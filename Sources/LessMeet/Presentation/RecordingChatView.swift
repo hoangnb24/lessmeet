@@ -11,7 +11,7 @@ struct RecordingChatView: View {
     let canSend: Bool
     let send: () -> Void
     @State private var showingSource = false
-    @FocusState private var composerFocused: Bool
+    @State private var composerFocused = false
 
     var body: some View {
         VStack(spacing: 0) {
@@ -129,29 +129,41 @@ struct RecordingChatView: View {
 
     private var composer: some View {
         VStack(alignment: .leading, spacing: 12) {
-            TextEditor(text: $draft)
-                .font(.system(size: 14)).scrollContentBackground(.hidden)
+            ChatTextEditor(text: $draft, isFocused: $composerFocused, isEditable: canUseCloud)
                 .frame(height: 64)
                 .overlay(alignment: .topLeading) {
                     if draft.isEmpty {
                         Text("Ask about this recording…").font(.system(size: 14))
-                            .foregroundStyle(.tertiary).padding(.leading, 5)
+                            .foregroundStyle(.tertiary)
                             .allowsHitTesting(false)
                     }
                 }
-                .focused($composerFocused).disabled(!canUseCloud)
                 .accessibilityLabel("Question about this recording")
             HStack(spacing: 10) {
                 Label("Transcript attached", systemImage: "doc.text")
                     .font(.system(size: 11)).foregroundStyle(.secondary)
                 Spacer()
                 if cloud.busy {
-                    Button { cloud.cancel() } label: { Image(systemName: "stop.fill").frame(width: 18, height: 18) }
-                        .buttonStyle(.bordered).help("Stop waiting; the submitted request may still finish")
+                    Button { cloud.cancel() } label: {
+                        Image(systemName: "stop.fill")
+                            .font(.system(size: 12, weight: .semibold))
+                            .foregroundStyle(Color(nsColor: .textBackgroundColor))
+                            .frame(width: 32, height: 32)
+                            .background(.primary, in: Circle())
+                            .contentShape(Circle())
+                    }
+                        .buttonStyle(.plain).help("Stop waiting; the submitted request may still finish")
                         .accessibilityLabel("Stop waiting for answer")
                 } else {
-                    Button(action: send) { Image(systemName: "arrow.up").frame(width: 18, height: 18) }
-                        .buttonStyle(.borderedProminent).tint(.primary).disabled(!canSend)
+                    Button(action: send) {
+                        Image(systemName: "arrow.up")
+                            .font(.system(size: 15, weight: .semibold))
+                            .foregroundStyle(canSend ? Color(nsColor: .textBackgroundColor) : .secondary)
+                            .frame(width: 32, height: 32)
+                            .background(canSend ? Color.primary : Color.primary.opacity(0.08), in: Circle())
+                            .contentShape(Circle())
+                    }
+                        .buttonStyle(.plain).disabled(!canSend)
                         .keyboardShortcut(.return, modifiers: .command)
                         .accessibilityLabel("Send question").help("Send question (⌘Return)")
                 }

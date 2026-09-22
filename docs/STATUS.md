@@ -1,5 +1,20 @@
 # LessMeet delivery
 
+## Composer scrollbar and send-control polish (2026-09-22)
+
+Human marked the composer scrollbar gutter and small rectangular send button.
+Lead replaced the send/stop chrome with matching 32-point circular controls and
+explicit disabled styling. A native NSScrollView/NSTextView bridge removes both
+scrollers while retaining multiline text, wrapping, scrolling and focus binding.
+The SwiftUI TextEditor scrollIndicators modifier was first checked in a native
+harness and did not hide its legacy macOS scroller; it was not used as the fix.
+
+`swift test` passed 31 tests, including a native editor regression that confirms
+both scrollers are absent and typing Return preserves a two-line draft.
+`bash scripts/build-app.sh` passed release build and strict code-sign verification;
+`git diff --check` passed. Full live visual review remains limited by the Keychain
+prompt when relaunching the rebuilt app. No cloud request or audio capture was used.
+
 ## Stable recording chat workspace (2026-09-22)
 
 Human requested pushing the Notion redesign and correcting Ask this recording
