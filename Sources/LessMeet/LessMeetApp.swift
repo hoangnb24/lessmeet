@@ -3,11 +3,12 @@ import SwiftUI
 @main
 struct LessMeetApp: App {
     @StateObject private var model = AppModel()
+    @StateObject private var accountSession = AccountSession()
     @NSApplicationDelegateAdaptor(AppDelegate.self) private var appDelegate
 
     var body: some Scene {
         WindowGroup {
-            LibraryView(model: model)
+            LibraryView(model: model, accountSession: accountSession)
                 .frame(minWidth: 1000, minHeight: 640)
                 .onAppear { appDelegate.model = model }
         }

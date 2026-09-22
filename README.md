@@ -5,7 +5,7 @@ Gemini transcription and transcript chat planned through a multi-user Convex bac
 
 ## Run locally
 
-Requires macOS 15+ and Xcode/Swift toolchain.
+Requires macOS 15+, Swift 6.3 with the Swift Build engine, and Node 22+.
 
 ```sh
 swift test
@@ -40,13 +40,23 @@ Original audio is retained if combining fails. A recording interrupted by app
 termination is marked interrupted when the library is reopened. Automatic repair,
 device switching, pause/resume and cloud sync are outside the first version.
 
-## Cloud work is not configured yet
+## Account and cloud
 
 This is a multi-user product. Gemini keys will **not** be saved in Keychain or
-bundled in Swift. Convex is the required backend; Vercel AI SDK can run in its
-TypeScript actions. The product owner funds one shared key in Convex env. Login
-setup remains pending before implementation of billable endpoints. Transcript/chat
-presentation exists, but no AI requests or login are wired yet.
+bundled in Swift. The product owner funds one shared key in Convex env.
+Clerk hosted login is wired into the sidebar; Google and Apple are enabled for the
+development instance. Clerk may persist login sessions in Keychain; this never
+stores the Gemini key. Real login and Convex token acceptance still need verification.
+Transcript/chat backend implementation is in progress; the Swift AI buttons are
+not yet connected.
+
+Before building, set public `CLERK_PUBLISHABLE_KEY` and `CONVEX_SITE_URL` in ignored
+`.env.local`. The packaging script copies only those public values into Info.plist.
+Missing account configuration does not prevent local recording. Clerk requires
+Native API enabled, `com.lessmeet.app://callback` registered, and session claim
+`aud: convex`. Convex uses `CLERK_JWT_ISSUER_DOMAIN` for the Clerk issuer.
+Production Google/Apple provider credentials and distribution signing are separate
+setup; development shared OAuth credentials do not establish production readiness.
 
 ### Convex development setup
 
@@ -63,15 +73,16 @@ npx convex env list --names-only
 Enter the key through the CLI prompt or the deployment dashboard's Environment
 Variables page. Do not put it in Swift, source files, shell arguments or chat.
 Environment variables are deployment-specific. Local Convex selection is kept in
-ignored `.env.local`. No Gemini key has been set by the setup work.
+ignored `.env.local`. The owner has set `GEMINI_API_KEY`; only its existence was
+checked, never its value.
 
 Research: [Vercel AI SDK](https://ai-sdk.dev/docs/getting-started/nodejs),
 [Google provider](https://github.com/vercel/ai/blob/main/packages/google/src/google-provider.ts),
 [Convex Swift](https://docs.convex.dev/client/swift/overview),
 [Gemini model catalog](https://ai.google.dev/gemini-api/docs/models),
 [Interactions API](https://ai.google.dev/gemini-api/docs/interactions-overview).
-`gemini-3.8-flash` is the documented default selected on 2026-09-22; actual project
-access and response quality have not been tested.
+The backend contract uses `gemini-flash-latest`, with a server-side `GEMINI_MODEL`
+override. Actual project access and response quality have not been tested.
 
 ## Verification and next checks
 

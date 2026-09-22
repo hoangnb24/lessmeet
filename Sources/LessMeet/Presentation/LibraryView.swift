@@ -2,6 +2,7 @@ import SwiftUI
 
 struct LibraryView: View {
     @ObservedObject var model: AppModel
+    @ObservedObject var accountSession: AccountSession
 
     var body: some View {
         NavigationSplitView {
@@ -35,6 +36,8 @@ struct LibraryView: View {
                     Text("Audio stays local until you ask for a transcript.")
                         .font(.caption2).foregroundStyle(.secondary)
                 }.frame(maxWidth: .infinity, alignment: .leading).padding(16)
+                Divider()
+                AccountPanel(session: accountSession)
             }
             .navigationSplitViewColumnWidth(min: 240, ideal: 280, max: 350)
         } detail: {
