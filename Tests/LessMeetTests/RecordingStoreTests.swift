@@ -2,6 +2,21 @@ import XCTest
 @testable import LessMeet
 
 final class RecordingStoreTests: XCTestCase {
+    func testIncompleteFolderDoesNotHideHealthyRecording() throws {
+        let root = FileManager.default.temporaryDirectory.appendingPathComponent(UUID().uuidString)
+        defer { try? FileManager.default.removeItem(at: root) }
+        let store = try RecordingStore(root: root)
+        var recording = Recording(title: "Healthy")
+        recording.status = .ready
+        try store.save(recording)
+        let incomplete = store.directory(for: UUID())
+        try FileManager.default.createDirectory(at: incomplete, withIntermediateDirectories: true)
+        var issues: [String] = []
+        XCTAssertEqual(try store.load { issues.append($0) }, [recording])
+        XCTAssertEqual(issues.count, 1)
+        XCTAssertTrue(FileManager.default.fileExists(atPath: incomplete.path))
+    }
+
     func testSaveAndReopenPreservesTranscriptAndChat() throws {
         let root = FileManager.default.temporaryDirectory.appendingPathComponent(UUID().uuidString)
         defer { try? FileManager.default.removeItem(at: root) }

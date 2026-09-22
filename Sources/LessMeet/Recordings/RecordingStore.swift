@@ -27,17 +27,27 @@ struct RecordingStore {
         try encoder.encode(recording).write(to: folder.appendingPathComponent("recording.json"), options: .atomic)
     }
 
-    func load() throws -> [Recording] {
+    func load(onIssue: (String) -> Void = { _ in }) throws -> [Recording] {
         let folders = try FileManager.default.contentsOfDirectory(at: root, includingPropertiesForKeys: nil)
-        return try folders.filter { UUID(uuidString: $0.lastPathComponent) != nil }.map { folder in
-            let data = try Data(contentsOf: folder.appendingPathComponent("recording.json"))
-            var recording = try JSONDecoder().decode(Recording.self, from: data)
-            if recording.status == .recording {
-                recording.status = .interrupted
-                recording.failure = "Recording was interrupted before it was finalized. Original audio is retained in its folder."
-                try save(recording)
+        return folders.filter { UUID(uuidString: $0.lastPathComponent) != nil }.compactMap { folder -> Recording? in
+            do {
+                let data = try Data(contentsOf: folder.appendingPathComponent("recording.json"))
+                var recording = try JSONDecoder().decode(Recording.self, from: data)
+                guard recording.id.uuidString == folder.lastPathComponent else {
+                    onIssue("Metadata does not match folder \(folder.lastPathComponent). Original files are untouched.")
+                    return nil
+                }
+                if recording.status == .recording {
+                    recording.status = .interrupted
+                    recording.failure = "Recording was interrupted before it was finalized. Original audio is retained in its folder."
+                    do { try save(recording) }
+                    catch { onIssue("Could not update \(recording.title): \(error.localizedDescription)") }
+                }
+                return recording
+            } catch {
+                onIssue("Could not read folder \(folder.lastPathComponent): \(error.localizedDescription). Original files are untouched.")
+                return nil
             }
-            return recording
         }.sorted { $0.createdAt > $1.createdAt }
     }
 }
