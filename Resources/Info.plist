@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0"><dict>
+<key>CFBundleExecutable</key><string>LessMeet</string>
+<key>CFBundleIdentifier</key><string>com.lessmeet.app</string>
+<key>CFBundleName</key><string>LessMeet</string>
+<key>CFBundleDisplayName</key><string>LessMeet</string>
+<key>CFBundlePackageType</key><string>APPL</string>
+<key>CFBundleShortVersionString</key><string>0.1.0</string>
+<key>CFBundleVersion</key><string>1</string>
+<key>LSMinimumSystemVersion</key><string>15.0</string>
+<key>NSHighResolutionCapable</key><true/>
+<key>NSMicrophoneUsageDescription</key><string>LessMeet records your microphone as a separate local audio track.</string>
+<key>NSScreenCaptureUsageDescription</key><string>LessMeet captures system audio for your recordings. No screen video is saved.</string>
+<key>NSAudioCaptureUsageDescription</key><string>LessMeet records audio played by meetings and videos.</string>
+</dict></plist>
