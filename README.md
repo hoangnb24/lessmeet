@@ -43,6 +43,11 @@ device switching, pause/resume and cloud sync are outside the first version.
 
 ## Account and cloud
 
+**Billable cloud access is paused on development** (`GEMINI_BILLABLE_ENABLED=false`).
+Uploads and chat return503 even with a valid JWT until cost/retention policy is
+accepted and enforced. Local recording, account checks and offline fixtures remain
+available. Do not turn this switch on merely to test the native UI.
+
 This is a multi-user product. Gemini keys will **not** be saved in Keychain or
 bundled in Swift. The product owner funds one shared key in Convex env.
 Clerk hosted login is wired into the sidebar; Google and Apple are enabled for the
@@ -89,7 +94,7 @@ override. Actual project access and response quality have not been tested.
 
 ## Verification and next checks
 
-Backend: `npm run typecheck:backend` and `npm run test:backend` pass (13 tests).
+Backend: `npm run typecheck:backend` and `npm run test:backend` pass (17 tests).
 Tests cover anonymous/cross-user rejection, owner upload/transcript/chat with a
 mocked provider, and the actual pinned SDK request format using mocked HTTP.
 No live Gemini request was made; model access/quality and real Clerk-token

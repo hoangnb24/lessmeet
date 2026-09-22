@@ -27,15 +27,34 @@ async function fixture(t: ReturnType<typeof setup>["t"], status: "ready" | "queu
   });
 }
 beforeEach(() => {
+  vi.stubEnv("GEMINI_BILLABLE_ENABLED", "true");
   vi.useFakeTimers();
   vi.resetAllMocks();
   vi.stubGlobal("fetch", vi.fn(() => { throw new Error("External network forbidden in tests"); }));
   vi.mocked(transcribeAudio).mockResolvedValue({ text: "# Transcript" });
   vi.mocked(replyToTranscript).mockResolvedValue("Agreed.");
 });
-afterEach(() => { vi.clearAllTimers(); vi.useRealTimers(); vi.unstubAllGlobals(); });
+afterEach(() => { vi.clearAllTimers(); vi.useRealTimers(); vi.unstubAllGlobals(); vi.unstubAllEnvs(); });
 
 describe("authenticated HTTP and database ownership", () => {
+  it.each([undefined, "false"])("blocks billable work even for an owner when the switch is %s", async enabled => {
+    vi.stubEnv("GEMINI_BILLABLE_ENABLED", enabled);
+    const { t, alice } = setup();
+    const id = await fixture(t);
+    expect((await alice.fetch("/recordings", { method: "POST", body: "not consumed" })).status).toBe(503);
+    expect((await alice.fetch("/chat", chat(id))).status).toBe(503);
+    expect((await alice.fetch(`/recordings?id=${id}`)).status).toBe(200);
+    expect((await alice.fetch("/account")).status).toBe(200);
+    expect(await t.run(ctx => ctx.db.query("recordings").collect())).toHaveLength(1);
+    expect(await t.run(ctx => ctx.db.system.query("_storage").collect())).toHaveLength(1);
+    const queued = await fixture(t, "queued");
+    await t.action(internal.jobs.transcribe, { id: queued });
+    expect((await t.run(ctx => ctx.db.get(queued)))!.status).toBe("failed");
+    expect(transcribeAudio).not.toHaveBeenCalled();
+    expect(replyToTranscript).not.toHaveBeenCalled();
+    expect(fetch).not.toHaveBeenCalled();
+  });
+
   it("rejects anonymous requests before storage/provider work, retaining /account", async () => {
     const { t, alice } = setup();
     for (const [path, init] of [["/account", undefined], ["/recordings?id=bad", undefined],

@@ -5,6 +5,7 @@ afterEach(() => { vi.unstubAllGlobals(); vi.unstubAllEnvs(); });
 
 // Exercise the pinned, real AI SDK and Google provider against HTTP fixtures.
 it.each(["completed", "incomplete"])("parses actual Interactions steps (%s), without fetching a public audio URL", async status => {
+  vi.stubEnv("GEMINI_BILLABLE_ENABLED", "true");
   vi.stubEnv("GEMINI_API_KEY", "test-placeholder-not-a-key");
   vi.stubEnv("GEMINI_MODEL", "gemini-flash-latest");
   const origin = "https://generativelanguage.googleapis.com";

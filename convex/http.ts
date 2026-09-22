@@ -4,6 +4,7 @@ import { internal } from "./_generated/api";
 import { ConvexError } from "convex/values";
 import { audioTypes, fail, MAX_AUDIO, MAX_MESSAGE } from "./limits";
 import { replyToTranscript, safeFailure } from "./gemini";
+import { billableEnabled, billablePausedMessage } from "./billable";
 
 function json(value: unknown, status = 200) {
   return new Response(JSON.stringify(value), { status, headers: {
@@ -64,6 +65,7 @@ http.route({
 });
 
 http.route({ path: "/recordings", method: "POST", handler: httpAction(async (ctx, request) => {
+  if (!billableEnabled()) return json({ error: billablePausedMessage }, 503);
   if (!await identity(ctx)) return json({ error: "Sign in to LessMeet first." }, 401);
   try {
     let mimeType = request.headers.get("content-type")?.split(";")[0].trim().toLowerCase() ?? "";
@@ -90,6 +92,7 @@ http.route({ path: "/recordings", method: "GET", handler: httpAction(async (ctx,
 }) });
 
 http.route({ path: "/chat", method: "POST", handler: httpAction(async (ctx, request) => {
+  if (!billableEnabled()) return json({ error: billablePausedMessage }, 503);
   if (!await identity(ctx)) return json({ error: "Sign in to LessMeet first." }, 401);
   try {
     if (request.headers.get("content-type")?.split(";")[0].trim().toLowerCase() !== "application/json") fail(415, "Send chat as application/json.");

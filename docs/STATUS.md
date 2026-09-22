@@ -1,5 +1,34 @@
 # LessMeet delivery
 
+## Current operating boundary — billable access CLOSED (2026-09-22)
+
+Human reopened cost/retention authority: no aggregate spending boundary or audio
+retention policy is accepted. The earlier authenticated development deployment
+was premature; auth/mock/401 evidence did not authorize owner-funded access.
+Human explicitly requested immediate reversible containment. Lead owns this fix.
+
+Development zany-octopus-315 now has GEMINI_BILLABLE_ENABLED=false (read back only
+this nonsecret switch). Missing or any value other than exactly true fails closed.
+POST /recordings and POST /chat return503 before authentication/body/storage work,
+so valid JWTs cannot bypass the pause. Background jobs check before audio access;
+both Gemini adapter entry points also check before reading key/creating provider.
+GET /account and owner-checked GET /recordings, local capture and fixture work remain
+available. No keys revoked/deleted or existing recordings deleted. This switch does
+not cancel a request already submitted before containment or undo prior charges.
+
+Evidence: development deploy succeeded; switch readback false; four live empty-body
+POST probes (absent and malformed bearer token on each route) returned503 with the
+pause message, without audio upload/provider calls. npm run typecheck:backend passed;
+npm run test:backend passed17 tests. New offline owner-identity and direct-adapter
+tests verify absent/false switch blocks storage/provider work and background jobs;
+existing opt-in mocked fixtures remain passing. This is containment evidence,
+NOT live-user/model verification or approval of quotas/retention.
+
+Do not enable the switch or perform valid-JWT billable/live-user tests until Human
+accepts cost and retention boundaries and their server-side enforcement is verified.
+Pilot limits/24-hour retention proposed in conversation are NOT accepted policy.
+Continue unrelated local/fixture implementation without enabling paid access.
+
 ## Product decisions
 
 Native macOS Swift app. Start/Stop records microphone and system audio separately;

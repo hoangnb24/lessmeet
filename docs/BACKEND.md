@@ -3,6 +3,14 @@
 Development endpoint: `https://zany-octopus-315.convex.site`.
 Implementation and deployment acceptance are tracked in [STATUS.md](STATUS.md).
 
+**Current state: billable access paused.** Development has
+`GEMINI_BILLABLE_ENABLED=false`. Both POST routes return503 before reading uploads
+or invoking Gemini, regardless of JWT. Background/provider entry points also fail
+closed; absent configuration is disabled. Read-only authenticated routes still work.
+Do not enable until the owner accepts cost/retention limits and enforcement is
+verified. The endpoint descriptions below document the fixture-tested enabled
+contract, not permission for live paid testing. No retention proposal is accepted.
+
 Every request sends `Authorization: Bearer <Clerk session token>`. The server
 validates Clerk's issuer and `aud: convex`. Never send a Gemini key from Swift.
 The application does not accept a client-supplied owner or storage ID.

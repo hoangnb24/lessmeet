@@ -13,6 +13,7 @@ function upload(state = "ACTIVE") {
     .mockResolvedValueOnce(Response.json({ file: metadata(state) }));
 }
 beforeEach(() => {
+  vi.stubEnv("GEMINI_BILLABLE_ENABLED", "true");
   vi.resetAllMocks();
   vi.stubEnv("GEMINI_API_KEY", "test-placeholder-not-a-key");
   vi.stubEnv("GEMINI_MODEL", "");
@@ -23,6 +24,15 @@ beforeEach(() => {
   generate.mockResolvedValue({ text: "# Complete transcript", finishReason: "stop" });
 });
 afterEach(() => { vi.unstubAllGlobals(); vi.unstubAllEnvs(); vi.useRealTimers(); });
+
+it.each([undefined, "false"])("blocks direct provider entry before any network when switch is %s", async enabled => {
+  vi.stubEnv("GEMINI_BILLABLE_ENABLED", enabled);
+  await expect(transcribeAudio(new Blob(["fixture"]), "audio/m4a")).rejects.toThrow("paused");
+  await expect(replyToTranscript("fixture", [], "question")).rejects.toThrow("paused");
+  expect(provider).not.toHaveBeenCalled();
+  expect(generate).not.toHaveBeenCalled();
+  expect(fetchMock).not.toHaveBeenCalled();
+});
 
 it("uploads raw bytes with matching MIME, requests stateless Interactions, and deletes Google copy", async () => {
   upload();
