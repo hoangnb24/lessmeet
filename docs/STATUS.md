@@ -1,5 +1,29 @@
 # LessMeet delivery
 
+## Notion-inspired library redesign (2026-09-22)
+
+Human selected the Notion reference after the Mobbin UX review. Lead owns this
+presentation-only change; this explicitly supersedes the earlier preserve-layout
+constraint. Library is the opening page, with title search, Today/Yesterday/Earlier
+groups, recording status and a compact recent-items sidebar. Details use a document
+layout with a persistent bottom player. Chat opens on demand beside the transcript
+when at least 900 points are available, or as the main pane at narrower widths.
+Account controls moved into a popover. Existing local capture, explicit upload
+consent, cloud/account scoping and backend behavior remain unchanged.
+
+Verification: `swift test` passed all 27 tests after the final source edit;
+`bash scripts/build-app.sh` passed release build and strict code-sign verification;
+`git diff --check` passed. Computer Use verified the actual rebuilt signed-in app:
+library, matching/no-match title search, clear search, cached transcript, chat
+open/close in narrow and wide content areas, untranscribed recording state, and
+account popover. Initial launch waited in Clerk's Keychain read; Human completed
+the macOS prompt and the main app then opened with its existing account. An
+account-free temporary bundle was used for initial layout inspection only.
+No recording, audio upload, AI request, sign-out or backend change was performed.
+Existing recording/cloud fixture tests are regression evidence, not a new live
+capture/transcription acceptance run. Yesterday/Earlier grouping and in-progress
+recording/transcription states were not exercised with live data in this review.
+
 ## Human end-to-end acceptance
 
 After native integration handoff e952f21, Human reports completing one real round:
