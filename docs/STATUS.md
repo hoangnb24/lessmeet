@@ -1,13 +1,28 @@
 # LessMeet delivery
 
-## Current operating boundary — billable access CLOSED (2026-09-22)
+## Current operating boundary — owner-approved access (2026-09-22)
+
+Human explicitly accepted all authenticated users using the owner-funded Gemini key
+without aggregate quotas for now, then accepted indefinite retention of audio,
+transcripts and chat. This supersedes the decision gap below. No allowlist, pilot
+quota or retention TTL is required for this stage. Existing technical payload,
+output and conversation bounds remain; they are not aggregate spending limits.
+Lead enabled GEMINI_BILLABLE_ENABLED=true on development only; CLI readback
+confirmed true. Four empty-body POST probes (absent/malformed bearer on recordings
+and chat) returned401, not the former503. No audio or valid JWT was used and no
+Gemini call was made. No code changes or redeploy required; tests not rerun for
+this env/docs-only change. Default-off kill switch remains reversible.
+No anonymous access, production rollout or paid agent test is authorized by this
+configuration change. Native integration may now proceed against the accepted policy.
+
+## Historical containment — superseded by explicit approval above
 
 Human reopened cost/retention authority: no aggregate spending boundary or audio
 retention policy is accepted. The earlier authenticated development deployment
 was premature; auth/mock/401 evidence did not authorize owner-funded access.
 Human explicitly requested immediate reversible containment. Lead owns this fix.
 
-Development zany-octopus-315 now has GEMINI_BILLABLE_ENABLED=false (read back only
+During containment, development zany-octopus-315 had GEMINI_BILLABLE_ENABLED=false (read back only
 this nonsecret switch). Missing or any value other than exactly true fails closed.
 POST /recordings and POST /chat return503 before authentication/body/storage work,
 so valid JWTs cannot bypass the pause. Background jobs check before audio access;
@@ -24,10 +39,9 @@ tests verify absent/false switch blocks storage/provider work and background job
 existing opt-in mocked fixtures remain passing. This is containment evidence,
 NOT live-user/model verification or approval of quotas/retention.
 
-Do not enable the switch or perform valid-JWT billable/live-user tests until Human
-accepts cost and retention boundaries and their server-side enforcement is verified.
-Pilot limits/24-hour retention proposed in conversation are NOT accepted policy.
-Continue unrelated local/fixture implementation without enabling paid access.
+The previous hold pending a cost/retention decision is resolved by the explicit
+approval above. Pilot limits/24-hour retention were proposals, never accepted policy.
+Paid agent tests still require separate permission under the workspace protocol.
 
 ## Product decisions
 

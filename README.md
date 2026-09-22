@@ -43,10 +43,10 @@ device switching, pause/resume and cloud sync are outside the first version.
 
 ## Account and cloud
 
-**Billable cloud access is paused on development** (`GEMINI_BILLABLE_ENABLED=false`).
-Uploads and chat return503 even with a valid JWT until cost/retention policy is
-accepted and enforced. Local recording, account checks and offline fixtures remain
-available. Do not turn this switch on merely to test the native UI.
+**Development cloud access is enabled** (`GEMINI_BILLABLE_ENABLED=true`). The owner
+approved access for all authenticated users without aggregate quotas for now, and
+indefinite cloud retention. The reversible switch defaults off if missing; it does
+not replace per-record authorization. Existing technical size limits still apply.
 
 This is a multi-user product. Gemini keys will **not** be saved in Keychain or
 bundled in Swift. The product owner funds one shared key in Convex env.
