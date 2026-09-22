@@ -1,5 +1,18 @@
 # LessMeet delivery
 
+## Human end-to-end acceptance
+
+After native integration handoff e952f21, Human reports completing one real round:
+sign in, Start Recording, grant TCC permissions, Transcribe, and Ask. Human explicitly
+confirmed all five steps worked successfully. Lead accepts the core product flow
+on Human's tested setup based on this report, not agent-observed runtime evidence.
+This supersedes earlier "live flow unverified" notes for that reported round only.
+Exact tested binary, login provider, device, duration and transcript accuracy were
+not separately recorded. Long-session drift, other devices, both OAuth providers,
+cross-account runtime switching and production distribution are not established.
+No new feature, policy change, API call or automated test was performed for this
+status update. Preserve the working MVP and accepted cost/retention decisions.
+
 ## Current operating boundary — owner-approved access (2026-09-22)
 
 Human explicitly accepted all authenticated users using the owner-funded Gemini key
