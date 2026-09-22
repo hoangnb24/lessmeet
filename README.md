@@ -1,7 +1,8 @@
 # LessMeet
 
 A native Swift macOS app for local microphone + system-audio recordings, with
-Gemini transcription and transcript chat planned through a multi-user Convex backend.
+Gemini transcription and transcript chat through an owner-isolated Convex backend
+(native cloud UI wiring is the next step).
 
 ## Run locally
 
@@ -47,8 +48,10 @@ bundled in Swift. The product owner funds one shared key in Convex env.
 Clerk hosted login is wired into the sidebar; Google and Apple are enabled for the
 development instance. Clerk may persist login sessions in Keychain; this never
 stores the Gemini key. Real login and Convex token acceptance still need verification.
-Transcript/chat backend implementation is in progress; the Swift AI buttons are
-not yet connected.
+Transcript/chat backend is implemented and deployed to development; the Swift AI
+buttons are not yet connected. See [the HTTP contract](docs/BACKEND.md).
+Audio uploads are limited to 18 MiB. Uploaded audio/transcripts remain in Convex
+indefinitely in this version; there is no deletion or spending-quota system yet.
 
 Before building, set public `CLERK_PUBLISHABLE_KEY` and `CONVEX_SITE_URL` in ignored
 `.env.local`. The packaging script copies only those public values into Info.plist.
@@ -85,6 +88,12 @@ The backend contract uses `gemini-flash-latest`, with a server-side `GEMINI_MODE
 override. Actual project access and response quality have not been tested.
 
 ## Verification and next checks
+
+Backend: `npm run typecheck:backend` and `npm run test:backend` pass (13 tests).
+Tests cover anonymous/cross-user rejection, owner upload/transcript/chat with a
+mocked provider, and the actual pinned SDK request format using mocked HTTP.
+No live Gemini request was made; model access/quality and real Clerk-token
+acceptance remain unverified. Development deployment is not production rollout.
 
 `swift test` exercises persistence/reopen and synthetic sample buffers through the
 real CAF/M4A writer/exporter. These do not prove live capture, acoustic quality,

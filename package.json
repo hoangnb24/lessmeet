@@ -3,9 +3,21 @@
   "private": true,
   "version": "0.1.0",
   "scripts": {
-    "convex": "convex"
+    "convex": "convex",
+    "typecheck:backend": "tsc -p convex/tsconfig.json && tsc -p Tests/backend/tsconfig.json",
+    "test:backend": "vitest run --config Tests/backend/vitest.config.mts"
   },
   "dependencies": {
-    "convex": "1.45.0"
+    "@ai-sdk/google": "4.0.76",
+    "ai": "7.0.109",
+    "convex": "1.45.0",
+    "zod": "4.1.8"
+  },
+  "devDependencies": {
+    "@edge-runtime/vm": "5.0.0",
+    "@types/node": "22.20.4",
+    "convex-test": "0.0.59",
+    "typescript": "5.9.3",
+    "vitest": "5.0.1"
   }
 }
