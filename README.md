@@ -44,9 +44,26 @@ device switching, pause/resume and cloud sync are outside the first version.
 
 This is a multi-user product. Gemini keys will **not** be saved in Keychain or
 bundled in Swift. Convex is the required backend; Vercel AI SDK can run in its
-TypeScript actions. Funding (shared key versus per-user keys), login and project
-setup need product decisions before implementation/deployment. Transcript/chat
+TypeScript actions. The product owner funds one shared key in Convex env. Login
+setup remains pending before implementation of billable endpoints. Transcript/chat
 presentation exists, but no AI requests or login are wired yet.
+
+### Convex development setup
+
+Project: [hoang-bang/lessmeet](https://dashboard.convex.dev/t/hoang-bang/lessmeet).
+Dev deployment: `zany-octopus-315` (US East); no production deployment yet.
+
+```sh
+npm ci
+npx convex deployment select hoang-bang:lessmeet:dev/lessmeet
+npx convex env set GEMINI_API_KEY
+npx convex env list --names-only
+```
+
+Enter the key through the CLI prompt or the deployment dashboard's Environment
+Variables page. Do not put it in Swift, source files, shell arguments or chat.
+Environment variables are deployment-specific. Local Convex selection is kept in
+ignored `.env.local`. No Gemini key has been set by the setup work.
 
 Research: [Vercel AI SDK](https://ai-sdk.dev/docs/getting-started/nodejs),
 [Google provider](https://github.com/vercel/ai/blob/main/packages/google/src/google-provider.ts),

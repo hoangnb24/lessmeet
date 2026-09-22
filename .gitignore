@@ -5,3 +5,5 @@ dist/
 *.xcuserstate
 xcuserdata/
 .artifacts/
+node_modules/
+.convex/

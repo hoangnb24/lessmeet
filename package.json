@@ -1,0 +1,11 @@
+{
+  "name": "lessmeet-backend",
+  "private": true,
+  "version": "0.1.0",
+  "scripts": {
+    "convex": "convex"
+  },
+  "dependencies": {
+    "convex": "1.45.0"
+  }
+}

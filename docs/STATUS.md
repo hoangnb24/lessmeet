@@ -6,12 +6,15 @@ Native macOS Swift app. Start/Stop records microphone and system audio separatel
 preserve both and create one time-aligned combined audio file. Local recording
 library and details, explicit Gemini transcription, readable Markdown, transcript
 chat beside/below it. Store recordings in Application Support. No automatic cloud
-upload, video storage, account/backend, meeting bot, or speculative features.
+upload, video storage, meeting bot, or speculative features.
 Human explicitly forbids Keychain and clarified this product supports many users.
 Backend must be Convex. Direct native BYOK architecture is REOPENED: Swift owns
-recording/UI, authenticated backend owns Gemini calls. Human decision pending:
-shared app-funded Gemini key vs per-user keys; auth/project provisioning.
-No deployment, shared-key billing exposure or credential persistence authorized.
+recording/UI, authenticated backend owns Gemini calls. Human chose a shared Gemini
+key funded by the product owner, stored only in Convex environment variables.
+Convex setup authorized; CLI login verified in team hoang-bang. Created project
+lessmeet and development deployment zany-octopus-315 (dev/lessmeet), US East.
+No production deployment, paid Gemini calls or public billable endpoint enabled.
+Authentication choice/setup remains pending. Gemini key has not been supplied.
 User asked for latest Gemini, Vercel AI SDK
 feasibility research, Uncle Bob references, Peers, feature commits and push.
 Repository: hoangnb24/lessmeet, private default announced to Human.
@@ -46,7 +49,8 @@ boundaries if they only forward calls without isolating change.
   @ai-sdk/google 4.0.76 has google.interactions; Convex authenticated HTTP actions
   are a plausible native boundary. Upload/auth/cost policy remains undecided;
   proposed endpoint list is NOT an accepted implementation contract.
-  No backend writes until shared-cost/auth decisions are resolved.
+  Shared-cost decision resolved: owner-funded key in Convex env. Auth remains a
+  prerequisite for billable endpoints. CLI setup now complete; no functions deployed.
   Reference dependency resolved: /Users/tubakhuym/projects/unclebob/references.
 
 ## Milestones
@@ -86,7 +90,21 @@ clock sanity check, live device timing, TCC and audible quality require real use
 Local recorder implementation and library can be tried via dist/LessMeet.app;
 README has build/run and manual checks. No personal audio captured or cloud API
 called. No active writable Peer remains. Cloud transcript/chat/login are NOT
-implemented; Human must choose shared-funded vs per-user Gemini keys and auth/
-Convex project setup. Lead recommendation: server-held key and authenticated
+implemented; Human must supply GEMINI_API_KEY directly to Convex env and confirm
+login choice (Google proposed). Lead recommendation: authenticated
 Convex actions using Vercel AI SDK, with explicit allowed-user/budget limits before
-deployment. Reopen backend implementation at that decision, not by guessing.
+billable endpoint deployment. Reopen authenticated backend work at that decision.
+
+## Convex setup evidence (2026-09-22)
+
+- CLI 1.45.0 authenticated using existing login; read-only team/project API confirmed
+  hoang-bang and no preexisting lessmeet project. No tokens or secret values printed.
+- `convex project create lessmeet --team hoang-bang` succeeded.
+- First deployment attempt using reserved `dev` alias failed without provisioning.
+  `deployment create hoang-bang:lessmeet:dev/lessmeet --type dev --region us --default
+  --select` created zany-octopus-315, then local selection failed for missing package.json.
+- Added pinned Convex CLI dependency; `npm install --ignore-scripts --no-audit --no-fund`
+  succeeded. `npx convex deployment select hoang-bang:lessmeet:dev/lessmeet` completed
+  local configuration. `.env.local` and node_modules are ignored.
+- `npx convex env list --names-only` succeeded: no environment variables set.
+- No app code changed in this setup step; Swift tests were not rerun.
