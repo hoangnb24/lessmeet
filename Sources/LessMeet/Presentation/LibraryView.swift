@@ -3,6 +3,7 @@ import SwiftUI
 struct LibraryView: View {
     @ObservedObject var model: AppModel
     @ObservedObject var accountSession: AccountSession
+    @ObservedObject var cloud: RecordingCloudModel
 
     var body: some View {
         NavigationSplitView {
@@ -45,7 +46,8 @@ struct LibraryView: View {
                 recordingBar
                 Divider()
                 if let recording = model.selected {
-                    RecordingDetailView(model: model, recording: recording)
+                    RecordingDetailView(model: model, accountSession: accountSession, cloud: cloud, recording: recording)
+                        .id(recording.id)
                 } else {
                     ContentUnavailableView {
                         Label("Room to listen", systemImage: "waveform")
@@ -58,6 +60,10 @@ struct LibraryView: View {
             }
         }
         .onChange(of: model.selection, initial: true) { _, _ in model.loadPlayback() }
+        .onChange(of: model.selection) { _, _ in cloud.contextChanged() }
+        .onChange(of: accountSession.sessionIdentifier) { _, _ in cloud.contextChanged() }
+        .onChange(of: model.phase) { _, phase in if phase != .idle { cloud.contextChanged() } }
+        .onDisappear { cloud.contextChanged() }
         .alert("LessMeet", isPresented: Binding(get: { model.error != nil }, set: { if !$0 { model.error = nil } })) {
             Button("OK", role: .cancel) { model.error = nil }
             Button("Open Recording Permissions") { model.openPermissions() }
@@ -104,7 +110,16 @@ struct LibraryView: View {
 
 private struct RecordingDetailView: View {
     @ObservedObject var model: AppModel
+    @ObservedObject var accountSession: AccountSession
+    @ObservedObject var cloud: RecordingCloudModel
     let recording: Recording
+    @State private var draft = ""
+    @State private var confirmUpload = false
+
+    private var remote: CloudRecording? { cloud.cached(recording) }
+    private var canUseCloud: Bool {
+        accountSession.sessionIdentifier != nil && model.phase == .idle && !cloud.busy && cloud.configurationIssue == nil
+    }
 
     var body: some View {
         VStack(alignment: .leading, spacing: 20) {
@@ -125,6 +140,29 @@ private struct RecordingDetailView: View {
             }
             PlaybackBar(player: model.playback)
                 .disabled(model.phase != .idle)
+            HStack {
+                if remote == nil || remote?.status == "failed" {
+                    Button(remote == nil ? "Create Transcript" : "Upload Again", systemImage: "text.badge.plus") { confirmUpload = true }
+                        .disabled(!canUseCloud || recording.status == .recording)
+                }
+                if remote != nil {
+                    Button("Refresh", systemImage: "arrow.clockwise") { cloud.refresh() }.disabled(!canUseCloud)
+                    Text(remote?.status.capitalized ?? "").font(.caption).foregroundStyle(.secondary)
+                }
+                if cloud.busy {
+                    ProgressView().controlSize(.small)
+                    Text(cloud.activity ?? "Working…").font(.caption)
+                    Button("Stop Waiting") { cloud.cancel() }
+                }
+                Spacer()
+            }
+            if let issue = cloud.configurationIssue ?? cloud.error ?? remote?.error {
+                Text(issue).font(.callout).foregroundStyle(.orange).textSelection(.enabled)
+            }
+            if !accountSession.isSignedIn {
+                Text("Sign in to create a transcript or view your account's saved cloud results.")
+                    .font(.caption).foregroundStyle(.secondary)
+            }
             Divider()
             HSplitView {
                 ScrollView {
@@ -133,14 +171,14 @@ private struct RecordingDetailView: View {
                             Label("Transcript", systemImage: "text.alignleft").font(.headline)
                             Spacer()
                         }
-                        if let transcript = recording.transcript {
+                        if let transcript = remote?.transcript {
                             MarkdownView(text: transcript)
                         } else {
                             VStack(alignment: .leading, spacing: 12) {
                                 Text("From conversation to clarity.").font(.title2.weight(.semibold))
-                                Text("Your transcript will appear here. Gemini transcription requires a configured Convex account connection.")
+                                Text("Choose Create Transcript to upload combined audio to Convex and Gemini. Audio stays local until you choose to upload it.")
                                     .foregroundStyle(.secondary)
-                                Label("Cloud connection not configured", systemImage: "cloud")
+                                Label("Maximum upload: 18 MiB", systemImage: "cloud")
                                     .font(.caption).foregroundStyle(.secondary)
                             }.padding(.top, 28)
                         }
@@ -149,22 +187,42 @@ private struct RecordingDetailView: View {
                 VStack(alignment: .leading, spacing: 16) {
                     Label("Ask this recording", systemImage: "bubble.left.and.bubble.right").font(.headline)
                     ScrollView {
-                        if recording.messages.isEmpty {
+                        if remote?.messages.isEmpty != false {
                             Text("Find decisions, pull out action items, or ask what you missed.")
                                 .foregroundStyle(.secondary).frame(maxWidth: .infinity, alignment: .leading)
                         } else {
-                            ForEach(recording.messages) { message in
+                            ForEach(Array((remote?.messages ?? []).enumerated()), id: \.offset) { _, message in
                                 VStack(alignment: .leading, spacing: 6) {
-                                    Text(message.role == .user ? "You" : "LessMeet").font(.caption.bold()).foregroundStyle(.teal)
+                                    Text(message.role == "user" ? "You" : "LessMeet").font(.caption.bold()).foregroundStyle(.teal)
                                     MarkdownView(text: message.text)
                                 }.padding(.vertical, 8)
                             }
                         }
                     }
-                    Text("Connect your account to chat with a transcript.").font(.caption).foregroundStyle(.secondary)
+                    TextField("Ask about this recording…", text: $draft, axis: .vertical)
+                        .lineLimit(2...5).textFieldStyle(.roundedBorder)
+                        .disabled(!canUseCloud || remote?.status != "ready")
+                    HStack {
+                        Text("Answers use this transcript.").font(.caption).foregroundStyle(.secondary)
+                        Spacer()
+                        Button("Send", systemImage: "paperplane") {
+                            cloud.send(draft.trimmingCharacters(in: .whitespacesAndNewlines))
+                        }
+                        .disabled(!canUseCloud || remote?.status != "ready" || draft.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty || draft.utf8.count > 8 * 1024)
+                    }
                 }.padding(.leading, 20).frame(minWidth: 240, idealWidth: 300, maxWidth: 420)
             }
         }.padding(28)
+        .onChange(of: accountSession.sessionIdentifier) { _, _ in draft = ""; confirmUpload = false }
+        .onChange(of: remote?.messages.count) { old, new in
+            if (new ?? 0) > (old ?? 0) { draft = "" }
+        }
+        .confirmationDialog("Upload this recording?", isPresented: $confirmUpload, titleVisibility: .visible) {
+            Button("Upload and Create Transcript") { cloud.transcribe() }
+            Button("Cancel", role: .cancel) { }
+        } message: {
+            Text("Combined audio is sent to Convex and Google Gemini using the owner's paid API key. Audio, transcript and chat stay in Convex indefinitely. Local source files are kept. Uploading again creates a new paid request.")
+        }
     }
 }
 

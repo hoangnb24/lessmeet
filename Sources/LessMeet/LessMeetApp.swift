@@ -2,13 +2,22 @@ import SwiftUI
 
 @main
 struct LessMeetApp: App {
-    @StateObject private var model = AppModel()
-    @StateObject private var accountSession = AccountSession()
+    @StateObject private var model: AppModel
+    @StateObject private var accountSession: AccountSession
+    @StateObject private var cloud: RecordingCloudModel
     @NSApplicationDelegateAdaptor(AppDelegate.self) private var appDelegate
+
+    init() {
+        let model = AppModel()
+        let account = AccountSession()
+        _model = StateObject(wrappedValue: model)
+        _accountSession = StateObject(wrappedValue: account)
+        _cloud = StateObject(wrappedValue: RecordingCloudModel(app: model, account: account))
+    }
 
     var body: some Scene {
         WindowGroup {
-            LibraryView(model: model, accountSession: accountSession)
+            LibraryView(model: model, accountSession: accountSession, cloud: cloud)
                 .frame(minWidth: 1000, minHeight: 640)
                 .onAppear { appDelegate.model = model }
         }

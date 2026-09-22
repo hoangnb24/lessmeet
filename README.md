@@ -1,8 +1,7 @@
 # LessMeet
 
 A native Swift macOS app for local microphone + system-audio recordings, with
-Gemini transcription and transcript chat through an owner-isolated Convex backend
-(native cloud UI wiring is the next step).
+Gemini transcription and transcript chat through an owner-isolated Convex backend.
 
 ## Run locally
 
@@ -53,8 +52,8 @@ bundled in Swift. The product owner funds one shared key in Convex env.
 Clerk hosted login is wired into the sidebar; Google and Apple are enabled for the
 development instance. Clerk may persist login sessions in Keychain; this never
 stores the Gemini key. Real login and Convex token acceptance still need verification.
-Transcript/chat backend is implemented and deployed to development; the Swift AI
-buttons are not yet connected. See [the HTTP contract](docs/BACKEND.md).
+Transcript/chat backend is deployed to development and connected to the Swift UI.
+See [the HTTP contract](docs/BACKEND.md).
 Audio uploads are limited to 18 MiB. Uploaded audio/transcripts remain in Convex
 indefinitely in this version; there is no deletion or spending-quota system yet.
 
@@ -65,6 +64,22 @@ Native API enabled, `com.lessmeet.app://callback` registered, and session claim
 `aud: convex`. Convex uses `CLERK_JWT_ISSUER_DOMAIN` for the Clerk issuer.
 Production Google/Apple provider credentials and distribution signing are separate
 setup; development shared OAuth credentials do not establish production readiness.
+
+### Using transcript and chat
+
+Sign in from the sidebar, select a saved recording and choose **Create Transcript**.
+Confirm the upload/retention notice. The app uploads only `combined.m4a`, saves the
+remote ID and waits for Markdown transcription. Use **Refresh** after reopening
+or a connection failure; it reuses the saved ID instead of uploading again.
+Once ready, type a question and choose **Send**. Results are saved with the local
+recording, separately for each backend/Clerk account. Signing out hides cloud caches;
+the local recording library remains available. Local caches are not encrypted by
+this app; this is account-aware UI isolation, not protection from the macOS user.
+
+**Stop Waiting** cancels local waiting, not work already accepted by the server.
+If the connection is lost before an upload ID is saved, the app cannot recover that
+remote recording automatically. Uploading again may incur another charge. There
+are no automatic mutation retries. Failed/oversize files never replace local audio.
 
 ### Convex development setup
 
@@ -103,6 +118,8 @@ acceptance remain unverified. Development deployment is not production rollout.
 `swift test` exercises persistence/reopen and synthetic sample buffers through the
 real CAF/M4A writer/exporter. These do not prove live capture, acoustic quality,
 long-session synchronization, TCC behavior, or macOS 15 runtime compatibility.
+The native suite passes27 tests, including7 HTTP client fixtures and4 cloud
+lifecycle/legacy persistence tests. No real OAuth or paid Gemini call was used.
 
 Before considering the recorder verified, record a short known conversation with
 mic-only, system-only and overlapping speech, including a long pause in playback.

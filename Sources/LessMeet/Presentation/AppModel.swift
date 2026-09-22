@@ -17,9 +17,9 @@ final class AppModel: ObservableObject {
     var selected: Recording? { recordings.first { $0.id == selection } }
     var canQuit: Bool { phase == .idle }
 
-    init() {
+    init(store suppliedStore: RecordingStore? = nil) {
         do {
-            let store = try RecordingStore()
+            let store = try suppliedStore ?? RecordingStore()
             self.store = store
             var issues: [String] = []
             recordings = try store.load { issues.append($0) }

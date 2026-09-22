@@ -29,6 +29,8 @@ final class AccountSession: ObservableObject {
     }
 
     var isSignedIn: Bool { clerk?.session?.status == .active }
+    var userID: String? { isSignedIn ? clerk?.user?.id : nil }
+    var sessionIdentifier: String? { !busy && isSignedIn ? clerk?.session?.id : nil }
     var isLoaded: Bool { clerk?.isLoaded == true }
     var email: String? { clerk?.user?.primaryEmailAddress?.emailAddress }
     var displayName: String {

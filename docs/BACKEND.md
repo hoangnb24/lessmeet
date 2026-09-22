@@ -74,8 +74,8 @@ cannot be cleaned up explicitly. Google-side expiry is not immediate deletion.
 Before deployment, verify unauthenticated requests fail, a second user cannot
 read or chat with the first user's recording, and the owner can complete the
 upload/transcript/chat path using a mocked provider. Live audio/API testing is
-not part of these offline checks. The Swift cloud buttons are a separate
-integration step; backend acceptance does not mean the full UI flow is complete.
+not part of these offline checks. Swift cloud buttons are integrated and verified
+with URLProtocol fixtures; real OAuth/upload/model behavior remains unverified.
 
 ```sh
 npm run typecheck:backend

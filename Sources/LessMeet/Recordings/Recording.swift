@@ -16,5 +16,7 @@ struct Recording: Codable, Identifiable, Equatable {
     var transcript: String?
     var messages: [ChatMessage] = []
     var failure: String?
+    // Cloud caches are scoped to backend + Clerk account, not the shared local library.
+    var cloud: [String: CloudRecording]?
     enum Status: String, Codable { case recording, ready, interrupted }
 }

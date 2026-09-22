@@ -82,6 +82,41 @@ boundaries if they only forward calls without isolating change.
 
 ## Ownership and frontier
 
+Native cloud integration completed after shared/local protocol reread, clean worktree
+and room ownership inspection. Backend and policy are accepted, unchanged inputs.
+- Peer 2f9139f4 client candidate ACCEPTED after exact source/test hash inspection:
+  CloudClient 5a7f3b64a01e, CloudClientTests cfdd45b2bce6. Seven fixture tests pass;
+  endpoint/redirect/token/error handling matches contract. Ownership returned.
+  Real networking/JWT and concurrent file modification remain unverified.
+- Lead owns UI/state/account scope/local persistence and all other files. Client
+  API agreed: init(baseURL: URL, session: URLSession = .shared), async throws
+  upload(fileURL: URL, token: String) -> String; recording(id: String, token: String)
+  -> CloudRecording; chat(id: String, message: String, token: String) -> String.
+  No SDK or Gemini key in client; caller supplies a fresh token on every request.
+  No automatic retry. Keep layout and local capture behavior. No live paid tests.
+  Acceptance requires fixtures for protocol and stale-account/selection protection,
+  existing tests, release build/sign; runtime UI/OAuth proof remains separate.
+Lead integration implements account-scoped local cloud caches, explicit upload
+confirmation, refresh/poll, chat and cancellation on context changes. swift test
+passes27 (including4 lifecycle/persistence and7 transport fixtures). Initial fixture
+render produced incomplete/transparent native controls; not visual acceptance.
+Source fixed one initial test raw-string syntax failure before passing tests.
+Read-only Peer 7ae4bc20 findings ACCEPTED against unchanged source hashes:
+RecordingCloudModel9c72a9b6617c, LibraryView8a4da2e38320, Recording deebb55ff5ba,
+AccountSession461a4d887c81, LessMeetApp ed63d879dda1, AppModel e0802e7defb1,
+CloudClient5a7f3b64a01e. No concrete account/session/selection blocker found.
+Lead ACCEPTS integrated implementation and27 fixture tests, not live OAuth/network.
+Ambiguous upload before remote ID persistence can leave an orphan remote recording;
+no automatic retry, explicit warning/confirmation; not cross-account leakage.
+Fixture render with explicit background shows transcript/chat detail layout, but
+native sidebar remains blank in offscreen capture, so full rendered UI is unverified.
+All Peer scopes closed; Lead owns packaging, docs and feature commit/push.
+Final packaging PASS: bash scripts/build-app.sh built release and strict codesign
+verified dist/LessMeet.app. Previous artifact retained in dist/build.qwy69l.
+No backend/env changes, actual login, audio capture/upload or paid API call in this
+native integration task. Ready for Human manual app trial, with unverified items
+above kept separate from fixture/build acceptance.
+
 - Lead: foundation, contracts, persistence, build packaging, integration/status.
 - Capture research ACCEPTED: macOS 15 ScreenCaptureKit dual output, shared PTS,
   no video persistence. Use small bounded buffers; no wait for both sources.
@@ -155,9 +190,9 @@ local recording and expose actionable safe failures. Oversize audio is rejected,
 not truncated. Before deployment, focused owner/other-user/unauthenticated tests
 must pass and independent inspection must resolve concrete authorization risks.
 
-Local UI work by Lead: library/detail, rename, playback, Markdown presentation,
-recording lifecycle. Cloud actions are explicitly unavailable pending backend;
-placeholder presentation is not acceptance of transcript/chat features.
+Original local UI milestone: library/detail, rename, playback, Markdown presentation
+and recording lifecycle; cloud placeholders were not feature acceptance. They are
+now replaced by the native cloud integration accepted above.
 Read-only Peer 9e349c18 completed UI/store inspection; no ownership outstanding.
 Review disposition: ACCEPT two findings, REJECT initial UI/store snapshot. Lead
 fixed initial playback loading (onChange initial:true) and per-folder load isolation
