@@ -1,5 +1,31 @@
 # LessMeet delivery
 
+## Stable recording chat workspace (2026-09-22)
+
+Human requested pushing the Notion redesign and correcting Ask this recording
+using OpenAI Codex references on Mobbin. The Notion baseline was committed as
+19c77d6 and pushed to origin/main before this follow-up. Mobbin's ChatGPT flow
+[Starting a chat (Codex)](https://mobbin.com/flows/143ee078-cd1b-4964-b48e-43d24c3a6f8c)
+provided the concrete reference: a persistent conversation/composer beside an
+optional work pane, with distinct user messages and assistant responses.
+
+Lead owns this change. Explicit Transcript/Chat tabs replace the width-triggered
+view replacement and ambiguous close-chat control. Chat keeps a stable primary
+column and opens the transcript in a user-controlled, resizable reference pane.
+The composer identifies the transcript context, supports multiline input and
+Command-Return submission, and restores the pending question after an error.
+Pending questions appear immediately; the stop control cancels waiting only.
+Drafts remain local and account/context resets retain the existing isolation.
+No backend/capture changes, automatic resend or new cloud request are introduced.
+
+Validation: final `swift test` passed 30 tests (including three new draft-state
+regressions); `bash scripts/build-app.sh` passed release build and strict signing.
+The first chat build was inspected live with existing cached messages and the
+optional transcript pane. That check caught native TextField Return selecting
+text rather than inserting a newline; the final build uses TextEditor instead.
+Final runtime verification is pending the macOS Keychain prompt on relaunch.
+No audio recording/upload or paid AI request was used for verification.
+
 ## Notion-inspired library redesign (2026-09-22)
 
 Human selected the Notion reference after the Mobbin UX review. Lead owns this

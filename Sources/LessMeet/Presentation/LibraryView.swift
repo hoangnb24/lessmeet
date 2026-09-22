@@ -276,11 +276,16 @@ private struct RecordingDetailView: View {
     @ObservedObject var accountSession: AccountSession
     @ObservedObject var cloud: RecordingCloudModel
     let recording: Recording
-    @State private var draft = ""
+    @State private var composer = RecordingChatDraft()
     @State private var title = ""
     @State private var confirmUpload = false
-    @State private var showingChat = false
+    @State private var selectedTab = DetailTab.transcript
     @FocusState private var titleFocused: Bool
+
+    private enum DetailTab: String, CaseIterable {
+        case transcript = "Transcript"
+        case chat = "Chat"
+    }
 
     private var remote: CloudRecording? { cloud.cached(recording) }
     private var canUseCloud: Bool {
@@ -289,35 +294,51 @@ private struct RecordingDetailView: View {
     private var transcriptReady: Bool { remote?.status == "ready" && remote?.transcript != nil }
     private var pending: Bool { remote?.status == "queued" || remote?.status == "processing" }
     private var canSend: Bool {
-        canUseCloud && transcriptReady && !draft.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty && draft.utf8.count <= 8 * 1024
+        canUseCloud && transcriptReady && composer.canSubmit
     }
 
     var body: some View {
-        GeometryReader { geometry in
-            VStack(spacing: 0) {
-                HStack(spacing: 0) {
-                    if !showingChat || geometry.size.width >= 900 {
-                        document
-                    }
-                    if showingChat {
-                        if geometry.size.width >= 900 { Divider().opacity(0.5) }
-                        chat.padding(24)
-                            .frame(width: geometry.size.width >= 900 ? 320 : nil)
-                            .frame(maxWidth: geometry.size.width >= 900 ? nil : .infinity)
-                    }
-                }.frame(maxHeight: .infinity)
-                Divider().opacity(0.5)
-                PlaybackBar(player: model.playback).disabled(model.phase != .idle)
-                    .padding(.horizontal, 28).padding(.vertical, 14)
+        VStack(spacing: 0) {
+            HStack {
+                Picker("Recording view", selection: $selectedTab) {
+                    ForEach(DetailTab.allCases, id: \.self) { tab in Text(tab.rawValue).tag(tab) }
+                }
+                .pickerStyle(.segmented).labelsHidden().frame(width: 200)
+                Spacer()
+                if selectedTab == .chat {
+                    Label("This recording only", systemImage: "doc.text")
+                        .font(.caption).foregroundStyle(.secondary)
+                }
+            }.padding(.horizontal, 28).padding(.vertical, 12)
+            Divider().opacity(0.5)
+            if selectedTab == .transcript {
+                document
+            } else if transcriptReady {
+                RecordingChatView(recording: recording, remote: remote, cloud: cloud,
+                                  draft: $composer.text, pendingQuestion: composer.pending,
+                                  canUseCloud: canUseCloud, canSend: canSend,
+                                  send: sendQuestion)
+            } else {
+                VStack(alignment: .leading, spacing: 16) {
+                    Text("Start with a transcript").font(.title2.weight(.semibold))
+                    Text("Chat answers questions using this recording’s transcript. Create it first, then come back here.")
+                        .foregroundStyle(.secondary)
+                    Button("Go to transcript") { selectedTab = .transcript }.buttonStyle(.borderedProminent)
+                }.padding(44).frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .topLeading)
             }
+            Divider().opacity(0.5)
+            PlaybackBar(player: model.playback).disabled(model.phase != .idle)
+                .padding(.horizontal, 28).padding(.vertical, 14)
         }
         .onAppear { title = recording.title }
         .onDisappear { saveTitle() }
         .onChange(of: titleFocused) { _, focused in if !focused { saveTitle() } }
         .onChange(of: accountSession.sessionIdentifier) { _, _ in
-            draft = ""; confirmUpload = false; showingChat = false
+            composer = RecordingChatDraft(); confirmUpload = false; selectedTab = .transcript
         }
-        .onChange(of: remote?.messages.count) { old, new in if (new ?? 0) > (old ?? 0) { draft = "" } }
+        .onChange(of: cloud.busy) { _, busy in
+            if !busy { composer.finishSubmission(failed: cloud.error != nil) }
+        }
         .confirmationDialog("Create a transcript?", isPresented: $confirmUpload, titleVisibility: .visible) {
             Button("Upload and Create Transcript") { cloud.transcribe() }
             Button("Cancel", role: .cancel) { }
@@ -349,11 +370,6 @@ private struct RecordingDetailView: View {
                 HStack {
                     Label("Transcript", systemImage: "text.alignleft").font(.system(size: 13, weight: .medium))
                     Spacer()
-                    if transcriptReady {
-                        Button { showingChat.toggle() } label: {
-                            Label(showingChat ? "Hide chat" : "Ask this recording", systemImage: "sparkle")
-                        }.buttonStyle(.bordered)
-                    }
                 }.padding(.bottom, 12)
                 Divider().padding(.bottom, 24)
                 if let failure = recording.failure { notice(failure) }
@@ -413,62 +429,9 @@ private struct RecordingDetailView: View {
         return "Create a transcript to revisit the details, find decisions, and ask questions about this recording."
     }
 
-    private var chat: some View {
-        VStack(alignment: .leading, spacing: 18) {
-            HStack {
-                Label("Ask this recording", systemImage: "sparkle").font(.system(size: 14, weight: .semibold))
-                Spacer()
-                Button { showingChat = false } label: { Image(systemName: "xmark") }
-                    .buttonStyle(.plain).foregroundStyle(.secondary).help("Back to transcript")
-            }
-            ScrollViewReader { proxy in
-                ScrollView {
-                    VStack(alignment: .leading, spacing: 20) {
-                        if remote?.messages.isEmpty != false {
-                            Text("Find the detail you’re looking for.").font(.system(size: 17, weight: .semibold)).padding(.top, 24)
-                            Text("Ask a question, or start with one of these.").font(.callout).foregroundStyle(.secondary)
-                            ForEach(["Summarize this conversation", "What decisions were made?", "List the action items"], id: \.self) { suggestion in
-                                Button { draft = suggestion } label: {
-                                    HStack {
-                                        Text(suggestion).multilineTextAlignment(.leading)
-                                        Spacer()
-                                        Image(systemName: "arrow.up.left").foregroundStyle(.secondary)
-                                    }.padding(12).frame(maxWidth: .infinity, alignment: .leading)
-                                        .background(.primary.opacity(0.035), in: RoundedRectangle(cornerRadius: 8))
-                                }.buttonStyle(.plain).disabled(!canUseCloud)
-                            }
-                        } else {
-                            ForEach(Array((remote?.messages ?? []).enumerated()), id: \.offset) { _, message in
-                                VStack(alignment: .leading, spacing: 8) {
-                                    Text(message.role == "user" ? "You" : "LessMeet")
-                                        .font(.system(size: 11, weight: .semibold)).foregroundStyle(.secondary)
-                                    MarkdownView(text: message.text)
-                                }.frame(maxWidth: .infinity, alignment: .leading)
-                            }
-                        }
-                        if cloud.busy {
-                            HStack { ProgressView().controlSize(.small); Text(cloud.activity ?? "Working…").font(.caption) }
-                            Button("Stop Waiting") { cloud.cancel() }.buttonStyle(.borderless)
-                        }
-                        if let error = cloud.error { notice(error) }
-                        Color.clear.frame(height: 1).id("chatEnd")
-                    }
-                }
-                .onChange(of: remote?.messages.count) { _, _ in proxy.scrollTo("chatEnd", anchor: .bottom) }
-            }
-            VStack(alignment: .leading, spacing: 10) {
-                TextField("Ask a question…", text: $draft, axis: .vertical)
-                    .lineLimit(2...5).textFieldStyle(.plain).disabled(!canUseCloud || !transcriptReady)
-                HStack {
-                    Text("Uses this transcript").font(.system(size: 10)).foregroundStyle(.secondary)
-                    Spacer()
-                    Button { cloud.send(draft.trimmingCharacters(in: .whitespacesAndNewlines)) } label: {
-                        Image(systemName: "arrow.up")
-                    }.buttonStyle(.borderedProminent).disabled(!canSend).help("Send question")
-                        .accessibilityLabel("Send question")
-                }
-            }.padding(12).background(.primary.opacity(0.035), in: RoundedRectangle(cornerRadius: 10))
-        }
+    private func sendQuestion() {
+        guard canSend, let question = composer.beginSubmission() else { return }
+        cloud.send(question)
     }
 
     private func saveTitle() {
