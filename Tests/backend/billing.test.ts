@@ -56,6 +56,31 @@ beforeEach(() => {
 afterEach(() => { vi.clearAllTimers(); vi.useRealTimers(); vi.unstubAllGlobals(); vi.unstubAllEnvs(); });
 
 describe("RevenueCat and billing identity", () => {
+  it.each(["empty string", "empty stream"])("accepts zero-byte sync body: %s", async kind => {
+    const { alice } = setup();
+    const body = kind === "empty string" ? "" : new ReadableStream<Uint8Array>({ start(controller) {
+      controller.enqueue(new Uint8Array(0)); controller.close();
+    } });
+    const init = { method: "POST", body, duplex: "half" };
+    const response = await alice.fetch("/billing/sync", init);
+    expect(response.status).toBe(200);
+    expect(await response.json()).toMatchObject({ userId: "alice", plan: "free", enforcement: true });
+    expect(fetch).toHaveBeenCalledTimes(1);
+  });
+  it.each(["{}", " ", "\u0000"])("rejects nonempty sync body before verification: %j", async body => {
+    const { alice } = setup();
+    expect((await alice.fetch("/billing/sync", { method: "POST", body })).status).toBe(400);
+    expect(fetch).not.toHaveBeenCalled();
+  });
+  it("rejects streamed bytes after an empty chunk without trusting Content-Length", async () => {
+    const { alice } = setup();
+    const body = new ReadableStream<Uint8Array>({ start(controller) {
+      controller.enqueue(new Uint8Array(0)); controller.enqueue(new Uint8Array([1])); controller.close();
+    } });
+    const init = { method: "POST", headers: { "Content-Length": "0" }, body, duplex: "half" };
+    expect((await alice.fetch("/billing/sync", init)).status).toBe(400);
+    expect(fetch).not.toHaveBeenCalled();
+  });
   it("requires auth, accepts bodyless sync, ignores no client identity or Pro claims", async () => {
     const { t, alice } = setup();
     expect((await t.fetch("/billing")).status).toBe(401);

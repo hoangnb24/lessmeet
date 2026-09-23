@@ -59,7 +59,22 @@ for (const [path, method] of [["/billing", "GET"], ["/billing/sync", "POST"]] as
     if (!account) return json({ error: "Sign in to LessMeet first." }, 401);
     try {
       // Neither IDs nor entitlement claims are accepted from query/body fields.
-      if (new URL(request.url).search || (method === "POST" && request.body !== null)) fail(400, "Billing requests take no parameters or body.");
+      if (new URL(request.url).search) fail(400, "Billing requests take no parameters or body.");
+      // HTTP transports may represent an empty POST as a non-null stream.
+      // Check actual bytes, not stream presence or a client-supplied length.
+      if (method === "POST" && request.body) {
+        const reader = request.body.getReader();
+        try {
+          while (true) {
+            const chunk = await reader.read();
+            if (chunk.done) break;
+            if (chunk.value.byteLength > 0) {
+              await reader.cancel();
+              fail(400, "Billing requests take no parameters or body.");
+            }
+          }
+        } finally { reader.releaseLock(); }
+      }
       const revision = await refreshBilling(ctx, account);
       return json(await ctx.runMutation(internal.billing.status, { revision }));
     } catch (error) { return failure(error); }
