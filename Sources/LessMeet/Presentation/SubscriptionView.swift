@@ -36,11 +36,13 @@ struct SubscriptionView: View {
     let configuration: BillingConfiguration?
     @Environment(\.dismiss) private var dismiss
     @State private var confirming = false
+    @State private var acknowledgedInternalTesting = false
 
     private var canPurchase: Bool {
         account.sessionIdentifier != nil && billing.activeUserID == account.userID &&
         subscription.status?.userId == account.userID && subscription.status?.enforcement == true &&
-        configuration?.privacyURL != nil && configuration?.termsURL != nil &&
+        ((configuration?.isInternalTesting == true && acknowledgedInternalTesting) ||
+         (configuration?.isInternalTesting != true && configuration?.privacyURL != nil && configuration?.termsURL != nil)) &&
         !billing.busy && !subscription.busy && !confirming
     }
 
@@ -78,6 +80,15 @@ struct SubscriptionView: View {
                         Text("Refresh your plan before purchasing. Subscription status is not confirmed.")
                     }
                     Divider()
+                    if configuration?.isInternalTesting == true {
+                        GroupBox("Internal testing only — not for distribution") {
+                            VStack(alignment: .leading, spacing: 8) {
+                                Text("Uses the Lessmeet development backend, Clerk and RevenueCat. Use synthetic data only. Public Privacy/Terms are not published yet. Contact Hoang Bang: hoang@2m0r.com.")
+                                Text("This build does not force Apple's payment environment. Use your Sandbox Apple Account and cancel any purchase sheet that is not clearly a sandbox test.")
+                                Toggle("I will use a Sandbox Apple Account and verify the Apple purchase sheet.", isOn: $acknowledgedInternalTesting)
+                            }.font(.caption).padding(6)
+                        }
+                    }
                     Text("Free").font(.headline)
                     Text("120 transcription minutes + 20 AI questions, once per account.")
                     Text("Pro").font(.headline)
@@ -106,7 +117,7 @@ struct SubscriptionView: View {
                     }
                     Text("Subscriptions renew automatically unless canceled in your Apple account settings. Payment is charged to your Apple account. Purchase confirmation alone does not unlock AI: the server must verify your subscription.")
                         .font(.caption).foregroundStyle(.secondary)
-                    if configuration?.privacyURL == nil || configuration?.termsURL == nil {
+                    if configuration?.isInternalTesting != true && (configuration?.privacyURL == nil || configuration?.termsURL == nil) {
                         Text("Purchases require published privacy and subscription terms.").font(.caption)
                     }
                     if let error = subscription.error { Text(error).foregroundStyle(.red) }

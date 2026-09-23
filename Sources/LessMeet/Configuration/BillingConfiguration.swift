@@ -5,8 +5,11 @@ struct BillingConfiguration {
     let publicAppleAPIKey: String?
     let privacyURL: URL?
     let termsURL: URL?
+    let isInternalTesting: Bool
 
-    init(publicAppleAPIKey: String?, privacyURL: String? = nil, termsURL: String? = nil) throws {
+    init(publicAppleAPIKey: String?, privacyURL: String? = nil, termsURL: String? = nil,
+         packagingMode: String? = nil) throws {
+        self.isInternalTesting = packagingMode == "sandbox-dev"
         let key = publicAppleAPIKey?.trimmingCharacters(in: .whitespacesAndNewlines) ?? ""
         guard key.isEmpty || (key.hasPrefix("appl_") && key.count > 5 &&
                              key.dropFirst(5).allSatisfy { $0.isASCII && ($0.isLetter || $0.isNumber) }) else {
@@ -22,7 +25,8 @@ struct BillingConfiguration {
         return try BillingConfiguration(
             publicAppleAPIKey: env["REVENUECAT_PUBLIC_APPLE_KEY"] ?? Bundle.main.object(forInfoDictionaryKey: "RevenueCatPublicAppleKey") as? String,
             privacyURL: env["LESSMEET_PRIVACY_URL"] ?? Bundle.main.object(forInfoDictionaryKey: "LessMeetPrivacyURL") as? String,
-            termsURL: env["LESSMEET_TERMS_URL"] ?? Bundle.main.object(forInfoDictionaryKey: "LessMeetTermsURL") as? String)
+            termsURL: env["LESSMEET_TERMS_URL"] ?? Bundle.main.object(forInfoDictionaryKey: "LessMeetTermsURL") as? String,
+            packagingMode: Bundle.main.object(forInfoDictionaryKey: "LessMeetPackagingMode") as? String)
     }
 
     private static func legalURL(_ raw: String?) throws -> URL? {

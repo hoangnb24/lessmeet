@@ -1,0 +1,71 @@
+{
+  "base": "dd70447f09a0ce44d6f879288b4cd2843c6805b8",
+  "candidate_kind": "deterministic working-tree snapshot; not committed",
+  "manifest_algorithm": "SHA-256 of file bytes; this evidence file is excluded from its own manifest and its hash is supplied in the handoff response",
+  "changed_paths_sha256": {
+    "Resources/Info.plist": "716b903e5da277393bb3823b0d3effc7f679680cd558609d73f8c216e2e792a2",
+    "Resources/LessMeet.sandbox.entitlements": "ce4a89ce21e9402efa98d8fed0f6565a8dbcdee3bfa842add8d0c04106592502",
+    "Tests/packaging/test_packaging.py": "2f1a903f82f97ee71d1aa08a4333849e24267760b43687aa24ce92853fb7c760",
+    "scripts/build-app.sh": "4489bed39c802616abda9c741b22f0b1599f7a591c0ac34597c6ab30219d9b30",
+    "scripts/configure-app.mjs": "86fea75441fe58bafdddce59f3c24966f292bcb57c51c2ee16ef2c775514bc19",
+    "scripts/packaging-signing.py": "32cc0031812e4d45eb0eb7b7e6d6b9ef74689c52841c589edd8148acc2c05bea"
+  },
+  "additional_changed_path": "Tests/packaging/HANDOFF.json",
+  "environment": {
+    "project": "/Users/tubakhuym/projects/lessmeet",
+    "os": "macOS 26.4 (25E246)",
+    "python": "3.9.6",
+    "node": "22.22.3",
+    "openssl": "LibreSSL 3.3.6"
+  },
+  "verification": [
+    {
+      "command": "PYTHONDONTWRITEBYTECODE=1 python3 -m unittest discover -s Tests/packaging -v",
+      "result": "PASS: 23 tests, 4.068 seconds, exit 0. Synthetic profiles, public keys, configuration, and one ephemeral self-signed certificate/private key only. No operator credentials accessed."
+    },
+    {"command": "bash -n scripts/build-app.sh", "result": "PASS, exit 0"},
+    {"command": "node --check scripts/configure-app.mjs", "result": "PASS, exit 0"},
+    {"command": "plutil -lint Resources/Info.plist Resources/LessMeet.entitlements Resources/LessMeet.sandbox.entitlements", "result": "PASS: all three OK, exit 0"},
+    {"command": "git diff --check", "result": "PASS, exit 0"},
+    {"command": "git diff --numstat -- Resources/LessMeet.entitlements", "result": "No output: original development entitlements unchanged"}
+  ],
+  "interfaces": {
+    "usage": "bash scripts/build-app.sh [dev|sandbox-dev|store] [--preflight]",
+    "default": "dev; original dist/LessMeet.app output, optional .env.local public configuration, ad hoc default or explicit identity, original development entitlements",
+    "signed_outputs": ["dist/sandbox-dev/LessMeet.app", "dist/store/LessMeet.app"],
+    "required_signed_environment": [
+      "LESSMEET_SIGNING_IDENTITY (exact valid local identity name or SHA-1 certificate fingerprint)",
+      "LESSMEET_PROVISIONING_PROFILE (explicit existing profile file path)",
+      "CLERK_PUBLISHABLE_KEY",
+      "CONVEX_SITE_URL",
+      "REVENUECAT_PUBLIC_APPLE_KEY",
+      "LESSMEET_PRIVACY_URL",
+      "LESSMEET_TERMS_URL"
+    ],
+    "sandbox_backend": "https://zany-octopus-315.convex.site",
+    "bundle": "com.lessmeet.app",
+    "team": "63M98WD275",
+    "oauth_callback": "com.lessmeet.app://callback",
+    "signed_configuration_source": "Exported environment only; signed modes do not read .env.local",
+    "entitlements": "Only sandbox, outbound network, audio input, and profile-backed app/team identifiers; neither mode emits get-task-allow or keychain/filesystem exceptions",
+    "preflight": "Checks public configuration and explicit local signing metadata without compilation, signing, installation, launch, or output artifacts",
+    "store_artifact": ".app only, explicitly not an installer/upload-ready .pkg"
+  },
+  "verified_scope": [
+    "Pure policy rejects wrong platform, expired/future profile, wrong team/bundle/prefix, wildcard bundle, absent certificate membership, wrong/expired certificate metadata, missing device coverage, development/store mismatch, store debugging, Developer ID, ad hoc identity, missing profile, and ambiguous identity names",
+    "Profile application prefix may differ from team ID; no broad profile capabilities are copied",
+    "Mocked metadata CLI confirms exact validated profile snapshot is embedded even if input file changes",
+    "Actual OpenSSL parses temporary synthetic certificate metadata",
+    "Real configuration script with temporary plists checks missing/invalid fields without leaking supplied values; dev optional configuration/local fallback/environment override preserved",
+    "Build orchestration with stubbed Swift/codesign/signing metadata boundary confirms resource retention, embedding before signing, isolated outputs, failed sign/verify preserving previous artifact, no deep signing, no recording modifications"
+  ],
+  "limits": [
+    "No real Swift compilation, identity lookup, CMS profile decoding, device metadata lookup, signing, or signed-app verification executed; signed orchestration uses stubs and policy fixtures",
+    "Actual Apple certificate/profile compatibility, OS installation/launch, sandbox recording/file access, OAuth/keychain behavior, purchases/restore, and backend/dashboard/legal availability remain unverified",
+    "Existing dev app and recordings were not touched; preservation is demonstrated against synthetic fixtures, not by reading user recordings",
+    "No .pkg creation, upload, installation, launch, browser activity, network writes, credentials inspection, env/deploy edits, commits, or pushes",
+    "Synthetic tests establish packaging policy and orchestration, not sandbox runtime usability or App Store acceptance",
+    "Unrelated .gitignore and documentation changes belong to Lead and are excluded from this snapshot"
+  ],
+  "ownership": "Relinquished to Lead for exact-candidate review and acceptance"
+}

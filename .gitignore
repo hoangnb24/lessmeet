@@ -7,3 +7,9 @@ xcuserdata/
 .artifacts/
 node_modules/
 .convex/
+# Local signing and service credentials; never commit private keys.
+/keys/
+/website/.wrangler/
+/.wrangler/
+*.p8
+*.p12
