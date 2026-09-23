@@ -9,6 +9,7 @@
  */
 
 import type * as billable from "../billable.js";
+import type * as billing from "../billing.js";
 import type * as gemini from "../gemini.js";
 import type * as http from "../http.js";
 import type * as jobs from "../jobs.js";
@@ -23,6 +24,7 @@ import type {
 
 declare const fullApi: ApiFromModules<{
   billable: typeof billable;
+  billing: typeof billing;
   gemini: typeof gemini;
   http: typeof http;
   jobs: typeof jobs;

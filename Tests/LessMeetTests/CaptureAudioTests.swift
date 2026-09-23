@@ -24,6 +24,10 @@ final class CaptureAudioTests: XCTestCase {
         system.close()
         microphone.close()
         let url = directory.appendingPathComponent("combined.m4a")
+        // Optional cross-runtime billing fixture: synthetic tones only, never user audio.
+        if let output = ProcessInfo.processInfo.environment["LESSMEET_SYNTHETIC_M4A_OUTPUT"] {
+            try Data(contentsOf: url).write(to: URL(fileURLWithPath: output), options: .withoutOverwriting)
+        }
         let asset = AVURLAsset(url: url)
         let videoTracks = try await asset.loadTracks(withMediaType: .video)
         let audioTracks = try await asset.loadTracks(withMediaType: .audio)

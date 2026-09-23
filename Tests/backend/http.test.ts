@@ -2,6 +2,7 @@ import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 import { convexTest } from "convex-test";
 import schema from "../../convex/schema";
 import { internal } from "../../convex/_generated/api";
+import type { Id } from "../../convex/_generated/dataModel";
 import { CHAT_TIMEOUT, JOB_TIMEOUT, MAX_AUDIO, MAX_MESSAGE } from "../../convex/limits";
 import { replyToTranscript, transcribeAudio } from "../../convex/gemini";
 
@@ -93,7 +94,7 @@ describe("authenticated HTTP and database ownership", () => {
     const { t, alice, bob } = setup();
     const response = await alice.fetch("/recordings", { method: "POST", headers: { "Content-Type": "audio/mp4" }, body: "fake audio" });
     expect(response.status).toBe(202);
-    const { recordingId } = await response.json();
+    const { recordingId } = await response.json() as { recordingId: Id<"recordings"> };
     const record = await t.run(ctx => ctx.db.get(recordingId));
     expect(record).toMatchObject({ owner: "issuer|alice", mimeType: "audio/m4a", status: "queued" });
     expect(await t.run(async ctx => (await ctx.storage.get(record!.audio))!.text())).toBe("fake audio");

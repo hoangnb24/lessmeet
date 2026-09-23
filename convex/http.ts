@@ -5,6 +5,9 @@ import { ConvexError } from "convex/values";
 import { audioTypes, fail, MAX_AUDIO, MAX_MESSAGE } from "./limits";
 import { replyToTranscript, safeFailure } from "./gemini";
 import { billableEnabled, billablePausedMessage } from "./billable";
+import { refreshBilling } from "./revenuecat";
+import { enforcementEnabled, requireBillingSetup } from "./billingPolicy";
+import { audioSeconds } from "./media";
 
 function json(value: unknown, status = 200) {
   return new Response(JSON.stringify(value), { status, headers: {
@@ -50,6 +53,19 @@ async function body(request: Request, limit: number, type = "application/json"):
 
 const http = httpRouter();
 
+for (const [path, method] of [["/billing", "GET"], ["/billing/sync", "POST"]] as const) {
+  http.route({ path, method, handler: httpAction(async (ctx, request) => {
+    const account = await identity(ctx);
+    if (!account) return json({ error: "Sign in to LessMeet first." }, 401);
+    try {
+      // Neither IDs nor entitlement claims are accepted from query/body fields.
+      if (new URL(request.url).search || (method === "POST" && request.body !== null)) fail(400, "Billing requests take no parameters or body.");
+      const revision = await refreshBilling(ctx, account);
+      return json(await ctx.runMutation(internal.billing.status, { revision }));
+    } catch (error) { return failure(error); }
+  }) });
+}
+
 // Read-only connection check. No upload, storage, or billable AI invocation.
 http.route({
   path: "/account",
@@ -66,14 +82,19 @@ http.route({
 
 http.route({ path: "/recordings", method: "POST", handler: httpAction(async (ctx, request) => {
   if (!billableEnabled()) return json({ error: billablePausedMessage }, 503);
-  if (!await identity(ctx)) return json({ error: "Sign in to LessMeet first." }, 401);
+  const account = await identity(ctx);
+  if (!account) return json({ error: "Sign in to LessMeet first." }, 401);
   try {
+    requireBillingSetup();
     let mimeType = request.headers.get("content-type")?.split(";")[0].trim().toLowerCase() ?? "";
     if (!audioTypes.has(mimeType)) fail(415, "Send raw supported audio with its audio Content-Type, not multipart data.");
     if (mimeType === "audio/mp4") mimeType = "audio/m4a";
-    const audio = await ctx.storage.store(await body(request, MAX_AUDIO, mimeType));
+    const media = await body(request, MAX_AUDIO, mimeType);
+    const seconds = enforcementEnabled() ? audioSeconds(await media.arrayBuffer(), mimeType) : undefined;
+    const revision = await refreshBilling(ctx, account);
+    const audio = await ctx.storage.store(media);
     try {
-      const recordingId = await ctx.runMutation(internal.recordings.create, { audio, mimeType });
+      const recordingId = await ctx.runMutation(internal.recordings.create, { audio, mimeType, seconds, revision });
       return json({ recordingId }, 202);
     } catch (error) {
       try { await ctx.storage.delete(audio); } catch {
@@ -93,8 +114,10 @@ http.route({ path: "/recordings", method: "GET", handler: httpAction(async (ctx,
 
 http.route({ path: "/chat", method: "POST", handler: httpAction(async (ctx, request) => {
   if (!billableEnabled()) return json({ error: billablePausedMessage }, 503);
-  if (!await identity(ctx)) return json({ error: "Sign in to LessMeet first." }, 401);
+  const account = await identity(ctx);
+  if (!account) return json({ error: "Sign in to LessMeet first." }, 401);
   try {
+    requireBillingSetup();
     if (request.headers.get("content-type")?.split(";")[0].trim().toLowerCase() !== "application/json") fail(415, "Send chat as application/json.");
     let input: unknown;
     try { input = JSON.parse(new TextDecoder("utf-8", { fatal: true }).decode(await (await body(request, MAX_MESSAGE * 6 + 1024)).arrayBuffer())); }
@@ -102,8 +125,11 @@ http.route({ path: "/chat", method: "POST", handler: httpAction(async (ctx, requ
     if (!input || typeof input !== "object" || !("recordingId" in input) || typeof input.recordingId !== "string" ||
         !("message" in input) || typeof input.message !== "string") fail(400, "Provide recordingId and message strings.");
     const { recordingId, message } = input;
+    // Resolve ownership before consulting the entitlement service.
+    await ctx.runQuery(internal.recordings.get, { id: recordingId });
+    const revision = await refreshBilling(ctx, account);
     const lease = crypto.randomUUID();
-    const context = await ctx.runMutation(internal.recordings.reserveChat, { id: recordingId, message, lease });
+    const context = await ctx.runMutation(internal.recordings.reserveChat, { id: recordingId, message, lease, revision });
     try {
       const text = await replyToTranscript(context.transcript, context.messages, message);
       await ctx.runMutation(internal.recordings.finishChat, { id: recordingId, message, lease, text });

@@ -4,6 +4,8 @@ import { internal } from "./_generated/api";
 import { MAX_AUDIO } from "./limits";
 import { GeminiFailure, safeFailure, transcribeAudio } from "./gemini";
 import { billableEnabled, billablePausedMessage } from "./billable";
+import { refreshBilling } from "./revenuecat";
+import { enforcementEnabled } from "./billingPolicy";
 
 export const transcribe = internalAction({
   args: { id: v.id("recordings") },
@@ -12,10 +14,13 @@ export const transcribe = internalAction({
     if (!job) return;
     try {
       if (!billableEnabled()) throw new GeminiFailure(billablePausedMessage);
+      if (enforcementEnabled() && !job.subject) throw new GeminiFailure("Upload this recording again to verify billing.");
+      const revision = await refreshBilling(ctx, { tokenIdentifier: job.owner, subject: job.subject ?? "" });
       const audio = await ctx.storage.get(job.audio);
       if (!audio || audio.size === 0 || audio.size > MAX_AUDIO) {
         throw new GeminiFailure("Stored audio is missing or outside the 18 MiB limit. Upload a valid recording again.");
       }
+      await ctx.runMutation(internal.recordings.authorizeJob, { id, revision });
       const result = await transcribeAudio(audio, job.mimeType);
       await ctx.runMutation(internal.recordings.finishJob, { id, transcript: result.text, error: result.warning });
     } catch (error) {
