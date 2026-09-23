@@ -10,6 +10,14 @@ struct CloudClient {
         self.session = session
     }
 
+    func subscription(token: String, synchronize: Bool = false) async throws -> SubscriptionStatus {
+        let request = try request(path: synchronize ? "billing/sync" : "billing",
+                                  method: synchronize ? "POST" : "GET", token: token)
+        let result: SubscriptionStatus = try await send(request, expectedStatus: 200)
+        guard result.isValid else { throw malformed(mutating: false) }
+        return result
+    }
+
     func upload(fileURL: URL, token: String) async throws -> String {
         let request = try request(path: "recordings", method: "POST", token: token, contentType: "audio/m4a")
         guard fileURL.isFileURL, fileURL.pathExtension.lowercased() == "m4a" else {

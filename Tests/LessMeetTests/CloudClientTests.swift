@@ -66,6 +66,35 @@ final class CloudClientTests: XCTestCase {
         XCTAssertEqual(text, "A reply")
     }
 
+    func testBillingStatusAndSyncUseOnlyBearerIdentity() async throws {
+        for sync in [false, true] {
+            CloudFixtureProtocol.handler = { request in
+                XCTAssertEqual(request.url?.path, sync ? "/billing/sync" : "/billing")
+                XCTAssertEqual(request.httpMethod, sync ? "POST" : "GET")
+                XCTAssertEqual(request.value(forHTTPHeaderField: "Authorization"), "Bearer billing-token")
+                XCTAssertTrue(try Self.body(request).isEmpty)
+                return (200, Data(#"{"userId":"alice","enforcement":true,"plan":"free","periodEndsAt":null,"transcriptionSeconds":{"limit":7200,"used":60,"reserved":120},"questions":{"limit":20,"used":1,"reserved":0}}"#.utf8))
+            }
+            let result = try await client.subscription(token: "billing-token", synchronize: sync)
+            XCTAssertEqual(result.transcriptionSeconds.remaining, 7020)
+            XCTAssertEqual(result.questions.remaining, 19)
+        }
+    }
+
+    func testInvalidBillingCountsAndModeAreRejected() async throws {
+        for plan in ["unknown", "development", "free"] {
+            CloudFixtureProtocol.handler = { _ in
+                (200, Data("""
+                {"userId":"alice","enforcement":true,"plan":"\(plan)","periodEndsAt":null,
+                 "transcriptionSeconds":{"limit":7200,"used":-1,"reserved":0},
+                 "questions":{"limit":20,"used":0,"reserved":0}}
+                """.utf8))
+            }
+            do { _ = try await client.subscription(token: "billing-token"); XCTFail("Invalid status accepted") }
+            catch { XCTAssertTrue(error.localizedDescription.contains("unexpected response")) }
+        }
+    }
+
     func testHTTPStatusSafeErrorAndMalformedMutationResponse() async throws {
         for status in [401, 404, 409, 413, 415, 502, 503] {
             CloudFixtureProtocol.handler = { _ in (status, Data(#"{"error":"Service temporarily paused."}"#.utf8)) }

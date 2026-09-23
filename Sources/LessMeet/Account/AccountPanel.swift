@@ -2,6 +2,7 @@ import SwiftUI
 
 struct AccountPanel: View {
     @ObservedObject var session: AccountSession
+    var billingBusy = false
     @State private var showingAccount = false
 
     var body: some View {
@@ -38,7 +39,7 @@ struct AccountPanel: View {
                 if let email = session.email, email != session.displayName {
                     Text(email).font(.caption).foregroundStyle(.secondary)
                 }
-                Button("Sign Out") { Task { await session.signOut() } }.disabled(session.busy)
+                Button("Sign Out") { Task { await session.signOut() } }.disabled(session.busy || billingBusy)
             } else {
                 Text("Sign in for transcripts and chat. Recording works without an account.")
                     .font(.caption).foregroundStyle(.secondary)

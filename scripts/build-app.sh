@@ -12,6 +12,7 @@ cp Resources/Info.plist "$app_dir/Contents/Info.plist"
 node scripts/configure-app.mjs "$app_dir/Contents/Info.plist"
 # Swift Build generates resource lookup through Bundle.main.resourceURL.
 cp -R "$binary_dir/Clerk_ClerkKit.bundle" "$app_dir/Contents/Resources/"
+cp -R "$binary_dir/RevenueCat_RevenueCat.bundle" "$app_dir/Contents/Resources/"
 codesign --force --sign "${LESSMEET_SIGNING_IDENTITY:--}" --options runtime \
   --entitlements Resources/LessMeet.entitlements "$app_dir"
 codesign --verify --strict --verbose=2 "$app_dir"

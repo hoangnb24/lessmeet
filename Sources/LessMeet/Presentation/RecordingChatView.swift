@@ -21,6 +21,18 @@ struct RecordingChatView: View {
                     Text(recording.title).font(.caption).foregroundStyle(.secondary).lineLimit(1)
                 }
                 Spacer()
+                Menu("Meeting notes", systemImage: "sparkles") {
+                    Button("Summarize") {
+                        draft = "Summarize this recording in its original language. Include the main points, decisions, and open questions. Base every point on the transcript; say when information is missing."
+                        composerFocused = true
+                    }
+                    Button("Action items") {
+                        draft = "Extract the action items from this recording in its original language. For each item list the task, owner, and deadline only when stated in the transcript. Mark unspecified owners or deadlines as unspecified; do not invent commitments."
+                        composerFocused = true
+                    }
+                }
+                .disabled(!canUseCloud)
+                .help("Prepare a question; choose Send to run it. Each successful request uses one AI question when quotas are enabled.")
                 Button { showingSource.toggle() } label: {
                     Label(showingSource ? "Hide transcript" : "Show transcript", systemImage: "sidebar.right")
                 }.buttonStyle(.bordered).help("Read the source alongside this conversation")
@@ -171,7 +183,8 @@ struct RecordingChatView: View {
             if draft.utf8.count > 8 * 1024 {
                 Text("This question is too long. Shorten it before sending.").font(.caption).foregroundStyle(.orange)
             } else if !cloud.busy {
-                Text("⌘Return to send · Return for a new line").font(.system(size: 10)).foregroundStyle(.tertiary)
+                Text("⌘Return to send · Each answer, summary or action-item request uses 1 AI question when quotas are enabled.")
+                    .font(.system(size: 10)).foregroundStyle(.secondary).fixedSize(horizontal: false, vertical: true)
             }
         }
         .padding(16)

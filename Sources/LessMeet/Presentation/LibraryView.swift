@@ -4,6 +4,9 @@ struct LibraryView: View {
     @ObservedObject var model: AppModel
     @ObservedObject var accountSession: AccountSession
     @ObservedObject var cloud: RecordingCloudModel
+    var billing: BillingStore? = nil
+    var subscription: SubscriptionModel? = nil
+    var billingConfiguration: BillingConfiguration? = nil
     @State private var search = ""
     @State private var showingLibrary = true
     @FocusState private var searchFocused: Bool
@@ -46,6 +49,9 @@ struct LibraryView: View {
         .onChange(of: model.selection, initial: true) { _, _ in model.loadPlayback() }
         .onChange(of: model.selection) { _, _ in cloud.contextChanged() }
         .onChange(of: accountSession.sessionIdentifier) { _, _ in cloud.contextChanged() }
+        .onChange(of: cloud.busy) { _, busy in
+            if !busy { Task { await subscription?.refresh() } }
+        }
         .onChange(of: model.phase) { _, phase in
             if phase != .idle { cloud.contextChanged() }
             if phase == .starting { showingLibrary = false; search = "" }
@@ -124,7 +130,12 @@ struct LibraryView: View {
             Label("Saved on this Mac", systemImage: "internaldrive")
                 .font(.caption).foregroundStyle(.secondary).padding(.horizontal, 18).padding(.bottom, 14)
             Divider().opacity(0.5)
-            AccountPanel(session: accountSession)
+            if let billing, let subscription {
+                SubscriptionAccountView(account: accountSession, billing: billing,
+                                        subscription: subscription, configuration: billingConfiguration)
+            } else {
+                AccountPanel(session: accountSession)
+            }
         }
         .background(Color(nsColor: .windowBackgroundColor))
     }
@@ -343,7 +354,7 @@ private struct RecordingDetailView: View {
             Button("Upload and Create Transcript") { cloud.transcribe() }
             Button("Cancel", role: .cancel) { }
         } message: {
-            Text("This uploads the combined audio to Convex and Google Gemini for processing. Audio, transcript and chat are stored in the cloud indefinitely. Your local files are kept. Maximum upload: 18 MiB. Uploading again creates a new paid request funded by the app owner.")
+            Text("This uploads the combined audio to Convex and Google Gemini for processing. Audio, transcript and chat are stored in the cloud indefinitely. Your local files are kept. Maximum upload: 18 MiB. When quotas are enabled, each completed transcription uses your AI minutes. Uploading again is a new request; refresh an existing transcript first.")
         }
     }
 
