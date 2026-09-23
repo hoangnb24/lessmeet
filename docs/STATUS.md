@@ -1,5 +1,220 @@
 # LessMeet delivery
 
+## Billing implementation — accepted locally, not activated (2026-09-23)
+
+Current checkpoint: Lead ACCEPTS native and backend implementation locally.
+All writable and read-only Peer assignments are closed; all write scopes belong
+to Lead. No deployment, live rollout or credential authority added.
+
+Usable outcome: `dist/LessMeet.app` includes Plan & usage, configured-only native
+purchase/restore, server-confirmed allowances and explicit summary/action-item
+composer actions. Backend implements Free/Pro verification and atomic quotas;
+default-off preserves existing development access. No commit/push performed.
+
+Final observed verification: `swift test` 55/55; `npm run typecheck:backend`
+passed; `npm run test:backend` 51/51; `bash scripts/build-app.sh` passed release
+build and strict ad-hoc code-sign verification. Shell/config script syntax and
+`git diff --check` passed. Unconfigured subscription screen rendered and visually
+inspected; one synthetic native M4A traversed backend validation/upload/settlement.
+Fresh read-only backend Peer independently passed typecheck and all 51 tests
+with no cache; no actionable finding under the documented policy.
+
+Next frontier / owners: Human authorizes Apple–RevenueCat credential connection,
+published legal pages and activation; Lead then verifies the original-user restore
+policy, products/offering, real v1 responses and isolated sandbox lifecycle before
+any enforcement rollout. Lead must also resolve hostile-media resource/decoded-
+duration assurance and long-recording/cost measurements before public activation.
+Fixtures do not prove live JWT, purchases/restores/refunds/renewals, deployed
+scheduler timing, all native recordings, model quality or Mac App Store packaging.
+Current development server/env/store configuration remains unchanged.
+
+Human requested implementation after rereading workspace protocols. Shared/local
+contracts and room inspected: previous Peer scopes are closed; only docs/STATUS.md
+has preexisting uncommitted work, preserved. Lead owns integration/UI/cloud client,
+docs and acceptance. New bounded Peer scopes: backend (convex/**, Tests/backend/**,
+package.json/package-lock.json if needed); native SDK (Sources/LessMeet/Billing/**,
+Tests/LessMeetTests/Billing* and Package.swift/Package.resolved). No overlapping
+writes. No deployment, env change, live paid test, Apple keys or store mutations.
+
+Stable contract: GET /billing with fresh Clerk JWT returns {userId, enforcement,
+plan: "free"|"pro"|"development", periodEndsAt: number|null (epoch milliseconds),
+transcriptionSeconds: {limit,used,reserved}, questions: {limit,used,reserved}}.
+POST /billing/sync (no client identity or entitlement accepted) revalidates through
+RevenueCat server-side then returns the same shape. SDK identifies only the signed
+in Clerk subject; no anonymous purchases. Entitlement lessmeet_pro; products
+com.lessmeet.app.pro.monthly and com.lessmeet.app.pro.yearly. Native package
+selection and prices must come from StoreKit/RevenueCat offerings, not hardcoded
+purchase labels. Missing configuration disables purchases, not local work.
+
+Quota enforcement opt-in BILLING_ENFORCEMENT_ENABLED=true; default keeps approved
+development access unchanged. Pro monthly windows anchored to subscription start
+in UTC with end-of-month clamping (also annual plans), no quota rollover. Free
+allowance lifetime. User-requested summary/action-items each use one question;
+UI must disclose this. Backend validates duration from uploaded media, not request
+headers; reserve atomically before AI, settle only on saved success, release on
+failure/timeout. Existing owner isolation and billable kill switch remain intact.
+Fresh independent read-only candidate inspection required before acceptance of
+this security-sensitive integration; fixtures/build are not live billing proof.
+
+Backend Peer 23910d4b REOPEN_REQUEST ACCEPTED: v1 latest transaction identity is
+not sufficient for a transfer-safe subscription-chain ledger. Scope stays v1;
+require RevenueCat Keep with original App User ID restore policy at rollout and
+REVENUECAT_ORIGINAL_USER_POLICY_CONFIRMED=true before enabling enforcement.
+Require verified original_app_user_id equal to the signed-in Clerk subject;
+no anonymous purchases. Missing prerequisite fails closed, not a free fallback.
+Peer retains backend ownership and resumes implementation. Human/Lead must verify
+dashboard policy before activation; no dashboard mutation authorized/performed.
+Native Peer e7cde137 retains its separate SDK scope. Lead owns remaining scopes.
+
+Native Peer dependency response resolved: missing SubscriptionAccountView was a
+temporary integration gap while Lead wrote the UI; it now compiles. Peer retains
+its scope to finish verification and return the final snapshot. Lead's focused
+Swift run passed 16 tests. First full run: 52 passed, one snapshot-test assertion
+failed because the headless renderer uses 1x, not assumed 2x scale; assertion fixed
+to support either density, rerun pending. This was not an app rendering failure.
+
+Lead ACCEPTS native adapter e7cde137 candidate (base b45f5c8, BillingStore SHA-256
+aee90ae33863881609a81ba493108ac1a6d40c3e3de76600357232f3774084a4;
+driver 0c988506512aefc0e941caab09e4304edbfff1f96afb2151c4fc8cff3602be2c).
+All five submitted path hashes match. Direct inspection confirms identified-only
+configuration, serialized SDK calls, stale-result isolation, explicit restore and
+StoreKit-derived supported prices; local entitlement is never cloud authority.
+Lead full swift test rerun passed 53 tests including 14 billing tests; adapter
+Peer independently reports 14/14. Ownership returned to Lead. Live StoreKit and
+signed-app resource loading still unverified. Fresh integration review follows.
+
+Read-only native inspection d1747deb REOPEN_REQUEST P2 ACCEPTED: an overlapping
+ordinary GET could discard required post-purchase synchronization. Lead queued
+required synchronization behind in-flight refreshes, retaining caller busy state;
+account-generation changes invalidate queued work. Suspended GET → required POST
+regression passed; added cross-account queued-sync regression, full rerun pending.
+Other inspected native paths had no demonstrated identity/authorization bypass.
+Release build passed and the RevenueCat privacy bundle exists in app Resources;
+unconfigured Plan & usage snapshot visually inspected. This is not live StoreKit
+or launched signed-app resource proof. Reviewer retains no write scope.
+
+Backend native-media dependency resolved by Lead: synthetic tones through actual
+CaptureAudioRecorder/AVFoundation exporter, 1.25s M4A fixture in a unique temporary
+directory, native test passed. Backend Peer owns parser compatibility verification.
+Earlier no-overwrite export refused an existing temporary path; it was preserved.
+Lead ACCEPTS documented v1 Get/Create customer explanation: verified empty
+entitlements means Free; HTTP 404 is unavailable, not a free entitlement.
+
+Native recheck d1747deb: Lead ACCEPTS production correction by inspection; no new
+cross-account/deadlock path found. Lead also ACCEPTS its test-ordering finding:
+one-shot Task.yield did not prove overlap. Fixtures now wait for the actual queued
+continuation count before releasing GET/changing identity, not scheduling luck.
+Reviewer scope closed. Latest full suite before this fixture hardening: Swift
+55/55, backend 40/40; backend typecheck passed. Final focused rerun pending.
+Release .app rebuilt after the production fix and strict ad-hoc signature passed.
+Backend final candidate/independent inspection remains pending, not accepted yet.
+
+Lead ACCEPTS corrected native integration locally: final `swift test` 55/55,
+including deterministic queued-sync/account-change checks; final release rebuild
+and strict ad-hoc signature verification passed. API identity assertions and SDK
+state cannot grant backend access; default-off behavior preserves current access.
+`git diff --check`, shell syntax and configure-script syntax passed. Native writer
+and inspection assignments are closed. Usable now: local Plan & usage shell,
+SDK purchase/restore adapter, server-status client and explicit meeting-note
+composer actions. Not verified: configured store UI, actual payment/restore,
+renewals, signed-app runtime resources, macOS 15 behavior, or model output quality.
+Lead continues backend acceptance before overall handoff.
+
+Backend handoff received: Tests/backend/BILLING_HANDOFF.md SHA-256
+3864bc725f03b7ab6163b4cac4f8bb716108b8e30202eb5705e7fb8b80ad40c5,
+base b45f5c8, includes complete 15-path implementation/test/dependency manifest.
+Writer relinquished ownership. Lead independently observed backend typecheck and
+51/51 tests, including actual native synthetic M4A validation/upload/settlement.
+Scope frozen for fresh read-only inspection. No candidate acceptance or rollout
+claim yet. Full decoder-equivalent duration, hostile parser resource limits and
+live RevenueCat field compatibility remain separate activation prerequisites.
+
+Final backend disposition: Lead ACCEPTS exactly the above handoff hash and all
+15 manifest entries, verified by direct inspection and hashes. Atomic quota/lease
+transactions, owner-subject boundary, stale-verification rejection, stable allowance
+windows and native-media compatibility satisfy local implementation acceptance.
+Fresh Peer 85e7ce59 matched the snapshot before/after inspection, independently
+passed typecheck +51 tests, and found no concrete overgrant, owner bypass or
+double-charge/refund flaw. Lead ACCEPTS that bounded response; writer and inspector
+were notified of closure. No remaining Peer dependency. All unverified activation
+limits stay unresolved, not silently accepted as production-safe.
+
+## Launch pricing decision — approved, not activated (2026-09-23)
+
+Human accepted the market-research recommendation: launch Free + Pro only,
+USD 9.99/month or USD 99.99/year. No Plus or lifetime offer at launch.
+Reason: a simple individual Mac offering priced below many monthly meeting-AI
+subscriptions, with bounded cloud usage rather than an ongoing unlimited-cost
+promise. These are approved launch targets, not measured demand or margin proof.
+
+- Free: local recording/playback without plan-based limits; one-time allowance
+  of 120 AI transcription minutes and 20 AI questions, not a monthly renewal.
+- Pro: 1,200 AI transcription minutes and 200 AI questions per month; transcript,
+  recording chat, summaries and action items. Summary/action-item composer presets
+  are now implemented locally; live output quality remains unverified.
+- Annual subscriptions receive monthly allowances, not the entire year's quota
+  upfront. No lower-quality transcription tier. System-failed tasks do not consume
+  quota; exhausted quota stops new AI work, never local capture. Cancellation
+  preserves access to recordings/results already stored locally.
+
+Lead owns implementation and verification. Next ready work: define and implement
+server-authoritative subscription/quota accounting and native purchase/restore UX,
+then verify with fixtures and sandbox. Summary/action-item accounting and monthly
+reset semantics are resolved in the implementation contract above. Validate long
+recordings against the current 18 MiB upload limit before promising session length.
+Measure actual AI/storage/transfer cost before activation; the proposed 25–30%
+cost budget of post-platform revenue is a target, not observed unit economics.
+Reopen limits/pricing with Human if measurements invalidate the launch targets.
+
+This replaces the outstanding pricing/paid-feature decision below. It approves
+the future launch policy, not immediate enforcement against existing users:
+current owner-funded development access is unchanged until rollout. No store
+products, prices, API credentials, paywall or production deployment changed by
+this decision-record update. Apple–RevenueCat credential creation/sharing still
+requires the applicable explicit approval. No app tests run (docs only);
+git diff --check passed.
+
+## RevenueCat setup — in progress (2026-09-22)
+
+2026-09-23 resumption: Human reports Chrome App Store Connect sign-in complete.
+Read-only UI checks confirm team Long Le (Apple Developer team 63M98WD275),
+Apps search for Lessmeet returns no results, and New App's available Bundle ID
+options do not include com.lessmeet.app. Apple Developer's Register an App ID
+form is accessible; Explicit is the default and In-App Purchase is already
+checked/disabled. Human then explicitly confirmed registration and app creation.
+Lead registered Explicit App ID com.lessmeet.app, description Lessmeet, with
+only the default In-App Purchase capability. Identifiers list confirms the row.
+Lead created macOS Lessmeet, Apple ID 6815021182, primary language English US,
+SKU lessmeet-macos. Limited Access selected with no additional users added;
+Apple retained its mandatory role access and current user. App Information
+readback confirms saved identity and metadata; macOS 1.0 is Prepare for Submission.
+https://appstoreconnect.apple.com/apps/6815021182/distribution/info
+Lead ACCEPTS Apple registration/provisioning, not distribution or payment readiness.
+No build uploaded, submission, pricing, API key, shared secret, server URL, or
+RevenueCat credential connection performed. Meetless remains untouched.
+This resumes the setup previously deferred by Human. Pricing/paid features were
+subsequently approved above; credential-sharing approval remains a prerequisite.
+No app tests run for this browser setup.
+
+Human chose Mac App Store distribution and authorized a separate RevenueCat
+project, not reuse of Meetless (which has bundle ID com.meetless.app).
+Lead created Lessmeet via the authenticated Chrome dashboard: project a83a7730,
+https://app.revenuecat.com/projects/a83a7730/overview, category Productivity,
+platform Native Apple. Creation is ACCEPTED based on the resulting project
+dashboard. Existing Meetless was not modified; no keys were revealed or copied.
+
+Dashboard reports Test Store configuration only and setup 0/6. Suggested
+Lessmeet Pro / monthly / yearly / lifetime onboarding was not submitted.
+This is project provisioning, not SDK/payment integration acceptance. No app code,
+backend, paid plan or purchase changed. Apple provisioning followed on 2026-09-23
+as recorded above. No app tests run for browser provisioning; git diff --check
+passed for the status update. Lead retains integration ownership.
+Next: implement the approved launch policy above; connect an App Store
+configuration for com.lessmeet.app with appropriate Apple authority, then verify
+native SDK/account identity and sandbox purchase/restore. Existing owner-funded
+development access stays unchanged pending rollout. Earlier no-billing scope is
+superseded by RevenueCat integration and the approved future launch policy.
+
 ## Composer scrollbar and send-control polish (2026-09-22)
 
 Human marked the composer scrollbar gutter and small rectangular send button.

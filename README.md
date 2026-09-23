@@ -55,10 +55,20 @@ stores the Gemini key. Real login and Convex token acceptance still need verific
 Transcript/chat backend is deployed to development and connected to the Swift UI.
 See [the HTTP contract](docs/BACKEND.md).
 Audio uploads are limited to 18 MiB. Uploaded audio/transcripts remain in Convex
-indefinitely in this version; there is no deletion or spending-quota system yet.
+indefinitely in this version; there is no deletion UI. Subscription/quota code is
+implemented and verified locally, not activated on development (see status).
+
+**Plan & usage** in the sidebar shows server-verified allowances and offers
+purchase/restore when configured. RevenueCat identifies the signed-in Clerk user;
+it never authorizes cloud work by itself. Free includes one-time 120 minutes and
+20 questions; Pro includes 1,200 minutes and 200 questions each month, also on
+annual billing. Pricing targets are USD 9.99/month or 99.99/year; actual purchase
+prices come from StoreKit. See [rollout prerequisites](docs/BACKEND.md#subscription-integration-local-rollout-pending).
+Purchases stay disabled without legal links, store configuration and active server
+enforcement. Existing development access and local recording remain unchanged.
 
 Before building, set public `CLERK_PUBLISHABLE_KEY` and `CONVEX_SITE_URL` in ignored
-`.env.local`. The packaging script copies only those public values into Info.plist.
+`.env.local`. The packaging script copies only allowlisted public values into Info.plist.
 Missing account configuration does not prevent local recording. Clerk requires
 Native API enabled, `com.lessmeet.app://callback` registered, and session claim
 `aud: convex`. Convex uses `CLERK_JWT_ISSUER_DOMAIN` for the Clerk issuer.
@@ -75,6 +85,10 @@ Once ready, type a question and choose **Send**. Results are saved with the loca
 recording, separately for each backend/Clerk account. Signing out hides cloud caches;
 the local recording library remains available. Local caches are not encrypted by
 this app; this is account-aware UI isolation, not protection from the macOS user.
+
+**Meeting notes → Summarize / Action items** prepares a grounded question in the
+composer; review and Send explicitly. Each successful request consumes one AI
+question when quotas are enabled, with the result saved in the conversation.
 
 **Stop Waiting** cancels local waiting, not work already accepted by the server.
 If the connection is lost before an upload ID is saved, the app cannot recover that
@@ -109,7 +123,7 @@ override. Actual project access and response quality have not been tested.
 
 ## Verification and next checks
 
-Backend: `npm run typecheck:backend` and `npm run test:backend` pass (17 tests).
+Backend: run `npm run typecheck:backend` and `npm run test:backend`.
 Tests cover anonymous/cross-user rejection, owner upload/transcript/chat with a
 mocked provider, and the actual pinned SDK request format using mocked HTTP.
 No live Gemini request was made; model access/quality and real Clerk-token
@@ -118,8 +132,9 @@ acceptance remain unverified. Development deployment is not production rollout.
 `swift test` exercises persistence/reopen and synthetic sample buffers through the
 real CAF/M4A writer/exporter. These do not prove live capture, acoustic quality,
 long-session synchronization, TCC behavior, or macOS 15 runtime compatibility.
-The native suite passes27 tests, including7 HTTP client fixtures and4 cloud
-lifecycle/legacy persistence tests. No real OAuth or paid Gemini call was used.
+The native suite includes billing identity/cancellation fixtures, HTTP contract,
+cloud lifecycle, persistence and local rendering checks. Exact current acceptance
+results are in STATUS.md. No real OAuth or paid Gemini call was used for these tests.
 
 Before considering the recorder verified, record a short known conversation with
 mic-only, system-only and overlapping speech, including a long pause in playback.

@@ -53,9 +53,9 @@ Only Convex reads `GEMINI_API_KEY`. `GEMINI_MODEL` optionally overrides the defa
 `gemini-flash-latest`; a rolling alias may change upstream. Provider/model access
 and transcription quality require a separately authorized live test.
 
-The development implementation is not a billing or quota system. Authentication
-and per-record ownership are required, not substitutes for spending limits when
-opening the product to a wider audience. Production rollout remains separate.
+Billing enforcement is implemented locally behind an opt-in switch; the current
+development deployment is not changed by local code. Authentication and
+per-record ownership remain required. Production rollout is separate.
 No audio, transcripts, tokens or provider error bodies should appear in logs.
 
 Bounds: 384 KiB serialized transcript, 8 KiB question, 32 KiB serialized reply,
@@ -84,3 +84,52 @@ npm run test:backend
 
 Tests use fake identities, synthetic bytes and mocked Gemini transport. They do
 not read deployment secrets or incur Gemini charges.
+
+## Subscription integration (local; rollout pending)
+
+`GET /billing` and `POST /billing/sync` accept only the Clerk bearer identity,
+no body or query parameters. Both return `userId`, `enforcement`, `plan`
+(`free`, `pro`, `development`), nullable `periodEndsAt` in epoch milliseconds,
+and `transcriptionSeconds` / `questions` objects with `limit`, `used`, `reserved`.
+Native SDK entitlement state is presentation-only, never authorization.
+
+The approved allowance is Free lifetime 7,200 seconds / 20 questions or Pro
+72,000 seconds / 200 questions per monthly window (annual subscriptions also
+reset monthly). Pro windows use the initial subscription anniversary in UTC,
+clamped at month end. Repeated sync, cancellation and plan switches must not
+create new grants. Summary/action-item requests each consume one question.
+Reservations and saved results settle atomically; system failure/expiry releases
+the reservation. Local recording and already-saved local results remain usable.
+
+Rollout prerequisites, not permission to change live configuration:
+
+- Connect only RevenueCat Lessmeet `a83a7730` to Apple `com.lessmeet.app`.
+  Entitlement `lessmeet_pro`; products `com.lessmeet.app.pro.monthly` and
+  `com.lessmeet.app.pro.yearly`, approved USD 9.99 / 99.99. Publish the current
+  offering; native prices are loaded from StoreKit rather than these targets.
+- Independently verify RevenueCat **Keep with original App User ID** restore
+  behavior. Server requires exact original Clerk subject; no anonymous purchases.
+  Set `REVENUECAT_ORIGINAL_USER_POLICY_CONFIRMED=true` only after verification.
+- Supply server-only `REVENUECAT_SECRET_API_KEY`; never bundle or log it.
+  `BILLING_ENFORCEMENT_ENABLED=true` opts in. Missing/false retains development
+  access without RevenueCat lookups or quota enforcement. Verification outages
+  fail closed when enabled. `REVENUECAT_ALLOW_SANDBOX=true` is for an isolated
+  test deployment only, not production.
+- Native public configuration: `REVENUECAT_PUBLIC_APPLE_KEY` (`appl_`),
+  `LESSMEET_PRIVACY_URL`, `LESSMEET_TERMS_URL` (published HTTPS legal pages).
+  Missing/invalid billing configuration never disables local capture or sign-in;
+  missing legal pages or unconfirmed server status disables purchasing.
+- Verify sandbox purchase, restore, cancellation, renewal, account-switch and
+  server reconciliation in the properly signed Mac App Store app. Current local
+  packaging is ad hoc, not store distribution acceptance. Confirm resource loading.
+- Confirm actual audio parsing and measure AI/storage/transfer cost before public
+  activation. Enforced uploads are non-fragmented AAC-LC M4A only, still max
+  18 MiB. Sample-table validation is not a full audio decode; malicious payload
+  resistance, parser CPU/memory amplification and long-recording duration/size
+  remain rollout concerns. Sample expansion is bounded but not exhaustively
+  fuzzed. AAC padding plus per-upload rounding can add a second to the charge.
+  The actual native synthetic 1.25s source/export compatibility fixture passes
+  backend validation and reserves/charges 2 seconds only on saved success.
+
+No live deployment, key sharing, store purchase or production switch change is
+included in offline implementation acceptance.
