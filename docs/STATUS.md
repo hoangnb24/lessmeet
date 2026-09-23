@@ -1,5 +1,435 @@
 # LessMeet delivery
 
+## Store connection / sandbox preparation (2026-09-23)
+
+Human acceptance checkpoint: after the sync hotfix, Human confirmed Pro activation
+and passed manual checks for app reopen, restore without duplicate allowance,
+account switching/restore isolation, expiry followed by Refresh removing Pro,
+and no quota reset from refresh/restore/login. These are Human-reported results,
+not independently captured transaction evidence. Human accepts core sandbox
+billing and defers polish. Automatic renewal continuity, live AI quota debit/
+refund, cost testing and public-release prerequisites remain unverified/open.
+No public sale authorized. Commit handoff preserves credentials and generated
+app artifacts outside Git; commits are local only, no push requested.
+
+Sandbox sync hotfix (2026-09-23 17:10 local): Human reported Apple sandbox
+purchase success but app displayed HTTP 400 "Billing requests take no parameters
+or body." Lead reproduced guard rejection of zero-byte POST string/stream in
+HTTP handler tests (two expected-200 tests failed against old code). After Human
+approved fix+dev deployment, Lead changed only convex/http.ts backend behavior:
+read stream until EOF or first nonempty chunk, reject actual data immediately
+without buffering, preserve authentication/query rejection/server verification.
+Added six regressions: empty string/stream accepted; JSON, whitespace, NUL and
+streamed data following an empty chunk rejected before RevenueCat lookup, even
+with misleading Content-Length: 0. Typecheck passed; full backend 62/62 passed;
+git diff --check passed. Lead ACCEPTS bounded fix, no peer write scope active.
+Deployed successfully with `npx convex dev --once --env-file
+keys/convex-sandbox.env --typecheck enable --codegen disable --tail-logs disable`
+to explicit dev:zany-octopus-315. No production/env/key/native-app changes.
+Unauthenticated live empty POST still returns 401. Authenticated live entitlement
+sync after the patch awaits Human Refresh; no subscription status claimed yet.
+Human can retry Refresh in the installed signed app, without repurchase/reinstall.
+
+SIGNED ARTIFACT ACCEPTED (2026-09-23 16:58 local): after Human unlocked the
+keychain in their Terminal, their codesign command succeeded. Lead independently
+verified strict signature, correct Apple Development authority/team 63M98WD275,
+com.lessmeet.app, hardened runtime and five minimal entitlements (sandbox,
+network-client, audio-input, app/team IDs; no debug/broad keychain permissions).
+Embedded profile byte-matches the accepted replacement. Public config asserts
+approved Convex dev URL, public Clerk/RevenueCat key prefixes, sandbox-dev mode.
+Both SDK bundles/privacy manifests present; file inventory finds one universal
+Mach-O (arm64/x86_64), no nested executable or .env/.p8/.p12 file.
+Promoted without overwrite to `dist/sandbox-dev/LessMeet.app`; strict
+`codesign --verify --all-architectures` passes there. Binary SHA256:
+502085de6b0328e71a301662e8f49703c7aa809b28c4bdf4c66d495617300ccb.
+This supersedes the unsigned/Keychain blockers below; existing dev app untouched.
+Acceptance is packaging only. Launch, auth, rendered acknowledgement, StoreKit
+catalog/purchase/restore and quota lifecycle remain unverified. Human can now
+open this isolated app and test; only sandbox@kieng.io.vn in Apple's sandbox
+context, cancel any purchase sheet not explicitly sandbox. No agent purchase,
+audio upload, paid AI, public release or submission. Billing dev remains configured.
+
+Signing diagnosis refined after Human's Terminal failure: find-identity (with
+and without -v) still lists the exact identity as valid. Narrow codesign logs
+show SecKeyCreateSignature failing with -25308 / CSSMERR_CSP_NO_USER_INTERACTION
+and integrity access denied, followed by -2070. Trust exceptions also occur
+earlier, but no evidence yet establishes a certificate-chain failure as cause.
+GUI unlocked state alone does not establish signing-session key access.
+Next: Human runs `security unlock-keychain` interactively in the SAME Terminal
+session, without password arguments, then retries the exact codesign command.
+This follows Apple DTS https://developer.apple.com/forums/thread/712005 .
+No blanket ACL/partition/trust edits or key recreation. Artifact remains unsigned.
+
+Correction after Human screenshot: GUI shows login unlocked (open-padlock icon
+and Lock Keychain menu), contradicting the agent session's unlocked=false result.
+Do not keep asking Human to unlock it or conclude they only opened the app.
+Direct codesign retry in agent PTY still failed errSecInternalComponent. Session
+keychain access or private-key authorization is suspected, not yet proven.
+Next diagnostic: same narrowly scoped codesign command in Human's local Terminal
+so any native key-use authorization can appear there. No trust/ACL changes,
+key export or security bypass authorized. Verify signature before promotion.
+
+Current checkpoint: replacement profile
+`keys/Lessmeet_Sandbox_Dev_20260923 (1).provisionprofile` (UUID
+7941e41e-9b87-48fa-b50a-faad4ab9c482) includes the valid local signing certificate.
+Actual signing preflight PASSED exact certificate membership, team, app, expiry
+and local Mac coverage. File permissions set to 600; prior file retained.
+Lead corrected macOS profile assumptions using Apple TN3125: App Sandbox and
+debug entitlements need not occur in the profile. App signing template still
+requires sandbox/network-client/audio-input, with no debug or broad keychain grant.
+
+Internal sandbox delivery now explicitly stamps LessMeetPackagingMode=sandbox-dev,
+permits unpublished legal URLs only there, and shows synthetic-data/internal-use
+disclosures plus a sandbox-account acknowledgement before purchases. It does NOT
+force StoreKit sandbox. Store configuration still requires both HTTPS legal URLs.
+This implements the approved internal-testing priority and supersedes the unresolved
+legal gate below, without publishing drafts or weakening the store build gate.
+
+Verification: `PYTHONDONTWRITEBYTECODE=1 python3 -m unittest discover -s
+Tests/packaging -q` passed 25 tests after resetting a reused plist test fixture;
+`swift test` passed 56 tests. Release compilation through build-app.sh sandbox-dev
+passed. Actual codesign FAILED errSecInternalComponent (also on explicit PTY retry).
+Read-only SecKeychainGetStatus returned success and unlocked=false, confirming
+the default keychain is locked. Human asked to unlock login Keychain locally;
+no password requested in chat, private key exported, trust/ACL changed or purchase made.
+Unpublished staging artifact: dist/sandbox-dev/build.DvzFPr/LessMeet.app;
+do not launch it or call it a signed candidate. Existing dev app preserved.
+
+Lead ACCEPTS read-only Peer c771169e's bounded no-material-defect assessment
+against exact hashes: signing c03a885ae044, configure 1f12a31af822,
+BillingConfiguration 138b3dad9c59, SubscriptionView 6ee300f78bb6.
+Peer verified hashes/source only, not runtime/tests. Candidate source accepted
+for signing retry; signed artifact and sandbox transaction readiness NOT accepted.
+Lead retains all writes. Resume signing after Human unlocks Keychain, then verify
+signature, profile, entitlements and packaged resources before purchase handoff.
+
+Downloaded-profile checkpoint: Human supplied
+`keys/Lessmeet_Sandbox_Dev_20260923.provisionprofile`; git check-ignore passed,
+directory/file permissions set to 700/600. CMS decoded successfully: exact app,
+team and current Mac UDID match. Signing preflight FAILED certificate membership.
+Profile includes SHA1 12917B34D9422BAF11ADFCD8507C1A9FAA62106C (July 28), while
+the only valid local signing identity is 24E5A98A599DCBBA0FF05C1B9B1554A2DB101C3C
+(September 11, expiry 2027-09-11, serial 34819462F7FEF79BB51739B8E425E0C2).
+Root cause: two local public certificates have the exact same common name;
+earlier find-certificate without -a returned the July certificate, which was
+incorrectly treated as metadata for the valid identity. Lead rejects that earlier
+certificate-selection inference. Public metadata only inspected, no key export.
+Need edit/regenerate the same profile using September 11 certificate (or include
+both same-named Mac Studio development certificates), then download replacement.
+No signing attempted and no private identity/profile check bypassed.
+Also observed actual Apple development profile omits app-sandbox and debug
+entitlements; packaging policy currently assumes their presence. Lead must
+reconcile that assumption with Apple provisioning rules before accepting build.
+Legal gate remains unresolved; app not yet ready for purchase testing.
+
+Profile CREATED after Human reauthenticated (2026-09-23): exact-name inspection
+of the profile list found no duplicate from the session-expired attempt. Lead
+repeated the previously approved selection and Apple confirmed
+`Lessmeet Sandbox Dev 2026-09-23`, ID `36A3J7T783`, Development,
+`63M98WD275.com.lessmeet.app`, displayed expiry 2027-09-23. Same certificate
+XSW78S23Q4 and one registered Mac selected. This establishes portal creation,
+not downloaded-profile validation or signing acceptance.
+Clicking Apple's Download link navigated to a Chrome error page:
+`ERR_BLOCKED_BY_CLIENT` / "This page has been blocked by Chrome". No profile
+file obtained and no signed artifact produced. Computer Use safety-barrier
+handoff: Human must download this exact profile into ignored `keys/` (or supply
+its local path); Lead must not bypass the browser block. Once available, validate
+actual certificate membership, expiry and local device coverage before signing.
+The download blocker was subsequently resolved by Human as recorded above.
+Dev billing remains enabled. No purchases, paid AI or runtime tests this turn.
+
+Billing dev activated on explicit Human request to sign/configure dev billing.
+Lead reran backend typecheck and 56/56 tests successfully, then set
+REVENUECAT_ORIGINAL_USER_POLICY_CONFIRMED=true and REVENUECAT_ALLOW_SANDBOX=true
+on explicit zany-octopus-315 (prior accepted dashboard restore-policy evidence).
+Deployed accepted backend using `convex dev --once --env-file
+keys/convex-sandbox.env --typecheck enable --codegen disable --tail-logs disable`;
+CLI confirmed hoang-bang:lessmeet dev URL and added the two billing indexes.
+Then enabled BILLING_ENFORCEMENT_ENABLED=true; all three flags read back true.
+Server key was already installed/verified. Unauthenticated GET /billing returns
+401 with sign-in instruction. Authenticated billing/RevenueCat responses and
+purchase lifecycle remain NOT RUN. Enforcement now affects all dev users.
+No production target, AI billable flag, audio upload, purchase or data reset touched.
+
+Signing preparation: exact valid local Apple Development fingerprint remains
+24E5A98A599DCBBA0FF05C1B9B1554A2DB101C3C. Disambiguated duplicate Mac Studio
+certificate labels through rendered checkbox IDs and Apple certificate detail
+expiry: selected XSW78S23Q4 (2027-07-28), not FBP97MX4BZ. macOS development
+wizard targets com.lessmeet.app/team 63M98WD275, one selected certificate and
+one registered Hoang's Mac Studio device. Final name entered:
+`Lessmeet Sandbox Dev 2026-09-23`. Human approved generation; the successful
+creation and download blocker above supersede the earlier pre-confirmation
+checkpoint. After download, validate certificate membership and exact local
+device coverage, then build/verify isolated artifact. No app signed yet.
+Legal URL gate for internal build still needs resolution.
+
+Priority correction approved by Human: resume internal sandbox delivery now.
+Apple annual price picker recovered on retry. Lead selected USD 99.99, verified
+United States USD 99.99 in the confirmation dialog, confirmed, and observed the
+saved Current Pricing section with disabled Save. Annual pricing is no longer
+blocked by loading. Persisted US row still needs direct readback (summary table
+initially renders only early alphabetical storefronts). No submission/release,
+purchase or storefront-availability changes. This supersedes the annual-price
+NOT set checkpoint below; monthly persisted US readback remains pending too.
+Deletion implementation/rehearsal, provider-retention audit and public legal
+publication are pre-release work, NOT prerequisites for owner-only sandbox
+billing tests with synthetic data. Their failed/unknown results remain recorded,
+not waived for public release. Lead owns all scopes; no active Peer writes.
+Ready frontier: finish Apple catalog/pricing, match development profile and
+certificate, deliver isolated signed sandbox artifact and configure dev billing.
+Human performs transactions; no real charging or agent-paid AI tests.
+Native/build legal-URL gates still exist: resolve explicitly for internal testing
+without fake public URLs or weakening store-mode validation. No code bypass or
+public policy publication is authorized merely by this reprioritization.
+
+Deletion rehearsal disposition (2026-09-23): Human requested testing. Lead owns
+Tests/backend/deletionRehearsal.test.ts and documentation only; no implementation,
+deployment, credentials, real data or provider operations changed. ACCEPT the
+five offline characterization tests as diagnostic evidence; REJECT deletion
+readiness. They reproduce residual audio/reserved quota after row-only deletion
+and billing-account recreation after deletion. Exact-target fixture cleanup
+preserves another owner, repeated fixture cleanup is harmless, and late recording
+callbacks do not recreate deleted rows. These are narrow in-memory checks, not
+proof of user identity/session invalidation or provider cleanup. Network denied
+in rehearsal. Full backend suite passed 56/56; backend typecheck and diff check
+passed. Runbook now separates failed criteria, limited passes and NOT RUN cases.
+Next technical work: per-owner deletion guard, targeted/idempotent storage and
+reservation cleanup, provider progress/retry and authenticated native initiation.
+Human's test request did not authorize live deletion. Public legal publication
+and store readiness remain unaccepted; no further deployment was attempted.
+
+Legal decision checkpoint: Human approved Apple Standard EULA and manual
+privacy/deletion intake through hoang@2m0r.com. Lead updated draft disclosures
+and prepared docs/legal/DELETION_RUNBOOK.md against actual schema/job ownership.
+No deletion, emails, App Store license changes or publication performed.
+Important correction to earlier proposal: Apple's account-deletion guidance
+requires in-app initiation for apps supporting account creation (including
+web-based creation); support email alone is insufficient for this app.
+Manual fulfillment is distinct from initiation. Add native authenticated
+initiation before store submission; do not mark the approved email choice as
+App Store compliance. Reference: developer.apple.com/support/offering-account-deletion-in-your-app/.
+
+Procedure is locally accepted as a plan, not an operational deletion mechanism.
+Actual code has no per-owner deletion lock and no persistent Gemini file ledger;
+running work, JWT validity, provider copies and backups require reconciliation.
+Synthetic deletion rehearsal NOT RUN. Public legal pages still blocked on these
+operational checks and provider disclosures, not on the now-resolved EULA/email
+choice. Human approval does not authorize deleting any current user's data.
+
+Cloudflare hosting preparation: Human selected Cloudflare/Wrangler and requested
+continuation. Lead owns website/**. Authenticated zone GET confirmed active
+`2m0r.com` in account `6031f1f85e189c44fb3bcd150ca65920` (Longmaba), not the other
+account visible to Wrangler. Existing Workers list has `meetless-website`, which
+is out of scope and unchanged. No matching Workers custom domain was found for
+`www.lessmeet.2m0r.com`; exact DNS-record GET returned 403 with current OAuth.
+No token printed or copied. DNS conflict inventory remains unverified.
+
+Prepared `website/wrangler.jsonc` for isolated `lessmeet-legal`, exact hostname,
+static public-only asset root, no workers.dev/preview URL, no backend bindings.
+Draft legal files are NOT included. Operator publication checklists remain
+unresolved (deletion process/provider disclosures/EULA/effective date), so this
+is not deployed and legal URLs remain unset in app. Need Human legal decisions
+and hostname DNS inspection before public deployment, then HTTPS verification.
+No DNS change, paid plan, Worker deployment or store/billing change made.
+
+Lead accepts configuration locally only: `npx --yes wrangler@4.136.3 deploy
+--config website/wrangler.jsonc --dry-run` passed; local Wrangler server plus
+Node assertions passed 7 paths and CSP/nosniff headers: root/CSS 200; legal,
+unknown, env and key paths 404. `git diff --check` passed. Local checks do not
+prove public DNS/TLS or legal completeness. Wrangler state folders ignored.
+
+Server credential checkpoint: Human confirmed creation/installation. Lead created
+RevenueCat V1 secret `Lessmeet Convex Dev` in project a83a7730 via Computer Use,
+then installed `REVENUECAT_SECRET_API_KEY` on explicit Convex deployment
+`zany-octopus-315` via CLI stdin (exit 0). Exact readback matched in memory;
+no secret printed, written to a local file, or bundled. Key hidden in dashboard
+after verification. This supersedes all pending-key notes below. Enforcement
+and billable AI flags remain unchanged. API authentication/lifecycle not tested.
+Profile preparation inspected Apple team 63M98WD275 and selected exact Lessmeet
+App ID in macOS development wizard, without generating a profile. Certificate
+selector contains two indistinguishable Hoang's Mac Studio labels; no certificate
+selected pending exact public-certificate matching. Local certificate serial
+3BEC48BB4DCEAD2EF239F8E28325E148 expires 2027-07-28. Existing Meetless profiles
+were not reused. Human asked asynchronously for DNS/hosting provider; no domain
+changes authorized or performed at this checkpoint.
+
+Packaging completion disposition: Lead ACCEPTS local packaging infrastructure
+candidate with HANDOFF SHA-256
+`69e5bfa49dd2211e0d57a1b81179abc6250f3b4247165b36f3996826824bb03b`,
+not signed-artifact or sandbox readiness. All six manifest hashes matched and
+Lead inspected scripts/configuration/profile policy. Independent Lead rerun of
+`PYTHONDONTWRITEBYTECODE=1 python3 -m unittest discover -s Tests/packaging -v`
+passed 23 tests; bash syntax, Node syntax, plist lint and diff whitespace passed.
+Accepted for isolated outputs, explicit public configuration and fail-closed
+profile/certificate checks. Peer assignment a697d96c is closed; all write
+ownership returns to Lead, superseding the earlier active-ownership notes below.
+Actual Apple profile compatibility, compiled architecture/nested-code inspection,
+real signing and signed runtime remain required before artifact acceptance.
+Store mode produces only .app, not installer .pkg. Lead owns these downstream
+checks once signing inputs are available. No build/launch, external mutation or
+credential generation performed in this handoff turn. Human confirmation for
+RevenueCat server key is still outstanding; the Peer event is not confirmation.
+
+Latest Lead checkpoint: RevenueCat product mappings ACCEPTED by saved dashboard
+readback: monthly `prod372db77772`, yearly `prod1543e0573c`, both associated with
+`lessmeet_pro` (`entl1530cb71d5`). Default offering `default`
+(`ofrng201500d7e4`) contains `$rc_monthly` and `$rc_annual` mapped to the exact
+Apple products. Store status cannot be checked without the optional ASC API
+credential; this is not evidence of StoreKit product availability. Public Apple
+SDK key was retrieved through Computer Use and added only to ignored `.env.local`.
+No server secret exists yet. V1 key form `Lessmeet Convex Dev` is prepared but
+Generate NOT clicked: action-time Human confirmation required by Computer Use
+policy. Next authorized step after confirmation: create and transfer key only to
+the selected Convex dev server secret without printing it. No enforcement change.
+
+Apple yearly subscription now exists: `com.lessmeet.app.pro.yearly`, Apple ID
+`6815079948`, duration 1 year, same group `22406255`. Monthly USD 9.99 pricing
+confirmation completed and page now has Current Pricing for New Subscribers;
+exact persisted price still needs readback. English (US) display names/descriptions
+were saved for both products. Annual USD 99.99 pricing is NOT set: price menu
+remained Loading across one refresh/retry. No storefront availability, submission,
+release or transaction performed. Group service-level alignment remains to verify.
+
+Public legal URLs `/privacy` and `/terms` both failed `curl --head --max-time 15`
+with DNS resolution error for `www.lessmeet.2m0r.com`. Hosting/DNS access and legal
+publication remain unresolved; no placeholder URL installed. Lead independently
+ran `security find-identity -v -p codesigning`: exactly one valid Apple Development
+identity, no store distribution identity. `git diff --check` passed at this
+checkpoint. No app/backend tests or paid calls run. Packaging Peer
+`a697d96c-2320-4a24-9400-bf5d464686c2` still owns its assigned write scope below;
+candidate acceptance deferred until its completion event, then Lead inspection.
+
+Current assignment: Human requests completion of technical setup; Human will run
+sandbox transactions. Lead owns Apple/RevenueCat/Convex configuration, docs,
+public local env and acceptance. Packaging Peer owns only scripts/build-app.sh,
+scripts/configure-app.mjs, new scripts/*signing* or *packaging* helpers,
+Resources/Info.plist, a NEW sandbox entitlement template, and Tests/packaging/**.
+Existing dev entitlement template and native/backend production code stay frozen.
+Accepted inputs: dd70447 implementation, prior read-only signing direction, exact
+bundle/team/dev backend below. No purchases, paid AI, store submission or release.
+
+Human authorized Computer Use for required keys/profiles, supplied an Apple
+sandbox test account (email retained in conversation, not tracked), and then
+explicitly confirmed creation/upload of `Lessmeet RevenueCat` In-App Purchase key.
+Lead generated key ID `ZU6ZY3QLZP`, downloaded it once, and moved that exact file
+to ignored `keys/SubscriptionKey_ZU6ZY3QLZP.p8`. `.gitignore` now excludes `/keys/`,
+`*.p8` and `*.p12`; directory permission is 700 and file permission is 600.
+No key contents printed, no unrelated keys reused/revoked, no copy left at its
+original Downloads path. Git check-ignore matches and git ls-files reports no
+tracked keys. Human should keep an encrypted backup: Apple allows one download.
+
+Lead ACCEPTS saved RevenueCat Apple app `app0efc34c2fb` in Lessmeet `a83a7730`,
+bundle `com.lessmeet.app`: dashboard readback shows **Valid credentials** for
+the uploaded IAP key, exact Key ID and issuer. This is credential/configuration
+acceptance, not a passed sandbox transaction. App Store Connect API credential
+for automated product import is still unset; server notification new-purchase
+tracking remains unchecked. RevenueCat server secret/public SDK app configuration,
+product/entitlement/offering mapping, signing profiles and sandbox lifecycle remain
+unfinished. Convex env/enforcement and public sale remain unchanged. No app/backend
+code changed. `git diff --check` passed; no app tests run for this credential step.
+
+Active resumption: shared/local protocols and room state reread; all existing
+changes preserved. Lead owns all writes and dashboard/configuration work. A fresh
+read-only Peer assessed the unchanged dd70447 signing/capture/storage candidate;
+assignment now closed, no writable scope delegated. Convex names-only environment inspection on explicit
+`zany-octopus-315` returned Clerk issuer, Gemini key and Gemini billable flag only:
+no RevenueCat server key or billing flags exist there yet. No values exposed.
+
+Checkpoint after interrupted browser work: authenticated Chrome access recovered
+using the local browser skill. Lead saved RevenueCat Lessmeet project restore
+behavior to **Keep with original App User ID**; saved page showed that selection
+and sandbox override off. This accepts dashboard configuration only, not tested
+cross-account restore. Apple group **Lessmeet Pro**, ID `22406255`, and monthly
+product `com.lessmeet.app.pro.monthly`, Apple ID `6815054883`, duration 1 month,
+were created and read back in Prepare for Submission. Monthly pricing dialog was
+opened but no price saved. Yearly product, localization and availability remain
+unfinished; nothing submitted for review or sale.
+
+Earlier RevenueCat Apple app form was filled for `com.lessmeet.app`, but Save failed
+required In-App Purchase .p8 key/Key ID/Issuer ID validation. No Apple app connection
+was saved at that checkpoint; this gap is now resolved by the accepted connection
+above. Resume by checking actual
+dashboard state before another create/save action. Account agreements/tax/bank
+status was not checked. Dev env and enforcement remain unchanged.
+
+Lead ACCEPTS Peer e0fe2910's read-only assessment of
+`dd70447f09a0ce44d6f879288b4cd2843c6805b8`, not store readiness. Direct inspection
+confirms ad-hoc default, no profile embedding, audio-input-only entitlements and
+container-relative storage risk. Peer reports one Apple Development identity,
+no distribution application identity, and strict-valid ad-hoc existing binary;
+these identity/artifact checks were not independently rerun by Lead.
+Accepted technical direction: separate dev/sandbox-dev/store outputs, minimal
+sandbox/network-client/audio-input entitlements and exact profile/identity
+validation. Not implemented. No broad file/Keychain/capture exceptions approved.
+
+REOPEN_REQUEST ACCEPTED: Convex dev and ALLOW_SANDBOX do not make purchases
+sandbox-only. Native uses actual RevenueCat purchase API; explicitly verify the
+StoreKit test context before any purchase. A server production-transaction rejection
+guard would not prevent Apple charging and cannot substitute for that check.
+DEPENDENCY_REQUEST retained: Lead owns signing/profile validation; Human supplies
+or authorizes missing signing inputs. Revisit on supplied inputs or resumed
+packaging work. Peer notified; read-only scope closed. Following Human interruption,
+only handoff/status reconciliation was performed; no further dashboard mutation.
+
+Human requested Apple–RevenueCat connection and sandbox testing, explicitly no
+real charging/public activation. Lead owns all scopes; prior Peer assignments are
+closed and the starting worktree was clean at `dd70447`. The later read-only
+signing assessment and closure are recorded above.
+This request authorizes preparation/connection within that boundary, superseding
+older notes that connection is the next approval to request. It does not supply
+all required legal/financial facts, a signing identity or an AI spending budget.
+Human now explicitly chose existing Convex dev `zany-octopus-315` for sandbox
+testing to avoid provisioning a separate deployment. This supersedes the earlier
+isolation requirement and preservation of unlimited development access during
+quota testing. Lead may configure/deploy sandbox billing on this dev target once
+credentials and restore-policy prerequisites are verified; enforcement affects
+all users of that backend. No production activation or real charging is authorized.
+
+Prepared [store/sandbox runbook](STORE_SANDBOX.md) and unpublished Privacy/Terms
+drafts under `docs/legal/`. Drafts accurately retain indefinite cloud retention
+and missing deletion workflow; they are not published legal pages or compliance
+approval. Human subsequently supplied Hoang Bang / hoang@2m0r.com /
+www.lessmeet.2m0r.com; these are now in the drafts. Proposed /privacy and /terms
+paths are not verified/published and have not been installed in app configuration.
+Effective date and remaining legal review stay pending publication approval.
+
+Human requested checking the codebase for Convex instead of supplying a sandbox
+URL. Lead inspected only allowlisted public deployment values from `.env.local`:
+`CONVEX_DEPLOYMENT=dev:zany-octopus-315`, cloud URL
+`https://zany-octopus-315.convex.cloud`, HTTP URL
+`https://zany-octopus-315.convex.site`. README and backend docs match. This is the
+existing development target, not evidence of a separate billing sandbox. No
+separate sandbox configuration was found in the inspected codebase; remote
+deployment inventory was not checked. No secret values were printed. Human's
+choice of Convex is confirmed; the subsequent decision selects this same dev
+target for sandbox. No new deployment or additional target approval is needed.
+
+Important technical gates: restore policy includes a possible separate sandbox
+override; verify both before asserting original-user policy confirmation. Current
+build script is ad-hoc/development and current entitlements omit App Sandbox and
+client networking. Adding those requires signed runtime/container/Keychain/capture
+verification, not merely a successful codesign command. No signing files changed.
+
+Initial dashboard access and RevenueCat IAP credential gaps were resolved;
+actual partial store changes are recorded above. No Apple contract/tax/bank
+submission, deployment, env change, signing or sandbox purchase was performed.
+All live lifecycle matrix rows remain NOT RUN. Account Holder owns
+agreement/tax/bank completion; Human owns remaining legal decisions; Lead resumes
+connection/testing on the selected dev target when authenticated dashboard access
+and credential/policy prerequisites are available. Do not enable enforcement
+prematurely: missing verification fails closed for all dev users.
+Paid AI measurements require a separate spending cap. Hostile audio and long-session
+assurance remain public-launch blockers, not accepted risks or passed tests.
+
+Local acceptance: Lead accepts these documents as preparation only, not store,
+signing or sandbox completion. `git diff --check` passed; a Node local Markdown
+link check passed (2 links across the 4 documents). No app/backend tests rerun:
+only documentation changed. No commit or push.
+
+Dev-target decision follow-up: runbook and backend prerequisites reconciled with
+Human's choice. No environment variable, deployment or billing switch changed.
+`git diff --check` passed; no app/backend tests run for this documentation update.
+
 ## Billing implementation — accepted locally, not activated (2026-09-23)
 
 Current checkpoint: Lead ACCEPTS native and backend implementation locally.

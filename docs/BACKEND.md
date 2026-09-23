@@ -101,7 +101,8 @@ create new grants. Summary/action-item requests each consume one question.
 Reservations and saved results settle atomically; system failure/expiry releases
 the reservation. Local recording and already-saved local results remain usable.
 
-Rollout prerequisites, not permission to change live configuration:
+Rollout prerequisites (Human selected existing dev `zany-octopus-315` for sandbox;
+production activation remains unauthorized):
 
 - Connect only RevenueCat Lessmeet `a83a7730` to Apple `com.lessmeet.app`.
   Entitlement `lessmeet_pro`; products `com.lessmeet.app.pro.monthly` and
@@ -113,8 +114,9 @@ Rollout prerequisites, not permission to change live configuration:
 - Supply server-only `REVENUECAT_SECRET_API_KEY`; never bundle or log it.
   `BILLING_ENFORCEMENT_ENABLED=true` opts in. Missing/false retains development
   access without RevenueCat lookups or quota enforcement. Verification outages
-  fail closed when enabled. `REVENUECAT_ALLOW_SANDBOX=true` is for an isolated
-  test deployment only, not production.
+  fail closed when enabled. `REVENUECAT_ALLOW_SANDBOX=true` is allowed on the
+  Human-selected dev target for sandbox testing, never production. Verify credentials
+  and restore policy before enforcement; it affects every account on that backend.
 - Native public configuration: `REVENUECAT_PUBLIC_APPLE_KEY` (`appl_`),
   `LESSMEET_PRIVACY_URL`, `LESSMEET_TERMS_URL` (published HTTPS legal pages).
   Missing/invalid billing configuration never disables local capture or sign-in;
