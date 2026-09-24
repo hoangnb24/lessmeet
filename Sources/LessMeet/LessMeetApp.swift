@@ -18,7 +18,7 @@ struct LessMeetApp: App {
         _cloud = StateObject(wrappedValue: RecordingCloudModel(app: model, account: account))
         let configuration = try? BillingConfiguration.load()
         billingConfiguration = configuration
-        _billing = StateObject(wrappedValue: BillingStore(publicAppleAPIKey: configuration?.publicAppleAPIKey))
+        _billing = StateObject(wrappedValue: BillingStore(publicAppleAPIKey: configuration?.publicAppleAPIKey, account: account))
         _subscription = StateObject(wrappedValue: SubscriptionModel(account: account))
     }
 

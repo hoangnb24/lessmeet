@@ -40,7 +40,10 @@ final class RecordingCloudModel: ObservableObject {
                   identity: {
             guard let user = account.userID, let session = account.sessionIdentifier else { return nil }
             return CloudIdentity(owner: "\(namespace)|\(user)", session: session)
-        }, token: { try await account.token() })
+        }, token: {
+            guard !account.cloudAccessLocked else { throw AccountError("Account deletion requested. Check deletion status in Account settings.") }
+            return try await account.token()
+        })
     }
 
     func cached(_ recording: Recording) -> CloudRecording? {

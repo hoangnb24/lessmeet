@@ -4,6 +4,127 @@ import RevenueCat
 
 @MainActor
 final class BillingStoreTests: XCTestCase {
+    func testDefaultAdmissionIsClosed() async {
+        let driver = BillingFixtureDriver()
+        let model = BillingStore(publicAppleAPIKey: "appl_fixture", driver: driver, gate: BillingOperationGate())
+        await model.prepare(userID: "user_a")
+        let restored = await model.restore()
+        XCTAssertFalse(restored)
+        XCTAssertTrue(driver.events.isEmpty)
+    }
+
+    func testRelaunchRequiresFreshExplicitNonDeletionStatus() async {
+        let driver = BillingFixtureDriver()
+        for mode in 0..<4 {
+            driver.statusHook = { who in
+                if mode == 0 { throw BillingFixtureError.failed }
+                return AccountDeletionStatus(userId: mode == 1 ? "other" : who.owner,
+                    requested: mode == 2, localComplete: mode == 3,
+                    providersComplete: false, requestedAt: mode == 2 ? 1 : nil)
+            }
+            // A new store represents a fresh process admission state, not a live SDK restart.
+            let model = store(driver)
+            await model.prepare(userID: "user_a")
+            let restored = await model.restore()
+            XCTAssertFalse(restored)
+            XCTAssertTrue(driver.events.isEmpty)
+        }
+        driver.statusHook = nil
+        await store(driver).prepare(userID: "user_a")
+        XCTAssertEqual(driver.events, ["identify:user_a", "packages:user_a"])
+    }
+
+    func testDelayedStatusCannotAuthorizeReplacementSessionOfSameOwner() async {
+        let driver = BillingFixtureDriver()
+        let entered = BillingLatch(), release = BillingLatch()
+        driver.statusHook = { who in
+            entered.open(); await release.wait()
+            return AccountDeletionStatus(userId: who.owner, requested: false,
+                localComplete: false, providersComplete: false, requestedAt: nil)
+        }
+        let model = store(driver)
+        let preparing = Task { await model.prepare(userID: "user_a") }
+        await entered.wait()
+        driver.identity = CloudIdentity(owner: "user_a", session: "replacement")
+        release.open()
+        await preparing.value
+        XCTAssertTrue(driver.events.isEmpty)
+        XCTAssertTrue(model.packages.isEmpty)
+    }
+
+    func testDeletionAndSignoutSuspendDelayedAdmission() async {
+        for deleting in [true, false] {
+            let driver = BillingFixtureDriver()
+            let entered = BillingLatch(), release = BillingLatch()
+            driver.statusHook = { who in
+                entered.open(); await release.wait()
+                return AccountDeletionStatus(userId: who.owner, requested: false,
+                    localComplete: false, providersComplete: false, requestedAt: nil)
+            }
+            let model = store(driver)
+            let preparing = Task { await model.prepare(userID: "user_a") }
+            await entered.wait()
+            model.suspend()
+            if !deleting { driver.identity = nil }
+            release.open()
+            await preparing.value
+            XCTAssertTrue(driver.events.isEmpty)
+            XCTAssertNil(model.activeUserID)
+            XCTAssertFalse(model.busy)
+        }
+    }
+
+    func testPurchaseAndRestoreRecheckStatusWithoutSDKCallsOnUnknown() async {
+        let driver = BillingFixtureDriver()
+        let admitted = store(driver)
+        await admitted.prepare(userID: "user_a")
+        driver.events = []
+        driver.statusHook = { _ in throw BillingFixtureError.failed }
+        let purchased = await admitted.purchase(packageID: "monthly")
+        let restored = await admitted.restore()
+        XCTAssertFalse(purchased)
+        XCTAssertFalse(restored)
+        XCTAssertTrue(driver.events.isEmpty)
+    }
+
+    func testDeletionObservedBeforeRestoreNeverIdentifiesAgain() async {
+        let driver = BillingFixtureDriver()
+        let model = store(driver)
+        await model.prepare(userID: "user_a")
+        driver.events = []
+        driver.statusHook = { who in
+            AccountDeletionStatus(userId: who.owner, requested: true,
+                localComplete: true, providersComplete: true, requestedAt: 1)
+        }
+        let restored = await model.restore()
+        let purchased = await model.purchase(packageID: "monthly")
+        XCTAssertFalse(restored)
+        XCTAssertFalse(purchased)
+        XCTAssertTrue(driver.events.isEmpty)
+    }
+
+    func testAmbiguousDeletionRevokesBillingBeforeRequestCompletes() async {
+        let driver = BillingFixtureDriver(), entered = BillingLatch(), release = BillingLatch()
+        let model = store(driver)
+        await model.prepare(userID: "user_a")
+        driver.events = []
+        let deletion = AccountDeletionModel(identity: { driver.identity }, token: { "fixture" },
+            send: { _, _ in
+                entered.open(); await release.wait(); throw BillingFixtureError.failed
+            }, lock: { _, locked in if locked { model.suspend() } })
+        deletion.prepareConfirmation()
+        let request = deletion.confirm()
+        await entered.wait()
+        XCTAssertNil(model.activeUserID)
+        let restored = await model.restore()
+        XCTAssertFalse(restored)
+        XCTAssertTrue(driver.events.isEmpty)
+        release.open()
+        await request?.value
+        XCTAssertNotNil(deletion.error)
+        XCTAssertNil(model.activeUserID)
+    }
+
     func testPinnedSDKCancellationClassificationWithoutConfiguringSDK() {
         XCTAssertTrue(RevenueCatBillingDriver.isPurchaseCancellation(
             NSError(domain: ErrorCode.errorDomain, code: ErrorCode.purchaseCancelledError.rawValue)))
@@ -15,7 +136,11 @@ final class BillingStoreTests: XCTestCase {
 
     private func store(_ driver: BillingFixtureDriver, gate: BillingOperationGate? = nil,
                        key: String? = "appl_fixture") -> BillingStore {
-        BillingStore(publicAppleAPIKey: key, driver: driver, gate: gate ?? BillingOperationGate())
+        BillingStore(publicAppleAPIKey: key, driver: driver, gate: gate ?? BillingOperationGate(),
+                     identity: { driver.identity }, deletionStatus: { who in
+            try await driver.statusHook?(who) ?? AccountDeletionStatus(userId: who.owner, requested: false,
+                localComplete: false, providersComplete: false, requestedAt: nil)
+        })
     }
 
     func testInvalidKeysAndAnonymousUsersNeverReachDriver() async {
@@ -66,6 +191,7 @@ final class BillingStoreTests: XCTestCase {
         await entered.wait()
         let switched = BillingLatch()
         let observer = model.$activeUserID.sink { if $0 == "user_b" { switched.open() } }
+        driver.identity = CloudIdentity(owner: "user_b", session: "session_b")
         let b = Task { await model.prepare(userID: "user_b") }
         await switched.wait()
         XCTAssertEqual(model.activeUserID, "user_b")
@@ -129,6 +255,7 @@ final class BillingStoreTests: XCTestCase {
         XCTAssertTrue(model.packages.isEmpty)
         let switched = BillingLatch()
         let observer = model.$activeUserID.sink { if $0 == "user_b" { switched.open() } }
+        driver.identity = CloudIdentity(owner: "user_b", session: "session_b")
         let b = Task { await model.prepare(userID: "user_b") }
         await switched.wait()
         XCTAssertFalse(driver.events.contains("identify:user_b"))
@@ -152,6 +279,7 @@ final class BillingStoreTests: XCTestCase {
         await entered.wait()
         let switched = BillingLatch()
         let observer = second.$activeUserID.sink { if $0 == "user_b" { switched.open() } }
+        driver.identity = CloudIdentity(owner: "user_b", session: "session_b")
         let b = Task { await second.prepare(userID: "user_b") }
         await switched.wait()
         b.cancel()
@@ -159,7 +287,7 @@ final class BillingStoreTests: XCTestCase {
         await a.value
         await b.value
         withExtendedLifetime(observer) {}
-        XCTAssertEqual(driver.events, ["identify:user_a", "packages:user_a"])
+        XCTAssertEqual(driver.events, ["identify:user_a"])
         XCTAssertTrue(second.packages.isEmpty)
         XCTAssertFalse(second.busy)
         XCTAssertEqual(driver.maxConcurrent, 1)
@@ -282,6 +410,8 @@ private enum BillingFixtureError: Error { case failed }
 
 @MainActor
 private final class BillingFixtureDriver: BillingDriver {
+    var identity: CloudIdentity? = CloudIdentity(owner: "user_a", session: "session_a")
+    var statusHook: ((CloudIdentity) async throws -> AccountDeletionStatus)?
     var offered = [BillingPackage(id: "monthly", productID: "com.lessmeet.app.pro.monthly",
                                 title: "Pro", localizedPrice: "12,99 €", period: .monthly)]
     var events: [String] = []

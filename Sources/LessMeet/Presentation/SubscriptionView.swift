@@ -39,7 +39,7 @@ struct SubscriptionView: View {
     @State private var acknowledgedInternalTesting = false
 
     private var canPurchase: Bool {
-        account.sessionIdentifier != nil && billing.activeUserID == account.userID &&
+        account.sessionIdentifier != nil && !account.cloudAccessLocked && billing.activeUserID == account.userID &&
         subscription.status?.userId == account.userID && subscription.status?.enforcement == true &&
         ((configuration?.isInternalTesting == true && acknowledgedInternalTesting) ||
          (configuration?.isInternalTesting != true && configuration?.privacyURL != nil && configuration?.termsURL != nil)) &&
@@ -98,6 +98,7 @@ struct SubscriptionView: View {
                     ForEach(billing.packages) { package in
                         Button {
                             Task {
+                                guard !account.cloudAccessLocked else { return }
                                 confirming = true
                                 defer { confirming = false }
                                 if await billing.purchase(packageID: package.id) {
@@ -131,13 +132,14 @@ struct SubscriptionView: View {
                         }
                         Button("Restore Purchases") {
                             Task {
+                                guard !account.cloudAccessLocked else { return }
                                 confirming = true
                                 defer { confirming = false }
                                 if await billing.restore() { await subscription.refresh(synchronize: true) }
                             }
                         }.disabled(!billing.isConfigured || billing.activeUserID != account.userID)
                         if billing.busy || subscription.busy || confirming { ProgressView().controlSize(.small) }
-                    }.disabled(account.sessionIdentifier == nil || billing.busy || subscription.busy || confirming)
+                    }.disabled(account.sessionIdentifier == nil || account.cloudAccessLocked || billing.busy || subscription.busy || confirming)
                     HStack {
                         if let url = configuration?.privacyURL { Link("Privacy", destination: url) }
                         if let url = configuration?.termsURL { Link("Terms", destination: url) }

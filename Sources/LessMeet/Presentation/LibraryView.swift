@@ -49,6 +49,9 @@ struct LibraryView: View {
         .onChange(of: model.selection, initial: true) { _, _ in model.loadPlayback() }
         .onChange(of: model.selection) { _, _ in cloud.contextChanged() }
         .onChange(of: accountSession.sessionIdentifier) { _, _ in cloud.contextChanged() }
+        .onChange(of: accountSession.cloudAccessLocked) { _, locked in
+            if locked { cloud.contextChanged(); subscription?.contextChanged() }
+        }
         .onChange(of: cloud.busy) { _, busy in
             if !busy { Task { await subscription?.refresh() } }
         }
@@ -300,7 +303,7 @@ private struct RecordingDetailView: View {
 
     private var remote: CloudRecording? { cloud.cached(recording) }
     private var canUseCloud: Bool {
-        accountSession.sessionIdentifier != nil && model.phase == .idle && !cloud.busy && cloud.configurationIssue == nil
+        accountSession.sessionIdentifier != nil && !accountSession.cloudAccessLocked && model.phase == .idle && !cloud.busy && cloud.configurationIssue == nil
     }
     private var transcriptReady: Bool { remote?.status == "ready" && remote?.transcript != nil }
     private var pending: Bool { remote?.status == "queued" || remote?.status == "processing" }

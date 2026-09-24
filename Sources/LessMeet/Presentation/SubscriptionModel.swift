@@ -26,7 +26,10 @@ final class SubscriptionModel: ObservableObject {
         self.init(identity: {
             guard let user = account.userID, let session = account.sessionIdentifier else { return nil }
             return CloudIdentity(owner: user, session: session)
-        }, token: { try await account.token() }, fetch: { token, sync in
+        }, token: {
+            guard !account.cloudAccessLocked else { throw AccountError("Account deletion requested. Billing access is locked.") }
+            return try await account.token()
+        }, fetch: { token, sync in
             guard let site else { throw AccountError("Configure the cloud endpoint to view your plan.") }
             return try await CloudClient(baseURL: site).subscription(token: token, synchronize: sync)
         })

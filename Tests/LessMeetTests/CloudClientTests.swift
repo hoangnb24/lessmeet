@@ -95,6 +95,36 @@ final class CloudClientTests: XCTestCase {
         }
     }
 
+    func testDeletionUsesFreshBearerAndExplicitConfirmationWithoutOwnerInput() async throws {
+        for submit in [false, true] {
+            CloudFixtureProtocol.handler = { request in
+                XCTAssertEqual(request.url?.path, "/account/deletion")
+                XCTAssertNil(request.url?.query)
+                XCTAssertEqual(request.httpMethod, submit ? "POST" : "GET")
+                XCTAssertEqual(request.value(forHTTPHeaderField: "Authorization"), "Bearer fresh-deletion-token")
+                if submit {
+                    XCTAssertEqual(try JSONSerialization.jsonObject(with: Self.body(request)) as? [String: String], ["confirm": "delete-account"])
+                } else { XCTAssertTrue(try Self.body(request).isEmpty) }
+                return (submit ? 202 : 200, Data(#"{"userId":"alice","requested":true,"localComplete":false,"providersComplete":false,"requestedAt":1234}"#.utf8))
+            }
+            let result = try await client.deletion(token: "fresh-deletion-token", requestDeletion: submit)
+            XCTAssertTrue(result.requested); XCTAssertFalse(result.providersComplete)
+        }
+    }
+
+    func testDeletionFailureDoesNotRetryOrMistakeAcceptanceForCompletion() async throws {
+        var calls = 0
+        CloudFixtureProtocol.handler = { _ in calls += 1; throw URLError(.networkConnectionLost) }
+        do { _ = try await client.deletion(token: "token", requestDeletion: true); XCTFail("Expected ambiguity") }
+        catch { XCTAssertTrue(error.localizedDescription.contains("may already have been processed")) }
+        XCTAssertEqual(calls, 1)
+        CloudFixtureProtocol.handler = { _ in
+            (200, Data(#"{"userId":"alice","requested":true,"localComplete":false,"providersComplete":true,"requestedAt":1234}"#.utf8))
+        }
+        do { _ = try await client.deletion(token: "token"); XCTFail("Impossible completion") }
+        catch { XCTAssertTrue(error.localizedDescription.contains("unexpected response")) }
+    }
+
     func testHTTPStatusSafeErrorAndMalformedMutationResponse() async throws {
         for status in [401, 404, 409, 413, 415, 502, 503] {
             CloudFixtureProtocol.handler = { _ in (status, Data(#"{"error":"Service temporarily paused."}"#.utf8)) }

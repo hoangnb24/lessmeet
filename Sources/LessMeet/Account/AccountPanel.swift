@@ -40,6 +40,7 @@ struct AccountPanel: View {
                     Text(email).font(.caption).foregroundStyle(.secondary)
                 }
                 Button("Sign Out") { Task { await session.signOut() } }.disabled(session.busy || billingBusy)
+                AccountDeletionView(model: session.deletion, sessionID: session.sessionIdentifier, billingBusy: billingBusy)
             } else {
                 Text("Sign in for transcripts and chat. Recording works without an account.")
                     .font(.caption).foregroundStyle(.secondary)
@@ -53,6 +54,40 @@ struct AccountPanel: View {
                 HStack(spacing: 8) { ProgressView().controlSize(.small); Text("Updating account…").font(.caption) }
             }
             if let error = session.error { Text(error).font(.caption).foregroundStyle(.red).textSelection(.enabled) }
+        }
+    }
+}
+
+private struct AccountDeletionView: View {
+    @ObservedObject var model: AccountDeletionModel
+    let sessionID: String?
+    let billingBusy: Bool
+
+    var body: some View {
+        VStack(alignment: .leading, spacing: 8) {
+            Divider()
+            if let status = model.status, status.requested {
+                Text("Account deletion requested").font(.caption.bold())
+                Text(status.localComplete ? "Cloud storage cleanup verified." : "Cloud cleanup is pending, including any in-flight work.")
+                Text(status.providersComplete ? "Provider handling verified. Contact the operator for the completion record and remaining retention limits." : "Provider handling is pending. This is not confirmation that all copies have been erased.")
+            } else {
+                Button("Delete Account…", role: .destructive) { model.prepareConfirmation() }
+                    .disabled(model.busy || billingBusy)
+            }
+            Button("Refresh deletion status") { Task { await model.refresh() } }.disabled(model.busy)
+            if model.busy { ProgressView().controlSize(.small) }
+            if let error = model.error { Text(error).foregroundStyle(.red).textSelection(.enabled) }
+            Text("Local recordings and saved results stay on this Mac. Account deletion does not cancel Apple subscriptions.")
+            Link("Manage or cancel subscription", destination: URL(string: "https://apps.apple.com/account/subscriptions")!)
+        }
+        .font(.caption)
+        .task(id: sessionID) { model.contextChanged(); await model.refresh() }
+        .confirmationDialog("Delete this LessMeet account?", isPresented: Binding(get: { model.confirming }, set: { if !$0 { model.cancelConfirmation() } }), titleVisibility: .visible) {
+            Button("Delete Account and Cloud Data", role: .destructive) { _ = model.confirm() }
+                .disabled(billingBusy)
+            Button("Cancel", role: .cancel) { model.cancelConfirmation() }
+        } message: {
+            Text("Cloud access will be locked and deletion of your account, uploaded audio, transcripts and chat will begin. This cannot be undone here. Provider fulfillment takes additional time and remains pending until verified; no completion date is promised. Local recordings and saved results remain. Apple billing continues unless you cancel separately; cancellation is not required to request deletion. Deleting this account does not transfer purchases to another account.")
         }
     }
 }

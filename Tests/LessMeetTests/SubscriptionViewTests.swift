@@ -7,7 +7,7 @@ final class SubscriptionViewTests: XCTestCase {
     @MainActor
     func testUnconfiguredPlanRendersWithoutNetwork() throws {
         let account = AccountSession(configuration: try AppConfiguration(clerkPublishableKey: nil, convexSiteURL: nil))
-        let billing = BillingStore(publicAppleAPIKey: nil)
+        let billing = BillingStore(publicAppleAPIKey: nil, account: account)
         let subscription = SubscriptionModel(identity: { nil }, token: {
             XCTFail("Signed-out plan must not request a token")
             return ""

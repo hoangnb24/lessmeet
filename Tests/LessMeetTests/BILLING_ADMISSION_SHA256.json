@@ -1,0 +1,196 @@
+{
+  "base": "1a2685b5d56c04e13a724e611f9fafb16e7effe1",
+  "exclusion": "Tests/LessMeetTests/BILLING_ADMISSION_SHA256.json (self; hash supplied in handoff)",
+  "files": [
+    {
+      "path": "Sources/LessMeet/Account/AccountDeletionModel.swift",
+      "before": "394fbe6614a5186a43407d36d01751db583ae8b38698abf4271f5c071118f8de",
+      "after": "394fbe6614a5186a43407d36d01751db583ae8b38698abf4271f5c071118f8de"
+    },
+    {
+      "path": "Sources/LessMeet/Account/AccountPanel.swift",
+      "before": "292334f840905e8a726a66d203500fa289baa88aab9ba4281be9c0a5fb075ea7",
+      "after": "292334f840905e8a726a66d203500fa289baa88aab9ba4281be9c0a5fb075ea7"
+    },
+    {
+      "path": "Sources/LessMeet/Account/AccountSession.swift",
+      "before": "7f62f6ef7e8afec525c58483138ca83011483007e10bc5a33ae321d854fb2ec6",
+      "after": "0e8466a20dc075d6c731ac3b2964a5393b9bd3f0bf24f60ee9f4c8a05ec7bd78"
+    },
+    {
+      "path": "Sources/LessMeet/Billing/BillingStore.swift",
+      "before": "aee90ae33863881609a81ba493108ac1a6d40c3e3de76600357232f3774084a4",
+      "after": "341b7093e7c357f89c99c8652b0d8350d2bbcf71780caf3d6f529f70af5ce387"
+    },
+    {
+      "path": "Sources/LessMeet/Billing/RevenueCatBillingDriver.swift",
+      "before": "0c988506512aefc0e941caab09e4304edbfff1f96afb2151c4fc8cff3602be2c",
+      "after": "0c988506512aefc0e941caab09e4304edbfff1f96afb2151c4fc8cff3602be2c"
+    },
+    {
+      "path": "Sources/LessMeet/Capture/CaptureAudioRecorder.swift",
+      "before": "ae88bea38136fb6cf358a7ef95040b3c68aa8e1e8fb94d974d1d51b287171e03",
+      "after": "ae88bea38136fb6cf358a7ef95040b3c68aa8e1e8fb94d974d1d51b287171e03"
+    },
+    {
+      "path": "Sources/LessMeet/Capture/CaptureService.swift",
+      "before": "b70d58deb5f710d19fc33ae143624ef0527e58a4f467bb9ec50f85aa9385e37a",
+      "after": "b70d58deb5f710d19fc33ae143624ef0527e58a4f467bb9ec50f85aa9385e37a"
+    },
+    {
+      "path": "Sources/LessMeet/Cloud/CloudClient.swift",
+      "before": "c689e20ba787e3c6051fbb89b970aaa7d8a6865a3e9c617bbd0369e03d776d1b",
+      "after": "c689e20ba787e3c6051fbb89b970aaa7d8a6865a3e9c617bbd0369e03d776d1b"
+    },
+    {
+      "path": "Sources/LessMeet/Cloud/CloudRecording.swift",
+      "before": "2e8f177e45da9b3401737faef0a840eefbcb5b27ed93f8c46c229a7e4b764af4",
+      "after": "2e8f177e45da9b3401737faef0a840eefbcb5b27ed93f8c46c229a7e4b764af4"
+    },
+    {
+      "path": "Sources/LessMeet/Cloud/SubscriptionStatus.swift",
+      "before": "9752f2406da5ab4a5bf2a9ea82ac2af5554cccc45610c9721fc5568e5b4b90bb",
+      "after": "9752f2406da5ab4a5bf2a9ea82ac2af5554cccc45610c9721fc5568e5b4b90bb"
+    },
+    {
+      "path": "Sources/LessMeet/Configuration/AppConfiguration.swift",
+      "before": "edc551491fa22a8888efba510c3818fe704718e60cc218fcb7b9cba30d582eb2",
+      "after": "edc551491fa22a8888efba510c3818fe704718e60cc218fcb7b9cba30d582eb2"
+    },
+    {
+      "path": "Sources/LessMeet/Configuration/BillingConfiguration.swift",
+      "before": "138b3dad9c592b1b1f2a27651c748eddd86edb5d1d4d85c716c60af05da6455c",
+      "after": "138b3dad9c592b1b1f2a27651c748eddd86edb5d1d4d85c716c60af05da6455c"
+    },
+    {
+      "path": "Sources/LessMeet/LessMeetApp.swift",
+      "before": "2090475e7edbdc96c1a7e17734bc4b5b2aaf6969a4b6cbf959ea7562fb1ba482",
+      "after": "1db4a7048c9815cdc06c01b76ad93c1b0fe7576a162ece332c2070ed2a129ca4"
+    },
+    {
+      "path": "Sources/LessMeet/Presentation/AppModel.swift",
+      "before": "e0802e7defb14d48cb19359281f8c08ac2ed262d3adc4142690ae32bd39afb98",
+      "after": "e0802e7defb14d48cb19359281f8c08ac2ed262d3adc4142690ae32bd39afb98"
+    },
+    {
+      "path": "Sources/LessMeet/Presentation/AudioPlayback.swift",
+      "before": "63d837e3948a104168dd288491e013c8ca378f8561b3d592648f5d8a6fe77977",
+      "after": "63d837e3948a104168dd288491e013c8ca378f8561b3d592648f5d8a6fe77977"
+    },
+    {
+      "path": "Sources/LessMeet/Presentation/ChatTextEditor.swift",
+      "before": "e4b6e09e82ce55c1c1f4305cf0b2d195c23ae0442fc8bc2ba62ae7654f28effc",
+      "after": "e4b6e09e82ce55c1c1f4305cf0b2d195c23ae0442fc8bc2ba62ae7654f28effc"
+    },
+    {
+      "path": "Sources/LessMeet/Presentation/LibraryView.swift",
+      "before": "48b69348d48e9dbc60330af307a121b5fac17a1143520385a4eff97ee79d337e",
+      "after": "48b69348d48e9dbc60330af307a121b5fac17a1143520385a4eff97ee79d337e"
+    },
+    {
+      "path": "Sources/LessMeet/Presentation/MarkdownView.swift",
+      "before": "84427dc3e02e75b7e15a8f7934dc4acb07ef3b34092892b9d6fb4c74995c22ef",
+      "after": "84427dc3e02e75b7e15a8f7934dc4acb07ef3b34092892b9d6fb4c74995c22ef"
+    },
+    {
+      "path": "Sources/LessMeet/Presentation/RecordingChatDraft.swift",
+      "before": "d2687ddd07ca59d4744fda82fbce5e7d0f5b71b906c57810a018a58fea6b085c",
+      "after": "d2687ddd07ca59d4744fda82fbce5e7d0f5b71b906c57810a018a58fea6b085c"
+    },
+    {
+      "path": "Sources/LessMeet/Presentation/RecordingChatView.swift",
+      "before": "a132f8eeddbfb1476627603484d89a5cfea10d6b9b521bfa449caf76a58eee21",
+      "after": "a132f8eeddbfb1476627603484d89a5cfea10d6b9b521bfa449caf76a58eee21"
+    },
+    {
+      "path": "Sources/LessMeet/Presentation/RecordingCloudModel.swift",
+      "before": "0113383f5ef13b9b3cb61824d4f43d3b155999f1682c06fbb82792e289ae7210",
+      "after": "0113383f5ef13b9b3cb61824d4f43d3b155999f1682c06fbb82792e289ae7210"
+    },
+    {
+      "path": "Sources/LessMeet/Presentation/SubscriptionModel.swift",
+      "before": "cb42fccba732ff26e29bcfcea26c88167fff48bc540c671bad6bb185a1071a6b",
+      "after": "cb42fccba732ff26e29bcfcea26c88167fff48bc540c671bad6bb185a1071a6b"
+    },
+    {
+      "path": "Sources/LessMeet/Presentation/SubscriptionView.swift",
+      "before": "b444ebee1720036c54ed36facb912c23cee5282676edc3d0ff341c7f0e734eb5",
+      "after": "b444ebee1720036c54ed36facb912c23cee5282676edc3d0ff341c7f0e734eb5"
+    },
+    {
+      "path": "Sources/LessMeet/Recordings/Recording.swift",
+      "before": "deebb55ff5ba3e1e680d056cf019dc12c43ce73ce874b1f279b59e116180f0d9",
+      "after": "deebb55ff5ba3e1e680d056cf019dc12c43ce73ce874b1f279b59e116180f0d9"
+    },
+    {
+      "path": "Sources/LessMeet/Recordings/RecordingStore.swift",
+      "before": "9cf82028f38e85a5887ccb4f5affb43532399c8f84091a0ec5b5721a34be6182",
+      "after": "9cf82028f38e85a5887ccb4f5affb43532399c8f84091a0ec5b5721a34be6182"
+    },
+    {
+      "path": "Tests/LessMeetTests/AccountDeletionTests.swift",
+      "before": "dff882f2a23e13a11352263f8aa3e5ce4aba3d4ad0d66f8d3b843a058c69e2a7",
+      "after": "dff882f2a23e13a11352263f8aa3e5ce4aba3d4ad0d66f8d3b843a058c69e2a7"
+    },
+    {
+      "path": "Tests/LessMeetTests/AccountSessionTests.swift",
+      "before": "238d030f1f320a416138409fbae845fcaba692b4bda139633019d8eec898df37",
+      "after": "238d030f1f320a416138409fbae845fcaba692b4bda139633019d8eec898df37"
+    },
+    {
+      "path": "Tests/LessMeetTests/BILLING_ADMISSION_HANDOFF.md",
+      "before": null,
+      "after": "f31656f59d461a616fe3222ef70350c22be379b24e2260c09c735dae75989680"
+    },
+    {
+      "path": "Tests/LessMeetTests/BillingStoreTests.swift",
+      "before": "a53f9e96de07d10628ce53021ef01fa03304c961ef8f273ed35352a27672992f",
+      "after": "64bc7110f4748448db819f5a9962089b9ea3f295c093ba5f817f80ab15fc0670"
+    },
+    {
+      "path": "Tests/LessMeetTests/CaptureAudioTests.swift",
+      "before": "4e723e707377e293a6dc7816ce7e351c83bc43685e1f054cd766688eeb55e405",
+      "after": "4e723e707377e293a6dc7816ce7e351c83bc43685e1f054cd766688eeb55e405"
+    },
+    {
+      "path": "Tests/LessMeetTests/ChatTextEditorTests.swift",
+      "before": "4a9d0cb058bf70f12f885fc11bea46f3ab7dfaea2decc5f0a8235a086983a0c0",
+      "after": "4a9d0cb058bf70f12f885fc11bea46f3ab7dfaea2decc5f0a8235a086983a0c0"
+    },
+    {
+      "path": "Tests/LessMeetTests/CloudClientTests.swift",
+      "before": "9eb4b49966bc210e15d5190781f9a0e531156d8babed18fadb87f1aa8143a3c8",
+      "after": "9eb4b49966bc210e15d5190781f9a0e531156d8babed18fadb87f1aa8143a3c8"
+    },
+    {
+      "path": "Tests/LessMeetTests/ConfigurationTests.swift",
+      "before": "2cfb38bf23189af32598bd94af2ef9f5812cb9a83ed1c074235ade17e63e81a0",
+      "after": "2cfb38bf23189af32598bd94af2ef9f5812cb9a83ed1c074235ade17e63e81a0"
+    },
+    {
+      "path": "Tests/LessMeetTests/RecordingChatDraftTests.swift",
+      "before": "560cb851c583da5ffeb0142f58674c426daf31370063ab907d8d5a448b27beef",
+      "after": "560cb851c583da5ffeb0142f58674c426daf31370063ab907d8d5a448b27beef"
+    },
+    {
+      "path": "Tests/LessMeetTests/RecordingCloudModelTests.swift",
+      "before": "4c5cc9be6c4b7a6a371ba6b801494f74e66e1aa945b249fafa5ceaf3e20d41d1",
+      "after": "4c5cc9be6c4b7a6a371ba6b801494f74e66e1aa945b249fafa5ceaf3e20d41d1"
+    },
+    {
+      "path": "Tests/LessMeetTests/RecordingStoreTests.swift",
+      "before": "3e38d5447f56319e302b4365dc7b4a4ed65016f62fcec66c94341da3471f6459",
+      "after": "3e38d5447f56319e302b4365dc7b4a4ed65016f62fcec66c94341da3471f6459"
+    },
+    {
+      "path": "Tests/LessMeetTests/SubscriptionModelTests.swift",
+      "before": "aaccd9dccf302e82537f151dae9b170571b5541d37632f7da535e1da3ff15145",
+      "after": "aaccd9dccf302e82537f151dae9b170571b5541d37632f7da535e1da3ff15145"
+    },
+    {
+      "path": "Tests/LessMeetTests/SubscriptionViewTests.swift",
+      "before": "399248d36c0a68f3e84ed94ed7179e891c76cef81b4515af673c56725cefa3d4",
+      "after": "9c063db0b42927bd54d0c439f7f023a8bd01e354b0ccec7f5ac59ee29d20b4b0"
+    }
+  ]
+}

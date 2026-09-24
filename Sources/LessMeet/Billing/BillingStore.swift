@@ -66,13 +66,36 @@ final class BillingStore: ObservableObject {
     private var generation = UUID()
     private var operations = 0
     private var ready = false
+    private let identity: () -> CloudIdentity?
+    private let deletionStatus: (CloudIdentity) async throws -> AccountDeletionStatus
+    private var admittedIdentity: CloudIdentity?
 
-    convenience init(publicAppleAPIKey: String?) {
+    convenience init(publicAppleAPIKey: String?, account: AccountSession) {
+        let site = (try? AppConfiguration.load())?.convexSiteURL
         self.init(publicAppleAPIKey: publicAppleAPIKey, driver: RevenueCatBillingDriver.shared,
-                  gate: .shared)
+                  gate: .shared, identity: { [weak account] in
+            guard let account, !account.cloudAccessLocked,
+                  let user = account.userID, let session = account.sessionIdentifier else { return nil }
+            return CloudIdentity(owner: user, session: session)
+        }, deletionStatus: { [weak account] who in
+            guard let account, let site else { throw AccountError("Billing status unavailable.") }
+            let bearer = try await account.token()
+            guard account.userID == who.owner, account.sessionIdentifier == who.session,
+                  !account.cloudAccessLocked else { throw AccountError("Account changed.") }
+            let status = try await CloudClient(baseURL: site).deletion(token: bearer, requestDeletion: false)
+            if status.isValid && status.userId == who.owner && status.requested {
+                account.setDeletionLock(who, locked: true)
+            }
+            return status
+        })
+        account.revokeBillingAdmission = { [weak self] in self?.suspend() }
     }
 
-    init(publicAppleAPIKey: String?, driver: BillingDriver, gate: BillingOperationGate) {
+    init(publicAppleAPIKey: String?, driver: BillingDriver, gate: BillingOperationGate,
+         identity: @escaping () -> CloudIdentity? = { nil },
+         deletionStatus: @escaping (CloudIdentity) async throws -> AccountDeletionStatus = { _ in
+             throw AccountError("Billing status unavailable.")
+         }) {
         let value = publicAppleAPIKey?.trimmingCharacters(in: .whitespacesAndNewlines)
         let valid = value.map {
             $0.hasPrefix("appl_") && $0.count > 5 &&
@@ -82,6 +105,20 @@ final class BillingStore: ObservableObject {
         isConfigured = valid
         self.driver = driver
         self.gate = gate
+        self.identity = identity
+        self.deletionStatus = deletionStatus
+    }
+
+    /// Local admission shutdown only: does not cancel submitted StoreKit/SDK work,
+    /// detach the RevenueCat singleton, or establish provider deletion safety.
+    func suspend() {
+        generation = UUID()
+        admittedIdentity = nil
+        activeUserID = nil
+        packages = []
+        hasProEntitlement = false
+        ready = false
+        error = nil
     }
 
     /// Identity and visible state change before the first await. Call for every Clerk change.
@@ -98,6 +135,11 @@ final class BillingStore: ObservableObject {
         hasProEntitlement = false
         error = nil
         ready = false
+        admittedIdentity = identity()
+        guard admittedIdentity?.owner == activeUserID, admittedIdentity != nil else {
+            activeUserID = nil
+            return
+        }
         guard let user = activeUserID, let key else { return }
         begin()
         defer { end() }
@@ -105,6 +147,7 @@ final class BillingStore: ObservableObject {
         defer { gate.release() }
         guard current(ticket) else { return }
         do {
+            try await authorize(ticket)
             try await driver.identify(publicAppleAPIKey: key, userID: user)
             guard current(ticket) else { return }
             let offered = try await driver.packages(userID: user)
@@ -132,6 +175,7 @@ final class BillingStore: ObservableObject {
         defer { gate.release() }
         guard current(ticket) else { return false }
         do {
+            try await authorize(ticket)
             let result = try await driver.purchase(packageID: packageID, userID: user)
             guard current(ticket), !result.cancelled else { return false }
             hasProEntitlement = result.hasProEntitlement
@@ -154,6 +198,7 @@ final class BillingStore: ObservableObject {
         defer { gate.release() }
         guard current(ticket), let key else { return false }
         do {
+            try await authorize(ticket)
             try await driver.identify(publicAppleAPIKey: key, userID: user)
             guard current(ticket) else { return false }
             let pro = try await driver.restore(userID: user)
@@ -167,7 +212,17 @@ final class BillingStore: ObservableObject {
         }
     }
 
-    private func current(_ ticket: UUID) -> Bool { generation == ticket && !Task.isCancelled }
+    private func authorize(_ ticket: UUID) async throws {
+        guard current(ticket), let who = admittedIdentity else { throw CancellationError() }
+        let status = try await deletionStatus(who)
+        guard current(ticket), status.isValid, status.userId == who.owner, !status.requested else {
+            throw AccountError("Billing requires confirmation that account deletion is not pending.")
+        }
+    }
+
+    private func current(_ ticket: UUID) -> Bool {
+        generation == ticket && !Task.isCancelled && admittedIdentity != nil && identity() == admittedIdentity
+    }
     private func begin() { operations += 1; busy = true }
     private func end() { operations -= 1; busy = operations > 0 }
 }

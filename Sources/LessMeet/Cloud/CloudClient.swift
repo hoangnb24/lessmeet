@@ -18,6 +18,15 @@ struct CloudClient {
         return result
     }
 
+    func deletion(token: String, requestDeletion: Bool = false) async throws -> AccountDeletionStatus {
+        var request = try request(path: "account/deletion", method: requestDeletion ? "POST" : "GET",
+                                  token: token, contentType: requestDeletion ? "application/json" : nil)
+        if requestDeletion { request.httpBody = Data(#"{"confirm":"delete-account"}"#.utf8) }
+        let result: AccountDeletionStatus = try await send(request, expectedStatus: requestDeletion ? 202 : 200)
+        guard result.isValid else { throw malformed(mutating: requestDeletion) }
+        return result
+    }
+
     func upload(fileURL: URL, token: String) async throws -> String {
         let request = try request(path: "recordings", method: "POST", token: token, contentType: "audio/m4a")
         guard fileURL.isFileURL, fileURL.pathExtension.lowercased() == "m4a" else {
