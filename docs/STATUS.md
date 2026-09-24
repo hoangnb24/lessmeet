@@ -1,5 +1,659 @@
 # LessMeet delivery
 
+## Main deletion-ledger retention approval (2026-09-24)
+
+Human approved the recommended main-ledger policy: keep the exact owner guard and
+operational evidence while a request is incomplete; once local cleanup and all five
+provider/residual confirmations are true, retain the identifier-bearing ledger for
+90 days, then remove it and all request-linked preflight, stage, outbox, contact and
+send rows. The durable remainder is an unlinkable receipt with completion/purge
+times and policy revision only—no owner, subject, email, token, provider payload,
+evidence reference or request ID. Reopening any completion flag cancels the clock;
+unresolved `deletionWork` fails purge closed. Daily bounded purge is independent of
+feature gates. Lead implemented and deployed this candidate to exact dev
+`zany-octopus-315`; backend typecheck, focused retention tests (4/4) and full backend
+regression (356 tests / 13 files) pass. Migration completed without a destructive
+warning; the new receipt table was empty and a deployed no-op purge returned 0.
+
+Lead then ran one bounded live-deployment rehearsal with fixed synthetic identity
+`user_codexdeletionrehearsal20260924`. A temporary exact-identity harness and separate
+gate admitted the request, ran empty local cleanup, applied five explicitly synthetic
+operator confirmations, and observed `localComplete=true`, all provider flags true,
+zero unresolved work, and `purgeAt - completedAt = 7,776,000,000ms` (90 days). This
+did not call or claim deletion at Clerk, RevenueCat, Apple or Gemini; automation,
+preflight, contact and send gates stayed off. Lead removed the temporary harness,
+redeployed the permanent surface, and verified it is absent from function inventory.
+`ACCOUNT_DELETION_ENABLED`, `DELETION_REHEARSAL_ENABLED` and all automation/preflight
+gates are absent again. Dev intentionally retains one completed synthetic ledger row
+until its approved deadline; the daily worker will compact it to an unlinkable receipt.
+
+## Provider setup checkpoint (2026-09-24)
+
+Human accepted the recommended preflight-only retention policy: provider inventory
+exists only while active and for 30 days after its latest accepted transition, then
+identifier-bearing rows are compacted to minimal non-identifier receipts. Lead
+implemented the local candidate in schema/worker/cron with frozen-snapshot receipts,
+gate-independent daily batches of 16 and legacy-row handling. Tests prove Clerk
+external-account/session identifiers, RevenueCat aliases, cursors and config are
+removed, repeated start cannot recreate the snapshot, disabled gates do not stop
+purge, batches are bounded, and legacy rows compact. Backend typecheck and scoped
+preflight tests pass (45 tests). Audited dev still has all three activation gates
+absent. This checkpoint's approval was limited to preflight inventory; the later
+main-ledger approval above supersedes that retention blocker but does not enable
+contact capture, sends or provider writes.
+Lead inspected and ACCEPTS this exact candidate: schema
+`a8b8bf10ddeee`, worker `6be5918efbad`, cron `87ed87e5e8fc`, tests
+`e917b618b8fc`, backend contract `7b7c98d01092`. `npm run typecheck:backend`,
+full `npm run test:backend` (352 tests / 12 files), and scoped
+`git diff --check` pass. Human then authorized dev deployment. Lead pushed the
+current accepted Convex backend to exact `zany-octopus-315`; Convex reported
+functions ready and added the preflight receipt table/purge index without a
+destructive-migration warning. Read-only inventory found zero deletion, preflight
+or receipt rows before activation. A deployed no-op
+`deletionPreflight:purgeExpired` invocation returned 0. `ACCOUNT_DELETION_ENABLED`
+and all three automation/preflight/retention gates remain absent, so no provider
+inventory was collected. A full synthetic request rehearsal was intentionally not
+run at that checkpoint because the main deletion-ledger policy was not yet approved;
+the later approval above now permits the dev rehearsal after deploying the policy.
+
+Latest access checkpoint: Human explicitly replaced the blocked 1Password storage
+route with local ignored storage. Lead used the authenticated Chrome session for
+exact RevenueCat project Lessmeet `a83a7730`, generated **LessMeet deletion
+preflight read-only** as V2 with Customers Configuration Read only, every other
+permission group No access, and Issue token disabled. The secret was copied without
+printing it and stored at ignored `keys/.env` as
+`REVENUECAT_PREFLIGHT_SECRET_KEY`; exact project ID `proja83a7730` is stored beside
+it. File mode is 0600, `git check-ignore` resolves `/keys/`, and Git does not track
+the file. Dashboard inventory readback shows the new V2 key. Lead then verified the
+exact project binding with one read-only V2 GET for synthetic subject
+`user_codexpreflightbinding20260924`; RevenueCat returned expected 404
+`resource_missing`, with no customer creation or real-customer read. Human approved
+dev provisioning. Exact Convex dev `zany-octopus-315` now has matching
+`REVENUECAT_PREFLIGHT_SECRET_KEY`, project `proja83a7730`, immutable config revision
+`rc_lessmeet_preflight_20260924_v1`, and
+`REVENUECAT_PREFLIGHT_PROJECT_VERIFIED=true`. Secret readback matched locally without
+printing it. `DELETION_AUTOMATION_ENABLED`, `DELETION_PREFLIGHT_ENABLED`, and
+`DELETION_PREFLIGHT_RETENTION_APPROVED` remain absent, so provisioning does not
+activate provider reads. No deployment, send or deletion was performed. 1Password
+CLI remains unusable and is no longer a blocker for this credential; migrate the
+local secret to durable approved storage before release or deleting the workstation
+copy.
+
+Update after Human approval: enabled Sign In with Apple as primary App ID for
+com.lessmeet.app/team63M98WD275. Saved, confirmed Apple capability warning, reopened
+identifier and verified persisted checked state. Apple says profiles containing
+this App ID are invalidated and must be regenerated before future signing; existing
+packaging/runtime proof is not new-profile acceptance. No profile/key/Services ID
+creation, Clerk change, backend provisioning, deployment, email or deletion.
+RC key creation + Private vault storage was previously blocked because vault listing
+timed out and `op whoami --format=json` returned account is not signed in. Human
+subsequently authorized local ignored storage instead; the latest checkpoint above
+supersedes that storage plan. CONFIGURATION.md records the current state. Prior
+checkpoint below is historical preparation, superseded by this update.
+
+Human asked to proceed with Apple credentials/RC read-only setup. Lead owns this
+external setup and documentation; no Peer writes are active. Read-only Apple portal
+inspection confirms exact Lessmeet App ID com.lessmeet.app/team63M98WD275 with
+Sign In with Apple unchecked. Existing Clerk shared development flow unchanged.
+RevenueCat new-key form prepared: LessMeet deletion preflight read-only, V2,
+Customers Configuration Read only, other groups No access. Generate NOT submitted.
+No keys generated, secrets read, capability changes saved, backend provisioning,
+deployment, sends or deletion. Browser forms preserved for action-time security
+confirmation: exact RC creation + Private vault storage, and exact Apple capability
+enablement. Human owns that confirmation; return on reply. Separate production
+client/domain and existing-identity migration remain unresolved. Configuration
+reference updated with observed state, not claims that setup is complete.
+
+## Configuration documentation (2026-09-24)
+
+Human requested durable configuration documentation. Lead added
+[CONFIGURATION.md](CONFIGURATION.md) as the configuration reference, linked from
+README: exact environments, public IDs, vault references, DNS, variable purposes,
+safe verification and remaining setup decisions. STATUS remains the sole work-status
+source. Update the reference after each configuration change; no secrets in repo.
+This documentation-only reconciliation leaves accepted runtime/manifest inputs
+unchanged. No new credentials, external configuration, sends or deployment in this
+documentation change. Next setup remains Apple custom-client/environment decision
+and RC v2 read-only credential, with scoped security approvals at the action boundary.
+
+## Provider configuration audit — read-only (2026-09-24)
+
+Human accepted the proposed read-only provider-configuration check. Lead inspected
+authenticated Clerk/RevenueCat dashboards and explicit Convex dev environment names;
+no external configuration changes, key reveals, token fetches, sends, deletion,
+deployment or activation. Existing browser sessions used, unrelated projects untouched.
+- Clerk LessMeet application app_3JggBoRulgsbt70ZFjgy9h7UjqQ has only development
+  instance ins_3JggBsWybMahxou8G4rXVmM2Snu, displayed domain
+  major-fish-4158.clerk.accounts.dev; dashboard explicitly says no production
+  environment. Apple and Google SSO both use Shared credentials. Therefore the
+  user-owned original Apple client/signer binding needed for automated revocation
+  is NOT established by this setup. No inference that Apple developer keys do not
+  exist; their applicability to this hosted flow remains unverified. Production
+  custom SSO credentials and provenance require separate setup/approval.
+- RevenueCat exact Lessmeet project settings display API v2 ID proja83a7730
+  (dashboard short ID a83a7730). Keep with original App User ID is selected;
+  separate sandbox transfer behavior is off. Key inventory shows one v1 secret,
+  Lessmeet Convex Dev, and no v2 read credential. Keys remained concealed.
+- `node node_modules/convex/bin/main.js env list --names-only --deployment
+  zany-octopus-315` succeeded. Seven existing names: BILLING_ENFORCEMENT_ENABLED,
+  CLERK_JWT_ISSUER_DOMAIN, GEMINI_API_KEY, GEMINI_BILLABLE_ENABLED,
+  REVENUECAT_ALLOW_SANDBOX, REVENUECAT_ORIGINAL_USER_POLICY_CONFIRMED,
+  REVENUECAT_SECRET_API_KEY. New contact/email/preflight gates/config/credentials
+  are absent on this dev deployment. Values of secrets not read. This check says
+  nothing about unknown production deployments.
+Next external setup decisions: original Apple custom client/signing path, RC v2
+read-only credential for proja83a7730, then separately authorized dev provisioning
+after retention/privacy choices. Do not enable flags merely because code is accepted.
+Destructive adapters remain unimplemented; current inventory cannot resolve Apple
+shared-client provenance or guarantee RC non-recreation. Lead owns technical route;
+Human owns new credentials/security grants/production provisioning and release risk.
+
+## Parallel integration round (2026-09-24)
+
+Human requested protocol reread and parallel Peers. Lead read both contracts,
+inspected dirty repository/current native billing and deletion boundaries, confirmed
+no active Peers, and matched accepted automation after-hashes plus native A hashes.
+Preserve dirty accepted work. Original HEAD remains 1a2685b5d56c04e13a724e611f9fafb16e7effe1.
+Accepted input: AUTOMATION_SHA256.json 2a80a8baa459e8382d64479d929af16069f9294924e2a054ee77e6c94b924271.
+Local implementation/offline testing only; previous DNS/key authority does not grant
+deployment, secret provisioning, provider mutations, sends, purchases or paid tests.
+
+Round ownership (A/B accepted; C assessment closed; preflight follow-up below):
+- A: 2b815cd6-5afb-41d9-90aa-a9746d3224cb.
+- B: 4a01b6af-267e-4fe6-a662-53293168aad0.
+- C: 7ffa8a53-e1c5-4053-a2f9-3eadbf4c882c.
+- A email: convex/**, Tests/backend/**, docs/BACKEND.md. Default-off Resend sender
+  integrated with accepted intent using a separate immutable send record. Preserve
+  public deletion endpoint/response contract. No destructive identity adapters.
+- B native: Sources/LessMeet/** and Tests/LessMeetTests/** only. Session-fenced
+  billing admission, shutdown/startup handling on deletion/sign-out, using existing
+  deletion status API; no backend, dependencies, packaging or app identity changes.
+- C provider dependencies: read-only research of accepted baseline/contracts and
+  official provider docs; no moving A/B source assumptions or file writes. Return
+  executable Clerk/Apple/RC contract and remaining precise configuration dependencies.
+Lead owns STATUS, package manifests, legal/website, integration and acceptance.
+
+Shared invariants: current native API unchanged; exact owner/issuer/subject binds
+all work; local files and Apple subscriptions untouched; no retention/SLA/guard-purge
+decision inferred. B cannot claim all-device quiescence. A cannot treat mutable intent,
+queued/accepted send or unimplemented provider as delivered/completed. No Peer reads
+real secrets, 1Password or live provider accounts. Sending config uses verified
+notifications@lessmeet.2m0r.com, but key exists only in Private / LessMeet Resend.
+A uses frozen payload/key with retries strictly inside Resend's 24h deduplication
+window, sanitized failures and durable recovery. Missing verified recipient is an
+exception; no JWT/client email trust. Optional Clerk read-only exact-subject inventory
+may establish verified primary contact only with explicit issuer/instance binding;
+it does not authorize Clerk deletion. Relay-only delivery after revocation stays
+blocked/unknown, never delay Apple revocation or claim successful notification.
+Completion email requires accepted local and all-provider/residual completion flags.
+Contact retention and provider privacy remain release gates; implementation off.
+
+Acceptance: each writer returns full before/after manifest from actual dirty input,
+commands and observed results, red/unknown evidence and relinquishes all writes.
+A: typecheck/full backend (130 baseline), fake transport and scheduler races/recovery,
+deduplication window/exhaustion, owner/config/contact checks, no premature completion.
+B: full Swift tests (66 baseline), delayed SDK/session-switch/delete/sign-out/startup
+races and local-data preservation; rendered UI/live SDK proof separately unknown.
+C returns bounded decisions/evidence without assuming either writer is accepted.
+At each finish Lead inspects exact candidate, resolves findings and records disposition
+before dependent work. Provider deletion integration follows C disposition and A/B
+acceptance rather than overlapping their moving scopes.
+
+### A notification disposition — ACCEPT bounded offline sender (2026-09-24)
+
+A relinquished all backend/docs writes. Lead matched NOTIFICATION_SHA256.json
+b99be58b8f620efd1a3cd7ab560210c2aceba5f8c358d600b173b1f298f5c808 and all47
+listed final hashes, inspected notification adapter/worker and handoff. Lead reran
+npm run typecheck:backend and npm run test:backend: PASS236tests/10files.
+Read-only b952833b-d4ea-4f9c-b078-3834ac4a3bfc verified all47hashes and the pinned
+Clerk schema, finding no material blocker. Lead ACCEPTS this exact candidate:
+authoritative completion checks, immutable contact/send binding and bounded durable
+deduplication satisfy the bounded brief, supported by Lead236tests/typecheck and
+independent source assessment. A and assessment assignments closed. Candidate covers frozen sending
+and verified contact, NOT delivery confirmation; delivery remains pending indefinitely
+without a separate authenticated delivery-evidence path. Default-off, retention/
+privacy approval, missing destructive provider adapters and no real sends remain.
+
+Next ready branch: C's previously accepted recommendation can now use accepted A/B
+interfaces. C 7ffa8a53-e1c5-4053-a2f9-3eadbf4c882c receives exclusive convex/**,
+Tests/backend/**, docs/BACKEND.md for default-off provider inventory/preflight only.
+Reuse A's pinned Clerk binding/contact reader rather than duplicate incompatible
+contracts. Add exact-owner Clerk external-account/session inventory and separate
+exact-project RC v2 customer/alias inventory, bounded durable pagination/recovery,
+frozen config revisions and sanitized prerequisite findings. No OAuth token fetch,
+session revoke, ban, user/subscriber DELETE, Apple revoke, or completion-flag writes.
+Missing credentials/provenance/alias ownership remains blocked, not success.
+No changes to accepted public/native deletion API, sender snapshots, dependencies,
+native/legal/packaging scopes. No real accounts/keys/API calls, installs or deployment.
+Acceptance: before/after hashes from accepted dirty notification snapshot, full
+typecheck/backend236baseline plus pagination/race/config/identity/alias/missing
+resource fixtures and zero destructive requests/false completion. Lead disposition
+at handoff; implementation does not authorize provisioning or live activation.
+
+### Preflight disposition — ACCEPT bounded offline inventory (2026-09-24)
+
+C relinquished all backend/docs writes. Lead verified PREFLIGHT_SHA256.json
+d84bf15015de6881d6ab85531e9c6f6f58319dce0fe27658a3d7f6d11b15114c and all54
+listed hashes; inspected handoff, contract, adapter and worker. Lead reran npm run
+typecheck:backend && npm run test:backend && scoped git diff --check: PASS,
+349 tests / 12 files. Writer's earlier fixture synchronization failure remains in
+PREFLIGHT_HANDOFF.md, corrected before this candidate. No live/provider proof.
+Read-only e0fced6a-cd24-47b4-83d0-0f2ad9cf8718 matched all54 and native38 hashes,
+reconciled notification input, checked primary wire contracts and independently
+passed both TypeScript projects/scoped whitespace. No material blocker found.
+Lead ACCEPTS this exact candidate: fixed-origin noncreating inventory, exact bindings,
+bounded durable traversal/recovery and unchanged completion/sender semantics meet
+the assignment with Lead349tests and independent source evidence. C and assessment
+assignments closed; all write ownership returns to Lead, no active writer.
+Usable downstream: bounded inventory schemas/observations and explicit prerequisite
+failures, not destructive execution clearance. Inventory
+traversal is not atomic/historical completeness or permission to delete; unknown
+Apple provenance and aliases stay blocked. No credential provisioning, retention
+approval or external activation follows from passing tests.
+Parallel round is locally complete. Remaining implementation: bound destructive
+provider adapters and authenticated delivery evidence; release dependencies include
+original Apple client/token provenance, provider credential/project attestations,
+retention/privacy decisions and RC recreation-risk disposition. Lead must resolve
+these contracts before new destructive-provider dispatch; current features stay off.
+
+### B disposition — ACCEPT bounded native admission (2026-09-24)
+
+B relinquished native/test writes to Lead. Candidate BILLING_ADMISSION_SHA256.json
+ff38147b3fc59e5592c7aa32095e25003aea6d9c7091c8b3709472887b1a2446 and all 38
+listed final hashes matched. Lead inspected billing admission/production wiring and
+handoff, reran swift test --disable-automatic-resolution: 73 tests, zero failures;
+scoped git diff --check passed. SwiftPM warns that two new handoff/manifest files
+are unhandled target files; not a test failure. Lead owns later packaging exclusion.
+Read-only assessment 789e96f2-32aa-4973-9d82-c0ab72379492 found no material blocker.
+Lead ACCEPTS this exact candidate for app-local admission: fresh deletion checks,
+session/generation fences, serialized driver entry and synchronous suspension meet
+the bounded assignment, supported by Lead's 73-test run and source assessment.
+B and assessment scopes closed; native writes remain with Lead. A remains sole
+backend writer and continues independently. Downstream can rely on local admission
+checks using the unchanged deletion API, not global quiescence. A coalesced SwiftUI
+transition may require explicit Refresh; production sign-out failure UI and actual
+process lifecycle are unverified. App-local admission is the bounded claim; singleton
+shutdown, submitted work, cross-device recreation and rendered/live UI remain
+unresolved, so production RC deletion is not cleared by this candidate.
+
+### C disposition — ACCEPT bounded dependency assessment (2026-09-24)
+
+Lead read C's complete handoff. Accept provider order and safety findings, not
+account readiness or a version-pinned executable API contract. C read-only assignment
+closed; A/B continue unchanged. C held no writes or live account access.
+Resolved Apple retry dependency: use the existing operator-exception route if remote
+revocation is ambiguous and a correctly bound token cannot be recovered. No new
+raw-token persistence/key store; Clerk identity deletion stays blocked until Apple
+disposition is durable. Email delivery must never delay revocation.
+Resolved RC claim: point-in-time observed absence only, not durable non-recreation;
+B's app-local admission fixes cannot prove all-device quiescence. Production RC
+activation remains a Human risk/release decision after evidence, not a test pass.
+Session inventory must complete before revocations mutate an active-only offset
+result; bound re-inventory for races. No Clerk ban added to the current scope.
+RC inventory uses exact-project v2 read and bounded same-route pagination; unexplained
+aliases block. v1 GET cannot verify absence because it creates missing customers.
+No subscriber DELETE success is final until non-creating observation resolves it.
+Next provider writer waits for A/B acceptance. Lead owns interface integration;
+Human/operator owns original Apple OAuth client/token provenance and secret-to-
+instance/project attestations before activation. No real-secret inspection delegated.
+C cited Clerk's 2021 schema whereas earlier research cited 2026-05-12; implementation
+must explicitly pin/reconcile current wire shapes, not silently mix SDK wrappers or
+versioned schemas. This is a technical prerequisite, not a reason to pause A/B.
+Sources: https://clerk.com/docs/reference/backend/sessions/get-session-list,
+https://clerk.com/docs/reference/backend/user/get-user-oauth-access-token,
+https://developer.apple.com/documentation/signinwithapplerestapi/revoke-tokens,
+https://www.revenuecat.com/docs/api-v2/customer,
+https://www.revenuecat.com/docs/api-v1/customers.
+
+## Automated deletion follow-up — authorized local implementation (2026-09-23)
+
+Human chose automation of normal deletion/provider revocation, bounded retries and
+completion notification, with operator intervention for exceptions. This supersedes
+manual fulfillment as the intended release route, not the historical A acceptance.
+Automation implementation scope is local code/offline verification; no deployment,
+live deletion, email sending, paid services or publication authorized. The separate
+Resend account-setup authorization below does not enable deletion automation.
+No 7-day SLA, 30-day retention or guard-purge policy was approved by this choice.
+
+Lead reread shared/local contracts, actual code/status and room inventory; no other
+active Peer writes. Accepted A manifest df822f671f3607e28d6fd42ceb344ff3503a89fd9e7dfa4f1055b84bc957d31c
+and all 25 hashes still match. Dirty tree consists of accepted A/B/C plus Lead doc
+reconciliation; preserve it. Base HEAD remains 1a2685b5d56c04e13a724e611f9fafb16e7effe1.
+
+Provider-route research by 41ab5cf3-c77a-4bae-a35d-6642226d5814 completed; Lead
+ACCEPTS its bounded source/document assessment, not account-specific readiness.
+Lead inspected BillingStore/driver and independently confirmed RevenueCat v1 GET
+creates missing customers and DELETE is asynchronous in official API docs.
+Human selected Resend for transactional email on 2026-09-23, using the Free tier;
+Cloudflare remains DNS/website infrastructure, not the selected email sender.
+Human subsequently authorized using the existing Resend login in 1Password and
+trying account configuration. Lead owns this setup; use Free and isolate LessMeet
+settings. No paid upgrade, real sends or deletion deployment is authorized. New
+security-sensitive access still requires action-time confirmation. Official Resend
+quotas checked today: 100 emails/day and 3,000/month
+(sent and received combined). Lead owns the Resend integration follow-up after the
+worker/outbox candidate is accepted; do not change the current Peer write scope.
+Sources: https://resend.com/docs/knowledge-base/account-quotas-and-limits and
+https://resend.com/docs/dashboard/emails/idempotency-keys.
+Resend idempotency lasts 24 hours: freeze request/key before sending and never
+blindly retry an ambiguous send outside that window. API acceptance is not delivery.
+Verified sender domain and server-only key remain operator setup prerequisites.
+Resend documents 30-day email-data retention; that is provider behavior, not approval
+of an application retention duration. Minimize notification content and reconcile
+provider disclosures before release.
+Setup checkpoint (2026-09-24): Human signed in; Lead verified authenticated Resend
+UI in team kieng. Existing notifications.kieng.io.vn remains untouched. Lead submitted
+Add domain for lessmeet.2m0r.com (Tokyo). Proposed sender
+notifications@lessmeet.2m0r.com; receiving remains off. After Human DNS approval
+and Cloudflare sign-in, Lead added exactly three previously absent records:
+TXT resend._domainkey.lessmeet (public DKIM key shown by Resend), DNS-only CNAME
+rsend.lessmeet -> rsend-apne1.forge.rmta.net, and DNS-only CNAME send.lessmeet ->
+send.forge.rmta.net, all TTL Auto. Cloudflare save results verified and dig +short
+for all three public names returned expected values. No existing records edited;
+MX, root SPF/DKIM, website and Kieng domain remain untouched. No email sent.
+Lead refreshed Resend after Human reported completion and verified
+the domain status is now verified (2026-09-24).
+Do not apply the suggested root _dmarc p=none record or change existing MX records.
+Resend Configuration now shows tracking requires a custom tracking subdomain;
+none configured. Opportunistic TLS remains default, unchanged. Free plan/account quota not yet verified
+in this team's billing UI; no upgrade action taken. API key setup follows verified
+domain verification. Human agreed to a sending-only API key restricted to
+lessmeet.2m0r.com and storage in 1Password Private / LessMeet Resend. Lead created
+LessMeet transactional with Sending access and that exact domain selected, then
+stored its concealed credential in the authorized vault. Read-back matched the
+one-time key exactly; Resend lists Sending access / No activity. No old keys changed.
+Storage verification history: masked UI value initially rejected locally; initial
+CLI stdin imports failed and a category-qualified creation yielded an empty item.
+Lead reconciled the single exact new item (no duplicates), populated it via explicit
+/dev/stdin template, and verified the saved secret before closing the key dialog.
+No secret printed, written to disk/repo, or put in process arguments. No backend
+secret provisioning/deploy, email send, or paid upgrade. Sender credentials are
+ready as integration input, not proof of delivery. Never print or commit the key.
+Current browser tab retained for return.
+Notification delivery must not be claimed from a queued event or an unconfigured
+adapter. A provider API cannot establish removal of all logs/backups; unknowns must
+remain exceptions. Local files and Apple subscriptions stay untouched.
+
+Next checkpoint: A/B implementation handoffs and C dependency response in the
+parallel round above. Worker/Gemini candidate is accepted offline. Native/status changes follow accepted interface;
+do not launch dependent parallel writers on speculative APIs.
+Old manual-only docs/acceptance criteria must be reconciled as automation lands;
+until then they describe the current accepted offline implementation, not new scope.
+
+### Provider dependency dispositions and ready implementation contract
+
+- ACCEPT native SDK REOPEN: prepare(nil) clears UI but does not detach Purchases.
+  Lead owns resolution of client logout/startup gating and other-device risk before
+  automatic RevenueCat deletion can be enabled; no claim of durable RC removal yet.
+- RESOLVE alias DEPENDENCY: retain current v1 billing; plan separate v2 read-only
+  exact-project alias inventory. Missing credentials or unexplained aliases must
+  produce a blocked exception, never fall back to original_app_user_id alone.
+  No credential creation/provisioning authorized. Native/alias prerequisites remain
+  unmet, so do not dispatch executable RC deletion work yet.
+- Apple: exact Clerk external-account token and original OAuth client must be
+  verified before revocation, which precedes Clerk deletion. No raw tokens in
+  ledger/scheduler args; absent binding is blocked, not not-applicable. Lead owns
+  remaining instance/config verification before those adapters are activated.
+- Notification: Resend Free selected; retain provider-neutral outbox in this first
+  candidate. Lead will sequence the Resend adapter after worker acceptance, using
+  its accepted interface. Accepted/queued is not delivered; ambiguous send must not
+  be blindly retried beyond provider deduplication. Relay-only post-revocation
+  delivery/fallback and verified-contact capture remain unresolved dependencies.
+- Keep legacy ambiguous work/residuals pending. File absence does not establish
+  generation completion. No guard purge, retention duration or SLA change.
+
+Handed-off isolated branch: 41ab5cf3 relinquished convex/**, Tests/backend/** and
+docs/BACKEND.md after a provider-neutral durable automation worker + exact-known
+Gemini file cleanup, with default-off automation and offline tests. Prior read-only
+assignment is closed. No native/dependency/legal/packaging/status edits. Lead owns
+all other scopes. Inputs are accepted A hashes and this stable contract; dependent
+RC/Clerk/Apple/email adapters are deliberately not part of this first candidate.
+Use stage leases/fences, immutable exact owner/target/config reference, persisted
+retry schedule (8 attempts, 30s base, 6h cap, honor longer Retry-After), bounded
+recovery and sanitized errors. These are technical retry defaults, not a promised
+fulfillment deadline. Expired lease is uncertainty, not provider success. Retain
+manual evidence paths for exceptions; automatic success cannot overwrite them.
+Capture durable generation outcome separately from file cleanup; old ambiguous
+rows cannot be retroactively guessed. Completion classification and one unique
+outbox intent must distinguish active cleanup, queued provider work, exceptions
+and notification delivery. No fake auto-complete for unimplemented providers.
+Acceptance: synthetic scheduler/lease-race/retry/exhaustion/owner/config mismatch,
+Gemini exact-file absence vs unknown generation, default-off and existing 82-test
+regressions; typecheck + full backend tests. Return base plus before/after hashes
+and explicit incomplete dependencies. Lead inspects candidate at finish event.
+
+### Worker handoff disposition — ACCEPT bounded offline candidate (2026-09-23)
+
+Candidate AUTOMATION_SHA256.json SHA256
+2a80a8baa459e8382d64479d929af16069f9294924e2a054ee77e6c94b924271 verified by Lead;
+all changed after-hashes and unchanged scoped baseline hashes match. Lead inspected
+worker/adapter/state implementation and handoff; reran npm run typecheck:backend
+and npm run test:backend: PASS, 130 tests / 8 files. Scoped git diff --check passed.
+No live provider or UI proof. Writer ownership returned to Lead.
+Read-only Peer 28808414-cc46-4ab3-aad6-8f74f42822dc verified the exact snapshot and
+found no material blocking defect. Lead ACCEPTS this exact candidate because
+durable scheduling/fencing, owner/config binding, separate generation uncertainty,
+and honest exception/outbox semantics meet the bounded assignment, supported by
+Lead's 130-test run and independent source assessment. Assessment assignment closed.
+Usable downstream: accepted worker/schema and provider-neutral intent; an intent
+is not a frozen send payload or delivered event. No executable missing-provider
+adapters, live activation or deployment is accepted/authorized by this disposition.
+Historical worker lanes closed with no retained writes. Current A/B ownership is
+assigned in the parallel round above; Resend setup is ready for local backend
+integration, not live activation. All provider, retention and relay gates remain.
+
+
+## Parallel pre-release implementation (2026-09-23)
+
+Human requested Peers A/B/C. Lead read shared/local protocols, current handoffs,
+source and room inventory; old Peers are idle and their scopes closed. Clean
+starting tree: `1a2685b5d56c04e13a724e611f9fafb16e7effe1`. Lead reserves this status
+file, README, docs/STORE_SANDBOX.md, package/dependency manifests and integration.
+No deployment, public publication, provider deletion, purchase, paid AI, certificate
+creation, account-dashboard changes, commit or push is authorized by this dispatch.
+
+All three lanes locally accepted and closed; every write scope returned to Lead:
+A `8f3654d4-1e62-4715-94c1-ec64fef65038`,
+B `392a69e6-1ced-47b8-9b40-747ba8cbf178`,
+C `0a392f02-66f3-471c-bb6f-6fdfe589d986`.
+All use the same flexible codex-peer profile, with finish/error/attention events.
+
+Completed assignment scopes (historical; no active Peer write ownership):
+- A: convex/**, Sources/LessMeet/**, Tests/backend/**, Tests/LessMeetTests/**,
+  docs/BACKEND.md. Implement authenticated account-deletion initiation, per-owner
+  guard, bounded/idempotent cleanup and durable provider progress; synthetic-only
+  verification. Preserve local recordings and other owners. No fabricated provider
+  completion, new retention/SLA promises, subscription transfer or cancellation.
+- B: docs/legal/** and website/** only. Prepare provider-disclosure research,
+  draft policies and Store metadata/review checklist in website/README.md. Use the
+  accepted base above for source evidence, not A's moving code. Existing operator,
+  support email, domain and Apple Standard EULA decisions remain inputs. Research
+  is read-only externally; drafts stay outside public asset root. Final policy
+  publication waits on accepted A behavior, provider settings and Human approval.
+- C: scripts/**, Resources/**, Tests/packaging/** only. Extend store packaging and
+  offline validation, installer path and icon/version requirements. Preserve dev
+  and sandbox-dev contracts. No actual signing/key access, artifact promotion or
+  release build against A's moving source; final compile/runtime waits on accepted
+  A plus production/legal/signing inputs. Icon branding remains unapproved; do not
+  invent final artwork or use a placeholder as release evidence.
+
+Stable cross-lane contract: com.lessmeet.app, team 63M98WD275, macOS 15+, callback
+com.lessmeet.app://callback; existing billing product IDs/pricing/quota/restore
+policy unchanged. A owns its new native/backend interface end-to-end; C must not
+change Swift configuration types or dependency manifests. B must distinguish
+implemented, proposed and operator-unverified facts. Each Peer reports exact base,
+changed-path SHA-256 manifest, commands/results and failed/unknown criteria; stop
+writes on handoff. Reopen scope/interface/retention decisions through Lead before
+crossing these boundaries. Lead accepts exact candidates and reconciles docs;
+passing local tests alone does not establish public-release readiness.
+
+Next frontier: Human ledger retention/access, fulfillment timing/notification and
+audience/market decisions; approved artwork and production/legal/signing inputs.
+No live deployment/publication follows automatically. Production provisioning and
+paid quality/cost tests are not part of these completed local lanes.
+
+### B disposition — ACCEPT draft preparation only (2026-09-23)
+
+Lead inspected all six candidate files and matched every supplied SHA-256 against
+base 1a2685b5d56c04e13a724e611f9fafb16e7effe1. Exact accepted manifest:
+- docs/legal/DELETION_RUNBOOK.md: f7f18a29dd7b3f4b146c08bd00acce11be9fbd753e2fa3d74dc4b815727d6bbb
+- docs/legal/PRIVACY_DRAFT.md: 0857de6cacddb061a457b1ce0b4cb1a6ae90cd53934ccbedcc294f721e41eaea
+- docs/legal/TERMS_DRAFT.md: eb4ad471c499a6cb2b3ce22ac9236c8e191626b4205c3f848ab107f86ca7bb96
+- docs/legal/PROVIDER_DISCLOSURES.md: 2cc395266e0fa4357d46286106ba3264904d880b959d004f1ce63a55890eb15a
+- website/README.md: 1db8c58e6a23621cc8b386eb0bf2e913e2398b2a108a753ddc6667ab6a07cda8
+- website/verify-drafts.mjs: c3431810ae6dd2a34eb0411fb8bd8b9694a410a04b8fcfe24e0df82709d6740c
+
+Accepted because drafts preserve approved commercial/retention decisions, separate
+baseline implementation from proposed deletion, identify provider-setting unknowns,
+and stay outside public assets. Lead reran node website/verify-drafts.mjs: PASS
+(4 assets, 3 HTML links, 9 Markdown links, metadata lengths); scoped diff check
+passed; git diff --exit-code against base for website/public and wrangler.jsonc
+passed unchanged. This is not HTTP/DNS/TLS, deletion/provider or release evidence.
+B relinquished all writes; legal/website scopes return to Lead. No further B work
+until accepted A behavior or Human publication decisions require reconciliation.
+
+Lead independently checked current Google Gemini terms and Apple deletion guidance.
+Apple token revocation must be a distinct verified/pending step, not inferred from
+Clerk deletion; routed to A within its existing scope. Gemini audience, available
+regions and paid-service eligibility remain Human product/market decisions; no age
+gate or storefront change is authorized. Google project billing/settings, minimal
+residual-record retention and completion-time disclosure remain unverified/unapproved.
+Human checkpoint before publication: decide eligible audience/markets and retention/
+timing after operator/provider verification. Lead recommends adult professional-use
+positioning with verified paid Gemini project, without treating positioning or an
+App Store age rating alone as proof of eligibility. Sources:
+https://ai.google.dev/gemini-api/terms and
+https://developer.apple.com/support/offering-account-deletion-in-your-app/.
+Usable downstream: reviewable policy/listing drafts, data inventory and reviewer
+checklists. Public publication stays blocked; A/C continue independent local work.
+
+### C handoff — source acceptance pending bounded assessment (2026-09-23)
+
+C relinquished all writes. Exact HANDOFF.json SHA256:
+d6d78f3fd20a403828cf287ae458c4311685a80b65d7ac47fbbd80a9553d48b2.
+Lead matched all six content hashes plus this manifest hash, inspected packaging
+implementation/contracts/tests, and reran the offline suite: 38/38 PASS (5.402s).
+`bash -n scripts/build-app.sh`, `node --check scripts/configure-app.mjs`, all three
+resource plist lints and scoped diff whitespace checks passed. No signing, real
+profile/Keychain access, compilation, installation, upload or dist promotion.
+
+Disposition: defer final source ACCEPT/REJECT until the already-dispatched fresh
+read-only Peer 28dc179d-31f1-4534-94d0-7addac7bd4ce returns its bounded assessment
+of exact manifest above (Apple command/identity/profile/output/config safety).
+Lead owns the decision and holds scripts/Resources/packaging tests stable; C must
+remain idle. This is not a missing Human approval or release-readiness claim.
+If assessment identifies a concrete defect, Lead resolves it before dependent
+packaging work. A continues independently; default Swift build cache remains A's.
+The production approval-record format is treated as a local binding of reviewed
+inputs, not a new Human approval or proof of provider state. Approved artwork,
+production/legal evidence, real distribution/installer identities and actual Apple
+command compatibility remain required even if the local source is accepted.
+
+### C disposition — REJECT exact candidate; bounded correction (2026-09-23)
+
+Lead ACCEPTS read-only Peer 28dc179d's REOPEN_REQUEST and REJECTS candidate
+HANDOFF d6d78f3fd20a403828cf287ae458c4311685a80b65d7ac47fbbd80a9553d48b2
+for source acceptance. store-package.py passes --extract-certificates and prefix
+as separate arguments; installed codesign treats the prefix as an input app.
+Lead independently repeated both nonexistent-path probes: separated form reports
+/nonexistent-lessmeet-review-prefix/cert missing; equals form instead reports
+/nonexistent-lessmeet-review-app/LessMeet.app missing. Both intentionally failed;
+the differing target establishes argument parsing only, not signing success.
+Manifest hash still matches. Prior 38 passing mock tests do not erase this failure.
+
+Assign C (0a392f02) sole correction writes to scripts/store-package.py,
+Tests/packaging/test_store_package.py, Tests/packaging/HANDOFF.json and, only if
+needed, Tests/packaging/STORE_INPUTS.md. Use --extract-certificates=<prefix> and
+make tests enforce actual argument binding (including rejecting the old form).
+Preserve all other contracts and A/B scopes. No real signing/profile/Keychain,
+installation, compilation, upload or artifact promotion. Return updated exact
+manifest and regression evidence; Lead decides acceptance at corrected handoff.
+Read-only Peer owns no writes and its bounded assessment is closed. Exact installer
+leaf fingerprint is not verified (trusted status/common name only); retain this
+explicit limit. A remains independent. This supersedes pending-source disposition.
+
+### C corrected disposition — ACCEPT offline source only (2026-09-23)
+
+Lead ACCEPTS corrected candidate HANDOFF SHA256
+869090909984cda4d2d24231796d7276c42b9cfa2dbba5a72462878785a16011,
+base 1a2685b5d56c04e13a724e611f9fafb16e7effe1. All six listed content hashes and
+handoff hash matched. Only script, boundary test and handoff changed since rejection.
+Lead inspected the bound --extract-certificates=<prefix> argument and stricter mock
+that rejects the old form, checks exact command shape and both architectures.
+This resolves the concrete read-only finding; no further assessment is needed for
+this narrow correction. Peer recorded red/green; Lead independently reran full
+38/38 tests (4.266s), shell/Node syntax, three plist lints and scoped diff check:
+all PASS. Earlier failed candidate and limited real argument probes remain evidence.
+
+C correction scope closed; scripts/Resources/packaging tests return to Lead.
+Usable now: offline input checks, explicit version/build/icon/production record
+contract and isolated installer tooling for later authorized real inputs. Store
+build still emits .app; package command is separate and signs an installer only
+under new explicit authority. No actual profile/Keychain access, signing, build,
+installer execution or upload performed. Common-name rather than installer-leaf
+fingerprint verification remains a documented limit; OS command/profile behavior,
+artwork rendering, real runtime and upload acceptance remain unverified.
+Store runbook now points to accepted input/installer contract. Next packaging
+checkpoint requires accepted A plus approved icon, production/legal configuration
+and authorized real signing inputs; no dependent release execution is ready yet.
+A continues its independent deletion scope; B publication remains blocked.
+
+### A handoff — exact source held for safety assessment (2026-09-23)
+
+A relinquished all writes. Lead matched the 25 content hashes in
+Tests/backend/DELETION_SHA256.txt and its own SHA256
+df822f671f3607e28d6fd42ceb344ff3503a89fd9e7dfa4f1055b84bc957d31c;
+base 1a2685b5d56c04e13a724e611f9fafb16e7effe1. Lead inspected guard/cleanup,
+provider admission and native confirmation/session/lock integration, and reran
+`npm run typecheck:backend` (PASS), `npm run test:backend` (82/82 PASS) and
+`swift test` (66/66 PASS). No deployment, flag change, live deletion/provider
+operation, UI interaction, signing or artifact promotion was performed.
+
+Disposition: defer source ACCEPT/REJECT to the already-dispatched read-only Peer
+8ba57a77-28b5-4c5f-ab33-43257e331159's finish/error/decision event. Bounded question
+is concrete deletion/owner-isolation/race/native-session defects in this exact
+snapshot; Lead owns decision and holds all A paths stable until resolution. A
+must remain idle. Passing tests do not certify live deletion or rendered UI.
+
+Default-off ACCOUNT_DELETION_ENABLED only gates new intake. Work admissions still
+run on ordinary cloud calls after deployment, with ambiguous operations retained.
+Therefore deployment itself (not just enabling intake) remains gated on Human
+ledger-retention/access and staffed timing/completion-notification decisions.
+Manual provider confirmation, separate Apple revocation, legacy orphan/log/backup
+limits and old-deployment quiescence stay explicit. Do not publish B policies as
+though A were accepted/deployed. Next ready step is resolve exact assessment then
+reconcile legal/backend/store docs; no public or live deletion activity is ready.
+
+### A final disposition — ACCEPT offline source (2026-09-23)
+
+Lead ACCEPTS exact A manifest
+df822f671f3607e28d6fd42ceb344ff3503a89fd9e7dfa4f1055b84bc957d31c
+and the read-only Peer 8ba57a77's bounded no-material-defect assessment. All 25
+content hashes were rechecked unchanged. Acceptance is based on Lead inspection,
+independent typecheck, 82 backend/66 Swift tests and scoped whitespace PASS already
+recorded above, plus independent source assessment; not on Peer completion alone.
+Guards, durable work admission, bounded exact-owner cleanup and independent pending
+provider stages satisfy the offline brief without inventing provider completion.
+All A writes return to Lead; independent assessment is closed. No active Peer scope.
+
+Limits retained: production scheduler/recovery, end-to-end provider lifecycle,
+rendered confirmation/purchase controls/relaunch, live revocation/deletion, other
+devices, old deployments, legacy orphans and actual backup restores are unverified.
+Default-off intake does not make new work-ledger retention safe to deploy without
+Human decisions. No deployment, publication, live deletion or paid tests performed.
+
+Lead reconciled README, store runbook and legal draft/runbook evidence boundaries:
+source now has an accepted deletion implementation; deployed behavior remains
+unchanged and policy publication is still blocked. Historical raw-row deletion
+failures are preserved, not asserted against the new request workflow. The A exact
+manifest is unchanged; B draft hashes are historical before this Lead reconciliation.
+Usable inputs: A offline deletion implementation/operator contract, B reviewable
+policy/listing inventory, C offline store-input/installer tooling. Next Human
+checkpoint must resolve ledger purpose/fields/access/duration and suppression,
+staffed completion timing/channel, provider settings and eligible audience/markets;
+then explicitly authorize any deployment/provider rehearsal/publication. Approved
+artwork, production setup/signing and quality/cost verification remain separate.
+
 ## Store connection / sandbox preparation (2026-09-23)
 
 Human acceptance checkpoint: after the sync hotfix, Human confirmed Pro activation

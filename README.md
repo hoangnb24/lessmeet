@@ -1,5 +1,15 @@
 # LessMeet
 
+Release-preparation checkpoint (2026-09-24): account-deletion/automation, notification
+and preflight source, legal/listing drafts and Store packaging tooling are locally
+accepted, not deployed or published. Resend DNS/domain and a vault-stored sending
+key are configured separately; backend sending remains off.
+Deletion intake defaults off; work-ledger retention and fulfillment timing/channel
+need operator decisions before deployment. See [current acceptance and remaining
+gates](docs/STATUS.md), [configuration inventory and secret locations](docs/CONFIGURATION.md)
+and [deletion contract](docs/BACKEND.md#account-deletion--local-candidate-not-deployed).
+Older development/runtime notes below do not supersede this checkpoint.
+
 A native Swift macOS app for local microphone + system-audio recordings, with
 Gemini transcription and transcript chat through an owner-isolated Convex backend.
 
@@ -55,8 +65,9 @@ stores the Gemini key. Real login and Convex token acceptance still need verific
 Transcript/chat backend is deployed to development and connected to the Swift UI.
 See [the HTTP contract](docs/BACKEND.md).
 Audio uploads are limited to 18 MiB. Uploaded audio/transcripts remain in Convex
-indefinitely in this version; there is no deletion UI. Subscription/quota code is
-implemented and verified locally, not activated on development (see status).
+indefinitely on the deployed version. Local source now includes guarded in-app
+deletion initiation, not yet deployed or live-verified. Core development sandbox
+billing was Human-tested; see status for remaining lifecycle/release checks.
 
 **Plan & usage** in the sidebar shows server-verified allowances and offers
 purchase/restore when configured. RevenueCat identifies the signed-in Clerk user;
