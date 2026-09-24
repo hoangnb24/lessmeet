@@ -5,7 +5,23 @@ Procedure partially rehearsed offline; NOT accepted for live use. No live deleti
 by this document. Each destructive operation needs a verified request and exact
 targets. Do not promise completion while provider copies remain unresolved.
 
+Evidence boundary (2026-09-23): base `1a2685b5d56c04e13a724e611f9fafb16e7effe1`.
+The base limitations and historical fixture outcomes below remain evidence even
+while an implementation lane is working. Its work is not accepted by this runbook.
+Use the [provider matrix](PROVIDER_DISCLOSURES.md) for dated public sources and
+account-setting unknowns. This is a proposed operational procedure, not executable
+deletion authority or a promise of a response/completion deadline.
+
 ## Intake and verification
+
+Lead reconciliation (2026-09-23): A's exact offline source was accepted (manifest
+df822f671f3607e28d6fd42ceb344ff3503a89fd9e7dfa4f1055b84bc957d31c).
+The historical base instructions/results below are not the executable procedure
+for the new code. Use [the accepted internal operator contract](../BACKEND.md#internal-exact-owner-operator-procedure)
+for new guarded request/inventory/retry/reconciliation/provider-confirmation work.
+No deployment, live provider handling or UI rehearsal has occurred. Retention,
+timing/notification and live-operation authority remain prerequisites. Do not use
+the historical row-only approach or treat source acceptance as deletion readiness.
 
 1. Record a private case ID, request date, requested scope and deployment.
    Keep identifying case details out of Git, public logs and chat.
@@ -47,6 +63,9 @@ targets. Do not promise completion while provider copies remain unresolved.
   customer data through the providers' supported procedures. Check aliases and
   identity linkage in RevenueCat without transferring purchases. Apple transaction
   records are outside the app database; explain any independent retention.
+- Verify Sign in with Apple token revocation through the responsible integration;
+  do not equate deleting a Clerk user with proof of Apple token revocation.
+  Record supported provider results and unresolved steps separately.
 - Gemini cleanup is best effort in current code; remote file identifiers are not
   durably recorded. Do not delete all files in a shared Google project to handle
   one user. Reconcile provider retention/settings or escalate to provider support
@@ -55,6 +74,9 @@ targets. Do not promise completion while provider copies remain unresolved.
   retention separately. Maintain a minimal private deletion ledger so a restored
   backup does not silently reintroduce deleted data. No backup deletion promise
   is made until the actual provider/account capabilities have been checked.
+- The proposed ledger/tombstone must have Human-approved purpose, minimal fields,
+  retention and access controls before operational use. A durable guard is not
+  permission to retain identity indefinitely or silently grant new free quota.
 
 ## Verify and close
 
@@ -93,3 +115,26 @@ For App Store submission, add authenticated in-app initiation and confirmation
 of account deletion. Manual fulfillment can remain behind that flow, but directing
 users only to email support is insufficient for Lessmeet. Verify current Apple
 requirements: https://developer.apple.com/support/offering-account-deletion-in-your-app/
+
+## Proposed release flow and completion evidence
+
+In-app initiation and confirmation must submit the request without requiring an
+email/support conversation. Manual back-office fulfillment may follow, with an
+approved time estimate and completion notification; none is invented here.
+Apple's guidance also requires a genuine account/data deletion option, not merely
+deactivation. Pending provider steps must stay pending, including unavailable
+credentials, partial failures, residual copies and unknown OAuth revocation.
+
+Before this runbook is marked usable, Lead must identify an accepted immutable
+candidate and repeat synthetic race/isolation/idempotence checks against it.
+Then a separately authorized operator verifies provider-specific handling and
+backup-restore suppression, records minimal private evidence, and approves the
+user-facing timing and residual-copy explanation. Do not store private case
+identities in this repository. Do not delete shared-provider files by broad list,
+reset quotas, transfer purchases or cancel Apple subscriptions as a workaround.
+
+Closure is per step: exact Convex rows/blobs, reservations, guard and late writes;
+Clerk account/sessions; Apple sign-in tokens; RevenueCat customer/aliases;
+Gemini known files and unidentified-copy escalation; backups/exports/support.
+Missing rows alone cannot establish complete erasure. No live procedure was run
+or provider completion verified in the 2026-09-23 disclosure research.

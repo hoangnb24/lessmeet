@@ -3,7 +3,16 @@
 NOT FOR PUBLICATION until reviewed and completed by the operator. This is product
 copy for review, not a complete jurisdiction-specific legal agreement.
 
+Reviewed 2026-09-23 against base `1a2685b5d56c04e13a724e611f9fafb16e7effe1`.
+Approved commercial inputs below are not evidence of public availability or
+production configuration. See [provider decisions](PROVIDER_DISCLOSURES.md).
+
 Effective date: [REQUIRED]
+Lead reconciliation (2026-09-23): the proposed deletion flow is now accepted as
+offline source only, not deployed/live-verified. Base limitations below remain
+historical; final release copy still needs verified behavior and approved timing,
+notification and residual-retention decisions. No publication is authorized.
+
 Service operator: Hoang Bang
 Support: hoang@2m0r.com
 Website: https://www.lessmeet.2m0r.com
@@ -60,6 +69,13 @@ under another Lessmeet account as an account-recovery workaround.
 Subscription cancellation does not delete stored data. See the Privacy Policy for
 current retention and the approved privacy-request process.
 
+Account deletion also does not cancel Apple renewal. The base has no accepted
+in-app account deletion implementation; the proposed release flow requires
+separate acceptance. Deletion may remove access tied to the original Lessmeet
+account; do not promise recovery, subscription transfer or a new allowance after
+re-registration. Explain these consequences without making cancellation or a
+support conversation a prerequisite for requesting deletion.
+
 ## Publication checklist — unresolved legal decisions
 
 - Set the effective date when approved; publish and verify the planned URLs.
@@ -69,3 +85,7 @@ current retention and the approved privacy-request process.
   responsibility and dispute terms with the operator's legal adviser as appropriate.
 - Confirm production quota/price behavior and support/account-recovery procedures
   match this copy before sale. Do not publish until launch gates are accepted.
+- Human must resolve eligible ages and markets under the actual Gemini service
+  terms, plus any required eligibility controls. No minimum-age clause or global
+  availability promise is adopted by this draft. Do not change approved prices,
+  allowances or indefinite cloud retention to resolve these questions implicitly.
