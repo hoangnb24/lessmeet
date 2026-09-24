@@ -44,6 +44,17 @@ for (const [variable, property] of [
   }
   entries.push([property, value]);
 }
+// Store-only restrictions: URL shape does not establish deployment provenance.
+// build-app additionally requires the explicit public Store approval record.
+if (mode === "store") {
+  const values = Object.fromEntries(entries);
+  if (!values.ClerkPublishableKey.startsWith("pk_live_")) {
+    throw new Error("store requires a production Clerk publishable key.");
+  }
+  if (values.ConvexSiteURL.replace(/\/$/, "") === "https://zany-octopus-315.convex.site") {
+    throw new Error("store rejects the known development backend; a production approval is also required.");
+  }
+}
 // Validate every field before writing anything. Never include values in errors.
 if (plist !== "--check") {
   for (const [property, value] of entries) {

@@ -1,14 +1,14 @@
 {
-  "base": "dd70447f09a0ce44d6f879288b4cd2843c6805b8",
-  "candidate_kind": "deterministic working-tree snapshot; not committed",
-  "manifest_algorithm": "SHA-256 of file bytes; this evidence file is excluded from its own manifest and its hash is supplied in the handoff response",
+  "base": "1a2685b5d56c04e13a724e611f9fafb16e7effe1",
+  "candidate_kind": "Deterministic uncommitted C-lane working-tree snapshot; Lead decides acceptance",
+  "manifest_algorithm": "SHA-256 of file bytes; HANDOFF.json excluded from its own manifest, with its hash supplied in the handoff response",
   "changed_paths_sha256": {
-    "Resources/Info.plist": "716b903e5da277393bb3823b0d3effc7f679680cd558609d73f8c216e2e792a2",
-    "Resources/LessMeet.sandbox.entitlements": "ce4a89ce21e9402efa98d8fed0f6565a8dbcdee3bfa842add8d0c04106592502",
-    "Tests/packaging/test_packaging.py": "2f1a903f82f97ee71d1aa08a4333849e24267760b43687aa24ce92853fb7c760",
-    "scripts/build-app.sh": "4489bed39c802616abda9c741b22f0b1599f7a591c0ac34597c6ab30219d9b30",
-    "scripts/configure-app.mjs": "86fea75441fe58bafdddce59f3c24966f292bcb57c51c2ee16ef2c775514bc19",
-    "scripts/packaging-signing.py": "32cc0031812e4d45eb0eb7b7e6d6b9ef74689c52841c589edd8148acc2c05bea"
+    "scripts/build-app.sh": "1cf5339bdb4993f0dc33f8f24731ba412c923b3b9b7d673ddb1698b06d3955d7",
+    "scripts/configure-app.mjs": "3fbf5d9b2e076e9b4e0b991dce2cd125b9909050143c70fe636737dde159066d",
+    "scripts/store-package.py": "e70b1d0f97bcdf3c5d0e9688f9385e924d67690ada38150d5672d0d1ba66424c",
+    "Tests/packaging/test_packaging.py": "364e925f52c0793059a64995aff1596dd8615dea1ddf6b067e82491ce05dc3c1",
+    "Tests/packaging/test_store_package.py": "97fcc91ccb0a484ab00a4ad1f805c2ac73a85b52c86365613c19e3c6b5407e0a",
+    "Tests/packaging/STORE_INPUTS.md": "687e33124163ae0aafb79e56fbd12b6d943d4fa6ed6845d9c96d1f5be65fc7e1"
   },
   "additional_changed_path": "Tests/packaging/HANDOFF.json",
   "environment": {
@@ -16,56 +16,119 @@
     "os": "macOS 26.4 (25E246)",
     "python": "3.9.6",
     "node": "22.22.3",
-    "openssl": "LibreSSL 3.3.6"
+    "verification": "Temporary synthetic fixtures, real Node/PlistBuddy public configuration only; mocked Apple signing/profile/icon/package tools. No Swift compilation."
   },
   "verification": [
     {
-      "command": "PYTHONDONTWRITEBYTECODE=1 python3 -m unittest discover -s Tests/packaging -v",
-      "result": "PASS: 23 tests, 4.068 seconds, exit 0. Synthetic profiles, public keys, configuration, and one ephemeral self-signed certificate/private key only. No operator credentials accessed."
+      "command": "PYTHONDONTWRITEBYTECODE=1 python3 -m unittest discover -s Tests/packaging -q",
+      "result": "PASS: 38 tests, 4.991 seconds, exit 0 after command-binding correction. Both arm64 and x86_64 extraction commands checked by strengthened boundary regression."
     },
-    {"command": "bash -n scripts/build-app.sh", "result": "PASS, exit 0"},
-    {"command": "node --check scripts/configure-app.mjs", "result": "PASS, exit 0"},
-    {"command": "plutil -lint Resources/Info.plist Resources/LessMeet.entitlements Resources/LessMeet.sandbox.entitlements", "result": "PASS: all three OK, exit 0"},
-    {"command": "git diff --check", "result": "PASS, exit 0"},
-    {"command": "git diff --numstat -- Resources/LessMeet.entitlements", "result": "No output: original development entitlements unchanged"}
+    {
+      "command": "PYTHONDONTWRITEBYTECODE=1 python3 -m unittest discover -s Tests/packaging -p test_store_package.py -k test_signed_app_boundary_exact_certificate_profile_and_entitlements -v",
+      "result": "PASS: 1 targeted boundary regression, 0.005 seconds, exit 0 after correction; expected old-code failure recorded separately."
+    },
+    {
+      "command": "bash -n scripts/build-app.sh",
+      "result": "PASS, exit 0"
+    },
+    {
+      "command": "node --check scripts/configure-app.mjs",
+      "result": "PASS, exit 0"
+    },
+    {
+      "command": "plutil -lint Resources/Info.plist Resources/LessMeet.entitlements Resources/LessMeet.sandbox.entitlements",
+      "result": "PASS: all three OK, exit 0"
+    },
+    {
+      "command": "git diff --check -- scripts Resources Tests/packaging",
+      "result": "PASS, exit 0"
+    },
+    {
+      "command": "shasum -a 256 scripts/build-app.sh scripts/configure-app.mjs scripts/store-package.py Tests/packaging/test_packaging.py Tests/packaging/test_store_package.py Tests/packaging/STORE_INPUTS.md",
+      "result": "PASS: hashes recorded in changed_paths_sha256"
+    }
   ],
-  "interfaces": {
-    "usage": "bash scripts/build-app.sh [dev|sandbox-dev|store] [--preflight]",
-    "default": "dev; original dist/LessMeet.app output, optional .env.local public configuration, ad hoc default or explicit identity, original development entitlements",
-    "signed_outputs": ["dist/sandbox-dev/LessMeet.app", "dist/store/LessMeet.app"],
-    "required_signed_environment": [
-      "LESSMEET_SIGNING_IDENTITY (exact valid local identity name or SHA-1 certificate fingerprint)",
-      "LESSMEET_PROVISIONING_PROFILE (explicit existing profile file path)",
-      "CLERK_PUBLISHABLE_KEY",
-      "CONVEX_SITE_URL",
-      "REVENUECAT_PUBLIC_APPLE_KEY",
-      "LESSMEET_PRIVACY_URL",
-      "LESSMEET_TERMS_URL"
+  "contracts": {
+    "existing_cli": "bash scripts/build-app.sh [dev|sandbox-dev|store] [--preflight], unchanged",
+    "dev_and_sandbox_dev": "Existing optional/dev env fallback, approved sandbox backend, unpublished legal exception, signing rules, entitlements and output paths unchanged. Accepted signed sandbox-dev artifact was not inspected, accessed or modified.",
+    "new_store_inputs": [
+      "LESSMEET_VERSION",
+      "LESSMEET_BUILD",
+      "LESSMEET_ICON_ICNS",
+      "LESSMEET_STORE_APPROVAL"
     ],
-    "sandbox_backend": "https://zany-octopus-315.convex.site",
-    "bundle": "com.lessmeet.app",
-    "team": "63M98WD275",
-    "oauth_callback": "com.lessmeet.app://callback",
-    "signed_configuration_source": "Exported environment only; signed modes do not read .env.local",
-    "entitlements": "Only sandbox, outbound network, audio input, and profile-backed app/team identifiers; neither mode emits get-task-allow or keychain/filesystem exceptions",
-    "preflight": "Checks public configuration and explicit local signing metadata without compilation, signing, installation, launch, or output artifacts",
-    "store_artifact": ".app only, explicitly not an installer/upload-ready .pkg"
+    "public_configuration": "Same five public environment variables and Swift plist properties. Store rejects pk_test_ and known dev backend. New external public approval record binds all five values, version/build and icon hash plus reviewed evidence references; cannot independently prove provider production state or authenticate Human approval.",
+    "public_input_check": "python3 scripts/store-package.py inputs; no signing/profile access, no compilation; iconutil/sips validation only",
+    "build_integration": "Store gates run before signing metadata or Swift. Fresh unsigned staging gets explicit version/build/icon before signature. build-app still produces .app only; it does not silently sign an installer.",
+    "installer_cli": "python3 scripts/store-package.py package --app /explicit/accepted/LessMeet.app --output-dir /explicit/existing-parent/new-candidate --installer-identity EXACT_NAME_OR_SHA1",
+    "installer_authority": "Requires separately granted local signing/profile authority. Not executed on actual inputs here. No app signing, compile, launch, install, upload, provider mutation or automatic dist promotion.",
+    "installer_policy": "New isolated output directory; copied app snapshot; matching store metadata/public config/approved icon; SDK resources; no symlinks; strict Apple-anchored app signature across all architectures; embedded store profile and leaf certificate membership; minimal entitlements separately on each arm64/x86_64 slice; distinct valid unambiguous same-team Mac Installer Distribution identity; productbuild --component APP /Applications --sign NAME PKG; pkgutil trusted signature and matching leaf name; recheck snapshot; exclusive final pkg creation.",
+    "branding": "No artwork created. A full standard/Retina ICNS set and Human/Lead-approved exact bytes remain mandatory. Synthetic 8-byte test container is only a mocked fixture, never release evidence.",
+    "approval_record_documentation": "Tests/packaging/STORE_INPUTS.md (null-valued schema is intentionally non-passing)"
   },
   "verified_scope": [
-    "Pure policy rejects wrong platform, expired/future profile, wrong team/bundle/prefix, wildcard bundle, absent certificate membership, wrong/expired certificate metadata, missing device coverage, development/store mismatch, store debugging, Developer ID, ad hoc identity, missing profile, and ambiguous identity names",
-    "Profile application prefix may differ from team ID; no broad profile capabilities are copied",
-    "Mocked metadata CLI confirms exact validated profile snapshot is embedded even if input file changes",
-    "Actual OpenSSL parses temporary synthetic certificate metadata",
-    "Real configuration script with temporary plists checks missing/invalid fields without leaking supplied values; dev optional configuration/local fallback/environment override preserved",
-    "Build orchestration with stubbed Swift/codesign/signing metadata boundary confirms resource retention, embedding before signing, isolated outputs, failed sign/verify preserving previous artifact, no deep signing, no recording modifications"
+    "Corrected candidate passes all 38 offline tests. The rejected snapshot's previous 38 passes did not detect incorrect codesign optional-argument binding; strengthened regression fails old code and passes corrected code.",
+    "Store input failures stop before identity/profile access, compilation, signing and dist creation.",
+    "Known dev backend/test Clerk rejected even when synthetic approval claims otherwise; unknown correctly shaped URL without approval record rejected.",
+    "Missing/mismatched version, build, public config, evidence references, icon hash, icon representation and dimensions fail closed.",
+    "Unsigned store staging stamp, callback/bundle/minimum macOS/config metadata mismatch gates and signed-bundle refusal tested.",
+    "Installer app-vs-installer type, wrong team, Developer ID, ad hoc/absent and ambiguous identity policy tested.",
+    "Mocked productbuild/signature failure never retains final pkg, existing output rejected, source bytes preserved, nested output and symlink rejected.",
+    "Signed-app mocked boundary verifies synthetic signature-leaf/profile membership, minimal entitlements, both supported architecture slices and exact bound certificate-extraction arguments. No actual signature was extracted.",
+    "Original dev/sandbox-dev orchestration preservation demonstrated on synthetic temporary app/resource/recording sentinels.",
+    "Previous real ephemeral certificate/key generation test replaced with mocked OpenSSL metadata; suite creates no certificate or private key."
   ],
-  "limits": [
-    "No real Swift compilation, identity lookup, CMS profile decoding, device metadata lookup, signing, or signed-app verification executed; signed orchestration uses stubs and policy fixtures",
-    "Actual Apple certificate/profile compatibility, OS installation/launch, sandbox recording/file access, OAuth/keychain behavior, purchases/restore, and backend/dashboard/legal availability remain unverified",
-    "Existing dev app and recordings were not touched; preservation is demonstrated against synthetic fixtures, not by reading user recordings",
-    "No .pkg creation, upload, installation, launch, browser activity, network writes, credentials inspection, env/deploy edits, commits, or pushes",
-    "Synthetic tests establish packaging policy and orchestration, not sandbox runtime usability or App Store acceptance",
-    "Unrelated .gitignore and documentation changes belong to Lead and are excluded from this snapshot"
+  "failed_checks": [
+    {
+      "classification": "Historical expected regression failure, fixed",
+      "command": "PYTHONDONTWRITEBYTECODE=1 python3 -m unittest discover -s Tests/packaging -p test_store_package.py -k test_signed_app_boundary_exact_certificate_profile_and_entitlements -v",
+      "result": "Before implementation fix: 1 failure, exit 1; rejected separate --extract-certificates argument. After fix: targeted and full suite pass. No unresolved verification failures."
+    }
   ],
-  "ownership": "Relinquished to Lead for exact-candidate review and acceptance"
+  "research_limits": [
+    "Two Apple documentation Markdown endpoints returned internal errors; current official indexed packaging excerpts and Apple certificate/profile/upload documentation plus local Apple manuals supplied requirements.",
+    "One baseline source lookup used the wrong path and failed; corrected to git show BASE:Sources/LessMeet/Configuration/BillingConfiguration.swift. No moving A-lane source consumed.",
+    "One no-op documentation patch failed context matching; no bytes changed; subsequent correct patch succeeded."
+  ],
+  "missing_real_inputs": [
+    "Accepted A-lane source and independent release compilation/runtime verification",
+    "Approved final icon artwork/ICNS, brand approval reference and approved version/build with App Store Connect uniqueness check",
+    "Explicit production Convex deployment evidence; production Clerk/RevenueCat/backend alignment; public configuration approval record",
+    "Published approved privacy/terms URLs and legal acceptance",
+    "Apple/Mac App Distribution identity, matching Mac App Store Connect explicit-app profile, separate Mac Installer Distribution identity and signing authority",
+    "App Store Connect record/permissions and separately authorized upload, processing/review and release decision"
+  ],
+  "unknown_or_unverified": [
+    "No real identity/profile/Keychain read, app or installer signing, actual installer creation, launch, installation, source compilation or dist promotion.",
+    "Apple command output compatibility and actual distribution certificate/profile compatibility remain untested against operator inputs.",
+    "pkg payload is produced by Apple's component mode, not independently unpacked or installed; local signature checks do not prove upload acceptance.",
+    "Icon decoding commands are mocked; no actual approved icon exists in this lane. Rendering/branding are unverified.",
+    "Approval record is an operator assertion bound to exact public inputs, not authenticated approval or independently fetched provider/legal evidence.",
+    "Installer verification checks trusted status and selected Common Name, not certificate fingerprint. Duplicate names are rejected; actual Apple trust/Keychain behavior remains unverified.",
+    "No sandbox runtime capture/file access, OAuth/session storage, billing purchase/restore, backend production behavior, policy availability or public release readiness established.",
+    "Future authorized real Apple trust tooling may consult network services; this lane's offline proof used mocks."
+  ],
+  "downstream_outcome": "Lead can review the exact corrected snapshot and red/green boundary evidence. Original base and full seven-path candidate manifest retained. Remaining contracts/gates unchanged; no real installer or upload acceptance claimed.",
+  "scope": "Only seven listed C-lane paths changed; no Resources artwork or entitlement change, no Swift/dependency/status/README/STORE_SANDBOX edits. Other lanes' changes excluded.",
+  "ownership": "Relinquished to Lead for exact-candidate review and acceptance; no further writes retained.",
+  "correction": {
+    "rejected_handoff_sha256": "d6d78f3fd20a403828cf287ae458c4311685a80b65d7ac47fbbd80a9553d48b2",
+    "changed_paths": [
+      "scripts/store-package.py",
+      "Tests/packaging/test_store_package.py",
+      "Tests/packaging/HANDOFF.json"
+    ],
+    "defect": "Separate --extract-certificates and prefix arguments incorrectly bind the optional codesign argument; permissive mock hid the defect.",
+    "fix": "Pass exactly one --extract-certificates=<prefix> argument. Boundary regression rejects the separate form, checks exact six-argument shape, tool/display/arch flags, supported architecture, bound prefix with expected name/existing temporary parent, and exact input app. It writes synthetic DER only to the bound prefix+0 consumed by the implementation.",
+    "red": {
+      "command": "PYTHONDONTWRITEBYTECODE=1 python3 -m unittest discover -s Tests/packaging -p test_store_package.py -k test_signed_app_boundary_exact_certificate_profile_and_entitlements -v",
+      "result": "EXPECTED FAIL against unchanged old implementation: 1 test, 0.005 seconds, exit 1. AssertionError: codesign optional prefix must bind with '='. Failure occurred at old scripts/store-package.py:134 before any real Apple tool access."
+    },
+    "green": {
+      "command": "PYTHONDONTWRITEBYTECODE=1 python3 -m unittest discover -s Tests/packaging -p test_store_package.py -k test_signed_app_boundary_exact_certificate_profile_and_entitlements -v",
+      "result": "PASS after one-line implementation fix: 1 test, 0.005 seconds, exit 0."
+    },
+    "authority": "Only the three correction paths changed from rejected snapshot; STORE_INPUTS.md and every remaining manifest entry are unchanged. No real signing/Keychain/profile access, certificate creation, source compilation, install, upload or nonexistent-path probes performed.",
+    "unchanged_limit": "Installer package verification checks trusted status and selected Common Name, not installer certificate fingerprint; no redesign in this correction."
+  }
 }

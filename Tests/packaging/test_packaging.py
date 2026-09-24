@@ -30,6 +30,8 @@ PUBLIC = {
     "LESSMEET_PRIVACY_URL": "https://example.com/privacy",
     "LESSMEET_TERMS_URL": "https://example.com/terms",
 }
+STORE_PUBLIC = {**PUBLIC, "CLERK_PUBLISHABLE_KEY": "pk_live_c3ludGhldGlj",
+                "CONVEX_SITE_URL": "https://synthetic-production.convex.site"}
 
 
 def environment():
@@ -194,15 +196,11 @@ class SigningPolicyTests(unittest.TestCase):
             self.assertNotIn("keychain-access-groups", ent)
             self.assertNotIn(FINGERPRINT, log.getvalue())
 
-    def test_real_openssl_parses_synthetic_certificate(self):
-        with tempfile.TemporaryDirectory() as folder:
-            der = Path(folder) / "synthetic.der"
-            result = subprocess.run(["/usr/bin/openssl", "req", "-x509", "-newkey", "rsa:2048", "-nodes",
-                                     "-keyout", str(Path(folder) / "synthetic.key"), "-out", str(der),
-                                     "-outform", "DER", "-days", "1", "-subj",
-                                     f"/CN=Apple Development: Synthetic/OU={signing.TEAM}"], capture_output=True)
-            self.assertEqual(result.returncode, 0)
-            self.assertEqual(signing.certificate_metadata(der.read_bytes()), cert())
+    def test_openssl_metadata_parser_without_certificate_creation(self):
+        metadata = ("subject=\n    CN = Apple Development: Synthetic\n    OU = " + signing.TEAM +
+                    "\nnotBefore=Jan  1 00:00:00 2020 GMT\nnotAfter=Jan  1 00:00:00 2099 GMT\n").encode()
+        with patch.object(signing, "run", return_value=metadata):
+            self.assertEqual(signing.certificate_metadata(DER), cert())
 
 
 class ConfigTests(unittest.TestCase):
@@ -285,7 +283,7 @@ class BuildFlowTests(unittest.TestCase):
         self.folder = Path(self.temp.name)
         for name in ["scripts", "Resources", "fake-bin", "binary", "dist/LessMeet.app", "recordings"]:
             (self.folder / name).mkdir(parents=True)
-        for name in ["build-app.sh", "configure-app.mjs", "packaging-signing.py"]:
+        for name in ["build-app.sh", "configure-app.mjs", "packaging-signing.py", "store-package.py"]:
             shutil.copy(ROOT / "scripts" / name, self.folder / "scripts" / name)
         for name in ["Info.plist", "LessMeet.entitlements", "LessMeet.sandbox.entitlements"]:
             shutil.copy(ROOT / "Resources" / name, self.folder / "Resources" / name)
@@ -314,12 +312,15 @@ fi
         path.chmod(0o755)
 
     def build(self, *args, values=None):
+        if args and args[0] == "store" and values is PUBLIC:
+            values = STORE_PUBLIC
         return subprocess.run(["bash", "scripts/build-app.sh", *args], cwd=self.folder,
                               env={**self.env, **(values or {})}, capture_output=True, text=True)
 
     def fake_signing_boundary(self):
         # Orchestration only: real signing policy is tested separately above.
         self.stub("python3", '''#!/bin/bash
+[[ "$1" != scripts/store-package.py ]] || exit 0
 [[ "$1" == scripts/packaging-signing.py ]] || exit 30
 if [[ "${3:-}" == --output ]]; then
   mkdir "$4"
@@ -388,7 +389,7 @@ fi
         self.assertFalse((self.folder / "invoked").exists())
 
     def test_missing_profile_rejected_before_build(self):
-        result = self.build("store", "--preflight", values={**PUBLIC, "LESSMEET_SIGNING_IDENTITY": "Apple Distribution: Synthetic"})
+        result = self.build("sandbox-dev", "--preflight", values={**PUBLIC, "LESSMEET_SIGNING_IDENTITY": "Apple Development: Synthetic"})
         self.assertNotEqual(result.returncode, 0)
         self.assertIn("Explicit provisioning profile", result.stderr)
         self.assertFalse((self.folder / "invoked").exists())

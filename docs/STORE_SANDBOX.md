@@ -109,11 +109,23 @@ contact `hoang@2m0r.com`, and domain `www.lessmeet.2m0r.com`. Proposed paths are
 `https://www.lessmeet.2m0r.com/privacy` and `https://www.lessmeet.2m0r.com/terms`;
 neither is verified as published. Human must review provider practices and approve
 the text before publication. Do not claim automatic deletion or an implemented deletion workflow:
-this version retains cloud data indefinitely and has no deletion UI/scheduler.
+the deployed version retains cloud data indefinitely. Local deletion source is
+accepted with default-off intake, guards and bounded cleanup; it has not been
+deployed or live-verified. Ledger retention and fulfillment timing/channel decisions
+are required even before deployment; see docs/BACKEND.md's deletion contract.
 Account deletion/privacy-request handling needs a real operational decision before
 public launch; a drafted contact address is not that implementation.
 
 ## 4. Mac signing gates
+
+Store packaging source is locally accepted after the certificate-extraction syntax
+correction; this is not real installer/upload acceptance. Store now additionally
+requires explicit version/build, approved ICNS and a public production/legal/icon
+approval record. See [Store input and installer contract](../Tests/packaging/STORE_INPUTS.md).
+`build-app.sh store` still produces only an app; the separate `store-package.py
+package` command signs an isolated installer and requires separately authorized
+real signing inputs. Do not run it merely because offline tests pass. Actual
+distribution compatibility, install/runtime and Apple upload remain unverified.
 
 `scripts/build-app.sh` supports `dev`, `sandbox-dev` and `store`. Default `dev`
 remains ad-hoc; signed modes have isolated outputs, profile validation and minimal

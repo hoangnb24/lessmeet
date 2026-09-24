@@ -11,6 +11,9 @@ output_dir="$PWD/dist"
 if [[ "$mode" != dev ]]; then
   output_dir="$output_dir/$mode"
   node scripts/configure-app.mjs --check "$mode"
+  if [[ "$mode" == store ]]; then
+    python3 scripts/store-package.py inputs
+  fi
   if [[ "$action" == --preflight ]]; then
     python3 scripts/packaging-signing.py "$mode"
     exit 0
@@ -35,6 +38,9 @@ mkdir -p "$app_dir/Contents/MacOS" "$app_dir/Contents/Resources"
 cp "$binary_dir/LessMeet" "$app_dir/Contents/MacOS/LessMeet"
 cp Resources/Info.plist "$app_dir/Contents/Info.plist"
 node scripts/configure-app.mjs "$app_dir/Contents/Info.plist" "$mode"
+if [[ "$mode" == store ]]; then
+  python3 scripts/store-package.py stamp "$app_dir"
+fi
 # Swift Build generates resource lookup through Bundle.main.resourceURL.
 cp -R "$binary_dir/Clerk_ClerkKit.bundle" "$app_dir/Contents/Resources/"
 cp -R "$binary_dir/RevenueCat_RevenueCat.bundle" "$app_dir/Contents/Resources/"
