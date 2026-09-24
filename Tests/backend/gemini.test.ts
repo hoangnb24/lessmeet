@@ -55,7 +55,7 @@ it("rejects incomplete output and still attempts cleanup, reporting cleanup fail
   upload();
   generate.mockResolvedValue({ text: "partial", finishReason: "length" });
   fetchMock.mockResolvedValueOnce(new Response(null, { status: 503 }));
-  await expect(transcribeAudio(new Blob(["audio"]), "audio/m4a")).rejects.toThrow(/incomplete.*could not be deleted/);
+  await expect(transcribeAudio(new Blob(["audio"]), "audio/m4a")).rejects.toThrow(/incomplete.*cleanup remains pending/);
   expect(fetchMock).toHaveBeenCalledTimes(3);
 });
 
@@ -74,7 +74,7 @@ it("bounds processing polls and cleans up without calling the model", async () =
 it("returns cleanup warning on success, and fresh labeled context for chat with no API history", async () => {
   upload();
   fetchMock.mockResolvedValueOnce(new Response(null, { status: 503 }));
-  expect((await transcribeAudio(new Blob(["audio"]), "audio/m4a")).warning).toContain("could not be deleted");
+  expect((await transcribeAudio(new Blob(["audio"]), "audio/m4a")).warning).toContain("cleanup remains pending");
   vi.stubEnv("GEMINI_MODEL", "chosen-model");
   await replyToTranscript("Transcript", [{ role: "user", text: "Old question" }], "New question");
   expect(interactions).toHaveBeenLastCalledWith("chosen-model");
@@ -84,4 +84,63 @@ it("returns cleanup warning on success, and fresh labeled context for chat with 
   expect(request.prompt).toContain("New question");
   expect(request).toMatchObject({ maxRetries: 0, providerOptions: { google: { store: false } } });
   expect(request).not.toHaveProperty("previousInteractionId");
+});
+
+it("durably records a returned file before generation and reports verified deletion", async () => {
+  upload(); fetchMock.mockResolvedValueOnce(new Response(null, { status: 204 }));
+  const order: string[] = [];
+  generate.mockImplementation(async () => { order.push("generate"); return { text: "Transcript", finishReason: "stop" }; });
+  await transcribeAudio(new Blob(["synthetic"]), "audio/m4a", {
+    checkActive: async () => { order.push("guard"); },
+    uploaded: async name => { expect(name).toBe("files/test"); order.push("ledger"); },
+    deleted: () => { order.push("deleted"); },
+  });
+  expect(order).toEqual(["guard", "ledger", "guard", "generate", "deleted"]);
+});
+
+it("a deletion lock acquired during upload prevents generation but still cleans the known file", async () => {
+  upload(); fetchMock.mockResolvedValueOnce(new Response(null, { status: 204 }));
+  let checks = 0; const uploaded = vi.fn(), deleted = vi.fn();
+  await expect(transcribeAudio(new Blob(["synthetic"]), "audio/m4a", {
+    checkActive: async () => { if (++checks === 2) throw new Error("Owner locked"); },
+    uploaded, deleted,
+  })).rejects.toThrow();
+  expect(uploaded).toHaveBeenCalledWith("files/test"); expect(deleted).toHaveBeenCalledOnce();
+  expect(generate).not.toHaveBeenCalled();
+});
+
+it("ledger failure fails closed before generation while still attempting exact-file cleanup", async () => {
+  upload(); fetchMock.mockResolvedValueOnce(new Response(null, { status: 503 }));
+  const deleted = vi.fn();
+  await expect(transcribeAudio(new Blob(["synthetic"]), "audio/m4a", {
+    checkActive: async () => {}, uploaded: async () => { throw new Error("Ledger unavailable"); }, deleted,
+  })).rejects.toThrow("cleanup remains pending");
+  expect(generate).not.toHaveBeenCalled(); expect(deleted).not.toHaveBeenCalled();
+  expect(fetchMock.mock.calls[2]).toEqual([metadata().uri, expect.objectContaining({ method: "DELETE" })]);
+});
+
+it("awaits durable generation intent before invoking the model, and response acknowledgement before returning", async () => {
+  upload(); fetchMock.mockResolvedValueOnce(new Response(null, { status: 204 }));
+  let release!: () => void, started!: () => void;
+  const pending = new Promise<void>(r => { release = r; });
+  const observed = new Promise<void>(r => { started = r; });
+  const order: string[] = [];
+  generate.mockImplementation(async () => { order.push("model"); return { text: "Synthetic", finishReason: "stop" }; });
+  const result = transcribeAudio(new Blob(["synthetic"]), "audio/m4a", {
+    checkActive: async () => {}, uploaded: async () => {}, deleted: () => { order.push("deleted"); },
+    generationStarted: async () => { started(); await pending; order.push("intent_committed"); },
+    generationFinished: async () => { await Promise.resolve(); order.push("response_committed"); },
+  });
+  await observed; expect(generate).not.toHaveBeenCalled(); release(); await result;
+  expect(order).toEqual(["intent_committed", "model", "response_committed", "deleted"]);
+});
+
+it("a failed generation-intent commit prevents model submission without preventing known-file cleanup", async () => {
+  upload(); fetchMock.mockResolvedValueOnce(new Response(null, { status: 204 }));
+  const deleted = vi.fn();
+  await expect(transcribeAudio(new Blob(["synthetic"]), "audio/m4a", {
+    checkActive: async () => {}, uploaded: async () => {}, deleted,
+    generationStarted: async () => { throw new Error("Synthetic database failure"); },
+  })).rejects.toThrow();
+  expect(generate).not.toHaveBeenCalled(); expect(deleted).toHaveBeenCalledOnce();
 });

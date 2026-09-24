@@ -5,10 +5,12 @@ import type { Id } from "./_generated/dataModel";
 import { byteLength, CHAT_TIMEOUT, fail, JOB_TIMEOUT, MAX_HISTORY, MAX_REPLY, MAX_TRANSCRIPT, MAX_TURNS, validateMessage } from "./limits";
 import { reserveQuota, settleQuota, verifiedAccount } from "./billing";
 import { enforcementEnabled } from "./billingPolicy";
+import { deletionFor, requireActive } from "./deletionGuard";
 
 async function owned(ctx: QueryCtx | MutationCtx, rawId: string) {
   const identity = await ctx.auth.getUserIdentity();
   if (!identity) fail(401, "Sign in to LessMeet first.");
+  await requireActive(ctx, identity.tokenIdentifier);
   const id = ctx.db.normalizeId("recordings", rawId);
   const recording = id ? await ctx.db.get(id) : null;
   if (!recording || recording.owner !== identity.tokenIdentifier) fail(404, "Recording not found.");
@@ -44,6 +46,7 @@ export const claimJob = internalMutation({
   handler: async (ctx, { id }) => {
     const r = await ctx.db.get(id);
     if (!r || r.status !== "queued") return null;
+    if (await deletionFor(ctx, r.owner)) return null;
     await ctx.db.patch(id, { status: "processing" });
     return { audio: r.audio, mimeType: r.mimeType, owner: r.owner, subject: r.subject };
   },
@@ -56,6 +59,7 @@ export const authorizeJob = internalMutation({
   handler: async (ctx, { id, revision }) => {
     const r = await ctx.db.get(id);
     if (!r || r.status !== "processing" || (r.jobDeadline !== undefined && Date.now() >= r.jobDeadline)) fail(409, "Transcription expired.");
+    await requireActive(ctx, r.owner);
     if (enforcementEnabled()) {
       const a = await verifiedAccount(ctx, r.owner, revision);
       if (!r.transcriptionReservation) fail(409, "Upload this recording again to reserve an AI allowance.");
@@ -70,6 +74,7 @@ export const finishJob = internalMutation({
   handler: async (ctx, { id, transcript, error }) => {
     const r = await ctx.db.get(id);
     if (!r || r.status !== "processing") return;
+    if (await deletionFor(ctx, r.owner)) return;
     if (r.jobDeadline !== undefined && Date.now() >= r.jobDeadline) {
       await settleQuota(ctx, r.transcriptionReservation, false);
       await ctx.db.patch(id, { status: "failed", error: "Transcription timed out. No allowance was charged.", transcriptionReservation: undefined });

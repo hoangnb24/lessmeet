@@ -3,7 +3,8 @@ import { convexTest } from "convex-test";
 import schema from "../../convex/schema";
 import { internal } from "../../convex/_generated/api";
 
-// Characterization of the CURRENT backend, not an implementation of deletion.
+// Historical row-only characterization retained to demonstrate that bypassing the
+// deletion request/guard is STILL unsafe. See deletion.test.ts for the new workflow.
 // All storage/database operations below are in-memory convex-test fixtures.
 const modules = import.meta.glob(["../../convex/**/*.{ts,js}", "!../../convex/**/*.d.ts", "!../../convex/auth.config.ts"]);
 const setup = () => convexTest({ schema, modules, transactionLimits: true });
@@ -82,7 +83,7 @@ describe("Deletion rehearsal: characterization, NOT release acceptance", () => {
     expect(await t.run(ctx => ctx.db.get(a.id))).toBeNull();
   });
 
-  it("GAP: verification can recreate an erased billing account without a deletion lock", async () => {
+  it("GAP: raw billing-row deletion without registering a deletion request permits recreation", async () => {
     const t = setup();
     const args = { owner: "issuer|alice", subject: "alice" };
     await t.mutation(internal.billing.beginVerification, args);

@@ -53,6 +53,23 @@ async function body(request: Request, limit: number, type = "application/json"):
 
 const http = httpRouter();
 
+for (const method of ["GET", "POST"] as const) {
+  http.route({ path: "/account/deletion", method, handler: httpAction(async (ctx, request) => {
+    if (!await identity(ctx)) return json({ error: "Sign in to LessMeet first." }, 401);
+    try {
+      if (new URL(request.url).search) fail(400, "Deletion requests take no parameters.");
+      if (method === "POST") {
+        const input = JSON.parse(await (await body(request, 128)).text());
+        if (!input || typeof input !== "object" || Object.keys(input).length !== 1 || input.confirm !== "delete-account") {
+          fail(400, "Confirm account deletion explicitly; do not supply an account ID.");
+        }
+        await ctx.runMutation(internal.deletion.request, {});
+      }
+      return json(await ctx.runQuery(internal.deletion.status, {}), method === "POST" ? 202 : 200);
+    } catch (error) { if (error instanceof SyntaxError) return json({ error: "Invalid deletion confirmation." }, 400); return failure(error); }
+  }) });
+}
+
 for (const [path, method] of [["/billing", "GET"], ["/billing/sync", "POST"]] as const) {
   http.route({ path, method, handler: httpAction(async (ctx, request) => {
     const account = await identity(ctx);
@@ -91,7 +108,10 @@ http.route({
     if (!account) {
       return new Response(JSON.stringify({ error: "Sign in to LessMeet first." }), { status: 401, headers });
     }
-    return new Response(JSON.stringify({ userId: account.subject }), { status: 200, headers });
+    try {
+      await ctx.runQuery(internal.deletion.check, { owner: account.tokenIdentifier });
+      return new Response(JSON.stringify({ userId: account.subject }), { status: 200, headers });
+    } catch (error) { return failure(error); }
   }),
 });
 
@@ -100,6 +120,7 @@ http.route({ path: "/recordings", method: "POST", handler: httpAction(async (ctx
   const account = await identity(ctx);
   if (!account) return json({ error: "Sign in to LessMeet first." }, 401);
   try {
+    await ctx.runQuery(internal.deletion.check, { owner: account.tokenIdentifier });
     requireBillingSetup();
     let mimeType = request.headers.get("content-type")?.split(";")[0].trim().toLowerCase() ?? "";
     if (!audioTypes.has(mimeType)) fail(415, "Send raw supported audio with its audio Content-Type, not multipart data.");
@@ -107,16 +128,21 @@ http.route({ path: "/recordings", method: "POST", handler: httpAction(async (ctx
     const media = await body(request, MAX_AUDIO, mimeType);
     const seconds = enforcementEnabled() ? audioSeconds(await media.arrayBuffer(), mimeType) : undefined;
     const revision = await refreshBilling(ctx, account);
+    const work = await ctx.runMutation(internal.deletion.beginWork, { owner: account.tokenIdentifier, kind: "upload" });
+    // A failed/unknown storage response leaves the durable operation unresolved.
     const audio = await ctx.storage.store(media);
+    let recordingId;
     try {
-      const recordingId = await ctx.runMutation(internal.recordings.create, { audio, mimeType, seconds, revision });
-      return json({ recordingId }, 202);
+      await ctx.runMutation(internal.deletion.track, { id: work, audio });
+      recordingId = await ctx.runMutation(internal.recordings.create, { audio, mimeType, seconds, revision });
     } catch (error) {
-      try { await ctx.storage.delete(audio); } catch {
+      try { await ctx.runMutation(internal.deletion.discardUpload, { id: work, audio }); } catch {
         return json({ error: "Recording could not be scheduled and upload cleanup failed. Contact the app owner before uploading again." }, 500);
       }
       throw error;
     }
+    await ctx.runMutation(internal.deletion.finishWork, { id: work, ambiguous: false });
+    return json({ recordingId }, 202);
   } catch (error) { return failure(error); }
 }) });
 
@@ -145,13 +171,20 @@ http.route({ path: "/chat", method: "POST", handler: httpAction(async (ctx, requ
     const revision = await refreshBilling(ctx, account);
     const lease = crypto.randomUUID();
     const context = await ctx.runMutation(internal.recordings.reserveChat, { id: recordingId, message, lease, revision });
+    let work;
+    let providerFinished = false;
     try {
+      work = await ctx.runMutation(internal.deletion.beginWork, { owner: account.tokenIdentifier, kind: "chat" });
+      await ctx.runMutation(internal.deletion.generation, { id: work, phase: "started" });
       const text = await replyToTranscript(context.transcript, context.messages, message);
+      await ctx.runMutation(internal.deletion.generation, { id: work, phase: "finished" });
+      providerFinished = true;
       await ctx.runMutation(internal.recordings.finishChat, { id: recordingId, message, lease, text });
       return json({ text });
     } finally {
       // A matching lease prevents an old request from unlocking a newer reply.
       await ctx.runMutation(internal.recordings.releaseChat, { id: context.id, lease });
+      if (work) await ctx.runMutation(internal.deletion.finishWork, { id: work, ambiguous: !providerFinished });
     }
   } catch (error) { return failure(error); }
 }) });

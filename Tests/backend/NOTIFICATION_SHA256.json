@@ -1,0 +1,263 @@
+{
+  "format": 1,
+  "baseHead": "1a2685b5d56c04e13a724e611f9fafb16e7effe1",
+  "baseDescription": "Accepted dirty A/B/C/automation input; not clean HEAD",
+  "acceptedAutomationManifestSHA256": "2a80a8baa459e8382d64479d929af16069f9294924e2a054ee77e6c94b924271",
+  "scope": [
+    "convex/**",
+    "Tests/backend/**",
+    "docs/BACKEND.md"
+  ],
+  "selfExcluded": "Tests/backend/NOTIFICATION_SHA256.json (own digest supplied in handoff response)",
+  "changedPaths": [
+    "Tests/backend/NOTIFICATION_HANDOFF.md",
+    "Tests/backend/NOTIFICATION_SHA256.json",
+    "Tests/backend/deletionNotifications.test.ts",
+    "Tests/backend/notificationAdapter.test.ts",
+    "convex/_generated/api.d.ts",
+    "convex/crons.ts",
+    "convex/deletion.ts",
+    "convex/deletionAutomationState.ts",
+    "convex/deletionNotifications.ts",
+    "convex/notificationAdapter.ts",
+    "convex/schema.ts",
+    "docs/BACKEND.md"
+  ],
+  "files": [
+    {
+      "path": "Tests/backend/AUTOMATION_HANDOFF.md",
+      "before": "e6df3281a60a7d71476dffbd4271d5dee92f29c45b7850d03077976e77bfc8b2",
+      "after": "e6df3281a60a7d71476dffbd4271d5dee92f29c45b7850d03077976e77bfc8b2"
+    },
+    {
+      "path": "Tests/backend/AUTOMATION_SHA256.json",
+      "before": "2a80a8baa459e8382d64479d929af16069f9294924e2a054ee77e6c94b924271",
+      "after": "2a80a8baa459e8382d64479d929af16069f9294924e2a054ee77e6c94b924271"
+    },
+    {
+      "path": "Tests/backend/BILLING_HANDOFF.md",
+      "before": "3864bc725f03b7ab6163b4cac4f8bb716108b8e30202eb5705e7fb8b80ad40c5",
+      "after": "3864bc725f03b7ab6163b4cac4f8bb716108b8e30202eb5705e7fb8b80ad40c5"
+    },
+    {
+      "path": "Tests/backend/DELETION_HANDOFF.md",
+      "before": "ee3d8dc392ac85aec4da8ad300bc63f3a04d1492a5e11f60d8bcc04947900cc5",
+      "after": "ee3d8dc392ac85aec4da8ad300bc63f3a04d1492a5e11f60d8bcc04947900cc5"
+    },
+    {
+      "path": "Tests/backend/DELETION_SHA256.txt",
+      "before": "df822f671f3607e28d6fd42ceb344ff3503a89fd9e7dfa4f1055b84bc957d31c",
+      "after": "df822f671f3607e28d6fd42ceb344ff3503a89fd9e7dfa4f1055b84bc957d31c"
+    },
+    {
+      "path": "Tests/backend/NOTIFICATION_HANDOFF.md",
+      "before": null,
+      "after": "341e91c929ca43781a8c41be1edd551caf7f9cd06b466d0fb974874aea795191"
+    },
+    {
+      "path": "Tests/backend/billing.test.ts",
+      "before": "b724e07a5cf5ecd2a0d1ca53459256a9c6a49b155b755c0bb7871d69b5cd1431",
+      "after": "b724e07a5cf5ecd2a0d1ca53459256a9c6a49b155b755c0bb7871d69b5cd1431"
+    },
+    {
+      "path": "Tests/backend/deletion.test.ts",
+      "before": "998f9463e0cdedf1ab897f73a14c258b0cc059dee64ab3e4b2c15837221edae1",
+      "after": "998f9463e0cdedf1ab897f73a14c258b0cc059dee64ab3e4b2c15837221edae1"
+    },
+    {
+      "path": "Tests/backend/deletionAdapter.test.ts",
+      "before": "82e652ea412e7e669851785c8f5a5d42be4a2c69b2ae1a4de8ba43a7d7be9637",
+      "after": "82e652ea412e7e669851785c8f5a5d42be4a2c69b2ae1a4de8ba43a7d7be9637"
+    },
+    {
+      "path": "Tests/backend/deletionAutomation.test.ts",
+      "before": "e95cf96cf3fa2b5d7e62b7195e41b3b0e50f6a6dbf7bbf1b674174896d257d21",
+      "after": "e95cf96cf3fa2b5d7e62b7195e41b3b0e50f6a6dbf7bbf1b674174896d257d21"
+    },
+    {
+      "path": "Tests/backend/deletionNotifications.test.ts",
+      "before": null,
+      "after": "449b4ea29e9c8fdfceb605249ad5043092dae2d10c6a325dc1f731c59a56b06a"
+    },
+    {
+      "path": "Tests/backend/deletionRehearsal.test.ts",
+      "before": "ed50f3409b28ed96dea2279f57ff464aa9d8b0da5f2276ac34802d5b34a9895c",
+      "after": "ed50f3409b28ed96dea2279f57ff464aa9d8b0da5f2276ac34802d5b34a9895c"
+    },
+    {
+      "path": "Tests/backend/gemini.test.ts",
+      "before": "066ff3704d9b3d08aaae1fe499154c8d3c910c97a4c2517fcfa544802986109d",
+      "after": "066ff3704d9b3d08aaae1fe499154c8d3c910c97a4c2517fcfa544802986109d"
+    },
+    {
+      "path": "Tests/backend/http.test.ts",
+      "before": "037f80d8149b42f055543bfe2667b5321bfae094bc2c00dfc2cc92bbc9f3a205",
+      "after": "037f80d8149b42f055543bfe2667b5321bfae094bc2c00dfc2cc92bbc9f3a205"
+    },
+    {
+      "path": "Tests/backend/interactions.test.ts",
+      "before": "a1fa1c1be90872a9b2dd2cd5045a7d6af2ea02e9cf926885906b344579ff31f5",
+      "after": "a1fa1c1be90872a9b2dd2cd5045a7d6af2ea02e9cf926885906b344579ff31f5"
+    },
+    {
+      "path": "Tests/backend/mediaFixture.ts",
+      "before": "f66b71a8cce993fb257a91bef5de78730762d49231a15b5d53237e295bfeb455",
+      "after": "f66b71a8cce993fb257a91bef5de78730762d49231a15b5d53237e295bfeb455"
+    },
+    {
+      "path": "Tests/backend/nativeMediaFixture.ts",
+      "before": "b11cd012456954eb8f10e049101a3b5743690500ed5a3d48b75eb3402e5182db",
+      "after": "b11cd012456954eb8f10e049101a3b5743690500ed5a3d48b75eb3402e5182db"
+    },
+    {
+      "path": "Tests/backend/notificationAdapter.test.ts",
+      "before": null,
+      "after": "d213367d98c25331f98d45165c6eea1bd002827e8d42d3c7afcbad58d55ea8fc"
+    },
+    {
+      "path": "Tests/backend/tsconfig.json",
+      "before": "df65b6741553ced20020f333f4d20dd006482be51e43cfd84543627b455822b2",
+      "after": "df65b6741553ced20020f333f4d20dd006482be51e43cfd84543627b455822b2"
+    },
+    {
+      "path": "Tests/backend/vitest.config.mts",
+      "before": "89ee99860df3300ec1350f109fc792d014f3dce325e69bc9cdfa5ce73df081b9",
+      "after": "89ee99860df3300ec1350f109fc792d014f3dce325e69bc9cdfa5ce73df081b9"
+    },
+    {
+      "path": "convex/_generated/api.d.ts",
+      "before": "0137639821a18317d9d6f416c14a36863c613fca70bc867acf40a74c415ecb90",
+      "after": "414c48825c3b7cc27431f8f79deee94047c4d5d966fcbd3be4a279312f6ddc76"
+    },
+    {
+      "path": "convex/_generated/api.js",
+      "before": "f513058549831e85376f8d19cafaf2a4a770b6eb1b859fb371141f2c9dec0d70",
+      "after": "f513058549831e85376f8d19cafaf2a4a770b6eb1b859fb371141f2c9dec0d70"
+    },
+    {
+      "path": "convex/_generated/dataModel.d.ts",
+      "before": "db177073d16a4393c7a96bcdc3a2a904e88c2432d54d138ca7715cc431982c17",
+      "after": "db177073d16a4393c7a96bcdc3a2a904e88c2432d54d138ca7715cc431982c17"
+    },
+    {
+      "path": "convex/_generated/server.d.ts",
+      "before": "2b536ee08d434dd044efe0302aeaf4ccb00cd08af10c9f8c7bc7a6734e4aa49b",
+      "after": "2b536ee08d434dd044efe0302aeaf4ccb00cd08af10c9f8c7bc7a6734e4aa49b"
+    },
+    {
+      "path": "convex/_generated/server.js",
+      "before": "0cdd1d842b9458d8a6f2444c35eb9929312316a384ca76a4b1d964bedde8a6f2",
+      "after": "0cdd1d842b9458d8a6f2444c35eb9929312316a384ca76a4b1d964bedde8a6f2"
+    },
+    {
+      "path": "convex/auth.config.ts",
+      "before": "2e3afcdc143db6ee4cb9212a9229bf288ba95113b5f7559094b93b1dea302d9b",
+      "after": "2e3afcdc143db6ee4cb9212a9229bf288ba95113b5f7559094b93b1dea302d9b"
+    },
+    {
+      "path": "convex/billable.ts",
+      "before": "6b57e3a225b2261adc639bb3403ce7e22438074a3c33419cefc0e74d514cb019",
+      "after": "6b57e3a225b2261adc639bb3403ce7e22438074a3c33419cefc0e74d514cb019"
+    },
+    {
+      "path": "convex/billing.ts",
+      "before": "e431f4a7c1df136d31adbfbbfe9c11493dd4c40dff71caffcd18203c478db723",
+      "after": "e431f4a7c1df136d31adbfbbfe9c11493dd4c40dff71caffcd18203c478db723"
+    },
+    {
+      "path": "convex/billingPolicy.ts",
+      "before": "c74f7160e57ce72aa645457bbe9aa5b8b24deb1005aad520f75007900dfee572",
+      "after": "c74f7160e57ce72aa645457bbe9aa5b8b24deb1005aad520f75007900dfee572"
+    },
+    {
+      "path": "convex/crons.ts",
+      "before": "d3579006d9a97eb6d41d8ba5fe389a4e240b9c509981a7a615df85e2e73d077c",
+      "after": "48d9a630f7cbc9f6b48cfe45f0eef12083a5066e5f918d7400a40ff262fe63ee"
+    },
+    {
+      "path": "convex/deletion.ts",
+      "before": "1bcc42d15cae999825db68f04356f7129e8c8439d167527fbdfe23b7375cd0f1",
+      "after": "94db43c7c40239d58d0f176b5acb9217cddab04355ac7e15b06074c1192e2869"
+    },
+    {
+      "path": "convex/deletionAdapter.ts",
+      "before": "6577bf309d703e583e9c7c4993554c0646c4218bdc8f28fa12479cb73193a479",
+      "after": "6577bf309d703e583e9c7c4993554c0646c4218bdc8f28fa12479cb73193a479"
+    },
+    {
+      "path": "convex/deletionAutomation.ts",
+      "before": "b52986d9bbdcdf64cacae036b79e5f7def9096aec943f09eff7c017dfd3050ae",
+      "after": "b52986d9bbdcdf64cacae036b79e5f7def9096aec943f09eff7c017dfd3050ae"
+    },
+    {
+      "path": "convex/deletionAutomationState.ts",
+      "before": "04529c2ffe0dd1c14364362feb33a3cde08c5c957a80c09383e7d88f83b9fc40",
+      "after": "b12b0481498dcf5fa458e706a43af0a813c0e6f44153e1d418d86c28dc01b552"
+    },
+    {
+      "path": "convex/deletionGuard.ts",
+      "before": "a91b67af1118dc8ab665406b55b553855fbbd07720ca643ffe52a178a2136a14",
+      "after": "a91b67af1118dc8ab665406b55b553855fbbd07720ca643ffe52a178a2136a14"
+    },
+    {
+      "path": "convex/deletionNotifications.ts",
+      "before": null,
+      "after": "87ca4db56fba068cf3b06c92afba730684b24a76e96417e52518f6b067a72d42"
+    },
+    {
+      "path": "convex/gemini.ts",
+      "before": "a63d5bed12f7e1100387f98cd0c43fb69a405aba05485e706cca9c5e3ff6e291",
+      "after": "a63d5bed12f7e1100387f98cd0c43fb69a405aba05485e706cca9c5e3ff6e291"
+    },
+    {
+      "path": "convex/http.ts",
+      "before": "2d6cabf4be17dc2df6c46dd008456a08a37815be70f42dd86d0faa0640494d13",
+      "after": "2d6cabf4be17dc2df6c46dd008456a08a37815be70f42dd86d0faa0640494d13"
+    },
+    {
+      "path": "convex/jobs.ts",
+      "before": "1fc098412febaa09c5154a2aa121c4d0a82cbe6e4007a3ed03b6a52f3bd87254",
+      "after": "1fc098412febaa09c5154a2aa121c4d0a82cbe6e4007a3ed03b6a52f3bd87254"
+    },
+    {
+      "path": "convex/limits.ts",
+      "before": "e6530d1c23220053108ef16dbb911860f520e4b3f474ff71ec9c78fb4a8ff204",
+      "after": "e6530d1c23220053108ef16dbb911860f520e4b3f474ff71ec9c78fb4a8ff204"
+    },
+    {
+      "path": "convex/media.ts",
+      "before": "0fe31ef1a4cee9fa34964869262c018144d2a9b27b71026f28973b868f468a94",
+      "after": "0fe31ef1a4cee9fa34964869262c018144d2a9b27b71026f28973b868f468a94"
+    },
+    {
+      "path": "convex/notificationAdapter.ts",
+      "before": null,
+      "after": "4ff228084e7acc632bdd1dac892e7c85af8366c9149167027f4cf42b230fc29b"
+    },
+    {
+      "path": "convex/recordings.ts",
+      "before": "fca94cdce5f9828f0b0553860fc80a5d536c225009aba7569c928e79949465d7",
+      "after": "fca94cdce5f9828f0b0553860fc80a5d536c225009aba7569c928e79949465d7"
+    },
+    {
+      "path": "convex/revenuecat.ts",
+      "before": "333d7943fc7b1db09b39d282571ad726159bdd81c62c42bd2f338edb8a3d6e95",
+      "after": "333d7943fc7b1db09b39d282571ad726159bdd81c62c42bd2f338edb8a3d6e95"
+    },
+    {
+      "path": "convex/schema.ts",
+      "before": "8870197c79b05fbceaff86aeddfabc8c27a6af329357dc9e6a9eb477dd6df74e",
+      "after": "ceffe74c8176830f21b26b03df406ef2e31546dc27f257335f1fe6e432dc37ed"
+    },
+    {
+      "path": "convex/tsconfig.json",
+      "before": "f4c4fa42940b8237f75f9b2dd7067b8b7834ff7752963fb83887193b06c0b31f",
+      "after": "f4c4fa42940b8237f75f9b2dd7067b8b7834ff7752963fb83887193b06c0b31f"
+    },
+    {
+      "path": "docs/BACKEND.md",
+      "before": "230aac410188281d85f0f1f3a83c80729971105229e9b9208e32ed6348734d4c",
+      "after": "3ba72b7dba83bf62def9da9009ce7d69b9148590584387ebac9a38c22cf9e655"
+    }
+  ]
+}

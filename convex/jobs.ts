@@ -12,6 +12,10 @@ export const transcribe = internalAction({
   handler: async (ctx, { id }) => {
     const job = await ctx.runMutation(internal.recordings.claimJob, { id });
     if (!job) return;
+    let work;
+    let fileDeleted = false;
+    let generationStarted = false;
+    let generationFinished = false;
     try {
       if (!billableEnabled()) throw new GeminiFailure(billablePausedMessage);
       if (enforcementEnabled() && !job.subject) throw new GeminiFailure("Upload this recording again to verify billing.");
@@ -21,10 +25,27 @@ export const transcribe = internalAction({
         throw new GeminiFailure("Stored audio is missing or outside the 18 MiB limit. Upload a valid recording again.");
       }
       await ctx.runMutation(internal.recordings.authorizeJob, { id, revision });
-      const result = await transcribeAudio(audio, job.mimeType);
+      work = await ctx.runMutation(internal.deletion.beginWork, { owner: job.owner, kind: "gemini" });
+      const result = await transcribeAudio(audio, job.mimeType, {
+        checkActive: () => ctx.runQuery(internal.deletion.check, { owner: job.owner }),
+        uploaded: file => ctx.runMutation(internal.deletion.track, { id: work!, file }),
+        deleted: () => { fileDeleted = true; },
+        generationStarted: async () => {
+          generationStarted = true;
+          await ctx.runMutation(internal.deletion.generation, { id: work!, phase: "started" });
+        },
+        generationFinished: async () => {
+          await ctx.runMutation(internal.deletion.generation, { id: work!, phase: "finished" });
+          generationFinished = true;
+        },
+      });
       await ctx.runMutation(internal.recordings.finishJob, { id, transcript: result.text, error: result.warning });
     } catch (error) {
       await ctx.runMutation(internal.recordings.finishJob, { id, error: safeFailure(error) });
+    } finally {
+      if (work) await ctx.runMutation(internal.deletion.finishWork, {
+        id: work, ambiguous: !fileDeleted || (generationStarted && !generationFinished), fileDeleted,
+      });
     }
   },
 });

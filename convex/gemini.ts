@@ -39,7 +39,14 @@ function validateFile(file: GoogleFile) {
   }
 }
 
-export async function transcribeAudio(audio: Blob, mimeType: string): Promise<{ text: string; warning?: string }> {
+export type FileLifecycle = {
+  checkActive: () => Promise<unknown>;
+  uploaded: (name: string) => Promise<unknown>;
+  deleted: () => void;
+  generationStarted?: () => Promise<unknown> | void;
+  generationFinished?: () => Promise<unknown> | void;
+};
+export async function transcribeAudio(audio: Blob, mimeType: string, lifecycle?: FileLifecycle): Promise<{ text: string; warning?: string }> {
   const { apiKey, google, model } = provider();
   const signal = AbortSignal.timeout(210_000);
   const headers = { "x-goog-api-key": apiKey };
@@ -48,6 +55,7 @@ export async function transcribeAudio(audio: Blob, mimeType: string): Promise<{ 
   let failure: unknown;
   let warning: string | undefined;
   try {
+    await lifecycle?.checkActive();
     const start = await checkedFetch(`${base}/upload/v1beta/files`, {
       method: "POST", signal,
       headers: { ...headers, "Content-Type": "application/json", "X-Goog-Upload-Protocol": "resumable",
@@ -62,7 +70,10 @@ export async function transcribeAudio(audio: Blob, mimeType: string): Promise<{ 
     });
     let file = (await uploaded.json() as { file: GoogleFile }).file;
     // Capture a safe resource name before validating other fields so cleanup still runs.
-    if (file && /^files\/[a-zA-Z0-9_-]+$/.test(file.name)) name = file.name;
+    if (file && /^files\/[a-zA-Z0-9_-]+$/.test(file.name)) {
+      name = file.name;
+      await lifecycle?.uploaded(name);
+    }
     validateFile(file);
     for (let attempt = 0; file.state === "PROCESSING" && attempt < 15; attempt++) {
       await new Promise(resolve => setTimeout(resolve, 2_000));
@@ -72,6 +83,8 @@ export async function transcribeAudio(audio: Blob, mimeType: string): Promise<{ 
       if (file.name !== name) throw new GeminiFailure("Gemini returned mismatched file metadata.");
     }
     if (file.state !== "ACTIVE") throw new GeminiFailure("Gemini could not prepare the recording in time. Try a shorter recording.");
+    await lifecycle?.checkActive();
+    await lifecycle?.generationStarted?.();
     const result = await generateText({
       model: google.interactions(model), maxRetries: 0, abortSignal: signal,
       maxOutputTokens: 65_536, providerOptions: { google: { store: false } },
@@ -80,6 +93,7 @@ export async function transcribeAudio(audio: Blob, mimeType: string): Promise<{ 
         { type: "file", data: new URL(file.uri), mediaType: mimeType },
       ] }],
     });
+    await lifecycle?.generationFinished?.();
     text = complete(result, MAX_TRANSCRIPT);
   } catch (error) {
     failure = error;
@@ -87,8 +101,9 @@ export async function transcribeAudio(audio: Blob, mimeType: string): Promise<{ 
     if (name) {
       try {
         await checkedFetch(`${base}/v1beta/${name}`, { method: "DELETE", headers, signal: AbortSignal.timeout(10_000) });
+        lifecycle?.deleted();
       } catch {
-        warning = "The temporary Google audio copy could not be deleted; Google Files normally expires it after 48 hours.";
+        warning = "The temporary Google audio copy could not be verified as deleted. Provider cleanup remains pending.";
       }
     }
   }

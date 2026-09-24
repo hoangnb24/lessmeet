@@ -3,12 +3,14 @@ import { internalMutation, type MutationCtx } from "./_generated/server";
 import type { Doc, Id } from "./_generated/dataModel";
 import { enforcementEnabled, FREE, PRO, monthlyWindow, requireBillingSetup, VERIFICATION_TTL } from "./billingPolicy";
 import { fail } from "./limits";
+import { requireActive } from "./deletionGuard";
 
 const account = (ctx: MutationCtx, owner: string) => ctx.db.query("billingAccounts").withIndex("by_owner", q => q.eq("owner", owner)).unique();
 
 export const beginVerification = internalMutation({
   args: { owner: v.string(), subject: v.string() },
   handler: async (ctx, { owner, subject }) => {
+    await requireActive(ctx, owner);
     requireBillingSetup();
     const previous = await account(ctx, owner);
     if (previous && previous.subject !== subject) fail(403, "Billing account identity mismatch.");
@@ -23,6 +25,7 @@ export const applyVerification = internalMutation({
   args: { owner: v.string(), subject: v.string(), revision: v.number(), observedAt: v.number(),
     plan: v.union(v.literal("free"), v.literal("pro")), expiresAt: v.union(v.number(), v.null()), anchor: v.union(v.number(), v.null()) },
   handler: async (ctx, args) => {
+    await requireActive(ctx, args.owner);
     requireBillingSetup();
     const a = await account(ctx, args.owner);
     if (!a || a.subject !== args.subject || a.revision !== args.revision ||
@@ -37,6 +40,7 @@ export const applyVerification = internalMutation({
 });
 
 export async function verifiedAccount(ctx: MutationCtx, owner: string, revision: number | undefined) {
+  await requireActive(ctx, owner);
   requireBillingSetup();
   const a = await account(ctx, owner), now = Date.now();
   if (!a || revision === undefined || a.revision !== revision || a.verifiedAt === undefined ||
@@ -60,6 +64,7 @@ export const status = internalMutation({
   handler: async (ctx, { revision }) => {
     const identity = await ctx.auth.getUserIdentity();
     if (!identity) fail(401, "Sign in to LessMeet first.");
+    await requireActive(ctx, identity.tokenIdentifier);
     if (!enforcementEnabled()) return { userId: identity.subject, enforcement: false, plan: "development" as const,
       periodEndsAt: null, transcriptionSeconds: { limit: 0, used: 0, reserved: 0 }, questions: { limit: 0, used: 0, reserved: 0 } };
     const a = await verifiedAccount(ctx, identity.tokenIdentifier, revision);
@@ -72,6 +77,7 @@ export const status = internalMutation({
 
 export type Reservation = { bucket: Id<"quotaBuckets">; seconds: number; questions: number };
 export async function reserveQuota(ctx: MutationCtx, owner: string, revision: number | undefined, seconds: number, questions: number): Promise<Reservation | undefined> {
+  await requireActive(ctx, owner);
   if (!enforcementEnabled()) return undefined;
   const a = await verifiedAccount(ctx, owner, revision), window = windowFor(a);
   if (!Number.isSafeInteger(seconds) || seconds < 0 || !Number.isSafeInteger(questions) || questions < 0 || seconds + questions <= 0) fail(400, "Invalid usage amount.");

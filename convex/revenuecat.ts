@@ -3,12 +3,15 @@ import { internal } from "./_generated/api";
 import { enforcementEnabled, parseEntitlement, requireBillingSetup, unavailable } from "./billingPolicy";
 
 export async function refreshBilling(ctx: ActionCtx, identity: { tokenIdentifier: string; subject: string }): Promise<number | undefined> {
+  await ctx.runQuery(internal.deletion.check, { owner: identity.tokenIdentifier });
   if (!enforcementEnabled()) return undefined;
   requireBillingSetup();
   const key = process.env.REVENUECAT_SECRET_API_KEY;
   if (!key || !key.startsWith("sk_")) unavailable();
   const owner = identity.tokenIdentifier, subject = identity.subject;
   const revision = await ctx.runMutation(internal.billing.beginVerification, { owner, subject });
+  const work = await ctx.runMutation(internal.deletion.beginWork, { owner, kind: "billing" });
+  let responseFinished = false;
   let payload: unknown;
   try {
     const response = await fetch(`https://api.revenuecat.com/v1/subscribers/${encodeURIComponent(subject)}`, {
@@ -32,7 +35,9 @@ export async function refreshBilling(ctx: ActionCtx, identity: { tokenIdentifier
     const bytes = new Uint8Array(size); let offset = 0;
     for (const chunk of chunks) { bytes.set(chunk, offset); offset += chunk.length; }
     payload = JSON.parse(new TextDecoder("utf-8", { fatal: true }).decode(bytes));
+    responseFinished = true;
   } catch { unavailable(); }
+  finally { await ctx.runMutation(internal.deletion.finishWork, { id: work, ambiguous: !responseFinished }); }
   const entitlement = parseEntitlement(payload, subject, Date.now());
   return ctx.runMutation(internal.billing.applyVerification, { owner, subject, revision, ...entitlement });
 }
