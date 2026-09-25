@@ -2,8 +2,10 @@ import Foundation
 
 struct RecordingStore {
     let root: URL
+    private let beforeSave: ((Recording) throws -> Void)?
 
-    init(root: URL? = nil) throws {
+    init(root: URL? = nil, beforeSave: ((Recording) throws -> Void)? = nil) throws {
+        self.beforeSave = beforeSave
         self.root = try root ?? FileManager.default.url(
             for: .applicationSupportDirectory, in: .userDomainMask,
             appropriateFor: nil, create: true
@@ -20,11 +22,23 @@ struct RecordingStore {
     }
 
     func save(_ recording: Recording) throws {
+        try beforeSave?(recording)
         let folder = directory(for: recording.id)
         try FileManager.default.createDirectory(at: folder, withIntermediateDirectories: true)
         let encoder = JSONEncoder()
         encoder.outputFormatting = [.prettyPrinted, .sortedKeys]
         try encoder.encode(recording).write(to: folder.appendingPathComponent("recording.json"), options: .atomic)
+    }
+
+    func batchFile(for id: UUID, path: String) throws -> URL {
+        let pieces = path.split(separator: "/", omittingEmptySubsequences: false)
+        guard pieces.count == 2, pieces[0].hasPrefix("batch-"),
+              BatchValidation.uuid(String(pieces[0].dropFirst(6))),
+              pieces[1].hasPrefix("chunk-"), pieces[1].hasSuffix(".m4a"),
+              !path.contains(".."), !path.contains("\\") else {
+            throw AccountError("Invalid saved batch path. Original audio is preserved.")
+        }
+        return directory(for: id).appendingPathComponent(path)
     }
 
     func load(onIssue: (String) -> Void = { _ in }) throws -> [Recording] {

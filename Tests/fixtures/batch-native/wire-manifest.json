@@ -1,0 +1,17 @@
+{
+  "chunks" : [
+    {
+      "bytes" : 12288,
+      "sha256" : "210677dbc40079130e9dce06fd93df17133dead2c696565590f246a51a574863"
+    }
+  ],
+  "source" : {
+    "bytes" : 12288,
+    "duration" : {
+      "timescale" : 44100,
+      "value" : 132301
+    },
+    "sha256" : "210677dbc40079130e9dce06fd93df17133dead2c696565590f246a51a574863"
+  },
+  "version" : 1
+}

@@ -9,6 +9,10 @@
  */
 
 import type * as billable from "../billable.js";
+import type * as batches from "../batches.js";
+import type * as batchJobs from "../batchJobs.js";
+import type * as batchChat from "../batchChat.js";
+import type * as batchChatJobs from "../batchChatJobs.js";
 import type * as billing from "../billing.js";
 import type * as billingPolicy from "../billingPolicy.js";
 import type * as crons from "../crons.js";
@@ -38,6 +42,10 @@ import type {
 } from "convex/server";
 
 declare const fullApi: ApiFromModules<{
+  batches: typeof batches;
+  batchJobs: typeof batchJobs;
+  batchChat: typeof batchChat;
+  batchChatJobs: typeof batchChatJobs;
   billable: typeof billable;
   billing: typeof billing;
   billingPolicy: typeof billingPolicy;

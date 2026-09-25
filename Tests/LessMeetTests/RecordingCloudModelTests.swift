@@ -58,7 +58,7 @@ final class RecordingCloudModelTests: XCTestCase {
         var account: CloudIdentity? = CloudIdentity(owner: "alice", session: "session-a")
         let cloud = RecordingCloudModel(app: app, client: CloudClient(baseURL: URL(string: "https://fixture.convex.site")!, session: session),
                                         identity: { account }, token: { "fixture-token" }, pollDelay: .zero)
-        cloud.transcribe()
+        cloud.transcribeLegacy()
         try await wait(cloud)
         XCTAssertNil(cloud.error)
         XCTAssertEqual(cloud.cached(app.selected!)?.transcript, "# Meeting")
@@ -108,7 +108,7 @@ final class RecordingCloudModelTests: XCTestCase {
             account = CloudIdentity(owner: "bob", session: "b")
             return "old-token"
         })
-        cloud.transcribe()
+        cloud.transcribeLegacy()
         try await wait(cloud)
         XCTAssertNil(app.selected?.cloud)
         XCTAssertNil(try store.load().first?.cloud)

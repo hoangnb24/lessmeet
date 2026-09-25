@@ -10,6 +10,128 @@ struct CloudClient {
         self.session = session
     }
 
+    var batchNamespace: String { baseURL.absoluteString }
+
+    func batchChatStatus(batchID: String, token: String) async throws -> BatchChatStatus {
+        let req = try batchRequest(path: "/chat", method: "GET", query: [.init(name: "batchId", value: batchID)], token: token)
+        let status: BatchChatStatus = try await batchSend(req, statuses: [200], limit: 256 * 1024)
+        try status.validate(batchID: batchID)
+        return status
+    }
+    func batchChatOperation(_ payload: BatchChatRequest, token: String, send: Bool = false) async throws -> BatchChatOperation {
+        try payload.validate()
+        var req = try batchRequest(path: "/chat/message", method: send ? "POST" : "GET", query: send ? [] : [.init(name: "batchId", value: payload.batchId), .init(name: "clientMessageId", value: payload.clientMessageId)], token: token)
+        if send { req.httpBody = try JSONEncoder().encode(payload); try BatchValidation.require(req.httpBody!.count <= 50176) }
+        let operation: BatchChatOperation = try await batchSend(req, statuses: send ? [200, 202] : [200], limit: 64 * 1024)
+        try operation.validate(batchID: payload.batchId, request: payload)
+        return operation
+    }
+    func batchChatOperation(batchID: String, clientMessageID: String, token: String) async throws -> BatchChatOperation {
+        try BatchValidation.require(!batchID.isEmpty && batchID.utf8.count <= 256 && BatchValidation.uuid(clientMessageID))
+        let req = try batchRequest(path: "/chat/message", method: "GET", query: [.init(name: "batchId", value: batchID), .init(name: "clientMessageId", value: clientMessageID)], token: token)
+        let operation: BatchChatOperation = try await batchSend(req, statuses: [200], limit: 64 * 1024)
+        try operation.validate(batchID: batchID)
+        try BatchValidation.require(operation.clientMessageId == clientMessageID)
+        return operation
+    }
+
+    func createBatch(_ local: LocalBatch, token: String) async throws -> BatchStatus {
+        struct Body: Encodable { let clientBatchId: String; let manifest: BatchManifest }
+        return try await batchStatus(local, path: "", method: "POST", body: JSONEncoder().encode(Body(clientBatchId: local.clientBatchId, manifest: local.manifest)), token: token, statuses: [200, 201])
+    }
+    func lookupBatch(_ local: LocalBatch, token: String) async throws -> BatchStatus {
+        try await batchStatus(local, path: "", method: "GET", query: [URLQueryItem(name: "clientBatchId", value: local.clientBatchId)], token: token, statuses: [200])
+    }
+    func uploadBatch(_ local: LocalBatch, index: Int, fileURL: URL, token: String) async throws -> BatchStatus {
+        try BatchValidation.require(local.manifest.chunks.indices.contains(index))
+        let file = try TranscriptionChunks.identity(fileURL)
+        let declared = local.manifest.chunks[index]
+        try BatchValidation.require(file.sha256 == declared.sha256 && file.bytes == declared.bytes)
+        return try await batchStatus(local, path: "/chunk", method: "PUT", query: [URLQueryItem(name: "batchId", value: local.status?.batchId), URLQueryItem(name: "index", value: String(index))], file: fileURL, token: token, statuses: [200, 202])
+    }
+    func sealBatch(_ local: LocalBatch, token: String) async throws -> BatchStatus {
+        struct Body: Encodable { let batchId: String; let manifestDigest: String }
+        guard let id = local.status?.batchId else { throw malformed(mutating: false) }
+        return try await batchStatus(local, path: "/seal", method: "POST", body: JSONEncoder().encode(Body(batchId: id, manifestDigest: try local.manifest.digest)), token: token, statuses: [202])
+    }
+    func retryBatch(_ local: LocalBatch, token: String) async throws -> BatchStatus {
+        struct Body: Encodable { let batchId: String; let index: Int; let expectedAttempt: Int; let expectedFence: Int64; let requestId: String; let confirm = "retry-failed-chunk" }
+        guard let id = local.status?.batchId, let pending = local.pending, pending.kind == "retry",
+              let index = pending.index, let attempt = pending.expectedAttempt,
+              let fence = pending.expectedFence, let nonce = pending.requestId, BatchValidation.uuid(nonce) else { throw malformed(mutating: false) }
+        return try await batchStatus(local, path: "/retry", method: "POST", body: JSONEncoder().encode(Body(batchId: id, index: index, expectedAttempt: attempt, expectedFence: fence, requestId: nonce)), token: token, statuses: [202])
+    }
+    func batchResult(batchID: String, index: Int, attempt: Int, token: String) async throws -> BatchRawResult {
+        let req = try batchRequest(path: "/result", method: "GET", query: [URLQueryItem(name: "batchId", value: batchID), URLQueryItem(name: "index", value: String(index)), URLQueryItem(name: "attempt", value: String(attempt))], token: token)
+        let result: BatchRawResult = try await batchSend(req, statuses: [200], limit: 6 * 384 * 1024 + 4096)
+        try BatchValidation.require(result.version == 1 && result.batchId == batchID && result.index == index && result.attempt == attempt && result.rawText.utf8.count <= 384 * 1024)
+        return result
+    }
+    func batchAggregate(batchID: String, token: String) async throws -> BatchAggregateResponse {
+        let req = try batchRequest(path: "/aggregate", method: "GET", query: [URLQueryItem(name: "batchId", value: batchID)], token: token)
+        let result: BatchAggregateResponse = try await batchSend(req, statuses: [200], limit: 384 * 1024 + 16 * 1024)
+        try BatchValidation.require(result.version == 1 && result.batchId == batchID && result.revision >= 0 && result.revision <= BatchValidation.safeInteger && ["pending", "complete", "partial", "too_large"].contains(result.status))
+        try BatchValidation.require((result.status == "complete" || result.status == "partial") == (result.aggregate != nil))
+        if let aggregate = result.aggregate {
+            let encoder = JSONEncoder()
+            encoder.outputFormatting = [.withoutEscapingSlashes]
+            try BatchValidation.require(encoder.encode(aggregate).count <= 384 * 1024)
+        }
+        return result
+    }
+    private func batchStatus(_ local: LocalBatch, path: String, method: String, query: [URLQueryItem] = [], body: Data? = nil, file: URL? = nil, token: String, statuses: Set<Int>) async throws -> BatchStatus {
+        try local.manifest.validate()
+        try BatchValidation.require(BatchValidation.uuid(local.clientBatchId) && (body?.count ?? 0) <= 16 * 1024)
+        var req = try batchRequest(path: path, method: method, query: query, token: token)
+        req.httpBody = body
+        if file != nil { req.setValue("audio/m4a", forHTTPHeaderField: "Content-Type") }
+        var result: BatchStatus = try await batchSend(req, file: file, statuses: statuses, limit: 128 * 1024)
+        result.chunks.sort { $0.index < $1.index }
+        try result.validate(manifest: local.manifest, clientID: local.clientBatchId)
+        if let id = local.status?.batchId { try BatchValidation.require(result.batchId == id) }
+        return result
+    }
+    private func batchRequest(path: String, method: String, query: [URLQueryItem], token: String) throws -> URLRequest {
+        var req = try request(path: "v1/transcription-batches" + path, method: method, token: token, contentType: method == "GET" ? nil : "application/json")
+        var url = URLComponents(url: req.url!, resolvingAgainstBaseURL: false)!
+        if !query.isEmpty { url.queryItems = query }
+        req.url = url.url
+        return req
+    }
+    private func batchSend<T: Decodable>(_ request: URLRequest, file: URL? = nil, statuses: Set<Int>, limit: Int) async throws -> T {
+        let data: Data; let response: URLResponse
+        do {
+                try Task.checkCancellation()
+                var outbound = request
+                if let file {
+                    outbound.httpBodyStream = InputStream(url: file)
+                    guard outbound.httpBodyStream != nil else { throw malformed(mutating: false) }
+                    let size = try file.resourceValues(forKeys: [.fileSizeKey]).fileSize
+                    if let size { outbound.setValue(String(size), forHTTPHeaderField: "Content-Length") }
+                }
+                let (bytes, reply) = try await session.bytes(for: outbound, delegate: RejectRedirects())
+                response = reply
+                var bounded = Data()
+                for try await byte in bytes {
+                    try Task.checkCancellation()
+                    guard bounded.count < limit else { throw malformed(mutating: request.httpMethod != "GET") }
+                    bounded.append(byte)
+                }
+                data = bounded
+        } catch { throw CloudClientError(message: "Batch request did not complete. Local preparation is saved. Refresh to reconcile; no automatic retry." ) }
+        guard let http = response as? HTTPURLResponse else { throw malformed(mutating: request.httpMethod != "GET") }
+        guard statuses.contains(http.statusCode) else {
+            let unavailable = request.url?.path.contains("/chat") == true
+                ? "Batch chat is disabled or unavailable. The saved question is retained. Refresh batch chat to reconcile; no automatic resend."
+                : "Batch transcription is disabled or unavailable. Local preparation is saved. Refresh, then explicitly continue when available."
+            let message = http.statusCode == 503 ? unavailable : "Batch request failed (HTTP \(http.statusCode)). Local data is saved. Refresh before continuing."
+            throw CloudClientError(message: message, statusCode: http.statusCode)
+        }
+        guard data.count <= limit else { throw malformed(mutating: request.httpMethod != "GET") }
+        do { return try JSONDecoder().decode(T.self, from: data) }
+        catch { throw malformed(mutating: request.httpMethod != "GET") }
+    }
+
     func subscription(token: String, synchronize: Bool = false) async throws -> SubscriptionStatus {
         let request = try request(path: synchronize ? "billing/sync" : "billing",
                                   method: synchronize ? "POST" : "GET", token: token)

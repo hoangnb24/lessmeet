@@ -1,0 +1,13 @@
+{
+  "sourceSHA": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+  "sourceBytes": 1234,
+  "chunkSHA": "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb",
+  "firstChunkBytes": 99,
+  "vectors": [
+    {"value": 3, "timescale": 1, "chunks": 1, "digest": "d588f41153cbecfb16bc094d8bcf54bad2481d9ff03e9256b95ad2ce11671ddd"},
+    {"value": 132301, "timescale": 44100, "chunks": 1, "digest": "a9fd2a1b6fbefd0e4151c53053812921c8915f60542278f65b694ca47de9b929"},
+    {"value": 1, "timescale": 48000, "chunks": 1, "digest": "b55b49a81f021647dfb25106e3c3a3b134b204d98639babfe98c657279338bf9"},
+    {"value": 7200, "timescale": 1, "chunks": 25, "digest": "aca0e3708e454c11a197db4e0f19919fe52f87363450273312f8e20b8f273f03"},
+    {"value": 13230001, "timescale": 44100, "chunks": 2, "digest": "9b20ac0fc809d2f30ddb7ad4c8cd7be0ded2966f497e9b5e850d9102744c3c76"}
+  ]
+}

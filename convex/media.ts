@@ -4,6 +4,73 @@ import { fail, MAX_AUDIO } from "./limits";
 const invalid = (): never => fail(415, "Billing requires a valid, non-fragmented AAC M4A recording. Export or record it again in LessMeet.");
 const positive = (n: number) => Number.isSafeInteger(n) && n > 0;
 
+// Admission checks for the native M4A box tree, before MP4Box allocates tables
+// or descends into containers. This is not a complete ISO-BMFF parser firewall:
+// codec descriptors and extension boxes still belong to the downstream parser.
+export function preflight(bytes: ArrayBuffer, batch = false) {
+  const view = new DataView(bytes);
+  const containers = new Set([
+    "moov", "trak", "edts", "mdia", "minf", "dinf", "stbl", "udta",
+    "meco", "hnti", "hinf", "strk", "strd", "sinf", "rinf", "schi", "trgr",
+    "iprp", "ipco", "grpl", "j2kH", "etyp", "povd", "vttc", "mfra",
+  ]);
+  const tableWidths: Record<string, number> = { stts: 8, ctts: 8, stsc: 12, stco: 4, co64: 8, stss: 4 };
+  let boxes = 0;
+  let entries = 0;
+  let sampleEntries = 0;
+  function walk(start: number, end: number, depth: number, parent = "") {
+    if (depth > 16) invalid();
+    for (let offset = start; offset < end;) {
+      if (++boxes > 4096 || end - offset < 8) invalid();
+      let size = view.getUint32(offset), header = 8;
+      const type = String.fromCharCode(...new Uint8Array(bytes, offset + 4, 4));
+      if (size === 1) {
+        if (end - offset < 16) invalid();
+        size = view.getUint32(offset + 8) * 0x100000000 + view.getUint32(offset + 12);
+        header = 16;
+      }
+      // Native exports use explicit sizes (including 64-bit mdat); no open-ended boxes.
+      if (!Number.isSafeInteger(size) || size < header || size > end - offset) invalid();
+      const body = offset + header, limit = offset + size, length = limit - body;
+      const need = (n: number) => { if (length < n) invalid(); };
+      const table = (prefix: number, count: number, width: number) => {
+        if (count > 1_000_000 || count > (length - prefix) / width || length !== prefix + count * width) invalid();
+        if (batch && (entries += count) > 65_536) invalid();
+      };
+      if (["moof", "mvex", "traf", "stz2"].includes(type)) invalid();
+      if (type === "stsz") {
+        need(12);
+        const count = view.getUint32(body + 8);
+        // In particular, constant-size stsz expands count entries DURING parse,
+        // before buildSampleLists, so the existing later guard is not sufficient.
+        if (view.getUint32(body) !== 0 || view.getUint32(body + 4) !== 0 || !positive(count)) invalid();
+        if (batch && (sampleEntries += count) > 16_384) invalid();
+        table(12, count, 4);
+      } else if (Object.hasOwn(tableWidths, type)) {
+        need(8);
+        if (view.getUint8(body) !== 0 && !(type === "ctts" && view.getUint8(body) === 1)) invalid();
+        table(8, view.getUint32(body + 4), tableWidths[type]);
+      } else if (type === "elst") {
+        need(8);
+        const version = view.getUint8(body), count = view.getUint32(body + 4);
+        if (version > 1 || count > 1) invalid();
+        table(8, count, version === 1 ? 20 : 12);
+      }
+      let child = -1;
+      if (containers.has(type) || type === "ilst" || parent === "ilst") child = body;
+      else if (type === "meta") { need(4); child = body + 4; }
+      else if (type === "stsd" || type === "dref") {
+        need(8);
+        if (view.getUint32(body) !== 0 || view.getUint32(body + 4) !== 1) invalid();
+        child = body + 8;
+      } else if (type === "mp4a") { need(28); child = body + 28; }
+      if (child >= 0) walk(child, limit, depth + 1, type);
+      offset = limit;
+    }
+  }
+  walk(0, bytes.byteLength, 0);
+}
+
 // This is structural validation, NOT an AAC decoder. MP4Box parses the actual
 // uploaded sample tables. We verify ranges and timelines and charge the maximum
 // of sample timing and AAC-LC frame count; never a caller-supplied duration.
@@ -11,6 +78,7 @@ const positive = (n: number) => Number.isSafeInteger(n) && n > 0;
 export function audioSeconds(bytes: ArrayBuffer, mimeType: string): number {
   if ((mimeType !== "audio/m4a" && mimeType !== "audio/mp4") || !bytes.byteLength || bytes.byteLength > MAX_AUDIO) invalid();
   try {
+    preflight(bytes);
     const file = createFile();
     const buildSamples = file.buildSampleLists.bind(file);
     file.buildSampleLists = () => {

@@ -1,0 +1,39 @@
+{
+  "chunks" : [
+    {
+      "channels" : 1,
+      "decodedFrames" : 132301,
+      "file" : {
+        "bytes" : 12288,
+        "name" : "chunk-00.m4a",
+        "sha256" : "210677dbc40079130e9dce06fd93df17133dead2c696565590f246a51a574863"
+      },
+      "presentationDuration" : {
+        "timescale" : 44100,
+        "value" : 132301
+      },
+      "sampleRate" : 44100,
+      "window" : {
+        "duration" : {
+          "timescale" : 44100,
+          "value" : 132301
+        },
+        "index" : 0,
+        "start" : {
+          "timescale" : 1,
+          "value" : 0
+        }
+      }
+    }
+  ],
+  "source" : {
+    "bytes" : 12288,
+    "name" : "combined.m4a",
+    "sha256" : "210677dbc40079130e9dce06fd93df17133dead2c696565590f246a51a574863"
+  },
+  "sourceDuration" : {
+    "timescale" : 44100,
+    "value" : 132301
+  },
+  "version" : 1
+}

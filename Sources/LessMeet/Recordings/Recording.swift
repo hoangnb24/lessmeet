@@ -18,5 +18,6 @@ struct Recording: Codable, Identifiable, Equatable {
     var failure: String?
     // Cloud caches are scoped to backend + Clerk account, not the shared local library.
     var cloud: [String: CloudRecording]?
+    var batches: [String: LocalBatch]?
     enum Status: String, Codable { case recording, ready, interrupted }
 }

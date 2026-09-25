@@ -8,6 +8,8 @@ import { billableEnabled, billablePausedMessage } from "./billable";
 import { refreshBilling } from "./revenuecat";
 import { enforcementEnabled, requireBillingSetup } from "./billingPolicy";
 import { audioSeconds } from "./media";
+import { batchRoutes } from "./batchHttp";
+import { batchChatRoutes } from "./batchChatHttp";
 
 function json(value: unknown, status = 200) {
   return new Response(JSON.stringify(value), { status, headers: {
@@ -52,6 +54,8 @@ async function body(request: Request, limit: number, type = "application/json"):
 }
 
 const http = httpRouter();
+batchRoutes(http);
+batchChatRoutes(http);
 
 for (const method of ["GET", "POST"] as const) {
   http.route({ path: "/account/deletion", method, handler: httpAction(async (ctx, request) => {

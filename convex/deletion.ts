@@ -8,6 +8,8 @@ import { settleQuota, type Reservation } from "./billing";
 import { automationEnabled, geminiProjectRef } from "./deletionAdapter";
 import { manualStage, publishIntent } from "./deletionAutomationState";
 import { notificationsEnabled } from "./notificationAdapter";
+import { deleteBatchContent, reconcileBatchWork } from "./batches";
+import { deleteChatContent, reconcileChatWork } from "./batchChat";
 
 async function deleteStoredFile(ctx: MutationCtx, id: Id<"_storage">) {
   if (await ctx.db.system.get("_storage", id)) await ctx.storage.delete(id);
@@ -109,6 +111,8 @@ export const cleanup = internalMutation({ args: { id: v.id("deletions") }, handl
     await ctx.db.delete(r._id);
   }
   if (rows.length) { await ctx.scheduler.runAfter(0, internal.deletion.cleanup, { id }); return; }
+  if (await deleteChatContent(ctx, d.owner)) { await ctx.scheduler.runAfter(0, internal.deletion.cleanup, { id }); return; }
+  if (await deleteBatchContent(ctx, d.owner)) { await ctx.scheduler.runAfter(0, internal.deletion.cleanup, { id }); return; }
   const buckets = await ctx.db.query("quotaBuckets").withIndex("by_owner_window", q => q.eq("owner", d.owner)).take(32);
   for (const b of buckets) await ctx.db.delete(b._id);
   if (buckets.length) { await ctx.scheduler.runAfter(0, internal.deletion.cleanup, { id }); return; }
@@ -156,6 +160,8 @@ export const reconcileWork = internalMutation({ args: { id: v.id("deletions"), o
     if (!/^[A-Za-z0-9_-]{1,100}$/.test(evidence)) fail(400, "Use a private case-reference identifier.");
     // Operator attests the action has stopped AND provider/unknown side effects reconciled.
     if (work.audio) await deleteStoredFile(ctx, work.audio);
+    await reconcileBatchWork(ctx, workId);
+    await reconcileChatWork(ctx, workId);
     const automatic = await ctx.db.query("deletionStages").withIndex("by_work", q => q.eq("work", workId)).unique();
     if (automatic) await manualStage(ctx, automatic, evidence);
     await ctx.db.delete(workId);

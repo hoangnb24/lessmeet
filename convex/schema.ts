@@ -1,10 +1,14 @@
 import { defineSchema, defineTable } from "convex/server";
 import { v } from "convex/values";
 import { provider, phase, externalAccount, session } from "./preflightContract";
+import { batchTables } from "./batchSchema";
+import { batchChatTables } from "./batchChatSchema";
 
 export const message = v.object({ role: v.union(v.literal("user"), v.literal("assistant")), text: v.string() });
 const reservation = v.object({ bucket: v.id("quotaBuckets"), seconds: v.number(), questions: v.number() });
 export default defineSchema({
+  ...batchTables,
+  ...batchChatTables,
   deletionPreflights: defineTable({ request: v.id("deletions"), owner: v.string(), subject: v.string(),
     requestedAt: v.number(), provider, config: v.string(), phase, cursor: v.string(),
     state: v.union(v.literal("queued"), v.literal("running"), v.literal("retry"), v.literal("observed"), v.literal("blocked"), v.literal("exhausted")),

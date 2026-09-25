@@ -56,6 +56,16 @@ export const purgeExpired = internalMutation({ args: {}, handler: async ctx => {
     await ctx.db.patch(d._id, { completedAt: undefined, purgeAt: undefined });
     return 0;
   }
+  // Completed-ledger retention cannot strand batch content or held operational attempts.
+  if (await ctx.db.query("transcriptionBatches").withIndex("by_owner", q => q.eq("owner", d.owner)).first() ||
+      await ctx.db.query("transcriptionChunks").withIndex("by_owner", q => q.eq("owner", d.owner)).first() ||
+      await ctx.db.query("transcriptionAttempts").withIndex("by_owner", q => q.eq("owner", d.owner)).first() ||
+      await ctx.db.query("batchChats").withIndex("by_owner", q => q.eq("owner", d.owner)).first() ||
+      await ctx.db.query("batchChatContexts").withIndex("by_owner", q => q.eq("owner", d.owner)).first() ||
+      await ctx.db.query("batchChatOperations").withIndex("by_owner", q => q.eq("owner", d.owner)).first()) {
+    await ctx.db.patch(d._id, { completedAt: undefined, purgeAt: undefined });
+    return 0;
+  }
   if (await deleteBatch(ctx, d._id)) {
     await ctx.scheduler.runAfter(0, internal.deletionRetention.purgeExpired, {});
     return 0;

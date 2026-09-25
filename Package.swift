@@ -14,7 +14,10 @@ let package = Package(
             .product(name: "ClerkKit", package: "clerk-ios"),
             .product(name: "RevenueCat", package: "purchases-ios-spm")
         ]),
-        .testTarget(name: "LessMeetTests", dependencies: ["LessMeet"])
+        .testTarget(name: "LessMeetTests", dependencies: ["LessMeet"], exclude: [
+            "BILLING_ADMISSION_HANDOFF.md", "BILLING_ADMISSION_SHA256.json",
+            "LONG_CAPTURE_HANDOFF.md"
+        ])
     ],
     swiftLanguageModes: [.v5]
 )

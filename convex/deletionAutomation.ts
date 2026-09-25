@@ -6,6 +6,7 @@ import { automationEnabled, executeDeletion, geminiProjectRef, LEASE_MS, MAX_ATT
 import { canDrainFileWork, classification, exactRequest, publishIntent } from "./deletionAutomationState";
 import { fail } from "./limits";
 import { preflightEnabled } from "./preflightAdapter";
+import { reconcileBatchWork } from "./batches";
 
 const providers = ["apple", "clerk", "revenuecat", "gemini", "residuals"] as const;
 const refArgs = { id: v.id("deletions"), owner: v.string() };
@@ -56,7 +57,7 @@ export const discover = internalMutation({ args: { ...refArgs, epoch: v.number()
         work: work._id, state, fence: 0, attempts: 0, nextAttemptAt: Date.now(), updatedAt: Date.now(),
         ...(work.fileDeleted ? { code: "previous_file_acknowledgement" } : state === "blocked" ? { code: valid ? "unverified_config" : "invalid_target" } : {}) });
       if (state === "queued") await ctx.scheduler.runAfter(0, internal.deletionAutomation.run, { id: stage });
-      if (canDrainFileWork(work)) { await ctx.db.delete(work._id); drained = true; }
+      if (canDrainFileWork(work)) { await reconcileBatchWork(ctx, work._id); await ctx.db.delete(work._id); drained = true; }
     }
     if (page.isDone) await ctx.db.patch(id, { discoveryComplete: true });
     else await ctx.scheduler.runAfter(0, internal.deletionAutomation.discover, { id, owner, epoch, cursor: page.continueCursor });
@@ -130,7 +131,7 @@ export const finish = internalMutation({ args: { ...fenceArgs, result: v.object(
   if (state === "retry") await ctx.scheduler.runAt(nextAttemptAt, internal.deletionAutomation.run, { id: s._id });
   if (state === "succeeded" && work) {
     await ctx.db.patch(work._id, { fileDeleted: true });
-    if (canDrainFileWork({ ...work, fileDeleted: true })) await ctx.db.delete(work._id);
+    if (canDrainFileWork({ ...work, fileDeleted: true })) { await reconcileBatchWork(ctx, work._id); await ctx.db.delete(work._id); }
     await ctx.scheduler.runAfter(0, internal.deletion.cleanup, { id: s.request });
   }
   await publishIntent(ctx, s.request);

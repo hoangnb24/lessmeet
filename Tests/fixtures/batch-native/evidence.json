@@ -1,0 +1,5 @@
+{
+  "canonicalJSON" : "[\"lessmeet.batch.geometry.v1\",\"210677dbc40079130e9dce06fd93df17133dead2c696565590f246a51a574863\",12288,132301,44100,[[0,\"210677dbc40079130e9dce06fd93df17133dead2c696565590f246a51a574863\",12288]]]",
+  "description" : "Synthetic 440Hz mono tone; 132301\/44100 seconds. Native chunk metadata\/checksum\/requested rational range in chunks\/manifest.json. No server decoder claim.",
+  "manifestDigest" : "9812a2b6dd6d06eaf2fe302bc71b231449749f83fd32f4360a3d62bf3f63fba7"
+}

@@ -199,7 +199,7 @@ struct LibraryView: View {
                         Text(group.title).font(.system(size: 12, weight: .semibold))
                             .foregroundStyle(.secondary).padding(.top, 26).padding(.bottom, 8)
                         ForEach(group.recordings) { recording in
-                            LibraryRecordingRow(recording: recording, remote: cloud.cached(recording)) { open(recording) }
+                            LibraryRecordingRow(recording: recording, remote: cloud.cached(recording), batch: cloud.batch(recording)) { open(recording) }
                         }
                     }
                 }
@@ -243,12 +243,22 @@ struct LibraryView: View {
 private struct LibraryRecordingRow: View {
     let recording: Recording
     let remote: CloudRecording?
+    let batch: LocalBatch?
     let action: () -> Void
     @State private var hovered = false
 
     private var status: String {
         if recording.status == .recording { return "Recording" }
         if recording.status == .interrupted { return "Interrupted" }
+        if let batch {
+            switch batch.status?.state {
+            case "complete": return "Batch completed"
+            case "partial": return "Partial transcript"
+            case "attention", "failed": return "Batch needs attention"
+            case "queued", "processing": return "Transcribing batch"
+            default: return "Batch prepared"
+            }
+        }
         switch remote?.status {
         case "ready": return "Transcript ready"
         case "queued", "processing": return "Transcribing"
@@ -294,6 +304,7 @@ private struct RecordingDetailView: View {
     @State private var title = ""
     @State private var confirmUpload = false
     @State private var selectedTab = DetailTab.transcript
+    @State private var showingLegacyChat = false
     @FocusState private var titleFocused: Bool
 
     private enum DetailTab: String, CaseIterable {
@@ -327,11 +338,24 @@ private struct RecordingDetailView: View {
             Divider().opacity(0.5)
             if selectedTab == .transcript {
                 document
+            } else if let batch = cloud.batch(recording), !showingLegacyChat || !transcriptReady {
+                VStack(spacing: 0) {
+                    if transcriptReady { Button("Open separate legacy transcript chat") { showingLegacyChat = true }.padding(10) }
+                    BatchChatView(batch: batch, cloud: cloud, enabled: canUseCloud).id(batch.clientBatchId)
+                }
             } else if transcriptReady {
-                RecordingChatView(recording: recording, remote: remote, cloud: cloud,
+                VStack(spacing: 0) {
+                    if cloud.batch(recording) != nil {
+                        HStack {
+                            Text("Legacy transcript chat only — separate from batch chat.").font(.caption).foregroundStyle(.orange)
+                            Button("Back to batch chat") { showingLegacyChat = false }
+                        }.padding(10)
+                    }
+                    RecordingChatView(recording: recording, remote: remote, cloud: cloud,
                                   draft: $composer.text, pendingQuestion: composer.pending,
                                   canUseCloud: canUseCloud, canSend: canSend,
                                   send: sendQuestion)
+                }
             } else {
                 VStack(alignment: .leading, spacing: 16) {
                     Text("Start with a transcript").font(.title2.weight(.semibold))
@@ -348,7 +372,7 @@ private struct RecordingDetailView: View {
         .onDisappear { saveTitle() }
         .onChange(of: titleFocused) { _, focused in if !focused { saveTitle() } }
         .onChange(of: accountSession.sessionIdentifier) { _, _ in
-            composer = RecordingChatDraft(); confirmUpload = false; selectedTab = .transcript
+            composer = RecordingChatDraft(); confirmUpload = false; selectedTab = .transcript; showingLegacyChat = false
         }
         .onChange(of: cloud.busy) { _, busy in
             if !busy { composer.finishSubmission(failed: cloud.error != nil) }
@@ -357,7 +381,7 @@ private struct RecordingDetailView: View {
             Button("Upload and Create Transcript") { cloud.transcribe() }
             Button("Cancel", role: .cancel) { }
         } message: {
-            Text("This uploads the combined audio to Convex and Google Gemini for processing. Audio, transcript and chat are stored in the cloud indefinitely. Your local files are kept. Maximum upload: 18 MiB. When quotas are enabled, each completed transcription uses your AI minutes. Uploading again is a new request; refresh an existing transcript first.")
+            Text("Prepare local chunks of at most 5 minutes with 5-second overlap, then upload them to Convex and Google Gemini. Maximum recording: 120 minutes; each chunk must fit 18 MiB. Local originals are kept. Cloud content is retained until deletion. The internal batch service may be disabled. Saved batches recover by Refresh; no unknown generation is automatically retried. Batch chat requires complete results and bounded context; it may be disabled separately.")
         }
     }
 
@@ -396,7 +420,9 @@ private struct RecordingDetailView: View {
                         Button("Stop Waiting") { cloud.cancel() }.buttonStyle(.borderless)
                     }.padding(.bottom, 20)
                 }
-                if let transcript = remote?.transcript {
+                if let batch = cloud.batch(recording) {
+                    BatchTranscriptView(batch: batch, cloud: cloud, enabled: canUseCloud)
+                } else if let transcript = remote?.transcript {
                     MarkdownView(text: transcript).font(.system(size: 14))
                 } else {
                     transcriptPlaceholder
