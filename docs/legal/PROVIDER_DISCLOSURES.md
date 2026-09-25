@@ -4,9 +4,22 @@ Reconciled 2026-09-24 against `b42a7a00a9e0f60a72eaeeadaa17b0c9c190f605`
 plus accepted working-tree evidence in [STATUS](../STATUS.md),
 [BACKEND](../BACKEND.md) and [CONFIGURATION](../CONFIGURATION.md).
 This is evidence for policy review, not legal approval or authorization to publish.
-No account/settings inspection occurred in this reconciliation. Recorded operator
-checks below are inherited evidence, not a fresh live audit. Owner internal
-TestFlight testing is the current milestone; public publication is separate.
+No account/settings inspection occurred in the Sep 24 reconciliation. Sep 25
+Google/Clerk evidence is now recorded in CONFIGURATION: Google credentials enabled,
+domain/SSL complete, Google Testing/Branding incomplete and Apple credentials pending.
+Scopes/Google dashboard behavior are Human-reported; full login remains unverified.
+Human subsequently authorized landing-only publication Sep 25; this does not
+authorize publishing policy drafts or establish Google production readiness.
+
+Sep 25 source refresh: [Google OAuth policies](https://developers.google.com/identity/protocols/oauth2/policies)
+require an accurate app homepage and links to privacy/terms on an owned verified
+domain for production. Basic login scopes do not establish a Gemini data-processing
+policy. [Gemini terms](https://ai.google.dev/gemini-api/terms) still prohibit API
+clients directed toward or likely accessed by under-18s, restrict purposes/regions,
+and distinguish paid-project data handling from unpaid use. The approved 10+ target
+therefore remains an unresolved eligibility decision for Human under #4, not a
+reason to invent an age clause or silently change provider. Exact paid-project and
+optional-sharing evidence is still needed; no universal no-training claim follows.
 
 ## Data, retention and deletion matrix
 

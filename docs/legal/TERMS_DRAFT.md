@@ -7,8 +7,9 @@ Reconciled 2026-09-24 against `b42a7a00a9e0f60a72eaeeadaa17b0c9c190f605`
 and the accepted working-tree/development evidence in [STATUS](../STATUS.md).
 Approved commercial inputs below are not evidence of public availability or
 production configuration. See [provider decisions](PROVIDER_DISCLOSURES.md).
-Owner internal TestFlight testing is the current milestone, not public launch or
-App Review. This draft does not impose publication as a universal beta prerequisite.
+Sep 25 update: this candidate also supports the public homepage/Google Branding
+dependency in issue #2; it is not an approved agreement or evidence of public launch.
+Human confirmed operator Hoang Bang and support/privacy hoang@2m0r.com Sep 25.
 
 Effective date: [REQUIRED]
 
@@ -23,8 +24,8 @@ Planned privacy policy URL (not yet verified/published): https://www.lessmeet.2m
 The operator has selected Apple's Standard End User License Agreement for the
 App Store version: https://www.apple.com/legal/internet-services/itunes/dev/stdeula/
 These service and subscription disclosures do not replace that license or limit
-mandatory consumer rights. The App Store Connect license configuration still
-requires verification before submission.
+mandatory consumer rights. Sep 25 App Store Connect readback displayed the Standard
+License Agreement; final release verification remains required before submission.
 
 ## Recording and AI
 
@@ -33,7 +34,19 @@ other participants' information. LessMeet provides local recording and optional
 cloud transcription, recording chat, summaries and action items. AI output may be
 inaccurate or incomplete; review it before relying on it. Local recording and
 playback are not subject to subscription usage quotas. Technical/device limits
-still apply; the current cloud upload limit is 18 MiB per recording.
+still apply. The existing single-upload route accepts at most 18 MiB. A separate
+bounded chunked-recording path is implemented but default-off and not accepted
+as a public production capability. A 120-minute allowance is not a promise that
+any individual 120-minute recording can currently be uploaded.
+
+## Accounts and availability
+
+Google sign-in uses Clerk and basic identity, email and profile information, not
+Calendar or Drive permissions. Signing in alone does not upload a recording or
+start a subscription. You separately confirm a cloud upload or an App Store purchase.
+Production Google publishing is still being completed; Apple login credentials
+and end-to-end production login remain unverified. These are review notes to
+reconcile before publication, not a promise of current availability.
 
 ## Plans and allowances
 

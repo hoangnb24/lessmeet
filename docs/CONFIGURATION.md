@@ -1,6 +1,6 @@
 # Configuration reference
 
-Last reconciled: 2026-09-25 (release identity inventory; service observations retain their dates). This is the configuration inventory; decisions,
+Last reconciled: 2026-09-25 (issue #2 production provisioning; older service observations retain their dates). This is the configuration inventory; decisions,
 ownership and release gates remain in [STATUS.md](STATUS.md). Update this document
 after each configuration change, including environment, verification date/result,
 secret location and rollback limits. Never commit keys, tokens or private keys.
@@ -68,10 +68,19 @@ changes. Remaining ownership and next checkpoint are in STATUS, not a second tra
 
 ## Accounts and environments
 
+Sep 25 Human confirmed **Hoang Bang** as website/privacy/terms operator and
+**hoang@2m0r.com** as website support/privacy contact. This does not independently
+establish Apple seller/trader status or approve the legal drafts. Google OAuth
+support/contact remains hoang@kieng.io.vn in the supplied handoff; no external
+change performed. Reconcile the public support field before Branding submission.
+
 | Service | Exact target / public configuration | Verified state |
 | --- | --- | --- |
 | Convex | `hoang-bang/lessmeet`, dev `zany-octopus-315`; `https://zany-octopus-315.convex.site` | Sep 24: accepted backend and retention workers deployed; RC preflight configuration provisioned. Intake/automation/preflight activation gates absent after synthetic rehearsal. Production not established. |
-| Clerk | LessMeet app `app_3JggBoRulgsbt70ZFjgy9h7UjqQ`, dev instance `ins_3JggBsWybMahxou8G4rXVmM2Snu` | Dashboard Sep 24: no production environment; Apple and Google use Shared credentials. |
+| Convex production | `hoang-bang:lessmeet:prod` resolves to `uncommon-narwhal-733` | Sep 25 CLI names-only inventory: no environment variables; usage-limits list: none configured. Discovered existing deployment; no create, env mutation or code deploy performed. Plan/region, code/data/scheduled-work state and cost boundary not yet verified. |
+| Clerk development | LessMeet app `app_3JggBoRulgsbt70ZFjgy9h7UjqQ`, dev instance `ins_3JggBsWybMahxou8G4rXVmM2Snu` | Dashboard Sep 24: Apple/Google shared credentials. Sep 25 API readback: audience convex and exact callback still present; dev not modified. |
+| Clerk production | Same LessMeet app; new `ins_3JoKJsnX2ro7wXXYQfu94imtJNX`, domain `auth.lessmeet.2m0r.com` | Sep 25 latest CLI readback: DNS/SSL/mail complete, Google configured, Apple credentials pending. Native API and aud=convex verified; exact callback saved. Google Publishing/Branding and end-to-end auth still incomplete. |
+| Clerk production issuer | `https://clerk.auth.lessmeet.2m0r.com` | Matches generated domain/publishable key; public JWKS GET succeeds (one RSA key), CLI SSL complete. Backend JWT acceptance not tested; not provisioned to Convex. |
 | Clerk issuer | `https://major-fish-4158.clerk.accounts.dev` | Explicit dev env value matches dashboard Sep 24. |
 | RevenueCat | **Lessmeet**, dashboard `a83a7730`, API v2 `proja83a7730` | Sep 24: Keep with original App User ID; separate sandbox transfer behavior off. Do not use unrelated Meetless project. |
 | RevenueCat apps | App Store `app0efc34c2fb`; Test Store `app2b707bf0f0` | Dashboard inventory Sep 24. |
@@ -83,6 +92,83 @@ Dashboard entry points: [Clerk SSO](https://dashboard.clerk.com/apps/app_3JggBoR
 [RevenueCat keys](https://app.revenuecat.com/projects/a83a7730/api-keys),
 [Resend keys](https://resend.com/api-keys),
 [Cloudflare DNS](https://dash.cloudflare.com/6031f1f85e189c44fb3bcd150ca65920/2m0r.com/dns/records).
+
+### Issue #2 production DNS and access checkpoint
+
+Latest Sep 25 readback after Human Google handoff: Clerk DNS, SSL and mail all
+complete; no pending DNS records. Earlier SSL-pending/handshake-failure observations
+below are historical. No actual mail-delivery or end-to-end login claim.
+
+Human approved production/credential setup and `auth.lessmeet.2m0r.com` plus only
+necessary Clerk DNS additions on Sep 25. Clerk generated these exact CNAMEs;
+Human reports adding all five on Sep 25. Lead verified each exact CNAME target
+directly against authoritative `newt.ns.cloudflare.com` (TTL 300). DNS addition
+is accepted; Clerk domain/SSL/mail verification is a separate checkpoint. Preserve
+DNS-only (no proxy) and existing website/email records.
+
+| Host | Target |
+| --- | --- |
+| `clerk.auth.lessmeet.2m0r.com` | `frontend-api.clerk.services` |
+| `accounts.auth.lessmeet.2m0r.com` | `accounts.clerk.services` |
+| `clkmail.auth.lessmeet.2m0r.com` | `mail.pfcieoi0slra.clerk.services` |
+| `clk._domainkey.auth.lessmeet.2m0r.com` | `dkim1.pfcieoi0slra.clerk.services` |
+| `clk2._domainkey.auth.lessmeet.2m0r.com` | `dkim2.pfcieoi0slra.clerk.services` |
+
+Initial post-addition CLI status still reported domain_pending. Exact domain API
+then verified four of five CNAMEs; DKIM2 remained unverified despite authoritative
+DNS matching. Lead triggered the documented `dns_check` endpoint: DNS in_progress,
+SSL/mail not_started, no failure hints. This supersedes the earlier missing-DNS
+observation, not evidence of functioning OAuth or email delivery.
+Subsequent exact-domain readback confirms **all five verified, DNS complete and
+mail complete**. API-host SSL complete; account-portal SSL in_progress. Public GET
+`https://clerk.auth.lessmeet.2m0r.com/.well-known/jwks.json` succeeds with one RSA
+key; HEAD returned 405 (GET required). Account-portal HTTPS handshake failed while
+its certificate was pending. Keep this failed probe separate from API-host success;
+neither proves production OAuth, backend JWT acceptance or email delivery.
+[Production domains dashboard](https://dashboard.clerk.com/apps/app_3JggBoRulgsbt70ZFjgy9h7UjqQ/instances/ins_3JoKJsnX2ro7wXXYQfu94imtJNX/domains).
+Production callback `com.lessmeet.app://callback` is saved as
+`ru_3JoKWBtrvDQuqMQ48JtSLr1L2d4`; audience `convex` and Native API enabled verified
+through exact-instance API reads. No secret keys were printed/exported or copied
+from dev; Clerk's production instance/key provisioning stays provider-managed.
+
+Chrome runtime initialization currently fails on a missing browser-service module;
+no provider page or browser authentication was inspected this turn. Wrangler
+4.136.3 is logged in and sees the expected Cloudflare account, but its displayed
+OAuth scopes have zone read, not DNS write. Do not substitute unrelated credentials
+or reauthorize broad scopes to bypass this. Human completed the DNS additions;
+Apple/Google credential setup still needs working dashboard access or an approved
+scoped alternative. DNS verification can continue through Clerk CLI.
+
+### Google production credentials — configured, public release incomplete
+
+Human handoff: Google project `lessmeet` (LessMeet), organization `kieng.io.vn`;
+External audience, support/contact `hoang@kieng.io.vn`. Web OAuth client
+**LessMeet Clerk Production**, ID
+`1040637696359-gkvivq7fqteo84b59ouf7lk671o5q4pq.apps.googleusercontent.com`.
+Redirect `https://clerk.auth.lessmeet.2m0r.com/v1/oauth_callback`; JS origins empty
+for hosted Clerk flow. Human reports only openid/userinfo.email/userinfo.profile
+scopes, no Calendar/Drive; owner accepted Google User Data Policy. Client secret
+entered directly into Clerk, not exported/read back or included in this inventory.
+
+Lead exact Clerk config read independently confirms enabled=true, matching client
+ID and aud=convex. CLI deploy status reports Google configured, Apple pending.
+Human reached Google account chooser from the production account portal; full
+sign-in/consent/callback/session and native/backend JWT smoke remain untested.
+Google dashboard state is Human-reported: Testing, no test users; Publish app blocked
+on Branding. Authorized domain 2m0r.com present but homepage/privacy/terms URLs empty.
+The earlier missing-DNS observation is historical: Human authorized landing-only
+publication Sep 25, deployed as Cloudflare Worker `lessmeet-legal`, version
+`9550542c-f6e1-48f7-8a08-cd962a49ff00`, at `www.lessmeet.2m0r.com`.
+See STATUS for live HTTPS verification. Policy approval/publication remains a
+dependency; the landing deployment does not authorize publishing legal drafts.
+Do not recreate this project/client or put any client secret into app configuration.
+Google project identity here establishes OAuth only, not Gemini API project/key binding.
+
+Rollback/current containment: do not point the native release at this unverified
+stack, do not deploy backend code or enable gates yet; development remains selected.
+The new Clerk instance is retained for resumable setup, not deleted. Reopen if its
+domain/issuer or provider identity changes. Creating this instance does not prove
+production billing eligibility or authorize paid upgrades.
 
 ## Secrets: where to find them
 
@@ -154,9 +240,10 @@ the seven names above plus `REVENUECAT_PREFLIGHT_CONFIG_REF`,
 `REVENUECAT_PREFLIGHT_PROJECT_ID`, `REVENUECAT_PREFLIGHT_PROJECT_VERIFIED` and
 `REVENUECAT_PREFLIGHT_SECRET_KEY` (11 total). Names only: no values or secret
 material read, no inference that present switches are enabled. No production
-environment or provider binding has yet been freshly verified for #2; historical
-account observations above retain their original dates. Production creation,
-credentials and cost approvals are pending in STATUS.
+environment was verified by that earlier inventory alone. Subsequent production
+Convex/Clerk observations are recorded above; other account observations retain
+their original dates. Human approved production creation/necessary credentials;
+paid upgrades/activation remain separate decisions in STATUS.
 
 ## Verification and change procedure
 

@@ -8,8 +8,10 @@ and the accepted working-tree evidence in [STATUS](../STATUS.md),
 [backend contract](../BACKEND.md) and [configuration](../CONFIGURATION.md).
 Development deployment is not production availability. No live settings were read
 for this reconciliation. See the [provider disclosure matrix](PROVIDER_DISCLOSURES.md).
-The current milestone is owner internal TestFlight testing, not public launch;
-this unpublished policy is not a universal beta-publication prerequisite.
+Sep 25 update: this is also the privacy-copy candidate for the public website
+and Google OAuth Branding dependency in issue #2. It remains unpublished and
+requires the decisions below; production credential setup is not release readiness.
+Human confirmed operator Hoang Bang and support/privacy hoang@2m0r.com Sep 25.
 
 Effective date: [REQUIRED]
 
@@ -28,9 +30,30 @@ encrypt those local files. Signing out does not erase the local library.
 
 ## Optional account and cloud AI
 
+### Signing in with Google
+
+Google sign-in is handled by Clerk. The configured login requests basic identity,
+email and profile information (`openid`, `userinfo.email`, `userinfo.profile`) to
+identify your account and establish a session. Profile information may include
+your name and profile picture. The configured login does not request Calendar or
+Drive access. LessMeet's backend uses your Clerk account identifier to associate
+your cloud recordings and access allowances with your account.
+
+Signing in is not consent to upload a recording. Google account information used
+for login is distinct from recording content you separately choose to send to
+Google Gemini. No Google password is requested by the LessMeet app.
+
+Operator review note: scopes are based on the Sep 25 Human handoff; Clerk enabled
+and client ID were independently checked, but full consent/callback and exact
+returned profile fields have not been exercised. Verify before publication.
+Google OAuth project `lessmeet` does not establish the Gemini project, billing
+tier or data-use settings.
+
+### Uploading a recording and asking questions
+
 Local recording does not require an AI upload. When you sign in, Clerk processes
 account and authentication information. When you explicitly confirm Create
-Transcript, the combined recording is uploaded to our Convex backend and sent to
+Transcript, audio from the selected recording is uploaded to our Convex backend and sent to
 Google Gemini for transcription. Questions you send, the transcript and relevant
 conversation context are processed to generate answers, summaries and action
 items. These outputs may contain information about you or other participants.
@@ -115,6 +138,13 @@ approval. No immediate deletion, response deadline or provider-erasure promise i
 
 ## Publication checklist — remove only after resolution
 
+- Operator/contact are confirmed as Hoang Bang / hoang@2m0r.com. Reconcile Google's
+  current hoang@kieng.io.vn support field before public Branding; do not silently
+  change account ownership or organization contact information.
+- Resolve target-audience/provider eligibility under issue #4. The approved 10+
+  target is not a contractual age limit; no 18+ clause is silently substituted.
+- Verify Google consent/profile fields and separately approve Gemini processing
+  disclosures. Login credentials alone do not establish AI data policy.
 - Set the effective date when approved; publish and verify the planned HTTPS URL.
   Confirm any additional operator contact details required before publication.
 - Confirm actual production provider contracts/settings and data inventory;
