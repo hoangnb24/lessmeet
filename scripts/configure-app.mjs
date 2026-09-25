@@ -6,7 +6,7 @@ import { execFileSync } from "node:child_process";
 const plist = process.argv[2];
 if (!plist) throw new Error("Expected the app Info.plist path.");
 const mode = process.argv[3] ?? "dev";
-if (!["dev", "sandbox-dev", "store"].includes(mode)) throw new Error("Unknown packaging mode.");
+if (!["dev", "sandbox-dev", "store", "testflight"].includes(mode)) throw new Error("Unknown packaging mode.");
 // Signed modes use only explicitly supplied public values, never local secrets.
 const local = mode === "dev" && existsSync(".env.local") ? parseEnv(readFileSync(".env.local", "utf8")) : {};
 const entries = [["LessMeetPackagingMode", mode]];
@@ -19,7 +19,7 @@ for (const [variable, property] of [
 ]) {
   const value = (process.env[variable] ?? local[variable] ?? "").trim();
   if (!value) {
-    const internalLegal = mode === "sandbox-dev" && ["LESSMEET_PRIVACY_URL", "LESSMEET_TERMS_URL"].includes(variable);
+    const internalLegal = ["sandbox-dev", "testflight"].includes(mode) && ["LESSMEET_PRIVACY_URL", "LESSMEET_TERMS_URL"].includes(variable);
     if (mode !== "dev" && !internalLegal) throw new Error(`Missing required public configuration: ${variable}`);
     continue;
   }

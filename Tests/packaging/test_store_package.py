@@ -260,13 +260,20 @@ class StoreTests(unittest.TestCase):
             store.verify_signed_app(self.app)
             displayed = [args[3] for args in self.calls if "--entitlements" in args]
             self.assertEqual(displayed, ["arm64", "x86_64"])
+            self.calls.clear()
+            store.verify_signed_app(self.app, "testflight")
+            self.assertEqual([args[3] for args in self.calls if "--entitlements" in args], ["arm64", "x86_64"])
             ent["get-task-allow"] = True
             with self.assertRaises(store.Invalid):
                 store.verify_signed_app(self.app)
+            with self.assertRaises(store.Invalid):
+                store.verify_signed_app(self.app, "testflight")
             del ent["get-task-allow"]
             data["DeveloperCertificates"] = [b"not the signature leaf"]
             with self.assertRaises(store.Invalid):
                 store.verify_signed_app(self.app)
+            with self.assertRaises(store.Invalid):
+                store.verify_signed_app(self.app, "testflight")
 
 
 store_run = store.run

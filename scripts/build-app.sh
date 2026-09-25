@@ -3,16 +3,16 @@ set -euo pipefail
 cd "$(dirname "$0")/.."
 mode="${1:-dev}"
 action="${2:-build}"
-if [[ $# -gt 2 || ! "$mode" =~ ^(dev|sandbox-dev|store)$ || ! "$action" =~ ^(build|--preflight)$ ]]; then
-  printf 'Usage: bash scripts/build-app.sh [dev|sandbox-dev|store] [--preflight]\n' >&2
+if [[ $# -gt 2 || ! "$mode" =~ ^(dev|sandbox-dev|store|testflight)$ || ! "$action" =~ ^(build|--preflight)$ ]]; then
+  printf 'Usage: bash scripts/build-app.sh [dev|sandbox-dev|store|testflight] [--preflight]\n' >&2
   exit 1
 fi
 output_dir="$PWD/dist"
 if [[ "$mode" != dev ]]; then
   output_dir="$output_dir/$mode"
   node scripts/configure-app.mjs --check "$mode"
-  if [[ "$mode" == store ]]; then
-    python3 scripts/store-package.py inputs
+  if [[ "$mode" == store || "$mode" == testflight ]]; then
+    python3 scripts/store-package.py inputs --mode "$mode"
   fi
   if [[ "$action" == --preflight ]]; then
     python3 scripts/packaging-signing.py "$mode"
@@ -38,8 +38,8 @@ mkdir -p "$app_dir/Contents/MacOS" "$app_dir/Contents/Resources"
 cp "$binary_dir/LessMeet" "$app_dir/Contents/MacOS/LessMeet"
 cp Resources/Info.plist "$app_dir/Contents/Info.plist"
 node scripts/configure-app.mjs "$app_dir/Contents/Info.plist" "$mode"
-if [[ "$mode" == store ]]; then
-  python3 scripts/store-package.py stamp "$app_dir"
+if [[ "$mode" == store || "$mode" == testflight ]]; then
+  python3 scripts/store-package.py stamp "$app_dir" --mode "$mode"
 fi
 # Swift Build generates resource lookup through Bundle.main.resourceURL.
 cp -R "$binary_dir/Clerk_ClerkKit.bundle" "$app_dir/Contents/Resources/"
@@ -55,6 +55,6 @@ if [[ -e "$output_dir/LessMeet.app" ]]; then
 fi
 mv "$app_dir" "$output_dir/LessMeet.app"
 printf 'Built %s\n' "$output_dir/LessMeet.app"
-if [[ "$mode" == store ]]; then
-  printf 'Store artifact is an .app only; no installer .pkg was created or uploaded.\n'
+if [[ "$mode" == store || "$mode" == testflight ]]; then
+  printf '%s artifact is an .app only; no installer .pkg was created or uploaded.\n' "$mode"
 fi

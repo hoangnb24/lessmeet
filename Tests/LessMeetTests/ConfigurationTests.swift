@@ -2,11 +2,12 @@ import XCTest
 @testable import LessMeet
 
 final class ConfigurationTests: XCTestCase {
-    func testOnlyExplicitSandboxPackagingEnablesInternalTesting() throws {
-        for mode in [nil, "dev", "store", "sandbox", ""] {
+    func testOnlyExactInternalPackagingModesEnableInternalTesting() throws {
+        for mode in [nil, "dev", "store", "sandbox", "", "TestFlight", "testflight ", " testflight", "testflight-internal"] {
             XCTAssertFalse(try BillingConfiguration(publicAppleAPIKey: nil, packagingMode: mode).isInternalTesting)
         }
         XCTAssertTrue(try BillingConfiguration(publicAppleAPIKey: nil, packagingMode: "sandbox-dev").isInternalTesting)
+        XCTAssertTrue(try BillingConfiguration(publicAppleAPIKey: nil, packagingMode: "testflight").isInternalTesting)
         XCTAssertThrowsError(try BillingConfiguration(publicAppleAPIKey: nil, privacyURL: "file:///tmp/privacy", packagingMode: "sandbox-dev"))
     }
     func testOptionalBillingConfigurationRejectsSecretsAndUnsafeLegalURLs() throws {

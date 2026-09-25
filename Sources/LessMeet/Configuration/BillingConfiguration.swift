@@ -9,7 +9,7 @@ struct BillingConfiguration {
 
     init(publicAppleAPIKey: String?, privacyURL: String? = nil, termsURL: String? = nil,
          packagingMode: String? = nil) throws {
-        self.isInternalTesting = packagingMode == "sandbox-dev"
+        self.isInternalTesting = packagingMode == "sandbox-dev" || packagingMode == "testflight"
         let key = publicAppleAPIKey?.trimmingCharacters(in: .whitespacesAndNewlines) ?? ""
         guard key.isEmpty || (key.hasPrefix("appl_") && key.count > 5 &&
                              key.dropFirst(5).allSatisfy { $0.isASCII && ($0.isLetter || $0.isNumber) }) else {

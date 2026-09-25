@@ -45,24 +45,42 @@ def digest(data):
     return hashlib.sha256(data).hexdigest()
 
 
-def inputs():
+def approval_mode(approval, mode):
+    require(mode in ("store", "testflight"), "Unknown distribution mode.")
+    require(approval.get("mode", "store") == mode, "Approval mode mismatch.")
+    if mode == "store":
+        require("internal_audience" not in approval, "Beta approval cannot authorize store packaging.")
+
+
+def inputs(mode="store"):
     version = os.environ.get("LESSMEET_VERSION", "")
     build = os.environ.get("LESSMEET_BUILD", "")
     require(re.fullmatch(r"[0-9]+\.[0-9]+\.[0-9]+", version), "Explicit three-component LESSMEET_VERSION required.")
     require(re.fullmatch(r"[1-9][0-9]{0,3}(\.[0-9]{1,2}){0,2}", build),
             "Explicit release LESSMEET_BUILD required (positive major, up to 4.2.2 digits).")
-    approval_path = os.environ.get("LESSMEET_STORE_APPROVAL", "")
-    require(approval_path and Path(approval_path).is_file(), "Explicit public LESSMEET_STORE_APPROVAL record required.")
+    require(mode in ("store", "testflight"), "Unknown distribution mode.")
+    variable = "LESSMEET_TESTFLIGHT_APPROVAL" if mode == "testflight" else "LESSMEET_STORE_APPROVAL"
+    other = "LESSMEET_STORE_APPROVAL" if mode == "testflight" else "LESSMEET_TESTFLIGHT_APPROVAL"
+    require(not os.environ.get(other), "Do not mix Store and TestFlight approval inputs.")
+    approval_path = os.environ.get(variable, "")
+    require(approval_path and Path(approval_path).is_file(), "Explicit public " + variable + " record required.")
     approval = json.loads(Path(approval_path).read_text())
+    approval_mode(approval, mode)
     require(approval.get("schema") == 1 and approval.get("bundle") == signing.BUNDLE
             and approval.get("team") == signing.TEAM, "Store approval schema, bundle or team mismatch.")
     require(approval.get("version") == version and approval.get("build") == build, "Approval version/build mismatch.")
     public = {key: os.environ.get(key, "").strip() for key in PUBLIC}
-    require(all(public.values()) and approval.get("public_configuration") == public, "Approval must bind every public configuration value exactly.")
+    required = PUBLIC if mode == "store" else list(PUBLIC)[:3]
+    require(all(public[k] for k in required) and approval.get("public_configuration") == public, "Approval must bind every public configuration value exactly.")
     # Reuse public syntactic validation. No .env fallback and no secret inputs.
-    run(["node", Path(__file__).with_name("configure-app.mjs"), "--check", "store"])
-    for key in ("production_backend_evidence", "production_auth_billing_evidence", "published_legal_evidence",
-                "approved_icon_evidence", "approved_by"):
+    run(["node", Path(__file__).with_name("configure-app.mjs"), "--check", mode])
+    evidence = ("production_backend_evidence", "production_auth_billing_evidence", "published_legal_evidence")
+    if mode == "testflight":
+        require(approval.get("internal_audience") == "internal-only", "Explicit internal-only audience required.")
+        require(approval.get("distribution_control_acknowledgement") == "manual-app-store-connect-internal-group-selection",
+                "A packaging mode does not enforce Apple's internal-only distribution; acknowledge manual group selection.")
+        evidence = ("backend_evidence", "auth_billing_evidence", "internal_unpublished_legal_acknowledgement")
+    for key in (*evidence, "approved_icon_evidence", "approved_by"):
         require(isinstance(approval.get(key), str) and approval[key].strip(), "Missing explicit Store approval evidence: " + key)
     icon_path = os.environ.get("LESSMEET_ICON_ICNS", "")
     require(icon_path and Path(icon_path).is_file() and Path(icon_path).suffix == ".icns", "Approved LESSMEET_ICON_ICNS input required.")
@@ -90,28 +108,30 @@ def validate_icon(icon):
                             "Icon representation has incorrect pixel dimensions.")
 
 
-def stamp(app, values):
+def stamp(app, values, mode="store"):
     # Only called by build-app on its fresh, unsigned staging bundle.
     require(not (app / "Contents/_CodeSignature").exists(), "Refusing to change a signed bundle.")
     info_path = app / "Contents/Info.plist"
     info = plistlib.loads(info_path.read_bytes())
-    version, build, public, icon, _ = values
-    require(info.get("LessMeetPackagingMode") == "store", "Only store staging bundles may be stamped.")
-    require(all(info.get(prop) == public[key] for key, prop in PUBLIC.items()), "Staging public configuration mismatch.")
+    version, build, public, icon, approval = values
+    approval_mode(approval, mode)
+    require(info.get("LessMeetPackagingMode") == mode, "Staging bundle mode mismatch.")
+    require(all(info.get(prop, "") == public[key] for key, prop in PUBLIC.items()), "Staging public configuration mismatch.")
     info.update(CFBundleShortVersionString=version, CFBundleVersion=build, CFBundleIconFile="LessMeet.icns")
     (app / "Contents/Resources/LessMeet.icns").write_bytes(icon)
     info_path.write_bytes(plistlib.dumps(info))
 
 
-def validate_bundle(app, values):
-    version, build, public, icon, _ = values
+def validate_bundle(app, values, mode="store"):
+    version, build, public, icon, approval = values
+    approval_mode(approval, mode)
     info = plistlib.loads((app / "Contents/Info.plist").read_bytes())
     expected = {"CFBundleIdentifier": signing.BUNDLE, "CFBundleExecutable": "LessMeet",
-                "CFBundlePackageType": "APPL", "LessMeetPackagingMode": "store",
+                "CFBundlePackageType": "APPL", "LessMeetPackagingMode": mode,
                 "CFBundleShortVersionString": version, "CFBundleVersion": build,
                 "CFBundleIconFile": "LessMeet.icns", "LSMinimumSystemVersion": "15.0"}
     expected.update({prop: public[key] for key, prop in PUBLIC.items()})
-    require(all(info.get(k) == v for k, v in expected.items()), "Store bundle metadata/configuration differs from approved inputs.")
+    require(all(info.get(k, "") == v for k, v in expected.items()), "Distribution bundle metadata/configuration differs from approved inputs.")
     require(info.get("CFBundleURLTypes") == [{"CFBundleURLName": signing.BUNDLE,
                                              "CFBundleURLSchemes": [signing.BUNDLE]}], "Callback contract mismatch.")
     require((app / "Contents/Resources/LessMeet.icns").read_bytes() == icon, "Bundled icon differs from approved bytes.")
@@ -120,7 +140,8 @@ def validate_bundle(app, values):
     require((app / "Contents/MacOS/LessMeet").is_file(), "Missing app executable.")
 
 
-def verify_signed_app(app):
+def verify_signed_app(app, mode="store"):
+    require(mode in ("store", "testflight"), "Unknown distribution mode.")
     requirement = 'anchor apple generic and identifier "' + signing.BUNDLE + '" and certificate leaf[subject.OU] = "' + signing.TEAM + '"'
     run(["/usr/bin/codesign", "--verify", "--strict", "--all-architectures", "--test-requirement", requirement, app])
     profile = plistlib.loads(run(["/usr/bin/security", "cms", "-D", "-i", app / "Contents/embedded.provisionprofile"]))
@@ -133,7 +154,7 @@ def verify_signed_app(app):
             prefix = Path(folder) / "cert"
             run(["/usr/bin/codesign", "--display", "--arch", arch, "--extract-certificates=" + str(prefix), app])
             der = Path(str(prefix) + "0").read_bytes()
-        approved = signing.validate(profile, "store", hashlib.sha1(der).hexdigest(), signing.certificate_metadata(der))
+        approved = signing.validate(profile, mode, hashlib.sha1(der).hexdigest(), signing.certificate_metadata(der))
         approved.update({"com.apple.security.app-sandbox": True, "com.apple.security.network.client": True,
                          "com.apple.security.device.audio-input": True})
         require(ent == approved, "Every architecture must have only the minimal approved entitlements.")
@@ -150,7 +171,7 @@ def installer_identity(output, requested):
     return fingerprint, names[0]
 
 
-def package(app, output, requested, values):
+def package(app, output, requested, values, mode="store"):
     app = app.resolve(strict=True)
     output = output.absolute()
     require(app.name == "LessMeet.app" and app.is_dir(), "Explicit LessMeet.app input required.")
@@ -159,7 +180,7 @@ def package(app, output, requested, values):
     # No symlink traversal into unowned data. Current app has no framework symlinks;
     # introducing frameworks requires reopening this narrow packaging policy.
     require(not any(p.is_symlink() for p in app.rglob("*")), "Symlink bundles need separate packaging review.")
-    validate_bundle(app, values)
+    validate_bundle(app, values, mode)
     require(requested and requested != "-", "Explicit installer signing identity required.")
     output.mkdir(mode=0o700)
     # Keep failures isolated and inspectable; never promote into dist or replace an app.
@@ -167,8 +188,8 @@ def package(app, output, requested, values):
         work = Path(folder)
         snapshot = work / "LessMeet.app"
         shutil.copytree(app, snapshot)
-        validate_bundle(snapshot, values)
-        verify_signed_app(snapshot)
+        validate_bundle(snapshot, values, mode)
+        verify_signed_app(snapshot, mode)
         fingerprint, name = installer_identity(run(["/usr/bin/security", "find-identity", "-v", "-p", "basic"]).decode(), requested)
         candidate = work / "LessMeet.pkg"
         run(["/usr/bin/productbuild", "--component", snapshot, "/Applications", "--sign", name, candidate])
@@ -177,9 +198,9 @@ def package(app, output, requested, values):
                 and re.search(r"^\s*1\.\s+" + re.escape(name) + r"\s*$", check, re.M),
                 "Installer signature must be trusted and match the selected installer identity.")
         # Recheck the exact app supplied to productbuild before retaining output.
-        verify_signed_app(snapshot)
-        validate_bundle(snapshot, values)
-        result = {"schema": 1, "bundle": signing.BUNDLE, "team": signing.TEAM,
+        verify_signed_app(snapshot, mode)
+        validate_bundle(snapshot, values, mode)
+        result = {"schema": 1, "mode": mode, "bundle": signing.BUNDLE, "team": signing.TEAM,
                   "version": values[0], "build": values[1], "pkg_sha256": digest(candidate.read_bytes()),
                   "approval_sha256": digest(json.dumps(values[4], sort_keys=True).encode()),
                   "limits": "Local packaging only; no upload acceptance, installation, runtime or publication proof."}
@@ -200,12 +221,14 @@ def main():
     package_parser.add_argument("--app", type=Path, required=True)
     package_parser.add_argument("--output-dir", type=Path, required=True)
     package_parser.add_argument("--installer-identity", required=True)
+    for command in commands.choices.values():
+        command.add_argument("--mode", choices=("store", "testflight"), default="store")
     args = parser.parse_args()
-    values = inputs()
+    values = inputs(args.mode)
     if args.command == "stamp":
-        stamp(args.app, values)
+        stamp(args.app, values, args.mode)
     elif args.command == "package":
-        package(args.app, args.output_dir, args.installer_identity, values)
+        package(args.app, args.output_dir, args.installer_identity, values, args.mode)
     else:
         print("Public input checks passed; approval assertions are NOT independently verified provider/branding evidence.")
 

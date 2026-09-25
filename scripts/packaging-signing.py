@@ -13,7 +13,7 @@ import tempfile
 
 BUNDLE = "com.lessmeet.app"
 TEAM = "63M98WD275"
-MODES = ("sandbox-dev", "store")
+MODES = ("sandbox-dev", "store", "testflight")
 
 
 class Invalid(ValueError):
