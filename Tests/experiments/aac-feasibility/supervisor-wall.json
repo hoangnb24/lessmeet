@@ -1,0 +1,20 @@
+{
+  "command": [
+    "/Users/tubakhuym/.local/bin/node",
+    "-e",
+    "setInterval(()=>{},1000)"
+  ],
+  "exit": -9,
+  "reason": "wall-time-kill",
+  "elapsedSeconds": 0.224350666,
+  "sampledPeakRssBytes": 40026112,
+  "limits": {
+    "wallSeconds": 0.2,
+    "sampledRssMiB": 256,
+    "cpuSoftSeconds": 5,
+    "cpuHardSeconds": 6,
+    "note": "No hard total-RSS ceiling on Darwin; samples can overshoot. Node flags and fixed WASM memory separately bound decoder allocations."
+  },
+  "stdout": "",
+  "stderr": ""
+}

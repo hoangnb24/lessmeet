@@ -1,0 +1,1474 @@
+{
+  "changedInputs": [],
+  "results": [
+    {
+      "kind": "valid",
+      "exit": 0,
+      "supervisorReason": null,
+      "elapsedSeconds": 0.062682958,
+      "sampledPeakRssBytes": 58785792,
+      "fixtureSha256": "e5a63bddc64bf91f985c36f135b8b6ffdf6733cdabadec4b9d3e769a7c00312e",
+      "result": {
+        "kind": "valid",
+        "inputHex": "01182007",
+        "inputBytes": 4,
+        "priming": {
+          "keys": [
+            "errors",
+            "channelData",
+            "samplesDecoded",
+            "sampleRate",
+            "bitDepth"
+          ],
+          "samplesDecoded": 0,
+          "sampleRate": 0,
+          "errors": [],
+          "channels": 0,
+          "pcm": []
+        },
+        "probe": {
+          "keys": [
+            "errors",
+            "channelData",
+            "samplesDecoded",
+            "sampleRate",
+            "bitDepth"
+          ],
+          "samplesDecoded": 1024,
+          "sampleRate": 48000,
+          "errors": [],
+          "channels": 2,
+          "pcm": [
+            {
+              "length": 1024,
+              "sha256": "8509e102b6e0b865d40be1ed4fe56b5d792a240bf46fa66f416f664d0f8c6712"
+            },
+            {
+              "length": 1024,
+              "sha256": "8509e102b6e0b865d40be1ed4fe56b5d792a240bf46fa66f416f664d0f8c6712"
+            }
+          ]
+        }
+      },
+      "wasm": [
+        {
+          "sha256": "e55e803264dc0f2eb2823141893387f14097dc1f11dc771066aa57abc1271d1f",
+          "bytes": 2665,
+          "memory": [
+            {
+              "flags": 0,
+              "initialPages": 96,
+              "maximumPages": null
+            }
+          ],
+          "imports": [],
+          "exports": [
+            {
+              "name": "memory",
+              "kind": "memory"
+            },
+            {
+              "name": "puff",
+              "kind": "function"
+            },
+            {
+              "name": "__heap_base",
+              "kind": "global"
+            }
+          ]
+        },
+        {
+          "sha256": "2003ae9119da0da0277f7089070bc44dfbc0a63158f2146c4f9098ee83903968",
+          "bytes": 217531,
+          "memory": [
+            {
+              "flags": 1,
+              "initialPages": 260,
+              "maximumPages": 260
+            }
+          ],
+          "imports": [
+            {
+              "module": "a",
+              "name": "a",
+              "kind": "function"
+            },
+            {
+              "module": "a",
+              "name": "b",
+              "kind": "function"
+            },
+            {
+              "module": "a",
+              "name": "c",
+              "kind": "function"
+            },
+            {
+              "module": "a",
+              "name": "d",
+              "kind": "function"
+            },
+            {
+              "module": "a",
+              "name": "e",
+              "kind": "function"
+            },
+            {
+              "module": "a",
+              "name": "f",
+              "kind": "function"
+            },
+            {
+              "module": "a",
+              "name": "g",
+              "kind": "function"
+            },
+            {
+              "module": "a",
+              "name": "h",
+              "kind": "function"
+            },
+            {
+              "module": "a",
+              "name": "i",
+              "kind": "function"
+            }
+          ],
+          "exports": [
+            {
+              "name": "j",
+              "kind": "memory"
+            },
+            {
+              "name": "k",
+              "kind": "function"
+            },
+            {
+              "name": "l",
+              "kind": "function"
+            },
+            {
+              "name": "m",
+              "kind": "function"
+            },
+            {
+              "name": "n",
+              "kind": "function"
+            },
+            {
+              "name": "o",
+              "kind": "function"
+            },
+            {
+              "name": "p",
+              "kind": "function"
+            },
+            {
+              "name": "q",
+              "kind": "table"
+            },
+            {
+              "name": "r",
+              "kind": "function"
+            }
+          ]
+        }
+      ],
+      "elapsedMs": 27.399708,
+      "memory": {
+        "rss": 61931520,
+        "heapTotal": 10928128,
+        "heapUsed": 6459760,
+        "external": 26012933,
+        "arrayBuffers": 647717
+      }
+    },
+    {
+      "kind": "trailing-end",
+      "exit": 0,
+      "supervisorReason": null,
+      "elapsedSeconds": 0.059567166000000005,
+      "sampledPeakRssBytes": 59490304,
+      "fixtureSha256": "e5a63bddc64bf91f985c36f135b8b6ffdf6733cdabadec4b9d3e769a7c00312e",
+      "result": {
+        "kind": "trailing-end",
+        "inputHex": "01182007e0",
+        "inputBytes": 5,
+        "priming": {
+          "keys": [
+            "errors",
+            "channelData",
+            "samplesDecoded",
+            "sampleRate",
+            "bitDepth"
+          ],
+          "samplesDecoded": 0,
+          "sampleRate": 0,
+          "errors": [],
+          "channels": 0,
+          "pcm": []
+        },
+        "probe": {
+          "keys": [
+            "errors",
+            "channelData",
+            "samplesDecoded",
+            "sampleRate",
+            "bitDepth"
+          ],
+          "samplesDecoded": 1024,
+          "sampleRate": 48000,
+          "errors": [
+            {
+              "message": "Invalid number of channels",
+              "frameLength": 5,
+              "frameNumber": 1,
+              "inputBytes": 21,
+              "outputSamples": 0
+            }
+          ],
+          "channels": 2,
+          "pcm": [
+            {
+              "length": 1024,
+              "sha256": "8509e102b6e0b865d40be1ed4fe56b5d792a240bf46fa66f416f664d0f8c6712"
+            },
+            {
+              "length": 1024,
+              "sha256": "8509e102b6e0b865d40be1ed4fe56b5d792a240bf46fa66f416f664d0f8c6712"
+            }
+          ]
+        }
+      },
+      "wasm": [
+        {
+          "sha256": "e55e803264dc0f2eb2823141893387f14097dc1f11dc771066aa57abc1271d1f",
+          "bytes": 2665,
+          "memory": [
+            {
+              "flags": 0,
+              "initialPages": 96,
+              "maximumPages": null
+            }
+          ],
+          "imports": [],
+          "exports": [
+            {
+              "name": "memory",
+              "kind": "memory"
+            },
+            {
+              "name": "puff",
+              "kind": "function"
+            },
+            {
+              "name": "__heap_base",
+              "kind": "global"
+            }
+          ]
+        },
+        {
+          "sha256": "2003ae9119da0da0277f7089070bc44dfbc0a63158f2146c4f9098ee83903968",
+          "bytes": 217531,
+          "memory": [
+            {
+              "flags": 1,
+              "initialPages": 260,
+              "maximumPages": 260
+            }
+          ],
+          "imports": [
+            {
+              "module": "a",
+              "name": "a",
+              "kind": "function"
+            },
+            {
+              "module": "a",
+              "name": "b",
+              "kind": "function"
+            },
+            {
+              "module": "a",
+              "name": "c",
+              "kind": "function"
+            },
+            {
+              "module": "a",
+              "name": "d",
+              "kind": "function"
+            },
+            {
+              "module": "a",
+              "name": "e",
+              "kind": "function"
+            },
+            {
+              "module": "a",
+              "name": "f",
+              "kind": "function"
+            },
+            {
+              "module": "a",
+              "name": "g",
+              "kind": "function"
+            },
+            {
+              "module": "a",
+              "name": "h",
+              "kind": "function"
+            },
+            {
+              "module": "a",
+              "name": "i",
+              "kind": "function"
+            }
+          ],
+          "exports": [
+            {
+              "name": "j",
+              "kind": "memory"
+            },
+            {
+              "name": "k",
+              "kind": "function"
+            },
+            {
+              "name": "l",
+              "kind": "function"
+            },
+            {
+              "name": "m",
+              "kind": "function"
+            },
+            {
+              "name": "n",
+              "kind": "function"
+            },
+            {
+              "name": "o",
+              "kind": "function"
+            },
+            {
+              "name": "p",
+              "kind": "function"
+            },
+            {
+              "name": "q",
+              "kind": "table"
+            },
+            {
+              "name": "r",
+              "kind": "function"
+            }
+          ]
+        }
+      ],
+      "elapsedMs": 23.443166,
+      "memory": {
+        "rss": 62242816,
+        "heapTotal": 10928128,
+        "heapUsed": 6661448,
+        "external": 26090893,
+        "arrayBuffers": 647717
+      }
+    },
+    {
+      "kind": "trailing-zero",
+      "exit": 0,
+      "supervisorReason": null,
+      "elapsedSeconds": 0.059816875000000005,
+      "sampledPeakRssBytes": 59899904,
+      "fixtureSha256": "e5a63bddc64bf91f985c36f135b8b6ffdf6733cdabadec4b9d3e769a7c00312e",
+      "result": {
+        "kind": "trailing-zero",
+        "inputHex": "0118200700",
+        "inputBytes": 5,
+        "priming": {
+          "keys": [
+            "errors",
+            "channelData",
+            "samplesDecoded",
+            "sampleRate",
+            "bitDepth"
+          ],
+          "samplesDecoded": 0,
+          "sampleRate": 0,
+          "errors": [],
+          "channels": 0,
+          "pcm": []
+        },
+        "probe": {
+          "keys": [
+            "errors",
+            "channelData",
+            "samplesDecoded",
+            "sampleRate",
+            "bitDepth"
+          ],
+          "samplesDecoded": 1024,
+          "sampleRate": 48000,
+          "errors": [
+            {
+              "message": "Maximum number of bitstream elements exceeded",
+              "frameLength": 5,
+              "frameNumber": 1,
+              "inputBytes": 21,
+              "outputSamples": 0
+            }
+          ],
+          "channels": 2,
+          "pcm": [
+            {
+              "length": 1024,
+              "sha256": "8509e102b6e0b865d40be1ed4fe56b5d792a240bf46fa66f416f664d0f8c6712"
+            },
+            {
+              "length": 1024,
+              "sha256": "8509e102b6e0b865d40be1ed4fe56b5d792a240bf46fa66f416f664d0f8c6712"
+            }
+          ]
+        }
+      },
+      "wasm": [
+        {
+          "sha256": "e55e803264dc0f2eb2823141893387f14097dc1f11dc771066aa57abc1271d1f",
+          "bytes": 2665,
+          "memory": [
+            {
+              "flags": 0,
+              "initialPages": 96,
+              "maximumPages": null
+            }
+          ],
+          "imports": [],
+          "exports": [
+            {
+              "name": "memory",
+              "kind": "memory"
+            },
+            {
+              "name": "puff",
+              "kind": "function"
+            },
+            {
+              "name": "__heap_base",
+              "kind": "global"
+            }
+          ]
+        },
+        {
+          "sha256": "2003ae9119da0da0277f7089070bc44dfbc0a63158f2146c4f9098ee83903968",
+          "bytes": 217531,
+          "memory": [
+            {
+              "flags": 1,
+              "initialPages": 260,
+              "maximumPages": 260
+            }
+          ],
+          "imports": [
+            {
+              "module": "a",
+              "name": "a",
+              "kind": "function"
+            },
+            {
+              "module": "a",
+              "name": "b",
+              "kind": "function"
+            },
+            {
+              "module": "a",
+              "name": "c",
+              "kind": "function"
+            },
+            {
+              "module": "a",
+              "name": "d",
+              "kind": "function"
+            },
+            {
+              "module": "a",
+              "name": "e",
+              "kind": "function"
+            },
+            {
+              "module": "a",
+              "name": "f",
+              "kind": "function"
+            },
+            {
+              "module": "a",
+              "name": "g",
+              "kind": "function"
+            },
+            {
+              "module": "a",
+              "name": "h",
+              "kind": "function"
+            },
+            {
+              "module": "a",
+              "name": "i",
+              "kind": "function"
+            }
+          ],
+          "exports": [
+            {
+              "name": "j",
+              "kind": "memory"
+            },
+            {
+              "name": "k",
+              "kind": "function"
+            },
+            {
+              "name": "l",
+              "kind": "function"
+            },
+            {
+              "name": "m",
+              "kind": "function"
+            },
+            {
+              "name": "n",
+              "kind": "function"
+            },
+            {
+              "name": "o",
+              "kind": "function"
+            },
+            {
+              "name": "p",
+              "kind": "function"
+            },
+            {
+              "name": "q",
+              "kind": "table"
+            },
+            {
+              "name": "r",
+              "kind": "function"
+            }
+          ]
+        }
+      ],
+      "elapsedMs": 24.049875,
+      "memory": {
+        "rss": 63094784,
+        "heapTotal": 10928128,
+        "heapUsed": 6662160,
+        "external": 26090893,
+        "arrayBuffers": 647717
+      }
+    },
+    {
+      "kind": "trailing-ff",
+      "exit": 0,
+      "supervisorReason": null,
+      "elapsedSeconds": 0.05799420799999999,
+      "sampledPeakRssBytes": 59719680,
+      "fixtureSha256": "e5a63bddc64bf91f985c36f135b8b6ffdf6733cdabadec4b9d3e769a7c00312e",
+      "result": {
+        "kind": "trailing-ff",
+        "inputHex": "01182007ff",
+        "inputBytes": 5,
+        "priming": {
+          "keys": [
+            "errors",
+            "channelData",
+            "samplesDecoded",
+            "sampleRate",
+            "bitDepth"
+          ],
+          "samplesDecoded": 0,
+          "sampleRate": 0,
+          "errors": [],
+          "channels": 0,
+          "pcm": []
+        },
+        "probe": {
+          "keys": [
+            "errors",
+            "channelData",
+            "samplesDecoded",
+            "sampleRate",
+            "bitDepth"
+          ],
+          "samplesDecoded": 1024,
+          "sampleRate": 48000,
+          "errors": [
+            {
+              "message": "Invalid number of channels",
+              "frameLength": 5,
+              "frameNumber": 1,
+              "inputBytes": 21,
+              "outputSamples": 0
+            }
+          ],
+          "channels": 2,
+          "pcm": [
+            {
+              "length": 1024,
+              "sha256": "8509e102b6e0b865d40be1ed4fe56b5d792a240bf46fa66f416f664d0f8c6712"
+            },
+            {
+              "length": 1024,
+              "sha256": "8509e102b6e0b865d40be1ed4fe56b5d792a240bf46fa66f416f664d0f8c6712"
+            }
+          ]
+        }
+      },
+      "wasm": [
+        {
+          "sha256": "e55e803264dc0f2eb2823141893387f14097dc1f11dc771066aa57abc1271d1f",
+          "bytes": 2665,
+          "memory": [
+            {
+              "flags": 0,
+              "initialPages": 96,
+              "maximumPages": null
+            }
+          ],
+          "imports": [],
+          "exports": [
+            {
+              "name": "memory",
+              "kind": "memory"
+            },
+            {
+              "name": "puff",
+              "kind": "function"
+            },
+            {
+              "name": "__heap_base",
+              "kind": "global"
+            }
+          ]
+        },
+        {
+          "sha256": "2003ae9119da0da0277f7089070bc44dfbc0a63158f2146c4f9098ee83903968",
+          "bytes": 217531,
+          "memory": [
+            {
+              "flags": 1,
+              "initialPages": 260,
+              "maximumPages": 260
+            }
+          ],
+          "imports": [
+            {
+              "module": "a",
+              "name": "a",
+              "kind": "function"
+            },
+            {
+              "module": "a",
+              "name": "b",
+              "kind": "function"
+            },
+            {
+              "module": "a",
+              "name": "c",
+              "kind": "function"
+            },
+            {
+              "module": "a",
+              "name": "d",
+              "kind": "function"
+            },
+            {
+              "module": "a",
+              "name": "e",
+              "kind": "function"
+            },
+            {
+              "module": "a",
+              "name": "f",
+              "kind": "function"
+            },
+            {
+              "module": "a",
+              "name": "g",
+              "kind": "function"
+            },
+            {
+              "module": "a",
+              "name": "h",
+              "kind": "function"
+            },
+            {
+              "module": "a",
+              "name": "i",
+              "kind": "function"
+            }
+          ],
+          "exports": [
+            {
+              "name": "j",
+              "kind": "memory"
+            },
+            {
+              "name": "k",
+              "kind": "function"
+            },
+            {
+              "name": "l",
+              "kind": "function"
+            },
+            {
+              "name": "m",
+              "kind": "function"
+            },
+            {
+              "name": "n",
+              "kind": "function"
+            },
+            {
+              "name": "o",
+              "kind": "function"
+            },
+            {
+              "name": "p",
+              "kind": "function"
+            },
+            {
+              "name": "q",
+              "kind": "table"
+            },
+            {
+              "name": "r",
+              "kind": "function"
+            }
+          ]
+        }
+      ],
+      "elapsedMs": 22.893167,
+      "memory": {
+        "rss": 62259200,
+        "heapTotal": 10928128,
+        "heapUsed": 6616840,
+        "external": 26090893,
+        "arrayBuffers": 647717
+      }
+    },
+    {
+      "kind": "erased",
+      "exit": 0,
+      "supervisorReason": null,
+      "elapsedSeconds": 0.05684249999999999,
+      "sampledPeakRssBytes": 59637760,
+      "fixtureSha256": "e5a63bddc64bf91f985c36f135b8b6ffdf6733cdabadec4b9d3e769a7c00312e",
+      "result": {
+        "kind": "erased",
+        "inputHex": "00000000",
+        "inputBytes": 4,
+        "priming": {
+          "keys": [
+            "errors",
+            "channelData",
+            "samplesDecoded",
+            "sampleRate",
+            "bitDepth"
+          ],
+          "samplesDecoded": 0,
+          "sampleRate": 0,
+          "errors": [],
+          "channels": 0,
+          "pcm": []
+        },
+        "probe": {
+          "keys": [
+            "errors",
+            "channelData",
+            "samplesDecoded",
+            "sampleRate",
+            "bitDepth"
+          ],
+          "samplesDecoded": 0,
+          "sampleRate": 0,
+          "errors": [
+            {
+              "message": "Maximum number of bitstream elements exceeded",
+              "frameLength": 4,
+              "frameNumber": 1,
+              "inputBytes": 21,
+              "outputSamples": 0
+            }
+          ],
+          "channels": 0,
+          "pcm": []
+        }
+      },
+      "wasm": [
+        {
+          "sha256": "e55e803264dc0f2eb2823141893387f14097dc1f11dc771066aa57abc1271d1f",
+          "bytes": 2665,
+          "memory": [
+            {
+              "flags": 0,
+              "initialPages": 96,
+              "maximumPages": null
+            }
+          ],
+          "imports": [],
+          "exports": [
+            {
+              "name": "memory",
+              "kind": "memory"
+            },
+            {
+              "name": "puff",
+              "kind": "function"
+            },
+            {
+              "name": "__heap_base",
+              "kind": "global"
+            }
+          ]
+        },
+        {
+          "sha256": "2003ae9119da0da0277f7089070bc44dfbc0a63158f2146c4f9098ee83903968",
+          "bytes": 217531,
+          "memory": [
+            {
+              "flags": 1,
+              "initialPages": 260,
+              "maximumPages": 260
+            }
+          ],
+          "imports": [
+            {
+              "module": "a",
+              "name": "a",
+              "kind": "function"
+            },
+            {
+              "module": "a",
+              "name": "b",
+              "kind": "function"
+            },
+            {
+              "module": "a",
+              "name": "c",
+              "kind": "function"
+            },
+            {
+              "module": "a",
+              "name": "d",
+              "kind": "function"
+            },
+            {
+              "module": "a",
+              "name": "e",
+              "kind": "function"
+            },
+            {
+              "module": "a",
+              "name": "f",
+              "kind": "function"
+            },
+            {
+              "module": "a",
+              "name": "g",
+              "kind": "function"
+            },
+            {
+              "module": "a",
+              "name": "h",
+              "kind": "function"
+            },
+            {
+              "module": "a",
+              "name": "i",
+              "kind": "function"
+            }
+          ],
+          "exports": [
+            {
+              "name": "j",
+              "kind": "memory"
+            },
+            {
+              "name": "k",
+              "kind": "function"
+            },
+            {
+              "name": "l",
+              "kind": "function"
+            },
+            {
+              "name": "m",
+              "kind": "function"
+            },
+            {
+              "name": "n",
+              "kind": "function"
+            },
+            {
+              "name": "o",
+              "kind": "function"
+            },
+            {
+              "name": "p",
+              "kind": "function"
+            },
+            {
+              "name": "q",
+              "kind": "table"
+            },
+            {
+              "name": "r",
+              "kind": "function"
+            }
+          ]
+        }
+      ],
+      "elapsedMs": 23.409292,
+      "memory": {
+        "rss": 62783488,
+        "heapTotal": 10928128,
+        "heapUsed": 6658080,
+        "external": 26074513,
+        "arrayBuffers": 631337
+      }
+    },
+    {
+      "kind": "empty",
+      "exit": 0,
+      "supervisorReason": null,
+      "elapsedSeconds": 0.059221416,
+      "sampledPeakRssBytes": 59424768,
+      "fixtureSha256": "e5a63bddc64bf91f985c36f135b8b6ffdf6733cdabadec4b9d3e769a7c00312e",
+      "result": {
+        "kind": "empty",
+        "inputHex": "",
+        "inputBytes": 0,
+        "priming": {
+          "keys": [
+            "errors",
+            "channelData",
+            "samplesDecoded",
+            "sampleRate",
+            "bitDepth"
+          ],
+          "samplesDecoded": 0,
+          "sampleRate": 0,
+          "errors": [],
+          "channels": 0,
+          "pcm": []
+        },
+        "probe": {
+          "keys": [
+            "errors",
+            "channelData",
+            "samplesDecoded",
+            "sampleRate",
+            "bitDepth"
+          ],
+          "samplesDecoded": 0,
+          "sampleRate": 0,
+          "errors": [],
+          "channels": 0,
+          "pcm": []
+        }
+      },
+      "wasm": [
+        {
+          "sha256": "e55e803264dc0f2eb2823141893387f14097dc1f11dc771066aa57abc1271d1f",
+          "bytes": 2665,
+          "memory": [
+            {
+              "flags": 0,
+              "initialPages": 96,
+              "maximumPages": null
+            }
+          ],
+          "imports": [],
+          "exports": [
+            {
+              "name": "memory",
+              "kind": "memory"
+            },
+            {
+              "name": "puff",
+              "kind": "function"
+            },
+            {
+              "name": "__heap_base",
+              "kind": "global"
+            }
+          ]
+        },
+        {
+          "sha256": "2003ae9119da0da0277f7089070bc44dfbc0a63158f2146c4f9098ee83903968",
+          "bytes": 217531,
+          "memory": [
+            {
+              "flags": 1,
+              "initialPages": 260,
+              "maximumPages": 260
+            }
+          ],
+          "imports": [
+            {
+              "module": "a",
+              "name": "a",
+              "kind": "function"
+            },
+            {
+              "module": "a",
+              "name": "b",
+              "kind": "function"
+            },
+            {
+              "module": "a",
+              "name": "c",
+              "kind": "function"
+            },
+            {
+              "module": "a",
+              "name": "d",
+              "kind": "function"
+            },
+            {
+              "module": "a",
+              "name": "e",
+              "kind": "function"
+            },
+            {
+              "module": "a",
+              "name": "f",
+              "kind": "function"
+            },
+            {
+              "module": "a",
+              "name": "g",
+              "kind": "function"
+            },
+            {
+              "module": "a",
+              "name": "h",
+              "kind": "function"
+            },
+            {
+              "module": "a",
+              "name": "i",
+              "kind": "function"
+            }
+          ],
+          "exports": [
+            {
+              "name": "j",
+              "kind": "memory"
+            },
+            {
+              "name": "k",
+              "kind": "function"
+            },
+            {
+              "name": "l",
+              "kind": "function"
+            },
+            {
+              "name": "m",
+              "kind": "function"
+            },
+            {
+              "name": "n",
+              "kind": "function"
+            },
+            {
+              "name": "o",
+              "kind": "function"
+            },
+            {
+              "name": "p",
+              "kind": "function"
+            },
+            {
+              "name": "q",
+              "kind": "table"
+            },
+            {
+              "name": "r",
+              "kind": "function"
+            }
+          ]
+        }
+      ],
+      "elapsedMs": 21.740584000000002,
+      "memory": {
+        "rss": 61849600,
+        "heapTotal": 10928128,
+        "heapUsed": 6469240,
+        "external": 25996549,
+        "arrayBuffers": 631333
+      }
+    },
+    {
+      "kind": "two-units",
+      "exit": 0,
+      "supervisorReason": null,
+      "elapsedSeconds": 0.057689291000000004,
+      "sampledPeakRssBytes": 59834368,
+      "fixtureSha256": "e5a63bddc64bf91f985c36f135b8b6ffdf6733cdabadec4b9d3e769a7c00312e",
+      "result": {
+        "kind": "two-units",
+        "inputHex": "0118200701182007",
+        "inputBytes": 8,
+        "priming": {
+          "keys": [
+            "errors",
+            "channelData",
+            "samplesDecoded",
+            "sampleRate",
+            "bitDepth"
+          ],
+          "samplesDecoded": 0,
+          "sampleRate": 0,
+          "errors": [],
+          "channels": 0,
+          "pcm": []
+        },
+        "probe": {
+          "keys": [
+            "errors",
+            "channelData",
+            "samplesDecoded",
+            "sampleRate",
+            "bitDepth"
+          ],
+          "samplesDecoded": 2048,
+          "sampleRate": 48000,
+          "errors": [],
+          "channels": 2,
+          "pcm": [
+            {
+              "length": 2048,
+              "sha256": "8bf7ed4b94037aba0169c686d1ec42380ba1e917674de98afd2386ed1e4ecd65"
+            },
+            {
+              "length": 2048,
+              "sha256": "8bf7ed4b94037aba0169c686d1ec42380ba1e917674de98afd2386ed1e4ecd65"
+            }
+          ]
+        }
+      },
+      "wasm": [
+        {
+          "sha256": "e55e803264dc0f2eb2823141893387f14097dc1f11dc771066aa57abc1271d1f",
+          "bytes": 2665,
+          "memory": [
+            {
+              "flags": 0,
+              "initialPages": 96,
+              "maximumPages": null
+            }
+          ],
+          "imports": [],
+          "exports": [
+            {
+              "name": "memory",
+              "kind": "memory"
+            },
+            {
+              "name": "puff",
+              "kind": "function"
+            },
+            {
+              "name": "__heap_base",
+              "kind": "global"
+            }
+          ]
+        },
+        {
+          "sha256": "2003ae9119da0da0277f7089070bc44dfbc0a63158f2146c4f9098ee83903968",
+          "bytes": 217531,
+          "memory": [
+            {
+              "flags": 1,
+              "initialPages": 260,
+              "maximumPages": 260
+            }
+          ],
+          "imports": [
+            {
+              "module": "a",
+              "name": "a",
+              "kind": "function"
+            },
+            {
+              "module": "a",
+              "name": "b",
+              "kind": "function"
+            },
+            {
+              "module": "a",
+              "name": "c",
+              "kind": "function"
+            },
+            {
+              "module": "a",
+              "name": "d",
+              "kind": "function"
+            },
+            {
+              "module": "a",
+              "name": "e",
+              "kind": "function"
+            },
+            {
+              "module": "a",
+              "name": "f",
+              "kind": "function"
+            },
+            {
+              "module": "a",
+              "name": "g",
+              "kind": "function"
+            },
+            {
+              "module": "a",
+              "name": "h",
+              "kind": "function"
+            },
+            {
+              "module": "a",
+              "name": "i",
+              "kind": "function"
+            }
+          ],
+          "exports": [
+            {
+              "name": "j",
+              "kind": "memory"
+            },
+            {
+              "name": "k",
+              "kind": "function"
+            },
+            {
+              "name": "l",
+              "kind": "function"
+            },
+            {
+              "name": "m",
+              "kind": "function"
+            },
+            {
+              "name": "n",
+              "kind": "function"
+            },
+            {
+              "name": "o",
+              "kind": "function"
+            },
+            {
+              "name": "p",
+              "kind": "function"
+            },
+            {
+              "name": "q",
+              "kind": "table"
+            },
+            {
+              "name": "r",
+              "kind": "function"
+            }
+          ]
+        }
+      ],
+      "elapsedMs": 22.654249999999998,
+      "memory": {
+        "rss": 62308352,
+        "heapTotal": 10928128,
+        "heapUsed": 6493024,
+        "external": 26029317,
+        "arrayBuffers": 664101
+      }
+    },
+    {
+      "kind": "truncated",
+      "exit": 0,
+      "supervisorReason": null,
+      "elapsedSeconds": 0.060568333,
+      "sampledPeakRssBytes": 59473920,
+      "fixtureSha256": "e5a63bddc64bf91f985c36f135b8b6ffdf6733cdabadec4b9d3e769a7c00312e",
+      "result": {
+        "kind": "truncated",
+        "inputHex": "011820",
+        "inputBytes": 3,
+        "priming": {
+          "keys": [
+            "errors",
+            "channelData",
+            "samplesDecoded",
+            "sampleRate",
+            "bitDepth"
+          ],
+          "samplesDecoded": 0,
+          "sampleRate": 0,
+          "errors": [],
+          "channels": 0,
+          "pcm": []
+        },
+        "probe": {
+          "keys": [
+            "errors",
+            "channelData",
+            "samplesDecoded",
+            "sampleRate",
+            "bitDepth"
+          ],
+          "samplesDecoded": 0,
+          "sampleRate": 0,
+          "errors": [
+            {
+              "message": "Maximum number of bitstream elements exceeded",
+              "frameLength": 3,
+              "frameNumber": 1,
+              "inputBytes": 21,
+              "outputSamples": 0
+            }
+          ],
+          "channels": 0,
+          "pcm": []
+        }
+      },
+      "wasm": [
+        {
+          "sha256": "e55e803264dc0f2eb2823141893387f14097dc1f11dc771066aa57abc1271d1f",
+          "bytes": 2665,
+          "memory": [
+            {
+              "flags": 0,
+              "initialPages": 96,
+              "maximumPages": null
+            }
+          ],
+          "imports": [],
+          "exports": [
+            {
+              "name": "memory",
+              "kind": "memory"
+            },
+            {
+              "name": "puff",
+              "kind": "function"
+            },
+            {
+              "name": "__heap_base",
+              "kind": "global"
+            }
+          ]
+        },
+        {
+          "sha256": "2003ae9119da0da0277f7089070bc44dfbc0a63158f2146c4f9098ee83903968",
+          "bytes": 217531,
+          "memory": [
+            {
+              "flags": 1,
+              "initialPages": 260,
+              "maximumPages": 260
+            }
+          ],
+          "imports": [
+            {
+              "module": "a",
+              "name": "a",
+              "kind": "function"
+            },
+            {
+              "module": "a",
+              "name": "b",
+              "kind": "function"
+            },
+            {
+              "module": "a",
+              "name": "c",
+              "kind": "function"
+            },
+            {
+              "module": "a",
+              "name": "d",
+              "kind": "function"
+            },
+            {
+              "module": "a",
+              "name": "e",
+              "kind": "function"
+            },
+            {
+              "module": "a",
+              "name": "f",
+              "kind": "function"
+            },
+            {
+              "module": "a",
+              "name": "g",
+              "kind": "function"
+            },
+            {
+              "module": "a",
+              "name": "h",
+              "kind": "function"
+            },
+            {
+              "module": "a",
+              "name": "i",
+              "kind": "function"
+            }
+          ],
+          "exports": [
+            {
+              "name": "j",
+              "kind": "memory"
+            },
+            {
+              "name": "k",
+              "kind": "function"
+            },
+            {
+              "name": "l",
+              "kind": "function"
+            },
+            {
+              "name": "m",
+              "kind": "function"
+            },
+            {
+              "name": "n",
+              "kind": "function"
+            },
+            {
+              "name": "o",
+              "kind": "function"
+            },
+            {
+              "name": "p",
+              "kind": "function"
+            },
+            {
+              "name": "q",
+              "kind": "table"
+            },
+            {
+              "name": "r",
+              "kind": "function"
+            }
+          ]
+        }
+      ],
+      "elapsedMs": 23.9135,
+      "memory": {
+        "rss": 62570496,
+        "heapTotal": 10928128,
+        "heapUsed": 6605792,
+        "external": 26074509,
+        "arrayBuffers": 631333
+      }
+    }
+  ]
+}

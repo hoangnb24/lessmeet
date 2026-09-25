@@ -1,0 +1,24 @@
+{
+  "command": [
+    "/Users/tubakhuym/.hermes/node/bin/node",
+    "--max-old-space-size=64",
+    "--max-semi-space-size=4",
+    "--wasm-max-mem-pages=512",
+    "Tests/experiments/aac-feasibility/probe.mjs",
+    "/tmp/lessmeet-aac-feasibility.s4EAQZ",
+    "two-units"
+  ],
+  "exit": 0,
+  "reason": null,
+  "elapsedSeconds": 0.057689291000000004,
+  "sampledPeakRssBytes": 59834368,
+  "limits": {
+    "wallSeconds": 10,
+    "sampledRssMiB": 256,
+    "cpuSoftSeconds": 5,
+    "cpuHardSeconds": 6,
+    "note": "No hard total-RSS ceiling on Darwin; samples can overshoot. Node flags and fixed WASM memory separately bound decoder allocations."
+  },
+  "stdout": "{\n  \"fixtureSha256\": \"e5a63bddc64bf91f985c36f135b8b6ffdf6733cdabadec4b9d3e769a7c00312e\",\n  \"result\": {\n    \"kind\": \"two-units\",\n    \"inputHex\": \"0118200701182007\",\n    \"inputBytes\": 8,\n    \"priming\": {\n      \"keys\": [\n        \"errors\",\n        \"channelData\",\n        \"samplesDecoded\",\n        \"sampleRate\",\n        \"bitDepth\"\n      ],\n      \"samplesDecoded\": 0,\n      \"sampleRate\": 0,\n      \"errors\": [],\n      \"channels\": 0,\n      \"pcm\": []\n    },\n    \"probe\": {\n      \"keys\": [\n        \"errors\",\n        \"channelData\",\n        \"samplesDecoded\",\n        \"sampleRate\",\n        \"bitDepth\"\n      ],\n      \"samplesDecoded\": 2048,\n      \"sampleRate\": 48000,\n      \"errors\": [],\n      \"channels\": 2,\n      \"pcm\": [\n        {\n          \"length\": 2048,\n          \"sha256\": \"8bf7ed4b94037aba0169c686d1ec42380ba1e917674de98afd2386ed1e4ecd65\"\n        },\n        {\n          \"length\": 2048,\n          \"sha256\": \"8bf7ed4b94037aba0169c686d1ec42380ba1e917674de98afd2386ed1e4ecd65\"\n        }\n      ]\n    }\n  },\n  \"wasm\": [\n    {\n      \"sha256\": \"e55e803264dc0f2eb2823141893387f14097dc1f11dc771066aa57abc1271d1f\",\n      \"bytes\": 2665,\n      \"memory\": [\n        {\n          \"flags\": 0,\n          \"initialPages\": 96,\n          \"maximumPages\": null\n        }\n      ],\n      \"imports\": [],\n      \"exports\": [\n        {\n          \"name\": \"memory\",\n          \"kind\": \"memory\"\n        },\n        {\n          \"name\": \"puff\",\n          \"kind\": \"function\"\n        },\n        {\n          \"name\": \"__heap_base\",\n          \"kind\": \"global\"\n        }\n      ]\n    },\n    {\n      \"sha256\": \"2003ae9119da0da0277f7089070bc44dfbc0a63158f2146c4f9098ee83903968\",\n      \"bytes\": 217531,\n      \"memory\": [\n        {\n          \"flags\": 1,\n          \"initialPages\": 260,\n          \"maximumPages\": 260\n        }\n      ],\n      \"imports\": [\n        {\n          \"module\": \"a\",\n          \"name\": \"a\",\n          \"kind\": \"function\"\n        },\n        {\n          \"module\": \"a\",\n          \"name\": \"b\",\n          \"kind\": \"function\"\n        },\n        {\n          \"module\": \"a\",\n          \"name\": \"c\",\n          \"kind\": \"function\"\n        },\n        {\n          \"module\": \"a\",\n          \"name\": \"d\",\n          \"kind\": \"function\"\n        },\n        {\n          \"module\": \"a\",\n          \"name\": \"e\",\n          \"kind\": \"function\"\n        },\n        {\n          \"module\": \"a\",\n          \"name\": \"f\",\n          \"kind\": \"function\"\n        },\n        {\n          \"module\": \"a\",\n          \"name\": \"g\",\n          \"kind\": \"function\"\n        },\n        {\n          \"module\": \"a\",\n          \"name\": \"h\",\n          \"kind\": \"function\"\n        },\n        {\n          \"module\": \"a\",\n          \"name\": \"i\",\n          \"kind\": \"function\"\n        }\n      ],\n      \"exports\": [\n        {\n          \"name\": \"j\",\n          \"kind\": \"memory\"\n        },\n        {\n          \"name\": \"k\",\n          \"kind\": \"function\"\n        },\n        {\n          \"name\": \"l\",\n          \"kind\": \"function\"\n        },\n        {\n          \"name\": \"m\",\n          \"kind\": \"function\"\n        },\n        {\n          \"name\": \"n\",\n          \"kind\": \"function\"\n        },\n        {\n          \"name\": \"o\",\n          \"kind\": \"function\"\n        },\n        {\n          \"name\": \"p\",\n          \"kind\": \"function\"\n        },\n        {\n          \"name\": \"q\",\n          \"kind\": \"table\"\n        },\n        {\n          \"name\": \"r\",\n          \"kind\": \"function\"\n        }\n      ]\n    }\n  ],\n  \"elapsedMs\": 22.654249999999998,\n  \"memory\": {\n    \"rss\": 62308352,\n    \"heapTotal\": 10928128,\n    \"heapUsed\": 6493024,\n    \"external\": 26029317,\n    \"arrayBuffers\": 664101\n  }\n}\n",
+  "stderr": ""
+}

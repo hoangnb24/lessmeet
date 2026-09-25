@@ -1,0 +1,23 @@
+{
+  "command": [
+    "/Users/tubakhuym/.hermes/node/bin/node",
+    "--max-old-space-size=64",
+    "--max-semi-space-size=4",
+    "--wasm-max-mem-pages=512",
+    "-e",
+    "const held=[];setInterval(()=>held.push(Buffer.alloc(8*1024*1024,1)),20)"
+  ],
+  "exit": -9,
+  "reason": "sampled-rss-kill",
+  "elapsedSeconds": 0.08466270799999999,
+  "sampledPeakRssBytes": 57409536,
+  "limits": {
+    "wallSeconds": 10,
+    "sampledRssMiB": 48,
+    "cpuSoftSeconds": 5,
+    "cpuHardSeconds": 6,
+    "note": "No hard total-RSS ceiling on Darwin; samples can overshoot. Node flags and fixed WASM memory separately bound decoder allocations."
+  },
+  "stdout": "",
+  "stderr": ""
+}

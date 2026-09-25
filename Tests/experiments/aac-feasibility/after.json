@@ -1,0 +1,17 @@
+{
+  "package.json": "f86948e57d10762f99a46b732ad26141a6ee4a06f682bbd275b58890310a56a9",
+  "package-lock.json": "ab92f7d2876e8923117d34a34842fcf0e66cdb6176a143b0bcdf7f856cae1460",
+  "Package.swift": "d84a648912e37e25eeaaccbff3e09c37977b2dc9cea4b0ade610692a4b7036f2",
+  "convex/media.ts": "83c1c9ddd8dfb2f70b59cd89e408795ad8353ac256fb911a442a938ef584b720",
+  "convex/http.ts": "2d6cabf4be17dc2df6c46dd008456a08a37815be70f42dd86d0faa0640494d13",
+  "convex/jobs.ts": "1fc098412febaa09c5154a2aa121c4d0a82cbe6e4007a3ed03b6a52f3bd87254",
+  "convex/gemini.ts": "a63d5bed12f7e1100387f98cd0c43fb69a405aba05485e706cca9c5e3ff6e291",
+  "convex/limits.ts": "e6530d1c23220053108ef16dbb911860f520e4b3f474ff71ec9c78fb4a8ff204",
+  "convex/billing.ts": "e431f4a7c1df136d31adbfbbfe9c11493dd4c40dff71caffcd18203c478db723",
+  "convex/billingPolicy.ts": "c74f7160e57ce72aa645457bbe9aa5b8b24deb1005aad520f75007900dfee572",
+  "convex/recordings.ts": "fca94cdce5f9828f0b0553860fc80a5d536c225009aba7569c928e79949465d7",
+  "Sources/LessMeet/Cloud/CloudClient.swift": "c689e20ba787e3c6051fbb89b970aaa7d8a6865a3e9c617bbd0369e03d776d1b",
+  "Sources/LessMeet/Capture/CaptureAudioRecorder.swift": "ae88bea38136fb6cf358a7ef95040b3c68aa8e1e8fb94d974d1d51b287171e03",
+  "Sources/LessMeet/Capture/CaptureService.swift": "b70d58deb5f710d19fc33ae143624ef0527e58a4f467bb9ec50f85aa9385e37a",
+  "Tests/backend/mediaFixture.ts": "f66b71a8cce993fb257a91bef5de78730762d49231a15b5d53237e295bfeb455"
+}

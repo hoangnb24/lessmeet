@@ -1,0 +1,290 @@
+[
+  {
+    "path": "node_modules/.package-lock.json",
+    "sha256": "1d312c42155581eabebd5017c64fd37f00041ba109356ee903a1e70b5bf515b4"
+  },
+  {
+    "path": "node_modules/@eshaz/web-worker/LICENSE",
+    "sha256": "43070e2d4e532684de521b885f385d0841030efa2b1a20bafb76133a5e1379c1"
+  },
+  {
+    "path": "node_modules/@eshaz/web-worker/README.md",
+    "sha256": "1de0f597084827371c305271aa0fda224c0638f1c686b58ed73a05914f355468"
+  },
+  {
+    "path": "node_modules/@eshaz/web-worker/browser.js",
+    "sha256": "86b00ba91cde877ab9848a72dfb0c89c928109b229ae4824493a5ef353c46d6a"
+  },
+  {
+    "path": "node_modules/@eshaz/web-worker/cjs/browser.js",
+    "sha256": "fae7f25c99a02fddfdd4311f4ad992c59d3b811bf412a4a7a443bbc1027932ab"
+  },
+  {
+    "path": "node_modules/@eshaz/web-worker/cjs/node.js",
+    "sha256": "30149794786e04cf32cebf710b1f3d3b808253c5fbd8f9f8574cc7ac78c69df4"
+  },
+  {
+    "path": "node_modules/@eshaz/web-worker/index.d.ts",
+    "sha256": "d3251b69004704b3c8c8d1f5fce9c65294246de00921dd94f6b119c19f243c1e"
+  },
+  {
+    "path": "node_modules/@eshaz/web-worker/node.js",
+    "sha256": "30b10beb96daf6cc501ae6b46ed06ff11abb21de75ccc803518b61b099adbd06"
+  },
+  {
+    "path": "node_modules/@eshaz/web-worker/package.json",
+    "sha256": "c6535df9fc0ea9721ca56fad306ad892460a81e798b7d43052425a6b74967807"
+  },
+  {
+    "path": "node_modules/@wasm-audio-decoders/aac/README.md",
+    "sha256": "8d74f16a054b39cfb86a64d92a41f3e359a7f407a3ca5c11eac61f2372872288"
+  },
+  {
+    "path": "node_modules/@wasm-audio-decoders/aac/dist/aac-decoder.min.js",
+    "sha256": "10195c36099872b4cc13b121ddfa39431416592142c8bc37d98bb97da24621a8"
+  },
+  {
+    "path": "node_modules/@wasm-audio-decoders/aac/dist/aac-decoder.min.js.map",
+    "sha256": "cc0b3f22b1bde590dc70ea45607deeffd3195cc15726c288feed508283e8f647"
+  },
+  {
+    "path": "node_modules/@wasm-audio-decoders/aac/index.js",
+    "sha256": "63b6889db17348eb336bc0fcd8b749c0ca3ba9ed0ed4c446f756fdad8440a469"
+  },
+  {
+    "path": "node_modules/@wasm-audio-decoders/aac/package.json",
+    "sha256": "172ae32f148c478f7d3ea816b8733d9ec30fd9c51ea28d5ae6301ed0d8d2de21"
+  },
+  {
+    "path": "node_modules/@wasm-audio-decoders/aac/src/AACDecoder.js",
+    "sha256": "e8918e2138230d4c55ebaa3dc88a664f8006d8f0c1a71ae3038bd0a95fe44e7c"
+  },
+  {
+    "path": "node_modules/@wasm-audio-decoders/aac/src/AACDecoderWebWorker.js",
+    "sha256": "12b4e633097cf383c1991845d53175744b0e567946e3c48aadc50755688af6e7"
+  },
+  {
+    "path": "node_modules/@wasm-audio-decoders/aac/src/EmscriptenWasm.js",
+    "sha256": "94ec83e8c816a829b74e70d4944b542c15489a8cee03216bbd1947436f3b2b26"
+  },
+  {
+    "path": "node_modules/@wasm-audio-decoders/aac/types.d.ts",
+    "sha256": "f2e1046501879ad20aafcb49a875ba1cb3cdd3c421e75240f3a56c8b8cb45e3c"
+  },
+  {
+    "path": "node_modules/@wasm-audio-decoders/common/index.js",
+    "sha256": "f84a3f7a02dcc1e1df8a2131237afd3e39cc90362c4eea8ebf3c3ac2d505253a"
+  },
+  {
+    "path": "node_modules/@wasm-audio-decoders/common/package.json",
+    "sha256": "75cef10e6d06a5b85b2fd8483be92616c6c3b7d3374867df0bdaaf471c6b89c0"
+  },
+  {
+    "path": "node_modules/@wasm-audio-decoders/common/src/WASMAudioDecoderCommon.js",
+    "sha256": "9eb713858e7c98dcb2da9a3121ba10b2f0e69bf9f32151eb705569c68e1f33ce"
+  },
+  {
+    "path": "node_modules/@wasm-audio-decoders/common/src/WASMAudioDecoderWorker.js",
+    "sha256": "172b0fea07eeffd60119fa6f40d462f40138355f4fbd630812ee1a53aae1c50d"
+  },
+  {
+    "path": "node_modules/@wasm-audio-decoders/common/src/puff/README",
+    "sha256": "77acde8d6207ba2a322da1aa13ea71088876c3a56569b70af9539927b438b5db"
+  },
+  {
+    "path": "node_modules/@wasm-audio-decoders/common/src/puff/build_puff.js",
+    "sha256": "e3209060843a8e89f18c01ab0c2b92667a5817e78122f52571496a25bc7a0aed"
+  },
+  {
+    "path": "node_modules/@wasm-audio-decoders/common/src/puff/puff.c",
+    "sha256": "89027d4f2fcbc9dbcf2e26c996dae9b8c1b6980f80dda7798a53dd944945e756"
+  },
+  {
+    "path": "node_modules/@wasm-audio-decoders/common/src/puff/puff.h",
+    "sha256": "969b7be2a930db0cdcb19b0e5b29ae6741f5a8f663b6dba6d647e12ec60cfa8e"
+  },
+  {
+    "path": "node_modules/@wasm-audio-decoders/common/src/utilities.js",
+    "sha256": "f2eb6ad9212e6519b03fb9b04d5e93011caaf03f625195ece77e7045445b71b8"
+  },
+  {
+    "path": "node_modules/@wasm-audio-decoders/common/types.d.ts",
+    "sha256": "bf88b170306b503c2e09784346c0a2c94df6cc49367295223393c3853b62bc51"
+  },
+  {
+    "path": "node_modules/codec-parser/.github/FUNDING.yml",
+    "sha256": "2b0a0e49385224bb2f13b1044699892d39f0aef04136d63c0fe047dbc0dca315"
+  },
+  {
+    "path": "node_modules/codec-parser/.prettierignore",
+    "sha256": "c3a3091b9d32267d0b3175ee14f70a1e0b3d7292d0a0fa45020ced5fb764d620"
+  },
+  {
+    "path": "node_modules/codec-parser/LICENSE",
+    "sha256": "e3a994d82e644b03a792a930f574002658412f62407f5fee083f2555c5f23118"
+  },
+  {
+    "path": "node_modules/codec-parser/README.md",
+    "sha256": "ebb198133aabeba2a0f02345034a076dca2eeb40e26408291b9711b8dad18a1e"
+  },
+  {
+    "path": "node_modules/codec-parser/index.d.ts",
+    "sha256": "ecaad34032824725d0d42bb6273c7871bda22b5a46ab01e6c9531064f83ffbb6"
+  },
+  {
+    "path": "node_modules/codec-parser/index.js",
+    "sha256": "7338c97271c387d5315059ba847e725d0b73e4cf99116b1fdff35a44eeacbdd5"
+  },
+  {
+    "path": "node_modules/codec-parser/package.json",
+    "sha256": "3e8057a850a8ae8108a720279044dbebdc856f3c551692de4ed400c207e62089"
+  },
+  {
+    "path": "node_modules/codec-parser/src/CodecParser.js",
+    "sha256": "4521df76ce0433fb7c05d9d162bd8142a01462ebadf627bed98a26a54a9f78f8"
+  },
+  {
+    "path": "node_modules/codec-parser/src/codecs/CodecFrame.js",
+    "sha256": "ad6ce89f77fbd2bd9a39375f89206668de992fd571ba8e6e6c6d2cd659f7e039"
+  },
+  {
+    "path": "node_modules/codec-parser/src/codecs/CodecHeader.js",
+    "sha256": "7460b34b857b2185d6e43202a67bcf8f818033b5c783e5d060f5128728c172c9"
+  },
+  {
+    "path": "node_modules/codec-parser/src/codecs/HeaderCache.js",
+    "sha256": "d7c56e1054f160f6ce727105114c2471d7f5417188e4e0c4dca74cfc25d533d5"
+  },
+  {
+    "path": "node_modules/codec-parser/src/codecs/Parser.js",
+    "sha256": "e3b96166bdb8e01058f5d59d1f596ab58f1038a83416884b2083b324dbd44863"
+  },
+  {
+    "path": "node_modules/codec-parser/src/codecs/aac/AACFrame.js",
+    "sha256": "3cb566db66463e6c4b5a55861d96c97cb6b30c6da111a09bc0a572e2be8446bd"
+  },
+  {
+    "path": "node_modules/codec-parser/src/codecs/aac/AACHeader.js",
+    "sha256": "320559688483ba7cc12e31baf5d16b55314b63e7dce4a4957f3688988ffb053c"
+  },
+  {
+    "path": "node_modules/codec-parser/src/codecs/aac/AACParser.js",
+    "sha256": "deae2100c76c0b674c01ded152d307a0c8d3b06edb68c431e4cc9ab0f0419903"
+  },
+  {
+    "path": "node_modules/codec-parser/src/codecs/flac/FLACFrame.js",
+    "sha256": "af63555a421b444779b713ae0c16b18a0c9104100e36ecbb79813b37c48dcac7"
+  },
+  {
+    "path": "node_modules/codec-parser/src/codecs/flac/FLACHeader.js",
+    "sha256": "4a6028c1a2698d7e78d1644572f4f95a0f318f5a04245ce2a98f98b7f5102c0b"
+  },
+  {
+    "path": "node_modules/codec-parser/src/codecs/flac/FLACParser.js",
+    "sha256": "6e12ed48e0af762adccaaf8e9dabd5412f304506b9be9b76a1e50189ee8a2480"
+  },
+  {
+    "path": "node_modules/codec-parser/src/codecs/mpeg/MPEGFrame.js",
+    "sha256": "682d41736710c2b4d94c28387710a4ac35310be038fda9466dc671367cae28ab"
+  },
+  {
+    "path": "node_modules/codec-parser/src/codecs/mpeg/MPEGHeader.js",
+    "sha256": "3a522648670be5a416ae858e16dc7726833068e45876a63371bcfaf4cb88148f"
+  },
+  {
+    "path": "node_modules/codec-parser/src/codecs/mpeg/MPEGParser.js",
+    "sha256": "448d6f72d836f28fe8f561615b345d4a185627fe71dc0bd798757542d490b139"
+  },
+  {
+    "path": "node_modules/codec-parser/src/codecs/opus/OpusFrame.js",
+    "sha256": "7e267c1e2a9ccb0ed7e310087b4ac0acc33c859800dcd14703c0a0106cc2a677"
+  },
+  {
+    "path": "node_modules/codec-parser/src/codecs/opus/OpusHeader.js",
+    "sha256": "7baf88e8412b07283f2ba8fbdaf044b28d64a5ce189739d7ccf2e3258bbc26d9"
+  },
+  {
+    "path": "node_modules/codec-parser/src/codecs/opus/OpusParser.js",
+    "sha256": "dcab2b43dbde2cf53db9c18ac906bbedca834891bb415dbfea69678b726547f6"
+  },
+  {
+    "path": "node_modules/codec-parser/src/codecs/vorbis/VorbisFrame.js",
+    "sha256": "a8836380b9af6113c029748f5edc3a786d984c4febe59479f7dd0f8cc4a52cef"
+  },
+  {
+    "path": "node_modules/codec-parser/src/codecs/vorbis/VorbisHeader.js",
+    "sha256": "5d44c9860d15eb11ff60d0986106d08e6db325d362a6fe49326558134761b951"
+  },
+  {
+    "path": "node_modules/codec-parser/src/codecs/vorbis/VorbisParser.js",
+    "sha256": "f70882d328aca5638ff2094d0dee62eed6fabb3aafe8092f26ab673d241554c7"
+  },
+  {
+    "path": "node_modules/codec-parser/src/constants.js",
+    "sha256": "a5e4d73ba64706f081088531689dde804049c7c602cbc10a4783e7338f41b554"
+  },
+  {
+    "path": "node_modules/codec-parser/src/containers/Frame.js",
+    "sha256": "7dbb96333f8b0b4e1b59fed9533729ffaccc3494ea4ab70eb653d2e73bdd4111"
+  },
+  {
+    "path": "node_modules/codec-parser/src/containers/ogg/OggPage.js",
+    "sha256": "3e92f01993eb401d7389c5a4ade5948541943818d093f3b244d18b9c145b6d2d"
+  },
+  {
+    "path": "node_modules/codec-parser/src/containers/ogg/OggPageHeader.js",
+    "sha256": "f9adc4da119fd34868b9ef64aaf572a6617834a81fd16cedbec1156d9de4637f"
+  },
+  {
+    "path": "node_modules/codec-parser/src/containers/ogg/OggParser.js",
+    "sha256": "6b3fd6ece5d5ada7290b42f75d4e40ae4571ff7e97f064fd996b5b9444e33454"
+  },
+  {
+    "path": "node_modules/codec-parser/src/globals.js",
+    "sha256": "dd18ea39875ce970e98954f94e83bd7529edd79a7f0dcf1d488e40976961d491"
+  },
+  {
+    "path": "node_modules/codec-parser/src/metadata/ID3v2.js",
+    "sha256": "efd271b2518bccb863387fa0d8332106dfd42be72f0742dfcf96268577eebf7a"
+  },
+  {
+    "path": "node_modules/codec-parser/src/utilities.js",
+    "sha256": "4a459473b121823f56fe8e6489bbbb06e608206f02d4cdee1c2ba4ec3edcffce"
+  },
+  {
+    "path": "node_modules/simple-yenc/.github/FUNDING.yml",
+    "sha256": "2b0a0e49385224bb2f13b1044699892d39f0aef04136d63c0fe047dbc0dca315"
+  },
+  {
+    "path": "node_modules/simple-yenc/.prettierignore",
+    "sha256": "bcae0416621b3db43d8cba1e4454a792c7af9e4b7287e51056efc5a215d95839"
+  },
+  {
+    "path": "node_modules/simple-yenc/LICENSE",
+    "sha256": "ce44a03cf2ded9cf1d326c5ffb20a29245375dd1b9f1e95e59cd275c24c00533"
+  },
+  {
+    "path": "node_modules/simple-yenc/README.md",
+    "sha256": "df64140e10c63dd17ece5825ca0a108176913c52df30c4a45b00bee07a115d6a"
+  },
+  {
+    "path": "node_modules/simple-yenc/dist/esm.js",
+    "sha256": "14680ab2c8dec870ceffc05e79967b7358d31fd96eee6481388f06347a53ac3e"
+  },
+  {
+    "path": "node_modules/simple-yenc/dist/index.js",
+    "sha256": "0ba1d90435ca68ac2e382171a1bbbc6c4b2796f4be6e8c48aeb9eadf12ea00b4"
+  },
+  {
+    "path": "node_modules/simple-yenc/package.json",
+    "sha256": "68b0047a8d7853ebf56a60e30d5a32efe688024f6913b58061db3c7464160066"
+  },
+  {
+    "path": "node_modules/simple-yenc/rollup.config.js",
+    "sha256": "acb799fed385fcd24ff4bf511f4743d118082bd91262aa473d0b5beb97e77105"
+  },
+  {
+    "path": "node_modules/simple-yenc/src/simple-yenc.js",
+    "sha256": "363cbcc23d55beed7b89398d1213a67722128ba958f6d1eb1964f8797375af4a"
+  }
+]

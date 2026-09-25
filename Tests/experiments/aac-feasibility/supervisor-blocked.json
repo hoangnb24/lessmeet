@@ -1,0 +1,23 @@
+{
+  "command": [
+    "/Users/tubakhuym/.hermes/node/bin/node",
+    "--max-old-space-size=64",
+    "--max-semi-space-size=4",
+    "--wasm-max-mem-pages=512",
+    "-e",
+    "while(true){}"
+  ],
+  "exit": -9,
+  "reason": "wall-time-kill",
+  "elapsedSeconds": 0.225334291,
+  "sampledPeakRssBytes": 44056576,
+  "limits": {
+    "wallSeconds": 0.2,
+    "sampledRssMiB": 256,
+    "cpuSoftSeconds": 5,
+    "cpuHardSeconds": 6,
+    "note": "No hard total-RSS ceiling on Darwin; samples can overshoot. Node flags and fixed WASM memory separately bound decoder allocations."
+  },
+  "stdout": "",
+  "stderr": ""
+}
