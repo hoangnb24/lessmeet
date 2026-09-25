@@ -9,7 +9,7 @@ secret location and rollback limits. Never commit keys, tokens or private keys.
 
 | Service | Exact target / public configuration | Verified state |
 | --- | --- | --- |
-| Convex | `hoang-bang/lessmeet`, dev `zany-octopus-315`; `https://zany-octopus-315.convex.site` | Dev env names inspected Sep 24; new deletion/email/preflight configuration absent. Production not established by this audit. |
+| Convex | `hoang-bang/lessmeet`, dev `zany-octopus-315`; `https://zany-octopus-315.convex.site` | Sep 24: accepted backend and retention workers deployed; RC preflight configuration provisioned. Intake/automation/preflight activation gates absent after synthetic rehearsal. Production not established. |
 | Clerk | LessMeet app `app_3JggBoRulgsbt70ZFjgy9h7UjqQ`, dev instance `ins_3JggBsWybMahxou8G4rXVmM2Snu` | Dashboard Sep 24: no production environment; Apple and Google use Shared credentials. |
 | Clerk issuer | `https://major-fish-4158.clerk.accounts.dev` | Explicit dev env value matches dashboard Sep 24. |
 | RevenueCat | **Lessmeet**, dashboard `a83a7730`, API v2 `proja83a7730` | Sep 24: Keep with original App User ID; separate sandbox transfer behavior off. Do not use unrelated Meetless project. |
@@ -60,8 +60,10 @@ unrelated `meetless.2m0r.com` / `meetless-website`. See [website README](../webs
 
 ## Backend configuration map — not an activation script
 
-These new names are absent from the audited dev deployment. Keep them off/unset
-until the relevant configuration, retention and external-operation approvals exist.
+RC preflight credential, project, revision and verified flag are provisioned to dev;
+the other new names below were absent at the recorded checkpoint. Activation gates
+remain off/unset until their configuration and external-operation approvals exist.
+Approved retention policies do not themselves activate inventory or deletion.
 Source behavior is specified in [BACKEND.md](BACKEND.md).
 
 | Variables | Purpose / prerequisite |
@@ -98,7 +100,8 @@ dig +short CNAME send.lessmeet.2m0r.com
 ```
 
 Before each setup/rotation: confirm exact environment/account and approved scope;
-store secrets only in the approved vault/backend secret store; record the item
+store secrets only in the approved vault/backend secret store or explicitly approved
+ignored local storage (the current RC exception above); record the item
 reference, nonsecret revision, verification outcome and date here. Record acceptance
 and outstanding decisions in STATUS, not a second task tracker.
 
@@ -139,7 +142,9 @@ or removing the workstation copy; never commit or paste it into chat.
 Apple custom credentials must be bound to the original hosted OAuth Services ID;
 preserve the existing shared development login until the target environment and
 identity migration implications are decided. Apple ambiguous revocation remains an
-operator exception. RC inventory needs a separate v2 key; SDK/cross-device recreation
-risk remains unresolved. Retention/privacy decisions, dev provisioning, live tests,
-real sends and deployment are separate checkpoints. Store signing inputs remain in
+operator exception. RC inventory's separate v2 read key is provisioned; it does not
+grant destructive permission. SDK/cross-device recreation risk remains unresolved.
+Ledger/preflight retention approval and dev deployment are complete as recorded
+above; contact/send privacy, provider activation, live tests and production remain
+separate checkpoints. Store signing inputs remain in
 [STORE_INPUTS.md](../Tests/packaging/STORE_INPUTS.md).

@@ -1,5 +1,722 @@
 # LessMeet delivery
 
+## Integration acceptance checkpoint (2026-09-25)
+
+Corrected backend batch chat ACCEPTED for default-off offline workflow:
+handoff `daf09dea0ce09cba1e64a050991740df45221a26447f8028dcb5952c864ef478`.
+Lead verified16hashes/handoff identity, inspected raw provider-status propagation,
+installed SDK terminal set and regressions. Both backend typechecks and658tests /
+21files passed (1.43s); scoped diff check passed. Nonterminal classification blocker
+CLOSED; K and reviewer notified. Native chat3d441a9… accepted separately as below.
+All implementation write/build ownership returned; no active Peer work remains.
+
+Next delivery frontier: native/backend combined compatibility and full app interaction,
+then authorized deployed runtime/quality checks, signed packaging and owner-internal
+TestFlight. Current tests use synthetic audio and mocked provider traffic; no live
+120-minute transcription or chat quality claim. Still need Human decision on
+structural-only owner-beta admission risk and distribution signing/profile readiness.
+No paid calls, activation, deployment, signing, upload, commit or push performed.
+Historical pending/reopened states below are superseded by this acceptance.
+
+Corrected native batch chat ACCEPTED offline:
+handoff `3d441a9bb01b0941d9f7175830cdda582f6c8b69361874d4d12708c8e23df417`.
+Lead matched7currenthashes, inspected shared operation guards and status-only
+disappearance/exact-ID terminal recovery plus disk/reopen regression tests.
+`swift test --disable-automatic-resolution`:128tests,3intentionalskips,0failures,
+13.223s; scoped diff check passed. Status-only blocker CLOSED; H and reviewer
+notified. Native frozen, no active writer/build. Full UI/live cross-lane compatibility
+unverified. Backend nonterminal-response correction below remains active under K.
+
+Backend chat c050d68… REOPENED: independent pinned-SDK probes with in_progress /
+requires_action responses caused premature terminal failure, quota release and
+replacement admission, then ignored late completion. Lead inspected adapter/worker
+and accepted reproduced finding; K regains sole backend/tests/chat-handoff scope.
+Decision: preserve explicit terminal-status evidence through adapter; nonterminal
+response remains unknown with quota/exclusion held and exact late completion allowed.
+Add real-SDK mock red/green regressions. Reviewer ff170… closed; evidence
+/tmp/lessmeet-chat-review.BiJJUS/RESULTS.md is supplemental, durable tests required.
+Native corrected chat handoff3d441a9… returned; seven current hashes match and Lead
+inspected shared transition/disappearance/terminal-history checks. Swift rerun active;
+native scope returned and frozen pending acceptance. No live activation authorized.
+
+Backend batch-chat candidate c050d68c2ef302cead829dc7be9743ca6aa732e25b98f607b28ee5367dd5f496
+(CHAT_BACKEND_HANDOFF.md) HOLD frozen pending acceptance. Lead matched16pathhashes,
+inspected context/HTTP/jobs/lifecycle and reran both backend typechecks plus646tests
+across21files (1.42s), all passed. K relinquished writes and notified HOLD.
+Fresh read-only `ff170c7d-5739-45e1-b323-fb93fe6e72a8` examines lifecycle/unknown
+holds/quotas/deletion. H continues native status-only recovery correction separately.
+
+Native batch-chat candidate returned, REOPENED pending correction:
+CHAT_NATIVE_HANDOFF SHA `bffbbf9f3802ba6fd8d7d428221d7e26881da529fdaa6528bc5b9295b6149979`.
+Lead matched seven changed-path hashes and inspected DTO/UI; native scope frozen,
+Swift ownership returned to Lead for rerun. Fresh read-only inspection
+`eb77cab5-70d8-4f81-9547-aff1adfca79b` covers durable recovery/clocks/cache.
+Lead full `swift test --disable-automatic-resolution` rerun passed:123tests,
+three intentional skips,zero failures,13.533s. Model send/reconcile/resend code
+inspected; acceptance remains pending the bounded recovery inspection.
+Backend K still owns moving chat scope. Changed-context confirmed-absent questions
+remain saved without a discard/reset shortcut; no claim of live compatibility.
+Read-only inspection found status-discovered pending operations (no local request)
+can regress revision3 unknown to revision2 running or accept equal-version conflicts.
+Lead accepted this source-traced finding, not yet executed proof. H again owns native
+scope and exclusive Swift builds to add failing-first model/disk/reopen tests and
+shared monotonic/state guards. Preserve unknown evidence when pending disappears;
+resolve exact known operation through GET, never fabricate a POST payload. Keep
+legitimate terminal recovery working. No DTO change authorized; reviewer closed.
+
+Chat revision dependency resolved by Lead: history revision starts0/increments only
+on successful exchange (equals exchange count); operation revision independently
+starts1/increments on observable state changes. No cross-counter comparison.
+Existing-message replay precedes current-history precondition; native preserves
+history prefix and rejects conflicting equal revisions. Clarification added to
+BATCH_CONTRACT and sent to both writers; prior chat-spec hash below is historical.
+
+Corrected native integration ACCEPTED for offline workflow/cache/recovery:
+handoff `01f5dd0aa740718301da8cabb0a5ec706bd87093b0587f06f336cd2fc1ee12ee`.
+Lead matched all seventeen current hashes, inspected strict raw/provenance changes
+and actual model/disk/reopen regressions. Full Swift rerun passed:103tests,3skips,
+zero failures (12.250s final rerun); scoped diff check passed. Prior native blockers
+CLOSED. Foundation/CoreData test diagnostics remain; no live service or full-window
+human interaction claim. Both K/H corrected transcription inputs are now accepted.
+
+Ready next branch: batch-chat implementation against additive frozen chat section
+in docs/BATCH_CONTRACT.md SHA256
+`4377b494a7f4e7a32b2775b74db9c2acb2ce6279d2c150e7e550ffca6d245aa4`.
+Prior geometry/DTOs unchanged. K owns convex/**,Tests/backend/** and
+Tests/experiments/chunking/CHAT_BACKEND_HANDOFF.md; H owns Sources/LessMeet/**,
+Tests/LessMeetTests/** and Tests/experiments/chunking/CHAT_NATIVE_HANDOFF.md,
+including exclusive Swift builds. No shared writes; Lead owns contract/STATUS.
+Outcome: actual bounded chat flow, durable question identity/recovery, safe quota
+and deletion integration, readable saved history; deterministic mocked proof only.
+Reopen on contract conflict, insufficient context, unknown-side-effect shortcut,
+or need for out-of-scope writes. Signing/risk approval still gates live delivery.
+
+Corrected backend ACCEPTED for default-off offline workflow:
+handoff `850994e592cc94fae934b33a3ba9b4266eccf88377301184343f84e743ec2074`.
+Lead verified all eighteen hashes, inspected timing/queue corrections and regressions,
+reran `npm run typecheck:backend` (both configurations), `npm run test:backend`
+(622 tests / 18 files, 1.42s), and scoped diff check: all pass.
+The two rejected-candidate blockers below are CLOSED: incompatible never-submitted
+work settles once and bounded pages continue; original timing declarations reconcile
+exactly with sample counts/durations. Native fractional fixture and wire digest agree.
+K relinquished scope, notified ACCEPT; prior reviewers notified closure. Backend frozen
+until next assigned change. This does not establish decoder safety, deployed resource
+limits, live-provider quality, or authorize activation/signing/upload. H corrections
+remain active; batch-chat final contract/dispatch follows their acceptance.
+
+Backend candidate handoff `44ae3e2246f205f905893784088db750a1a48fb7aa7e2ef490872cc6498e75ce`
+is REJECTED pending two corrections, despite Lead's 607-test/typecheck pass.
+Independent lifecycle review `242973d9-921d-4904-89d4-087f630b3e1c` reproduced
+Free-to-Pro reservation incompatibility starving later eligible queued work.
+Media review `64f15094-2a6b-49cf-9246-5eae526ae2e5` reproduced acceptance of
+original stts counts 60/62 against 61 actual declared samples. Both findings accepted.
+K regains sole backend/test/handoff write scope. Decision: incompatible never-submitted
+queued work releases its reservation exactly once, becomes explicit billing_changed
+failure with the existing retry budget; no automatic new charge or retry. Bounded
+queue draining must permit later eligible work. Unknown/running holds stay intact.
+Original timing-table coverage must agree with sample counts and exact durations;
+legacy admission remains unchanged. Return checkpoint: regression tests and new hashes.
+
+H native integration handoff `cf2a0bc2f67975fe32795f032759876f99d5c94575ee8a72e5dfca8c0196bf25`
+is REOPENED after inspection, not accepted by completion or passing tests alone.
+Native and Swift ownership returned. Writer reports 98 tests, three skips, no failures.
+Lead verified all 17 native snapshot hashes and reran
+`swift test --disable-automatic-resolution`: 98 tests, three intentional skips,
+zero failures (11.486s). Read-only native recovery inspection assigned to
+`f2f3ef06-3b0a-4fe8-9f00-38368985ab22`; native scope stays frozen, Lead owns builds.
+That review returned source-level counterexamples (not executed Swift reproductions):
+missing nullable raw-result fields/unknown keys pass validation, and aggregate sources
+can refer to declared missing chunks. Lead accepted the findings and assigned H
+executed failing-first regressions plus strict schema/provenance corrections.
+H again owns native/tests/handoff and exclusive Swift builds; prior freeze superseded.
+Keep prior valid partial cache on rejection; backend DTOs unchanged. Review closed.
+Batch chat remains an explicit follow-on; signing and Human structural-only beta
+risk decision remain unresolved. No activation, paid calls, deployment or upload.
+Earlier dispatch ownership statements below are historical where superseded here.
+
+Lead also reran the exact 120-minute native test with
+`LESSMEET_EXACT_CHUNKS_120=1 swift test --disable-automatic-resolution --filter TranscriptionChunksTests.testOptInExact120Minutes`:
+one test passed, CAF and combined-AAC routes, 9.359s. An initial mistyped filter
+matched zero tests and is not counted as evidence. Packaging unittest: 47 passed;
+website draft verification: four assets, three HTML and twenty Markdown links passed.
+These are local/synthetic checks, not live-provider or TestFlight evidence.
+J owns a read-only batch-chat follow-on design using frozen spec/native candidate
+and baseline legacy code, while K fixes backend; no new write ownership or activation.
+J design returned and ACCEPTED as architecture, not implementation: batch chat uses
+all selected validated raw segments with chunk-local provenance, bounded context
+384 KiB and complete aggregate prerequisite; oversized context fails before quota.
+Durable message UUID/context/history binding, pre-call intent and unknown hold
+replace legacy timeout unlock semantics. Preserve existing model, question quota,
+20-exchange/128 KiB history, 8 KiB message and 32 KiB reply bounds; no auto retries.
+Separate default-off chat gate; same-owner reads survive gate-off, deletion includes
+new content and unresolved work. POST body chat-only bound 50,176 bytes permits
+escaped 8 KiB messages without broadening transcription control requests.
+Lead owns final DTO freeze and implementation dispatch AFTER corrected K/H acceptance;
+J holds no writes. No guarantee that every 120-minute transcript fits chat context.
+
+## Integration continuation (2026-09-25, active)
+
+Human requested protocol recheck and completion. Lead reread both protocols,
+resolved actual repo, inspected worktree/latest handoffs and room: no active writers.
+All H/I scopes returned; earlier active-ownership wording below is historical.
+Accepted300/295/5 native and merge modules are available but not a working batch
+feature. Finish line remains ownerinternalTestFlight120min, not publicrelease.
+
+Ready read-only decision lanes before backend/native integration dispatch:
+- J `dc03e15a-ae61-4995-82b4-b6dd51683943`: close exactrational native-to-wire
+  precision. Evaluate exactduration plus ceil-ms displayenvelope, never floor/trim
+  actualaudio or round across7200/300caps; specify safeintegerarithmetic/digest.
+- K `ca3a00f8-87af-41fc-9fc9-7fd7f5296f4e`: close defaultoff ownerallowlisted
+  batch admission/lifecycle/response contract using boundedstructural validation,
+  existingbilling/deletion hooks and isolatedbatchconcurrency; no publicsafeclaim.
+- Lead owns STATUS/contracts/integration. No backend/native writer until interfaces
+  accepted. These decisions unblock realworkflowimplementation, not extra framework.
+
+Human asked explicitly whether to accept structural-only admission residual risk
+for owner-only beta (malformedAAC may pass, resource/provider failure possible).
+Fullserverdecoder gate remains for publicrelease; no risk acceptance inferred yet.
+Also asked whether distribution signing inputs are now available or guidance needed.
+No paidcall/deploy/providerdestruction or privatekey export authorized by these asks.
+
+J ACCEPTED exact rational source identity + enclosing ceil-ms result envelope;
+backend BigInt and native checkedinteger/CMTime arithmetic, exactcapsfirst and timed
+resultend<=floor(actualms). Sub-ms onlypairednull/emptysegments. Fixedarraydigest
+crosslanguagevectors required. Dependency assigned, not left implicit: K owns exact
+structuralpresentation extractor and resultboundadapter; H owns wireconversion.
+Complete shared spec frozen in docs/BATCH_CONTRACT.md (not a second statustracker).
+
+Integrated write ownership dispatched after J/K contract acceptance:
+- K `ca3a00f8-87af-41fc-9fc9-7fd7f5296f4e`: ALLconvex/**,Tests/backend/** and new
+  Tests/experiments/chunking/BACKEND_HANDOFF.md. Preserveacceptedbaseline. Implement
+  versionedHTTP/storage/attempts/scheduler/mockprovider path, mediaexactpresentation,
+  quotas/deletion and recovery together; no secondbackendwriter. No rootdepschange.
+- H `04a5cfdb-bec9-417c-93c4-d1b936e6090d`: Sources/LessMeet/**,
+  Tests/LessMeetTests/**,new Tests/fixtures/batch-native/** and
+  Tests/experiments/chunking/NATIVE_INTEGRATION_HANDOFF.md; exclusiveSwiftbuilds.
+  Implement real model/client/account-scopedcache/UI batchflow against frozenDTOs,
+  persistbeforefirstnetwork, lostresponse/relaunch/partial/rawprovenance/explicitretry
+  tests. Legacybehavior retained. No Package.swift/backend/docs/scriptswrites.
+- Lead owns spec/STATUS/integrationacceptance. Any wirechange comes throughLead.
+  Batchchat explicitlyfollow-on integrationcheckpoint; don'tclaim completefeature
+  until handled. No activation/deploy/paidcalls/signing/push. Humanrisk/signingstill
+  unresolved; these do not block deterministicmockimplementation.
+
+K ACCEPTED as integrated offlineimplementation contract, not runtime approval:
+versioned `/v1/transcription-batches` (supersedes provisionalunversionedroute),
+defaultoff enablegate+exactissuerboundallowlist, unconditionalstructuralAACadmission,
+immutableparent+slots+attempts and two-slot batchinventory. Freeze K's non-timeline
+BatchStatus/result/aggregate/error envelopes; manifest/digest await J. Unknown
+submission retains slot/reservation; no timeout-as-termination, no legacyexpireJob.
+Onebackendwriter must own schema/http/media/billing/deletion/scheduling/provider
+wiring together; native gets separate scope only after completeDTOacceptance.
+Gatesoff must not prevent existingownerread/reconciliation/deletion. Mediaadapter
+exactstructuralpresentation != decodedproof; sample/tablebudgets require fixtures.
+K notifiedholdno writes pending J; risk/signing blockactivation, not offlinebuild.
+
+Lead baseline rerun Sep25:bothbackendtypechecks and583tests passed; Swift test
+command exited0 (longoptintests not enabled);47packagingtests passed; website
+verification4assets/3HTML/20Markdown passed. Signingidentitymetadata still lists
+only AppleDevelopment. Added sourced signing-setup guidance to existing
+Tests/packaging/TESTFLIGHT_INPUTS.md; no certificate/profile creation or keyexport.
+
+## Finish-to-TestFlight continuation (2026-09-24, active)
+
+Sep25 acceptance checkpoint: BOTH300/295/5 migrations ACCEPTED, disconnected only.
+Lead matched all six hashes and inspected current source/handoffs. I snapshot:
+source`2ed80c8e98374d09ab7e70fc2a44b9d365701ab2215942e3532657bdf7232d27`,
+tests`6d6557b6c9e566f1313ab9e8d122b00e41a5786e8623bc87c54d384ed4357333`,
+handoff`56af492e0bfd15b3d98043d9c42b3f00122f63833ef29f38e35b62888ac230a3`.
+Lead reran both backend typechecks,583tests/16files and diffcheck:passed.
+H snapshot:source`f7091bd10383d12294a854f37182869dc1c8887759cf14ddfbb29af2c7bba27d`,
+tests`a898705f90ec11450e1a4726d7718bb03ac6bbb8ce4416deeb75a855fc175905`,
+handoff`4a75859d7883bd117b6009bb74be45840ff76ffb8526710c9262994b898bb9b9`.
+Lead reran `LESSMEET_EXACT_CHUNKS_120=1 swift test --disable-automatic-resolution`:
+passed(exit0). Dense48k stereo regression now succeeds under18MiB and exact120min
+CAF+combinedAAC each produce25 fully locally decoded chunks, unchanged sources.
+This does not establish acoustic/model accuracy or hostile-server decoder safety.
+Dispositions sent; both write/nativebuild scopes returned. Next dependencies:
+explicit rational-to-wire precision, server admission route, then durable batch/API/
+nativecache integration. No new module is wired into a live transcription workflow.
+
+CURRENT CHUNK CONTRACT (supersedes earlier600/590/10 and13slot text below):
+Lead chooses300second windows,5second overlap,295second stride,max25slots for
+7200seconds. Human requested10minutes or less; dense48k stereo actually exceeded
+18MiB at600seconds (18,950,335bytes). Shorter windows retain the encoding preset
+and provide size headroom, still failclosed18MiB. At120min totalinitialproviderinput
+remains7320seconds, within Human-approved2minuteoverlapallowance; quota7200seconds.
+Max2batchgenerationjobs and initial+oneexplicitretry remain unchanged. No paid
+test authority inferred. Both disconnected native/results modules must migrate
+together before integration; no old600second network contract has been deployed.
+New dense300second export success must be measured, not assumed guaranteed.
+H output-validation revision ACCEPTED as disconnected exact-or-reject primitive:
+Lead inspected fullsource/handoff, matched source`5d50cbcd8dd0d8d5293ea19459d1b85ffe1282557479c4d5de7f9b72b4b6eb2f`,
+tests`e2a67b453b6f9b7d03f5d9ae31c12767b528438ea103e245190b731c83a6d338`,
+handoff`f42f700db901173f462c90688a266039d1ebc805d789d2503f5171b8faaf2b64`;
+reran opt-in TranscriptionChunksTests successfully(exit0). Native decode validates
+presentation frames, not rawAACpadding or hostile-server safety. New actualdense
+failure justifies contract migration instead of lowering bitrate or raising cap.
+H now owns SAME3nativepaths/exclusiveSwiftbuild to migrate300/295/5 and prove dense
+and120minute paths. I owns SAME3resultpaths to migratecanonicalgeometry,max25slots,
+5sec dedupregion and tests. These independent writes share this frozen contract;
+no other API/schema/UI/provider changes authorized. Both returnnewhashes/evidence.
+
+Human clarified the finish line: upload a TestFlight build for Human testing, with
+transcription of meetings up to120minutes. NOT public sale or submission for public
+App Review. Lead continues engineering/integration toward this concrete milestone,
+preserving the accepted dirty parallel-round candidate below. Separate production
+provisioning/legal publication are not automatically prerequisites to an internal
+beta; existing store-mode gates remain unchanged until a scoped beta-packaging
+contract is accepted. No external action is inferred
+where credentials, cost, privacy, identity migration or irreversible risk still needs
+a concrete Human decision. No paid tests, real provider deletion or production
+provisioning is authorized by local test acceptance.
+
+Lead reread both protocols, actual source/schema/retention and latest handoffs;
+initial room inventory had no active writer. First lanes and current dispositions:
+- D `1b174e4e-cba1-49c7-b332-f243c204f0a2`, E
+  `0e4775ab-63ce-4952-b097-f847e039aeac`, F
+  `27e4ce65-7ad2-4a53-9b11-fd4409ee1f45` are the assigned Peers below.
+- D: read-only independent architecture decision on the accepted Clerk transport
+  plus current durable worker. Lead proposes a separately gated, request-bound
+  execution inventory and fenced observe-before-retry worker; exact design must
+  be accepted before backend writes. No live providers or schema changes yet.
+- E: read-only technical route for long-upload and hostile-media validation using
+  actual Convex/native constraints and official current sources. Compare preserving
+  originals with derived upload encoding versus direct object-storage upload;
+  isolate untrusted decode costs and trusted duration/quota admission. No new
+  service, changed audio quality, upload cap or provider request yet.
+- F: draft-only reconciliation in `docs/legal/**` and `website/README.md`, using
+  the accepted backend behavior and retention approvals. No `website/public/**`
+  edits, publication, effective-date/audience/market/SLA invention or legal approval.
+  Distinguish content retention,30day inventory,90day completed operational ledger,
+  unresolved provider destruction and pending notification delivery. Return full
+  before/after hashes, exact changes and offline document checks.
+- Lead: STATUS/configuration/product decisions and architecture integration. All
+  production source stays frozen until a scoped design/ownership decision. Peers
+  use accepted dirty hashes, not old HEAD alone. No commit/push or external changes.
+
+Human's internal-TestFlight decision makes an additional packaging lane ready:
+- G `e7b10a2b-0b2d-4baf-bdea-b00c1ff67d13` owns `scripts/**`, `Tests/packaging/**`,
+  `Sources/LessMeet/Configuration/BillingConfiguration.swift` and
+  `Tests/LessMeetTests/ConfigurationTests.swift` only. Add explicit `testflight`
+  packaging mode isolated from unchanged dev/sandbox-dev/store policies. Same exact
+  app/team, distribution profile/app certificate and installer signature validation
+  as store; explicit version/build/approved icon and a distinct beta approval record
+  binding the known dev backend/public configuration and internal audience. Never
+  disguise the artifact as store or claim a mode string restricts Apple distribution.
+  TestFlight mode may reuse the internal unpublished-legal acknowledgement, never
+  publish drafts or weaken store production/legal requirements. No live signing,
+  profile/key access, upload, artwork creation or existing artifact promotion.
+  Offline mock proof and Swift configuration tests first; actual profile/signing/
+  App Store processing and internal-group selection remain final delivery gates.
+  G exclusively owns Swift compilation until handoff; other lanes are read-only
+  or documentation, and later native audio implementation must wait for ownership.
+
+Acceptance: D/E return exact contracts, options/recommendation, primary sources,
+tests needed and precise Human choices; F preserves all resolved Human decisions
+and makes no new public claims. Reopen interface or external-effect needs to Lead.
+Continue each ready branch on its finish/decision event; dependent work waits for
+explicit disposition recorded here.
+
+### Continuation decisions and ownership checkpoint
+
+- D design ACCEPTED as a future offline implementation input: freeze Apple case
+  reference plus monotonic stage fence; expose sanitized session status and bounded
+  inventory; use phase-aware observe-before-retry recovery. Terminal or typed-absent
+  sessions are bounded handling, never proof of global revocation. Worker deferred
+  by Lead until after the 120-minute route/signing checkpoint: full provider
+  automation is not a prerequisite for this owner-only beta. No backend writer.
+- E diagnosis ACCEPTED: raising the upload cap or compressing audio does not prove
+  decoder safety. Preserve local originals; strict 7,200-second presentation bounds
+  must distinguish the existing 7,200.4993-second synthetic fixture. External worker/
+  bucket proposal DEFERRED pending exact provider/cost and Human authorization.
+  E remains read-only, assessing a bounded Convex-WASM streaming feasibility route
+  and upload binding/cost limits before Lead chooses an implementation contract.
+- F and G returned candidates and relinquished all write scopes, including native
+  compilation. Their handoffs await Lead artifact verification/acceptance; passing
+  writer tests are not signing, runtime or upload evidence.
+- Human approved the generated temporary icon direction for TestFlight. Lead owns
+  versioned artwork and format conversion under Resources; built-in imagegen used.
+  No public branding approval inferred. No signed build or upload yet.
+- F ACCEPTED: exact five after-hashes in its handoff matched. Lead inspected drafts
+  and reran `node website/verify-drafts.mjs` (4 assets,3 HTML,20 Markdown links) and
+  `git diff --check`, both passed. Retention/intake/notification history now matches
+  accepted behavior; public assets and Human commercial decisions unchanged. This
+  is unpublished documentation acceptance, not legal or fulfillment approval.
+- G independent read-only inspection assigned to
+  `150d70c5-7f46-4552-8f38-2e40e9e33244`, exact ten-path handoff snapshot; candidate
+  frozen pending decision. Lead inspected diff and real ICNS separately.
+- Approved provisional artwork is `Resources/Artwork/lessmeet-testflight-v1.png`
+  SHA256 `416f72ce4b928cfe5656dba503220b74addd267b1c10bf142ab3bf28e7c35a6b`;
+  converted ICNS SHA256 `a4f12ae15c88b599c8d280584d4c3dcd5ba3419adac812c97c82d1d14d19b0a4`.
+  Actual `validate_icon` decoded and validated all required representations. Prompt
+  and original1254px dimensions are recorded alongside artwork. No bundle stamped.
+- Lead read-only `security find-identity -v -p codesigning` found one valid Apple
+  Development identity, no distribution identity. Human asked to prepare matching
+  app/installer distribution identities and current App Store profile; no private
+  keys were read/exported and no certificate was created. This is a signing blocker,
+  separate from the still-unimplemented120minute cloud route.
+- Lead reran `swift test --disable-automatic-resolution`:74 tests,1 intentional
+  skip,0 failures. Lead packaging unittest discovery:47 passed in5.195s.
+- G ACCEPTED as bounded local tooling: exact ten-path snapshot anchored by handoff
+  SHA256 `01b761646e6d45a8a87b7cafeb3673c7c7143077d00c1ce60b9a35da76cbfb21`.
+  Fresh independent inspection matched all before/after hashes and found no new
+  blocker;47 tests and syntax checks passed. Store guards, explicit beta inputs,
+  separate staging and distribution signing policy preserved. Existing installer
+  common-name verification/runtime overrides/optional architecture coverage remain
+  limitations, not newly certified behavior. Disposition sent to G and inspector.
+  E feasibility research returned (disposition below); Human signing-material preparation is the
+  external delivery dependency. No app signed, installer produced or upload made
+  outside synthetic mocked packaging tests.
+
+### E feasibility disposition — ACCEPT research; staged local probe only
+
+Lead ACCEPTS the bounded technical research, not decoder adoption or deployed safety.
+At this historical decision a single120minute model request was the initial design;
+Human's subsequent chunking direction below supersedes it. No model switch or retention change.
+Signed-envelope adoption can bind bytes/owner but cannot hard-cap Convex upload
+ingress. Any live use of that residual bearer capability needs Human risk approval.
+
+E receives exclusive `Tests/experiments/aac-feasibility/**` and one separately
+created temporary dependency directory for a staged local probe. No root package/
+lockfile, backend, native app or build changes. First gate only: verify exact npm
+artifact/dependency integrity/license inventory, inspect WASM imports/memory and
+bundle compatibility; synthetic short raw-access-unit consumption/rejection probe
+under a separate hard process timeout. Do not build a new general demuxer, signed
+envelope or120minute pipeline before the decoder gate passes. No lifecycle scripts,
+global installs, credentials, personal audio, uploads, paid tests or deployments.
+Stop/reopen on missing consumption evidence, unsupported runtime dependencies,
+unbounded memory or required decoder rebuild. GPL/commercial notice is unresolved
+for adoption, not silently classified MIT-only; no distribution of decoder bytes.
+Lead owns next integration/license/runtime decision after immutable probe handoff.
+
+### Chunking direction and decoder first-gate disposition
+
+Human explicitly chose <=10minute segments with overlap, batch processing and
+aggregation. This supersedes the earlier single-request recommendation. Lead's
+initial bounded contract is600second source windows,10second adjacent overlap,
+590second stride, up to13chunks for7200seconds; at most2 provider jobs concurrently.
+Keep originals, persist successful chunk results, reconcile ambiguous submissions
+before any paid retry, and never count overlap twice against user quota. Provider
+cost still includes overlap. Global speaker identity/dedup quality is not proven.
+
+E first-gate evidence ACCEPTED only as a diagnostic artifact: manifest SHA256
+`b62000c1df94ff80a4b3cd9790aaa497cd78780355ad3564ecf5982444972ceb` and all23listed
+files matched in Lead's independent Node hash check; full handoff inspected.
+Decoder adoption REJECTED at this gate: consumption/progress and channel correctness
+remain unproven; startup decompressor lacks declared max; Convex compatibility and
+license disposition unresolved. Tested malformed nonempty inputs errored, so no
+silent-acceptance exploit is claimed. Eight supervised probe results are Peer
+evidence, not Lead reruns. No actual decoder hang or longfile test occurred.
+Separate ABI/rebuild work DEFERRED by Lead until chunk architecture checkpoint;
+retained isolated dependency directory stays evidence, no integration authorized.
+Frozen experiment's single-request sentence is historical and superseded here.
+
+Current exclusive ownership:
+- H `04a5cfdb-bec9-417c-93c4-d1b936e6090d`: new
+  `Sources/LessMeet/Cloud/TranscriptionChunks.swift`,
+  `Tests/LessMeetTests/TranscriptionChunksTests.swift`, and
+  `Tests/experiments/chunking/NATIVE_HANDOFF.md`; exclusive native builds. Implement
+  disconnected local chunk planner/exporter with18MiB perchunk bound, actual metadata,
+  source preservation and owned-output cancellation cleanup. No API/UI integration.
+  Acceptance requires boundary/offset/cancel/hash evidence; synthetic audio is not
+  speech quality or server admission proof. Native source is not a trusted server.
+- I `4d0eec27-b165-486f-b214-3c79d188eca9`: read-only independent backend contract
+  for parent/chunk jobs, trusted timeline/quota/overlap, retry/deletion fencing,
+  bounded structured transcripts and conservative merge. No backend writer until
+  Lead accepts exact interfaces. Flag audio safety as unresolved, not waived.
+- Lead owns STATUS/integration decisions; all other accepted candidates preserved.
+  No upload, paid request, signing or deployment. Signing inputs still need Human.
+
+### I architecture disposition — bounded contract and beta quota accepted
+
+Lead inspected actual schema/recordings/limits and full I response. ACCEPT parent +
+max13 immutable chunk slots with individually fenced attempts, recoverable owner+
+clientBatchId before network, explicit seal trigger, independent unknown outcomes,
+strict structured results and conservative merge. Existing recording API remains
+legacy; no reinterpretation of independent legacy records as one batch. Proposed
+versioned batch API: create manifest, PUT bounded chunk, seal, lookup by owner/key
+or parent ID, bounded perchunk result, explicit failed-chunk retry with attempt and
+request id. Unknown submissions cannot automatically retry or be declared ended
+by timeout. Initial+one explicit retry is the bounded beta attempt limit.
+
+Concurrency clarification: max2 applies new batch transcription generation, not a
+new all-Gemini/chat scheduling framework. No global provider cap is claimed. Audio
+validation must not depend on billing toggle. Decoder safety remains unresolved.
+Human explicitly ACCEPTED fixed protocol-overhead allowance for internal beta:
+120min canonical quota versus122min maximum initial input, without proving overlap
+content equality. Server-fixed geometry bounds the allowance; never accept client
+billable seconds or variable discounts. This does not authorize paid test calls,
+unlimited retries, public rollout or unrelated quota grants. Backend lifecycle
+implementation still waits for admission contract acceptance; accounting can use
+this approved policy. Allocate canonical intervals with cumulative rounding so
+chunk allocations sum exactly to rounded total, not perchunk rounded inflation.
+
+Ready independent writer I now owns ONLY `convex/chunkResults.ts`,
+`Tests/backend/chunkResults.test.ts`, `Tests/experiments/chunking/RESULTS_HANDOFF.md`.
+Implement disconnected version1 structured-result validator and conservative merge:
+paired nullable timestamps, local speaker namespace, boundedraw384KiB/2048segments/
+8KiBtext, canonical geometry, exact normalized text AND identical global intervals
+for adjacent-overlap dedup only, preserved rawtext/provenance and ambiguous overlap.
+No fuzzy removal, globalspeaker inference, hidden truncation or paid summarization.
+Aggregate >384KiB explicitly unavailable/too_large; original results remain usable.
+H continues separate nativehelper scope and exclusive Swift builds. No API/provider
+wiring until Lead accepts these inputs. I must return hashes, tests/typecheck and
+limits; acceptance of architecture is not acceptance of unfinished implementation.
+
+### H candidate checkpoint — bounded primitive accepted; hardening next
+
+H relinquished all writes/native builds. Lead matched exact three-path snapshot:
+source `2a6d53771fc0c889ef8f8ccf31d4a88eb97e8a30891aaa66460263eca15d75dd`,
+tests `cb75166d63e3219314998fd88e0083c3bfe1899a0241783efd7d26b8847ea499`,
+handoff `0de10d5f92024d9dc3bf9cd6b3dbc48144dc823091effbf7568a6a58c16f1a09`.
+Source/tests/handoff inspected. Fresh read-only inspection assigned to
+`6726c2e6-a81f-4bb5-b28e-72475fb95a69`; candidate frozen pending disposition.
+Lead owns native compilation and reruns opt-in chunk tests. Writer's exact120min
+full-decode proof uses PCM CAF;601s fixture covers combined AAC re-encoding. These
+are separate claims, not120min speech-quality/provider/runtime proof. Rational
+source times require an explicit precision contract before integer-ms API mapping;
+no silent rounding or coverage change is accepted. I result-module writer remains
+independent and active. No backend/API integration yet.
+Lead ran `LESSMEET_EXACT_CHUNKS_120=1 swift test --disable-automatic-resolution
+--filter TranscriptionChunksTests`:5tests,0failures; exact120min case4.468s.
+This independently reproduces the bounded synthetic result, including source
+preservation/cancellation/nooverwrite tests; candidate acceptance awaits inspection.
+
+Lead ACCEPTED the exact original H snapshot as disconnected local preparation only
+after independent inspection matched hashes and confirmed geometry/preservation.
+Not upload-ready: actual output duration/rate/channels were recorded more broadly
+than validated, and `decodedFrames` came from declared AVAudioFile.length rather
+than a production decode pass. Reviewer findings accepted; disposition sent to H
+and inspector. No claim all output satisfies <=600seconds or server decoder safety.
+
+Next H scope is the SAME3paths, exclusive Swift builds restored. Harden actual
+export admission: supported single zero-origin AAC-LC audio, output format checks,
+actual presentation <=600seconds, explicit requested-range/sampleprecision match,
+bounded streaming full local decode with cancellation/progress/length evidence.
+No silent trimming/rounding or misleading declared-as-decoded count. Test stereo
+44.1/48k/fractional endpoints and relevant failure cleanup; add actual long combined
+AAC route within prior resource budget or report why unavailable. Exact rational
+to integer-ms network conversion still requires a separate accepted policy.
+No network/API/UI or backend writes; server safety remains independent. Candidate
+must return new complete hashes and reproduction evidence before integration.
+
+### I result candidate checkpoint — accepted disconnected module
+
+I relinquished three-path writer scope. Lead inspected complete source/handoff and
+matched hashes: `convex/chunkResults.ts`
+`5772db38db627416ea0b3e6ae373d5e0f358eac7b3759ffee65417e9de0d5c43`, test
+`a11659ec664676cb9e4520e56189d72ead11cdee0f4b467e090b871e8b12f92a`, handoff
+`c5d64a3260e3b936e3bf1026ac516e04c3790739e1b2fb647a958180bc55d41c`.
+Lead runs backend typecheck/full tests; fresh read-only inspection assigned on exact
+snapshot for adversarial JSON and conservative dedup/provenance/overflow behavior.
+Inspector ID `9f0ff218-2106-46fd-a27b-1c1bef7d2f4f`. Lead independently reran
+`npm run typecheck:backend` (bothprojects pass), `npm run test:backend`
+(574tests/16files pass,662ms), and `git diff --check` (pass). I notified to keep
+candidate frozen until disposition; no new write scope granted.
+Lead ACCEPTED this exact three-path I candidate after independent inspection.
+Inspector matched hashes before/after;107scoped tests passed and1103in-memory
+adversarial/conservation cases passed (supplemental cases not persisted). Lead's
+574test/typecheck proof above remains independent integration evidence.
+Acceptance is only strict result validation plus a reversible derived view.
+Important accepted limitation/reproduction: chunk0 [591000,592000,"yes","Alice"]
+and chunk1 [1000,2000,"yes","Bob"] collapse to one view segment with2sources and
+overlaps:false. This follows exact text/time equivalence but cannot prove one real
+utterance; distinct simultaneous speech is possible. Original JSON and both local
+speaker/provenance references survive. Downstream UI/integration MUST expose
+multi-source equivalence and original alternatives; overlaps:false is not acoustic
+certainty. Never irreversibly replace originals or claim global speaker identity.
+No pure-module change required at this gate. Disposition sent to writer/inspector;
+backend lifecycle still awaits exact native precision and server admission contract.
+No persistence, provider completion, timestamp accuracy or UI claim follows from
+this pure module. H hardening owns native files/builds independently.
+
+
+## Release-readiness parallel round (2026-09-24, locally accepted)
+
+Human requested parallel progress after readiness assessment. Lead reread shared
+and local protocols, resolved `/Users/tubakhuym/projects/lessmeet`, inspected clean
+HEAD `b42a7a00a9e0f60a72eaeeadaa17b0c9c190f605`, current handoffs and room inventory:
+no active Peer writers. Accepted baseline exists in this checkout; Lead reran
+backend typecheck/356 tests, Swift 73 tests and packaging 38 tests successfully
+before dispatch. Swift has two unhandled handoff-file warnings, not test failures.
+
+Current scope is local implementation, synthetic offline verification and public
+provider documentation research. No production provisioning, credential access,
+provider mutation, send, upload, purchase, paid AI, signing or release is authorized
+by this round. All existing feature gates remain unchanged.
+
+Ready branches, with exclusive ownership assigned before dispatch:
+- Assigned Peer IDs (current dispositions below): A `4cba6faf-735f-4a06-90ff-468b4c104139`;
+  B `ca89bcc7-7ffe-471e-8134-49eb398b3aff`;
+  C `16209a14-5e1b-4005-b38b-fe0b96e773f5`.
+- A / media admission: `convex/media.ts`, new `Tests/backend/mediaSafety.test.ts`
+  and `Tests/backend/MEDIA_SAFETY_HANDOFF.md`. Exercise bounded hostile M4A cases
+  and make narrowly justified parser-admission fixes. Keep audioSeconds API,
+  18 MiB cap, accepted native export compatibility and billing contracts unchanged.
+  No other backend/schema/provider/dependency changes. Acceptance: concrete fixtures,
+  typecheck/full regression, resource-bound evidence and explicit undecoded-payload
+  limitations; reopen if robust handling needs a decoder/service/dependency.
+- B / long capture: new `Tests/LessMeetTests/LongCaptureTests.swift` and
+  `Tests/LessMeetTests/LONG_CAPTURE_HANDOFF.md` only. Add opt-in synthetic streaming
+  capture/export measurements using existing accepted native capture API. No live
+  microphone/system capture or production-source edits. Measure duration, size,
+  timing and memory where reliable, bounded resources, source preservation and
+  decoded duration. Start short, then 30/60/120 minutes only within local resource
+  bounds. Acceptance distinguishes actual runs from skipped cases and synthetic
+  pipeline evidence from acoustic/TCC quality. Reopen source defects to Lead.
+- C / provider execution contract: read-only exact baseline plus official public
+  docs. Resolve executable Clerk/Apple/RC deletion order, wire versions, provenance,
+  retries and observation semantics; identify what can be implemented offline and
+  what needs Human configuration/risk decisions. No writes or live provider access.
+  Lead must disposition this contract before any destructive-adapter dispatch.
+- Lead: README/configuration/backend-documentation/status reconciliation, Package.swift handoff exclusions,
+  integration and candidate acceptance. Other source, scripts, legal drafts and
+  website stay frozen in this round unless explicitly reassigned.
+
+Each writer returns original base, complete changed paths and SHA-256 snapshot,
+commands/results, remaining limits and explicit relinquishment. No commit/push.
+Separate file scopes permit shared-checkout work; no concurrent native compilation
+outside B until its handoff. Any shared-interface change reopens ownership first.
+Downstream target is a verified release candidate for eventual internal TestFlight,
+not public-sale approval. Production/auth, provider completion, legal publication,
+artwork/signing and cost/runtime evidence remain gates. Current store tooling's
+production/legal gates are project policy, not a claim that Apple forbids every
+development-backed internal beta. Return on Peer finish/error/decision events.
+
+### C disposition — ACCEPT bounded provider contract; narrow next lane
+
+Lead read C's complete response against frozen `b42a7a0`, inspected existing adapter,
+worker completion fencing and preflight contracts, and checked the pinned public
+Clerk schema. ACCEPT research as an offline design input, not provider readiness.
+Clerk DELETE acknowledgement is not absence; missing optional response ID is allowed
+but a contradictory ID blocks. Session absence is not proof of revocation. Apple
+original-client provenance remains unresolved; RC DELETE is asynchronous and its
+read-only credential does not grant deletion. No combined destructive lane approved.
+
+DEPENDENCY_REQUEST resolved by narrowing the next implementation to an unconnected
+Clerk transport module. C exclusively owns new `convex/clerkDeletionTransport.ts`,
+`Tests/backend/clerkDeletionTransport.test.ts` and
+`Tests/backend/CLERK_TRANSPORT_HANDOFF.md`; A/B scopes unchanged. No existing
+schema, worker, preflight, generated API, provider flags or retention writes.
+Require injected transport (no implicit global fetch), explicit verified immutable
+binding/enable input, fixed origin and pinned wire version, bounded body/timeout,
+no hidden retry and no completion publication. Represent acknowledgements,
+point-in-time absence, session revocation and transport ambiguity separately.
+Destructive operations additionally require explicit Apple disposition and a
+caller-provided fresh authorization check before submission; these are contracts
+for a future trusted worker, not proof supplied by a public client.
+Existing worker continues returning adapter_unimplemented for Clerk. Acceptance
+requires fixture coverage of exact routes, instance/subject/session mismatches,
+optional/contradictory IDs, typed/generic 404, malformed/large/timeout responses,
+authorization withdrawal and zero calls when disabled/unbound. No actual HTTP.
+
+Durable integration is deferred to Lead after this transport candidate is accepted:
+design fresh execution inventory/adoption, evidence retention and observe-before-
+retry with fences before assigning schema/worker ownership. Existing frozen
+preflights cannot be repurposed. Notification delivery may remain unknown for this
+offline lane; release still needs a supportable timing/completion-notification
+process, including missing/relay-only contacts. Human owns original Apple client/
+migration, any manual revocation workflow, RC write scope/recreation risk and live
+activation. C's original read-only assignment is closed; new transport brief follows.
+
+### A disposition — ACCEPT bounded structural hardening; broader safety gate retained
+
+A relinquished its three paths. Lead matched source `83c1c9ddd8df`, tests
+`b4f8eb0155cf`, handoff `4c81680444e1`, read the full candidate and started independent
+verification. Source adds pre-parser explicit box bounds, recognized-tree depth/count
+caps and table backing checks; 27 new cases include a safe sentinel boundary for
+hostile counts plus real native-fixture compatibility. A reports typecheck/383 tests.
+Fresh read-only Peer `c709866a-93a2-4a58-a9a3-7269cb235479` matched all three hashes,
+checked pinned MP4Box expansion and passed 67 media/billing tests without cache;
+no blocking finding within the limited claim. Lead independently reran backend
+typecheck and all 383 tests/14 files successfully. ACCEPT these exact bytes for
+earlier structural rejection with native fixture/billing compatibility preserved.
+Conservative native-v0 admission does not promise all QuickTime format variants.
+A and read-only assessment closed; ownership returns to Lead. Usable downstream:
+local pre-parser guards and repeatable hostile-fixture evidence, not deployment or
+public safety clearance. No production behavior changed remotely.
+
+ACCEPT A's REOPEN_REQUEST for any broader release-safe decoding claim: erased AAC
+payload still passes structural admission and nested descriptors/extensions remain
+downstream parser attack surface. Public activation remains blocked. Lead owns the
+next decoder/isolation architecture decision after this bounded candidate assessment;
+new service/cost/hosting changes need Human authority. No complete decoder or deployed
+resource-limit assurance is inferred from these fixtures or runner memory numbers.
+
+### B disposition — ACCEPT synthetic long-capture evidence; upload gap measured
+
+Lead matched and inspected test `6fb76577092c` and handoff `79781f7653d5`;
+B relinquished files and native-build ownership. ACCEPT bounded opt-in harness and
+synthetic results, not acoustic/real-device or long-upload readiness. B measured
+10/1800/3600/7200-second cases with streaming generation/hash/decode, unchanged
+original hashes and 32-frame duration delta. Long exports are 30,992,655 / 61,983,734 /
+123,962,236 bytes (29.56/59.11/118.22 MiB), all exceeding the unchanged 18 MiB cap.
+No automatic split, bitrate or billing change is approved by this evidence.
+
+Lead reran `LESSMEET_LONG_CAPTURE_SECONDS=7200 swift test
+--disable-automatic-resolution --filter LongCaptureTests`: PASS, 18.831s test,
+123,962,236-byte export, 1,160,770,573 temporary bytes, 345,623,968 frames at48kHz,
+original hashes preserved; process peak RSS129,269,760 bytes (not helper/system RAM).
+Lead excluded all three handoff/manifest files in Package.swift and reran
+`swift test --disable-automatic-resolution`: 74 tests, one intentional opt-in skip,
+zero failures and no unhandled-file warning. Existing app artifacts were not rebuilt.
+B's two initial decoder-helper failures and hash-autorelease measurement correction
+remain recorded in its handoff, not silently counted as success.
+
+Downstream may reproduce long synthetic export and size measurements using the named
+test. Long-meeting transcription needs a separately verified upload/encoding route;
+Lead owns that technical proposal, with Human decisions for quality/splitting/cost
+tradeoffs before behavior changes. Local originals remain untouched by cloud failure.
+
+### C transport disposition — ACCEPT disconnected transport only
+
+C relinquished all three new files. Lead matched hashes and inspected complete
+source/handoff: transport `39d3c407880a`, tests `2ee049383f6e`, handoff `655e66188ca6`.
+No other backend file imports the new module; existing worker/API/schema remain
+unchanged. Lead reran backend typecheck and full suite: 467 tests/15 files PASS.
+Fresh read-only Peer `74e4b3f7-698e-4555-b614-c26d0004b191` matched all hashes before
+and after its checks, verified the pinned public Clerk schema, independently passed
+84 transport tests and both TypeScript projects, and found no blocking defect.
+Lead ACCEPTS the exact three-file candidate for disconnected transport only:
+immutable identity, immediate pre-submission authorization, bounded response/deadline
+handling and distinct result semantics meet the brief. Callback authorization is
+not atomic with remote mutation; timeout or blocked post-submission response is
+never proof of no side effect. C and assessment assignments closed; all ownership
+returns to Lead. No active Peer writes or outstanding actionable responses remain.
+Acknowledgement, absence and revocation remain distinct; no observation is a
+complete deletion claim. No live request, key read or activation occurred.
+
+### Round handoff and next frontier
+
+All three bounded lanes are locally accepted; no commit/push/deployment/signing or
+Store upload was performed. Lead reconciled README, CONFIGURATION and BACKEND
+against the latest accepted dev checkpoints and removed Swift handoff-resource
+warnings. Final observed checks: backend typecheck/467 tests in15files; Swift74
+tests with1intentional skip and0failures; opted-in120-minute synthetic capture PASS;
+`git diff --check` and `node website/verify-drafts.mjs` PASS. Packaging38tests were
+the pre-dispatch baseline (packaging scripts unchanged), not a new signed build.
+The Lead120-minute temporary directory was confirmed removed by its test cleanup;
+no user recording or accepted app artifact was removed/overwritten.
+
+Usable downstream inputs: bounded media preflight and fixtures, reproducible long
+capture measurements, and pinned injectable Clerk transport. Next technical work
+belongs to Lead: design fresh execution inventory/legacy-stage adoption, trusted
+Apple-evidence revision and fence semantics, observe-before-retry, session/user
+aggregation and retention integration before dispatching the durable Clerk worker.
+Transport acceptance alone does not establish those contracts. Separate technical
+proposals are needed for isolated media validation and long-upload encoding; do
+not silently introduce a service, change audio quality, split recordings or bypass
+the18MiB limit. Reopen at those design checkpoints; no dependent writer is assigned.
+
+Human gates remain original Apple client/environment and existing-identity migration,
+any manual revocation route, RC destructive credential/recreation-risk acceptance,
+completion timing/notification process, production provisioning, legal publication,
+approved artwork/signing and bounded paid cost measurements. Main-ledger90day and
+inventory30day retention decisions are resolved, not reopened by this round. Public
+release is still NOT accepted: structural media safety is incomplete and the tested
+30/60/120-minute exports exceed current upload capacity.
+
 ## Main deletion-ledger retention approval (2026-09-24)
 
 Human approved the recommended main-ledger policy: keep the exact owner guard and

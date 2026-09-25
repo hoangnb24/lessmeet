@@ -1,13 +1,17 @@
 # LessMeet
 
-Release-preparation checkpoint (2026-09-24): account-deletion/automation, notification
-and preflight source, legal/listing drafts and Store packaging tooling are locally
-accepted, not deployed or published. Resend DNS/domain and a vault-stored sending
-key are configured separately; backend sending remains off.
-Deletion intake defaults off; work-ledger retention and fulfillment timing/channel
-need operator decisions before deployment. See [current acceptance and remaining
+Release-preparation checkpoint (2026-09-24): the core product flow and core sandbox
+billing have Human-reported acceptance. The accepted backend, including deletion
+orchestration and retention workers, is deployed to development, not production.
+A synthetic deletion rehearsal verified orchestration, not provider erasure.
+Deletion intake, automation, inventory and email activation remain off; destructive
+Clerk/Apple/RevenueCat adapters are not implemented. Main deletion-ledger retention
+(90 days after full completion) and preflight retention (30 days after the latest
+accepted transition) are approved. Legal/listing drafts remain unpublished; Store
+packaging tooling has offline acceptance, not a verified uploadable release.
+See [current acceptance and remaining
 gates](docs/STATUS.md), [configuration inventory and secret locations](docs/CONFIGURATION.md)
-and [deletion contract](docs/BACKEND.md#account-deletion--local-candidate-not-deployed).
+and [deletion contract](docs/BACKEND.md#account-deletion--development-deployed-activation-off).
 Older development/runtime notes below do not supersede this checkpoint.
 
 A native Swift macOS app for local microphone + system-audio recordings, with
@@ -27,7 +31,11 @@ Open `Package.swift` in Xcode to browse/debug. For recording permission checks, 
 the packaged `.app`, not `swift run`: the bundle contains the usage descriptions
 and hardened-runtime audio-input entitlement. Development builds are ad-hoc signed;
 set `LESSMEET_SIGNING_IDENTITY` to your own identity for stable signed builds.
-Distribution signing/notarization and App Store sandboxing are not configured.
+An isolated signed `sandbox-dev` app was accepted for internal testing. Store
+distribution signing and installer tooling exist but real Store packaging/upload
+remain unverified. Sign In with Apple was enabled on the App ID on Sep 24;
+provisioning profiles must be regenerated before future signing. See
+[packaging inputs](Tests/packaging/STORE_INPUTS.md).
 
 ## Recording
 
@@ -50,33 +58,42 @@ Original audio is retained if combining fails. A recording interrupted by app
 termination is marked interrupted when the library is reopened. Automatic repair,
 device switching, pause/resume and cloud sync are outside the first version.
 
+Synthetic 30/60/120-minute exports completed locally but measured 29.56/59.11/118.22
+MiB, all above the 18 MiB upload limit. Long local recording does not currently imply
+long-meeting transcription support. See the [reproducible opt-in test and limits](Tests/LessMeetTests/LONG_CAPTURE_HANDOFF.md);
+these measurements do not establish real-device sound quality or drift.
+
 ## Account and cloud
 
-**Development cloud access is enabled** (`GEMINI_BILLABLE_ENABLED=true`). The owner
-approved access for all authenticated users without aggregate quotas for now, and
-indefinite cloud retention. The reversible switch defaults off if missing; it does
-not replace per-record authorization. Existing technical size limits still apply.
+The owner approved development cloud access and indefinite recording retention;
+sandbox billing enforcement was subsequently enabled on the same development
+backend. The earlier unlimited-access checkpoint is not the current billing policy.
+`GEMINI_BILLABLE_ENABLED` defaults off if missing and does not replace owner checks
+or billing admission. Recorded configuration is not a fresh live switch readback.
 
 This is a multi-user product. Gemini keys will **not** be saved in Keychain or
 bundled in Swift. The product owner funds one shared key in Convex env.
 Clerk hosted login is wired into the sidebar; Google and Apple are enabled for the
 development instance. Clerk may persist login sessions in Keychain; this never
-stores the Gemini key. Real login and Convex token acceptance still need verification.
+stores the Gemini key. Human reported a successful login/transcript/chat round;
+both providers and production credentials are not independently verified by it.
 Transcript/chat backend is deployed to development and connected to the Swift UI.
 See [the HTTP contract](docs/BACKEND.md).
 Audio uploads are limited to 18 MiB. Uploaded audio/transcripts remain in Convex
-indefinitely on the deployed version. Local source now includes guarded in-app
-deletion initiation, not yet deployed or live-verified. Core development sandbox
-billing was Human-tested; see status for remaining lifecycle/release checks.
+indefinitely unless an approved deletion workflow removes them. Guarded in-app
+deletion initiation is implemented and its backend is deployed to dev, but intake
+is off and provider deletion is not live-verified. Core development sandbox billing
+was Human-tested; see status for remaining lifecycle/release checks.
 
 **Plan & usage** in the sidebar shows server-verified allowances and offers
 purchase/restore when configured. RevenueCat identifies the signed-in Clerk user;
 it never authorizes cloud work by itself. Free includes one-time 120 minutes and
 20 questions; Pro includes 1,200 minutes and 200 questions each month, also on
 annual billing. Pricing targets are USD 9.99/month or 99.99/year; actual purchase
-prices come from StoreKit. See [rollout prerequisites](docs/BACKEND.md#subscription-integration-local-rollout-pending).
+prices come from StoreKit. See [rollout prerequisites](docs/BACKEND.md#subscription-integration-development-sandbox-production-pending).
 Purchases stay disabled without legal links, store configuration and active server
-enforcement. Existing development access and local recording remain unchanged.
+enforcement. Internal `sandbox-dev` permits explicitly acknowledged unpublished
+legal links; Store mode does not. Local recording remains available without billing.
 
 Before building, set public `CLERK_PUBLISHABLE_KEY` and `CONVEX_SITE_URL` in ignored
 `.env.local`. The packaging script copies only allowlisted public values into Info.plist.
@@ -130,15 +147,17 @@ Research: [Vercel AI SDK](https://ai-sdk.dev/docs/getting-started/nodejs),
 [Gemini model catalog](https://ai.google.dev/gemini-api/docs/models),
 [Interactions API](https://ai.google.dev/gemini-api/docs/interactions-overview).
 The backend contract uses `gemini-flash-latest`, with a server-side `GEMINI_MODEL`
-override. Actual project access and response quality have not been tested.
+override. Human reported successful transcription/chat; exact model/version,
+systematic response quality and cost per quota have not been measured.
 
 ## Verification and next checks
 
 Backend: run `npm run typecheck:backend` and `npm run test:backend`.
 Tests cover anonymous/cross-user rejection, owner upload/transcript/chat with a
 mocked provider, and the actual pinned SDK request format using mocked HTTP.
-No live Gemini request was made; model access/quality and real Clerk-token
-acceptance remain unverified. Development deployment is not production rollout.
+These automated checks use no live Gemini request. Separately, Human reported one
+successful end-to-end round and core sandbox billing checks; this does not establish
+the current release binary's complete runtime matrix or production readiness.
 
 `swift test` exercises persistence/reopen and synthetic sample buffers through the
 real CAF/M4A writer/exporter. These do not prove live capture, acoustic quality,

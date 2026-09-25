@@ -3,15 +3,14 @@
 NOT FOR PUBLICATION until reviewed and completed by the operator. This is product
 copy for review, not a complete jurisdiction-specific legal agreement.
 
-Reviewed 2026-09-23 against base `1a2685b5d56c04e13a724e611f9fafb16e7effe1`.
+Reconciled 2026-09-24 against `b42a7a00a9e0f60a72eaeeadaa17b0c9c190f605`
+and the accepted working-tree/development evidence in [STATUS](../STATUS.md).
 Approved commercial inputs below are not evidence of public availability or
 production configuration. See [provider decisions](PROVIDER_DISCLOSURES.md).
+Owner internal TestFlight testing is the current milestone, not public launch or
+App Review. This draft does not impose publication as a universal beta prerequisite.
 
 Effective date: [REQUIRED]
-Lead reconciliation (2026-09-23): the proposed deletion flow is now accepted as
-offline source only, not deployed/live-verified. Base limitations below remain
-historical; final release copy still needs verified behavior and approved timing,
-notification and residual-retention decisions. No publication is authorized.
 
 Service operator: Hoang Bang
 Support: hoang@2m0r.com
@@ -69,12 +68,22 @@ under another Lessmeet account as an account-recovery workaround.
 Subscription cancellation does not delete stored data. See the Privacy Policy for
 current retention and the approved privacy-request process.
 
-Account deletion also does not cancel Apple renewal. The base has no accepted
-in-app account deletion implementation; the proposed release flow requires
-separate acceptance. Deletion may remove access tied to the original Lessmeet
+Account deletion also does not cancel Apple renewal. Accepted native Account
+settings include initiation, confirmation and status refresh. The guarded backend
+and approved operational retention workers are deployed to development with intake
+and automation gates off. Clerk transport is accepted only as a disconnected module;
+Clerk/Apple/RevenueCat destructive fulfillment is not integrated and completion
+notification delivery remains unverified. Do not present this as an available
+end-to-end deletion service. Deletion may remove access tied to the original Lessmeet
 account; do not promise recovery, subscription transfer or a new allowance after
 re-registration. Explain these consequences without making cancellation or a
 support conversation a prerequisite for requesting deletion.
+
+Cloud content remains indefinite unless deletion is requested. The separate approved
+30-day provider-inventory inactivity policy and 90-day completed operational-ledger
+policy are not content-expiry or fulfillment deadlines; see the Privacy draft for
+their conditions. Timing, provider residual handling and notification still require
+verification and approval before public claims. Local files remain separate.
 
 ## Publication checklist — unresolved legal decisions
 

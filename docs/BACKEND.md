@@ -3,10 +3,12 @@
 Development endpoint: `https://zany-octopus-315.convex.site`.
 Implementation and deployment acceptance are tracked in [STATUS.md](STATUS.md).
 
-**Current policy: all authenticated users may use owner-funded Gemini, without
-aggregate quotas for now.** The owner explicitly accepted indefinite retention of
-audio, transcripts and chat. Development is enabled with
-`GEMINI_BILLABLE_ENABLED=true`. The switch remains reversible: false/missing blocks
+**Current recorded dev policy: owner-funded Gemini with sandbox billing enforcement.**
+The earlier unlimited-development policy was superseded when Human selected this
+same deployment for sandbox billing. The owner accepted indefinite retention of
+audio, transcripts and chat unless deletion is requested. Development Gemini access
+was approved with `GEMINI_BILLABLE_ENABLED=true`; this is not a new live readback.
+The switch remains reversible: false/missing blocks
 uploads/chat and provider entry points while preserving authenticated reads.
 Technical request/storage limits below remain. Paid agent tests and production
 rollout remain separate from this development configuration approval.
@@ -33,7 +35,9 @@ Status is `queued`, `processing`, `ready` or `failed`. The response includes
 `recordingId`, `status`, `messages`, and optional `transcript`/`error`. A ready
 recording can include a cleanup warning in `error`; show it without hiding the
 transcript. Messages use `{ "role": "user" | "assistant", "text": "..." }`.
-Supported MIME types include `audio/m4a`, `audio/mp4`, `audio/mpeg`, `audio/mp3`,
+With billing enforcement on, uploads must be non-fragmented AAC-LC M4A with MIME
+`audio/m4a` or `audio/mp4`; see the media validation limits below. The legacy
+unenforced path accepts `audio/m4a`, `audio/mp4`, `audio/mpeg`, `audio/mp3`,
 `audio/wav`, `audio/aac`, `audio/flac`, `audio/ogg` and `audio/aiff`.
 
 ## Chat
@@ -53,8 +57,8 @@ Only Convex reads `GEMINI_API_KEY`. `GEMINI_MODEL` optionally overrides the defa
 `gemini-flash-latest`; a rolling alias may change upstream. Provider/model access
 and transcription quality require a separately authorized live test.
 
-Billing enforcement is implemented locally behind an opt-in switch; the current
-development deployment is not changed by local code. Authentication and
+Billing enforcement was deployed and enabled on the selected dev backend for
+Human-tested sandbox billing. Further local edits do not deploy themselves. Authentication and
 per-record ownership remain required. Production rollout is separate.
 No audio, transcripts, tokens or provider error bodies should appear in logs.
 
@@ -64,9 +68,10 @@ rejected rather than saved partially. Jobs expire after five minutes; abandoned
 chat reservations expire after two minutes. There is no automatic retry.
 
 Cloud content retains the existing indefinite-storage policy unless deletion is
-requested; no automatic content retention TTL is added. The local deletion candidate
-below adds in-app initiation and bounded cleanup, not a deployed service or an
-approved deletion-ledger retention policy. Temporary Google Files are deleted after
+requested; no automatic content retention TTL is added. The deletion implementation
+below is deployed to dev with intake/automation gates off. Main-ledger retention is
+approved at 90 days after full verified completion; provider erasure remains
+unimplemented for Clerk/Apple/RevenueCat. Temporary Google Files are deleted after
 transcription when their ID is known. Known IDs and ambiguous operations now have a
 durable ledger; failures remain pending, not inferred deleted after a deadline.
 
@@ -76,7 +81,9 @@ Before deployment, verify unauthenticated requests fail, a second user cannot
 read or chat with the first user's recording, and the owner can complete the
 upload/transcript/chat path using a mocked provider. Live audio/API testing is
 not part of these offline checks. Swift cloud buttons are integrated and verified
-with URLProtocol fixtures; real OAuth/upload/model behavior remains unverified.
+with URLProtocol fixtures. Separately, Human reported one successful real login,
+recording, transcription and chat round; full provider/device/quality coverage and
+the current release binary remain unverified.
 
 ```sh
 npm run typecheck:backend
@@ -86,7 +93,7 @@ npm run test:backend
 Tests use fake identities, synthetic bytes and mocked Gemini transport. They do
 not read deployment secrets or incur Gemini charges.
 
-## Subscription integration (local; rollout pending)
+## Subscription integration (development sandbox; production pending)
 
 `GET /billing` and `POST /billing/sync` accept only the Clerk bearer identity,
 no body or query parameters. Both return `userId`, `enforcement`, `plan`
@@ -122,22 +129,29 @@ production activation remains unauthorized):
   `LESSMEET_PRIVACY_URL`, `LESSMEET_TERMS_URL` (published HTTPS legal pages).
   Missing/invalid billing configuration never disables local capture or sign-in;
   missing legal pages or unconfirmed server status disables purchasing.
-- Verify sandbox purchase, restore, cancellation, renewal, account-switch and
-  server reconciliation in the properly signed Mac App Store app. Current local
-  packaging is ad hoc, not store distribution acceptance. Confirm resource loading.
+- Human reported core sandbox purchase/restore, reopen, account isolation, expiry
+  on Refresh and no duplicate allowances in the signed development-sandbox app.
+  Renewal continuity and live AI debit/refund still need evidence. Store distribution
+  is not accepted, and profiles must be regenerated after enabling Sign In with Apple.
 - Confirm actual audio parsing and measure AI/storage/transfer cost before public
   activation. Enforced uploads are non-fragmented AAC-LC M4A only, still max
   18 MiB. Sample-table validation is not a full audio decode; malicious payload
   resistance, parser CPU/memory amplification and long-recording duration/size
-  remain rollout concerns. Sample expansion is bounded but not exhaustively
-  fuzzed. AAC padding plus per-upload rounding can add a second to the charge.
+  remain rollout concerns. Local pre-parser hardening bounds recognized box trees
+  and checks fixed-width tables before MP4Box expansion; erased AAC payloads still
+  pass structural checks, and descriptors/extensions remain an unverified parser
+  surface. See [bounded media evidence](../Tests/backend/MEDIA_SAFETY_HANDOFF.md).
+  Native synthetic 30/60/120-minute exports measured 29.56/59.11/118.22 MiB, all
+  over18MiB; local export success is not long-upload readiness. See
+  [long-capture evidence](../Tests/LessMeetTests/LONG_CAPTURE_HANDOFF.md).
+  AAC padding plus per-upload rounding can add a second to the charge.
   The actual native synthetic 1.25s source/export compatibility fixture passes
   backend validation and reserves/charges 2 seconds only on saved success.
 
 No live deployment, key sharing, store purchase or production switch change is
 included in offline implementation acceptance.
 
-## Account deletion — accepted legacy baseline plus partial automation, not deployed
+## Account deletion — development deployed, activation off
 
 The accepted A snapshot implemented in-app intake, guards, local cleanup and manual
 provider evidence. Human subsequently chose normal-path automation with bounded
@@ -148,6 +162,15 @@ Apple, RevenueCat and residual-copy fulfillment are **not implemented**;
 their worker stages stop as explicit exceptions. Email delivery remains pending,
 never inferred from API acceptance. This is not full automation,
 provider readiness, legal compliance, or permission to deploy/enable anything.
+
+An accepted local [Clerk transport-only module](../Tests/backend/CLERK_TRANSPORT_HANDOFF.md)
+now provides injectable, bounded wire primitives with mocked verification. It has
+no registered handler, production caller, implicit credentials or completion writes;
+the existing worker still returns `adapter_unimplemented` for Clerk. A future
+trusted worker must supply Apple disposition, identity/config/fence validation,
+fresh execution inventory and durable observe-before-retry reconciliation. A DELETE
+acknowledgement, exact-resource absence or revoked session is not by itself full
+account-deletion completion.
 
 `GET /account/deletion` requires the current Clerk bearer token and no query
 parameters. `POST /account/deletion` requires that same authentication, no query
