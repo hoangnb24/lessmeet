@@ -135,6 +135,39 @@ class StoreTests(unittest.TestCase):
             with patch.object(store, "run", side_effect=fake), self.assertRaises(store.Invalid):
                 store.validate_icon(ICON)
 
+    def test_release_identity_template(self):
+        info = plistlib.loads((ROOT / "Resources/Info.plist").read_bytes())
+        self.assertEqual(info["CFBundleName"], "LessMeet")
+        self.assertEqual(info["CFBundleDisplayName"], "LessMeet")
+        self.assertEqual(info["CFBundleShortVersionString"], "1.0.0")
+        self.assertEqual(info.get("LSApplicationCategoryType"), "public.app-category.productivity")
+        # Release stamping still requires explicit version/build inputs rather
+        # than treating the source template as permission to upload build 1.
+        stamped = plistlib.loads(self.info_path.read_bytes())
+        self.assertEqual(stamped["CFBundleShortVersionString"], "1.2.3")
+        self.assertEqual(stamped["CFBundleVersion"], "42")
+
+    def test_distribution_identity_missing_or_wrong_rejected(self):
+        for mode in ("store", "testflight"):
+            approval = {**self.approval, "mode": mode}
+            values = (*self.values[:4], approval)
+            original = plistlib.loads(self.info_path.read_bytes())
+            original["LessMeetPackagingMode"] = mode
+            self.info_path.write_bytes(plistlib.dumps(original))
+            store.validate_bundle(self.app, values, mode)
+            for key in ("CFBundleName", "CFBundleDisplayName", "LSApplicationCategoryType"):
+                for value in (None, "wrong"):
+                    with self.subTest(mode=mode, key=key, value=value):
+                        info = dict(original)
+                        if value is None:
+                            info.pop(key, None)
+                        else:
+                            info[key] = value
+                        self.info_path.write_bytes(plistlib.dumps(info))
+                        with self.assertRaises(store.Invalid):
+                            store.validate_bundle(self.app, values, mode)
+            self.info_path.write_bytes(plistlib.dumps(original))
+
     def test_stamp_and_bundle_metadata_rejection(self):
         store.validate_bundle(self.app, self.values)
         for key in ("CFBundleVersion", "CFBundleShortVersionString", "CFBundleIconFile", "CFBundleIdentifier",

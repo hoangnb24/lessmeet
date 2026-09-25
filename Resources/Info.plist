@@ -10,9 +10,10 @@
 <key>CFBundleURLName</key><string>com.lessmeet.app</string>
 <key>CFBundleURLSchemes</key><array><string>com.lessmeet.app</string></array>
 </dict></array>
-<key>CFBundleShortVersionString</key><string>0.1.0</string>
+<key>CFBundleShortVersionString</key><string>1.0.0</string>
 <key>CFBundleVersion</key><string>1</string>
 <key>LSMinimumSystemVersion</key><string>15.0</string>
+<key>LSApplicationCategoryType</key><string>public.app-category.productivity</string>
 <key>NSHighResolutionCapable</key><true/>
 <key>NSMicrophoneUsageDescription</key><string>LessMeet records your microphone as a separate local audio track.</string>
 <key>NSScreenCaptureUsageDescription</key><string>LessMeet captures system audio for your recordings. No screen video is saved.</string>

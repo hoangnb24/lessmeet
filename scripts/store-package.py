@@ -127,6 +127,8 @@ def validate_bundle(app, values, mode="store"):
     approval_mode(approval, mode)
     info = plistlib.loads((app / "Contents/Info.plist").read_bytes())
     expected = {"CFBundleIdentifier": signing.BUNDLE, "CFBundleExecutable": "LessMeet",
+                "CFBundleName": "LessMeet", "CFBundleDisplayName": "LessMeet",
+                "LSApplicationCategoryType": "public.app-category.productivity",
                 "CFBundlePackageType": "APPL", "LessMeetPackagingMode": mode,
                 "CFBundleShortVersionString": version, "CFBundleVersion": build,
                 "CFBundleIconFile": "LessMeet.icns", "LSMinimumSystemVersion": "15.0"}

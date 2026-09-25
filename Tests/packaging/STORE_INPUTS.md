@@ -7,6 +7,16 @@ are unchanged. No Swift configuration property, callback or billing product chan
 
 ## Gates and inputs
 
+Release identity is owned by [CONFIGURATION.md](../../docs/CONFIGURATION.md):
+LessMeet, first public version `1.0.0`, Productivity
+(`LSApplicationCategoryType=public.app-category.productivity`). Store and TestFlight
+bundle validation rejects missing or mismatched name/display name/category.
+The source plist now defaults to `1.0.0`; its build `1` is only a local default,
+not an allocated upload number. Release stamping still requires explicit inputs
+and the existing exact approval binding; later versions remain supported.
+Use increasing integer upload build numbers, without resetting on version changes,
+after checking App Store Connect history. No offline check proves uniqueness.
+
 Store builds now require explicit `LESSMEET_VERSION` (three numeric components),
 `LESSMEET_BUILD` (positive major, at most 4 digits; optional minor/patch at most
 2 digits each), `LESSMEET_ICON_ICNS`, and `LESSMEET_STORE_APPROVAL`. This build
