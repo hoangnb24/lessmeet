@@ -1,9 +1,70 @@
 # Configuration reference
 
-Last reconciled: 2026-09-24. This is the configuration inventory; decisions,
+Last reconciled: 2026-09-25 (release identity inventory; service observations retain their dates). This is the configuration inventory; decisions,
 ownership and release gates remain in [STATUS.md](STATUS.md). Update this document
 after each configuration change, including environment, verification date/result,
 secret location and rollback limits. Never commit keys, tokens or private keys.
+
+## First public Mac App Store release contract — issue #1
+
+Status: issue #1 release identity ACCEPTED on 2026-09-25; core choices and target
+audience 10+ approved, Apple identity/metadata readback completed. Actual Apple age
+rating remains unsaved and is explicitly owned by [issue #4](https://github.com/hoangnb24/lessmeet/issues/4),
+with category-by-category content assessment and saved rating required before
+submission. Business/account verification deferred
+at Human direction because the account is reported to be operating normally.
+This section is the single release-identity reference; it does not approve signing,
+upload, submission, public availability, legal declarations or agreement acceptance.
+Sep 25 authorized Apple changes: saved name LessMeet, version 1.0.0, Productivity,
+manual release and all 175 storefronts (including future storefronts). App remains
+Prepare for Submission; no review submission or release occurred.
+
+| Field | Evidence / current state | Proposed decision or remaining input |
+| --- | --- | --- |
+| Platform / identity | macOS; bundle `com.lessmeet.app`; team `63M98WD275`. Sep 25 live Developer account/Identifiers readback confirms team and exact Lessmeet App ID row; ASC selected bundle agrees. | Matches native plist/signing constants. Developer identifier description remains Lessmeet; no capability or profile change. |
+| App record | Apple ID `6815021182`, SKU `lessmeet-macos`, English US; Sep 25 live [App Information](https://appstoreconnect.apple.com/apps/6815021182/distribution/info) readback confirms identity under Long Le account. | Accepted fresh dashboard evidence, not another app named Meetless. |
+| Branding | Native `CFBundleName`/`CFBundleDisplayName`: `LessMeet`; Apple name changed from Lessmeet to LessMeet and verified after leaving/reopening App Information Sep 25. | Saved and aligned; historical provider labels are not new identities and need not be renamed. |
+| First public version | Repo source and Apple draft now `1.0.0`; reopened [version page](https://appstoreconnect.apple.com/apps/6815021182/distribution/macos/version/inflight) Sep 25 shows 1.0.0 Prepare for Submission. | Accepted saved metadata only. No release build or upload produced; explicit release version input remains required. |
+| Build strategy | Sep 25 [TestFlight](https://appstoreconnect.apple.com/teams/69a6de8c-6878-47e3-e053-5b8c7c11a4d1/apps/6815021182/testflight) shows No Builds / Submit a build to start testing. | First intended upload build `1`; recheck immediately before upload to detect intervening uploads. Increase integer numbers across uploads, never reset on version change; use explicit input within packaging validator range. No Apple reservation/upload made. |
+| Primary category | Source plist `public.app-category.productivity`, Store/TestFlight validation and listing agree. Sep 25 Apple primary Category saved as Productivity and confirmed after reopening. | Accepted local and Apple metadata alignment. Secondary category unchanged/unset. |
+| Storefronts | Human approved all; Sep 25 saved [availability page](https://appstoreconnect.apple.com/apps/6815021182/distribution/pricing/availability) shows Availability (175 Countries or Regions), 175 data rows, Available on App Release. Confirmation also includes future countries/regions, surfaced to Human before saving. | Availability selection accepted, not public release or provider/legal eligibility. No pre-order, price schedule or distribution-method change. |
+| Target audience / age rating | Human explicitly selected ages 10+ Sep 25 and clarified this is target audience only, with rating based on actual content, not a binding minimum in terms. | Audience decision accepted for #1. No age override solely to force 10+; no new minimum-age clause or Made for Kids selection. Issue #4 owns unsaved questionnaire, defensible release-representative content assessment, under-13 privacy/consent/provider eligibility, and saved rating before submission. |
+| Release mode | Sep 25 changed from automatic to Manually release this version; reopened version page confirms checked radio and saved version 1.0.0. | Accepted manual setting; no Add for Review, submission or release action. |
+| Seller / DSA trader | Team display name Long Le; website draft copyright Hoang Bang remains unresolved. App Information incidentally displays existing non-trader declaration for this app Sep 25. | Recorded existing declaration, not validated or changed. Account Holder owns seller/DSA review at issue #4 before public submission; other business checks stay deferred. |
+| Agreements / Tax / Banking | Human reports Sep 25 that the account is operating normally; individual statuses were not inspected. | Skip this check for current issue #1 work as requested. Account Holder owns any later Apple action-required notice; revisit at issue #5 production subscriptions, before public submission. This is not independent verification or authority to accept agreements/submit financial data. |
+
+Age-rating reference checked Sep 25: Apple's current global tiers are 4+, 9+,
+13+, 16+, 18+ (OS/regional ratings can differ), not a global 10+ tier.
+[Apple rating guidance](https://developer.apple.com/help/app-store-connect/manage-app-information/set-an-app-age-rating)
+and [rating definitions](https://developer.apple.com/help/app-store-connect/reference/app-information/age-ratings-values-and-definitions).
+Human resolved the interpretation: 10+ is only target audience. Use the calculated
+rating from truthful content declarations without a target-age override; do not
+invent questionnaire answers to obtain a preferred rating. Apple's
+[AI-specific reminder](https://developer.apple.com/news/?id=ks775ehf) requires
+considering sensitive-content frequency from assistants/chatbots. Current source
+prompts ground replies in transcripts, but do not prove a particular frequency or
+absence of sensitive content; release-representative policy/behavior must inform
+answers under issue #4. Suitable pre-release evidence can inform the assessment;
+neither production users/personal recordings nor a particular sampling methodology
+is inherently required. No paid/live tests are authorized by this handoff.
+
+Local identity verification: packaging tests assert the source version/name/category,
+explicit release version/build stamping, and rejection of missing/wrong branding or
+category in both Store and TestFlight bundles. Existing approval, public service,
+legal URL and signing gates remain intact; product-choice approval does not satisfy
+them. Category value follows [Apple's plist reference](https://developer.apple.com/documentation/bundleresources/information-property-list/lsapplicationcategorytype).
+Current listing, support HTML and unpublished legal drafts now spell the product
+LessMeet; historical provider labels/identity records remain untouched. No website
+publication or legal-policy approval is implied by spelling normalization.
+
+Evidence policy: each accepted decision needs its dated Human confirmation and,
+where applicable, saved dashboard readback. No credential, private key, personal
+financial details or unredacted dashboard screenshots belong in Git. Sep 25 Chrome
+skill connection accessed the signed-in Apple session; earlier claims that browser
+tooling was unavailable were premature and are superseded. Only nonsecret readback
+summaries/URLs are recorded here. Do not reuse an IAP private key as an App Store
+Connect management credential. Reopen on bundle/team/seller/audience/storefront
+changes. Remaining ownership and next checkpoint are in STATUS, not a second tracker.
 
 ## Accounts and environments
 
@@ -87,6 +148,15 @@ Existing dev names observed Sep 24: `BILLING_ENFORCEMENT_ENABLED`,
 `CLERK_JWT_ISSUER_DOMAIN`, `GEMINI_API_KEY`, `GEMINI_BILLABLE_ENABLED`,
 `REVENUECAT_ALLOW_SANDBOX`, `REVENUECAT_ORIGINAL_USER_POLICY_CONFIRMED`,
 `REVENUECAT_SECRET_API_KEY`. Except the public issuer, this audit did not read values.
+
+Sep 25 issue #2 read-only refresh of exact dev `zany-octopus-315` succeeded:
+the seven names above plus `REVENUECAT_PREFLIGHT_CONFIG_REF`,
+`REVENUECAT_PREFLIGHT_PROJECT_ID`, `REVENUECAT_PREFLIGHT_PROJECT_VERIFIED` and
+`REVENUECAT_PREFLIGHT_SECRET_KEY` (11 total). Names only: no values or secret
+material read, no inference that present switches are enabled. No production
+environment or provider binding has yet been freshly verified for #2; historical
+account observations above retain their original dates. Production creation,
+credentials and cost approvals are pending in STATUS.
 
 ## Verification and change procedure
 

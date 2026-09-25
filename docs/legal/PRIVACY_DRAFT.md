@@ -1,4 +1,4 @@
-# Lessmeet Privacy Policy — unpublished draft
+# LessMeet Privacy Policy — unpublished draft
 
 NOT FOR PUBLICATION until the operator has reviewed and completed this document.
 This describes the current implementation, not a legal-compliance certification.
@@ -20,7 +20,7 @@ Planned policy URL (not yet verified/published): https://www.lessmeet.2m0r.com/p
 
 ## Recordings on your Mac
 
-Lessmeet records microphone and system audio when you start recording and grant
+LessMeet records microphone and system audio when you start recording and grant
 macOS permissions. System audio can include other applications; no video track is
 saved. Obtain the necessary consent before recording others. Local audio, recording
 metadata and saved AI results remain on your Mac. The app does not separately
@@ -50,9 +50,9 @@ cloud data or necessarily stop work already accepted by the server.
 ## Subscription information
 
 Apple processes App Store purchases. RevenueCat processes subscription and
-transaction status associated with your Lessmeet account identifier. Our backend
+transaction status associated with your LessMeet account identifier. Our backend
 uses this information to verify access and track usage/allowance reservations.
-Restoring a purchase requires the original Lessmeet account. Private service API
+Restoring a purchase requires the original LessMeet account. Private service API
 keys are held on the server, not included in the app.
 
 ## Providers and requests

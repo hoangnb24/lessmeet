@@ -1,4 +1,4 @@
-# Lessmeet legal hosting
+# LessMeet legal hosting
 
 Unpublished preparation, reconciled 2026-09-24 against
 `b42a7a00a9e0f60a72eaeeadaa17b0c9c190f605` and accepted working-tree evidence.
@@ -99,22 +99,22 @@ claims into App Store Connect. No screenshots have been generated or captured.
 
 | Field | Candidate / decision |
 | --- | --- |
-| Name | Lessmeet |
+| Name | LessMeet |
 | Subtitle | Record, transcribe, revisit |
 | Promotional text | Record microphone and system audio on your Mac. Choose when to upload for AI transcripts, summaries and questions. Keep your local recordings at hand. |
 | Keywords | meeting,recorder,transcription,notes,audio,summary,productivity |
-| Primary category | Productivity — proposed, Human approval needed |
+| Primary category | Productivity — Human approved, saved and reopened on Apple Sep 25 |
 | Platform | macOS 15+; bundle `com.lessmeet.app`; team `63M98WD275` |
 | Support URL | `https://www.lessmeet.2m0r.com/` — proposed, HTTPS/public support verification pending |
 | Privacy URL | `https://www.lessmeet.2m0r.com/privacy` — intentionally unpublished |
 | Terms link | `https://www.lessmeet.2m0r.com/terms` — intentionally unpublished |
-| License | Apple Standard EULA, approved choice; verify saved App Store Connect selection |
+| License | Apple Standard EULA, approved choice; App Information readback confirms Sep 25 |
 | Copyright / seller | Hoang Bang; confirm exact copyright year and required seller/trader details |
 | Marketing URL | Omit until an approved public page is useful; do not invent a second hostname |
 
 Description candidate:
 
-> Keep a local record of your conversations on your Mac. Lessmeet records microphone
+> Keep a local record of your conversations on your Mac. LessMeet records microphone
 > and system audio, keeps a recording library, and lets you replay saved audio.
 >
 > Choose when to use cloud AI. Sign in and confirm an upload to create a transcript,
@@ -131,8 +131,8 @@ Description candidate:
 >
 > Pro is available as an auto-renewing monthly or annual subscription. The App Store
 > purchase sheet shows the localized price and billing period. Manage renewal with
-> Apple. Use your original Lessmeet account to restore purchases; purchases do not
-> transfer to another Lessmeet login. Canceling a subscription does not delete data.
+> Apple. Use your original LessMeet account to restore purchases; purchases do not
+> transfer to another LessMeet login. Canceling a subscription does not delete data.
 >
 > Cloud audio, transcripts and chats are retained indefinitely unless deletion is
 > requested. Review our Privacy Policy before uploading. Local files remain separate.
@@ -166,7 +166,7 @@ retention conditions and still-unresolved contact/send and residual-copy disclos
   screenshots against approved products, original-account restore policy and
   monthly allowances. Do not substitute sandbox acceptance for public sale approval.
 - Review the full production app and every SDK/service. Apple's questionnaire
-  includes third-party collection, not just data in Lessmeet's database. A privacy
+  includes third-party collection, not just data in LessMeet's database. A privacy
   manifest is an input, not a substitute for these answers.
 
 Provisional mapping for review, NOT completed App Store Connect answers:
@@ -177,7 +177,7 @@ Provisional mapping for review, NOT completed App Store Connect answers:
 | User Content → Other User Content | Transcripts, questions, replies; app functionality | Linked to owner; review participant-sensitive content and any additional applicable categories |
 | Identifiers → User ID | Clerk subject, issuer-bound owner, RevenueCat App User ID; authentication/purchase access and guarded deletion evidence; gated provider inventory | Linked; apply approved operational retention separately from content; review SDK/device identifiers rather than assuming none |
 | Contact Info → Email Address / Name | Clerk social-account fields/support; gated verified-primary contact and frozen completion email | Contact/send activation off; review Resend processing, retention and missing/relay-only handling before activation; do not infer delivery |
-| Purchases → Purchase History | StoreKit/RevenueCat and backend entitlement verification | Linked to account; Apple payment processing does not automatically mean Lessmeet collects card data |
+| Purchases → Purchase History | StoreKit/RevenueCat and backend entitlement verification | Linked to account; Apple payment processing does not automatically mean LessMeet collects card data |
 | Usage Data / Diagnostics / other identifiers | Quota counters plus possible SDK/service operational metadata | Inspect actual production SDK options and provider inventory; categories/purposes/linkage not finalized |
 
 Do not select “Data Not Collected”: authenticated cloud content is retained in the
@@ -188,7 +188,20 @@ exception. Sources read 2026-09-23: [Apple privacy definitions](https://develope
 [RevenueCat SDK guidance](https://www.revenuecat.com/docs/platform-resources/apple-platform-resources/apple-app-privacy),
 [metadata fields](https://developer.apple.com/help/app-store-connect/reference/app-information/platform-version-information/).
 
-## Age rating and audience — unresolved decision
+## Age rating and audience — product decision recorded, eligibility unresolved
+
+Human approved target audience 10+ and all available App Store countries/regions
+on Sep 25. The authoritative release contract is
+[CONFIGURATION.md](../docs/CONFIGURATION.md). This does not establish an Apple
+rating, Made for Kids classification, provider eligibility or age enforcement.
+The first public version is 1.0.0, with increasing integer upload build numbers
+and manual release. Sep 25 Apple readback confirms name/version/category/manual
+release and all 175 storefronts (including future storefronts). TestFlight shows
+No Builds; intended first build is 1, subject to recheck immediately before upload.
+Issue #4 owns the unsaved age-rating questionnaire and release-representative
+content-frequency assessment. Human confirmed 10+ is target audience only, not a
+minimum-age clause; do not override the calculated rating to force that target.
+Complete truthful declarations and saved rating readback before submission.
 
 Complete Apple's current questionnaire using the actual released feature set,
 including messaging/chat, user-generated content, unrestricted web access and AI
@@ -197,7 +210,7 @@ of person-to-person messaging or public sharing; do not answer by feature name
 alone. No final rating is assigned here and no parental controls are claimed.
 Review regional ratings and any age override in the current form.
 
-Human must first resolve audience/market eligibility under the [Gemini terms](https://ai.google.dev/gemini-api/terms)
+Issue #4 must resolve audience/market eligibility under the [Gemini terms](https://ai.google.dev/gemini-api/terms)
 identified in the provider matrix. A content rating alone does not establish an
 effective age restriction. Do not market to students/minors or promise worldwide
 availability before that decision. [Apple rating definitions](https://developer.apple.com/help/app-store-connect/reference/app-information/age-ratings-values-and-definitions/)
@@ -224,13 +237,13 @@ Source: [Apple screenshot specifications](https://developer.apple.com/help/app-s
 
 Candidate note, to complete only after the release is accepted:
 
-> Lessmeet is a native Mac microphone/system-audio recorder with optional cloud AI.
+> LessMeet is a native Mac microphone/system-audio recorder with optional cloud AI.
 > Local recording does not require a cloud upload. Grant the requested macOS capture
 > permissions, make a synthetic recording, stop it, and replay it from the library.
 > To test transcription, sign in and explicitly confirm Create Transcript; questions,
 > summaries and action items use the resulting transcript. AI requires network access.
 > Pro uses Apple auto-renewing subscriptions; annual billing still has monthly usage
-> allowances. Restore Purchases uses the original Lessmeet account.
+> allowances. Restore Purchases uses the original LessMeet account.
 
 - Supply a working review account or an Apple-accepted fully featured demonstration
   route; verify the actual Clerk Google/Apple sign-in and callback on the submitted
@@ -263,7 +276,8 @@ this draft neither alters it nor accepts another lane's moving implementation.
 ## Publication handoff boundary
 
 Usable now: listing strings, disclosure inventory, operational/reviewer checklists
-and policy drafts for review. Still required: Human audience/markets/legal approval;
+and policy drafts for review. Audience/market product intent is now approved;
+still required: audience/market eligibility assessment and Human legal approval;
 provider settings and residual-retention/contact-send decisions; integrated provider
 fulfillment and an authorized rehearsal beyond accepted intake/cleanup; approved
 timing/notification text; signed-build screenshots/runtime

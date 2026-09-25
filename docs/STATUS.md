@@ -1,5 +1,215 @@
 # LessMeet delivery
 
+## Issue #2 started — production authority checkpoint (2026-09-25)
+
+Human requested starting #2. GitHub issue #2 is OPEN with no comments; its explicit
+owner approval requirement for production deployments, new credentials and costs
+remains in force. #1 identity dependency is accepted above/in CONFIGURATION;
+unfinished compliance stays with #4. Lead owns this issue's configuration/status
+preparation; no Peer dispatched or given write ownership. Latest accepted handoff
+reports all prior Peer scopes closed. Existing uncommitted #1 changes preserved.
+
+Read-only Sep 25 Convex names inventory succeeded for exact dev zany-octopus-315:
+11 names, including the four RC preflight names. No secret values read; presence
+does not prove values, project binding, or activation state. Source confirms AI,
+batch, deletion and notification admission gates require explicit true. Production
+provider identities, settings, credentials and signed-in smoke remain unverified.
+
+Proposed next scope, pending explicit Human approval: create/select separate Convex
+and Clerk production within the existing LessMeet accounts, configure production
+OAuth/JWT and least-privilege server credentials, verify existing exact RC project
+and Gemini project/model/settings, then test synthetic sign-in/backend identity.
+Preserve development and existing users; do not copy dev secrets wholesale. Keep
+billable AI, batch, deletion/automation/preflight and email admission off. Do not
+enable sandbox billing in production. No paid upgrades, real meeting data, provider
+deletion, purchase, signing/upload, deployment or new credential creation occurred.
+
+Human owns the production/credential approval and cost boundary. Resume at their
+answer; ask separately before any required paid tier, billing activation or cost
+increase. Secret-storage destination also needs approval (server secret store plus
+owner-approved durable vault; do not generalize the prior RC local-storage exception).
+Issue #2 remains incomplete; no production acceptance or live auth claim. No app
+code changed or runtime tests run at this checkpoint.
+
+## Issue #1 accepted / rating handoff to #4 (2026-09-25)
+
+Human confirmed 10+ is target audience only; actual rating follows content, not
+a binding minimum in terms. ACCEPT interpretation: no minimum-age clause or
+override to force a target rating. This resolves the prior Human question; do not
+ask again. Apple explicitly requires considering AI-assistant/chatbot sensitive
+content frequency (https://developer.apple.com/news/?id=ks775ehf, checked Sep 25).
+Source prompts ground answers in transcripts but do not establish sensitive-content
+frequency; no real AI calls or personal recordings are authorized for this check.
+
+Lead requested fresh read-only Peer `00d88e0a-dcc0-4f2b-b38c-67342dfde0ba` to assess
+evidence sufficiency and whether the original #1 scope genuinely requires completed
+rating versus a #4 production-compliance dependency. Exact code input: HEAD
+0defccf930731f8a493efe92be07b964608ee8af; gemini.ts SHA256
+d1c2c6be64c5ce35d0ffaed93cd0203f9add10170fb5518de63f18c237c340ee;
+RecordingChatView.swift a132f8eeddbfb1476627603484d89a5cfea10d6b9b521bfa449caf76a58eee21.
+Lead ACCEPTS Peer REOPEN_REQUEST after checking exact code hashes and original
+issue outcome/acceptance versus appended progress. Content exposure does not prove
+frequency, including Frequent; source inspection alone cannot fill these choices.
+Completed questionnaire was a Lead-added #1 blocker, not original identity/audience
+scope. Decision: move it explicitly to #4 rather than block #2 production inputs
+needed to assess release behavior. Peer notified ACCEPT; assignment closed, no
+write/browser ownership outstanding. No new Apple declaration saved.
+
+Issue #4 scope/acceptance now explicitly includes age rating, owner-approved
+release-representative category-by-category assessment, saved calculated/regional
+readback, under-13/provider/market eligibility, seller/DSA verification and reopen
+conditions. Lead owns evidence preparation; Human owns product/legal approval.
+Checkpoint is #4 completion before App Review submission. Pre-release evidence may
+suffice; personal/production recordings or a particular sampling method are not
+inherently required. No live/paid tests newly authorized. GitHub #4 readback matched
+the exact edited body, still OPEN, before #1 closure.
+
+ACCEPT #1 identity outcome: local metadata/tests, saved Apple app/team/bundle/name/
+version/category/manual-release/storefront evidence, owner audience decision,
+explicit build strategy and deferred business checkpoints are complete. Unknown
+rating remains unknown under #4, not a pass. Usable downstream input is the release
+contract in CONFIGURATION; #2 identity dependency is satisfied. Scope of this user
+request ends at #1; production changes/new credentials/costs in #2 still require
+their explicit Human authority. No #2 writer dispatched, no deploy/sign/upload/
+submit/release/commit/push. Local changes remain uncommitted and preserved.
+Final verification rerun: 49 packaging tests passed (6.695s), website verifier
+passed (4 assets, 3 HTML/21 Markdown links), plist lint OK, diff check passed.
+No runtime or real signing tests. Issue #1 acceptance body matched readback;
+`gh issue close 1 --repo hoangnb24/lessmeet --reason completed` succeeded and
+`gh issue view` confirmed CLOSED at 2026-09-25T07:26:10Z. #4 remains OPEN with
+the explicit unfinished compliance work. All actionable Peer responses resolved.
+
+## Issue #1 Apple metadata checkpoint (2026-09-25)
+
+Human reported Apple sign-in ready and authorized finishing remaining metadata.
+Lead discovered the installed control-chrome skill and connected successfully to
+the existing Chrome session. Earlier missing-tool statements were premature,
+not evidence that the user's authentication was unavailable. Shared/local rules,
+working tree and latest handoff reread; existing local changes preserved, no Peers
+dispatched and Lead retains sole issue #1 metadata/documentation ownership.
+
+ACCEPT saved Apple metadata after direct UI readback:
+- Developer account/Identifiers: team `63M98WD275`, exact `com.lessmeet.app` row;
+  identifier description Lessmeet retained, no capability/profile/key changes.
+- ASC app `6815021182`: bundle com.lessmeet.app, SKU lessmeet-macos, English US.
+  Saved LessMeet name and Productivity primary category; left/reopened to verify.
+- Version changed 1.0 to 1.0.0; automatic release changed to manual. Reopened
+  version page confirms 1.0.0 Prepare for Submission, manual checked, Save disabled.
+- Availability saved as all 175 countries/regions; confirmation includes future
+  storefronts, disclosed before saving. Result heading shows 175, table has 175
+  data rows and Available on App Release statuses. No price/pre-order change.
+- TestFlight shows No Builds / Submit a build to start testing. Allocate first
+  intended build 1 with mandatory pre-upload recheck; no reservation/upload made.
+Exact nonsecret page references and dated evidence are in CONFIGURATION.
+
+Age rating NOT accepted or saved. Live Step 1 definitions distinguish broad UGC
+distribution/social feed/user-to-user messaging from private recording/AI chat.
+Lead entered No for current absent controls/capabilities, then stopped at Step 2
+content-frequency declarations. No evidence establishes None/Infrequent/Frequent
+for arbitrary recordings and AI output. Canceled wizard and confirmed Set Up Age
+Ratings remains; no partial declaration was submitted. The subsequent Human answer
+above resolves 10+ as target audience only. Content declarations still require
+production evidence, not a guessed 9+/13+ substitution or invented frequency.
+
+App Information incidentally shows existing non-trader declaration and Apple
+Standard License Agreement; neither was changed/accepted. Seller/DSA review stays
+with issue #4; Agreements/Tax/Banking check remains deferred to #5 as requested.
+New storefront selection is not a provider/legal eligibility finding. Historical
+#1 rating hold is superseded by explicit #4 handoff above; #2 not dispatched. Chrome tab retained for
+follow-up. No signing, upload, submission, public release, price change, website
+publication, credential access, commit or push. No private account details/screenshots
+recorded in Git. Only docs changed this turn; prior packaging pass is historical.
+Verification this turn: `node website/verify-drafts.mjs` passed (4 assets,
+3 HTML/21 local Markdown links); `git diff --check` passed. Issue #1 updated;
+`gh issue view` readback matched submitted body and confirmed OPEN. No app/backend
+tests rerun; direct saved UI readbacks, not unit tests, establish metadata changes.
+
+## Issue #1 started — release identity (2026-09-25)
+
+Lead owns release metadata, packaging validation/tests, current listing/support/legal
+branding and configuration/status documentation; no Peer write scope is active.
+Room check found only the current Lead running. Existing uncommitted issue-sequence
+notes below are preserved. GitHub issue
+#1 was read via `gh issue view 1 --repo hoangnb24/lessmeet --json number,title,body,state,comments,url`:
+OPEN, no comments. Connector returned 404; CLI successfully supplied the actual brief.
+
+Release identity inventory is now centralized in CONFIGURATION. Historical accepted
+Apple evidence identifies macOS app `6815021182`, bundle `com.lessmeet.app`, team
+`63M98WD275`, SKU `lessmeet-macos`, English US and draft `1.0`. Native plist uses
+`LessMeet`; source version advanced from `0.1.0` to approved `1.0.0` in this
+implementation. Historical Apple display name is `Lessmeet`; Apple alignment
+remains unverified. Provider labels were not changed. Human approved Sep 25:
+LessMeet, public 1.0.0,
+monotonically increasing integer upload builds, Productivity, manual release.
+Human answered “Tất cả” for markets/audience; Lead explicitly interprets this as
+all available App Store countries/regions. Human subsequently explicitly selected
+target audience 10+, accepted as product intent, not a saved Apple rating. Apple
+has no current global 10+ tier; questionnaire/readback remains pending, with no
+automatic 9+/13+ substitution or Made for Kids selection. Issue #4 scope must
+include under-13 privacy/consent and provider eligibility for this audience before
+public release; business-account check deferral does not waive that assessment.
+Starting build requires Apple history, not an assumption
+that build 1 is unused. Human asked what business statuses mean; explanation and
+nonsecret readback guidance supplied. Human then explicitly requested skipping
+this step because the account is operating normally. ACCEPT this workflow change:
+seller/trader and Agreements/Tax/Banking inspection is deferred, not passed, and
+no longer blocks current issue #1 work. Account Holder owns deferred checks:
+seller/DSA at issue #4 compliance, agreements/tax/banking at issue #5 subscriptions,
+or earlier if Apple reports action required; resolve before public submission.
+No legal classification, agreement acceptance or financial-data change inferred.
+
+Local implementation ACCEPTED after exact diff inspection and offline verification:
+source plist version 1.0.0 and Productivity category; Store/TestFlight validators
+enforce exact name/display name/category; current listing/support/legal drafts use
+LessMeet consistently. No legal terms were changed beyond branding. Explicit release
+version/build and all prior approval/signing gates remain. Build 1 is still only a
+source default, not an allocated upload number. Subsequent version stamps supported.
+
+Verification: new tests failed before implementation (corrected test setup then
+13 failing assertions, no errors), then all 49 packaging tests passed in 5.270s via
+`python3 -m unittest discover -s Tests/packaging -p 'test_*.py'`. The earlier test
+setup had two missing-key errors, corrected before the final red run; not product
+failure evidence. `node website/verify-drafts.mjs` passed four public assets,
+three HTML and 21 local Markdown links plus listing field lengths.
+`plutil -lint Resources/Info.plist` reported OK; `git diff --check` passed.
+Apple signing/package commands in tests are mocked; no real app/package built,
+no signing inputs read. Swift/backend tests not run for this metadata-only scope.
+No new runtime, screenshot, HTTP/DNS/TLS or Apple acceptance claim.
+GitHub issue #1 body updated with approved choices, deferred business checkpoints,
+local acceptance/evidence and remaining Apple checklist; `gh issue view` readback
+matched the exact submitted body and confirmed OPEN. Working-tree changes are not
+committed/pushed. No Peer ownership outstanding; local scope complete pending the
+Apple/operator checkpoint below.
+
+Historical local-only checkpoint: Apple evidence was pending at this stage.
+The Apple metadata checkpoint above supersedes the missing-browser diagnosis and
+identity/settings work; rating remains unresolved. Target audience is decided;
+only its binding-minimum interpretation/content declarations require resolution.
+Do not request deferred business statuses again. Do not access private keys to
+work around browser tooling.
+Historical team name and draft copyright differ; do not infer legal seller from
+either. No dependent issue #2 dispatch until #1 is accepted. No signing, key access,
+Apple write, deployment, upload, submission, commit or push occurred.
+
+## Public Mac App Store issue sequence (2026-09-25)
+
+Human requested a sequential GitHub issue plan for eventual public App Store
+submission. The accepted execution order is [#1 release identity/App Store record](https://github.com/hoangnb24/lessmeet/issues/1),
+[#2 production services](https://github.com/hoangnb24/lessmeet/issues/2),
+[#3 provider-complete account deletion](https://github.com/hoangnb24/lessmeet/issues/3),
+[#4 privacy/legal/compliance](https://github.com/hoangnb24/lessmeet/issues/4),
+[#5 production subscriptions](https://github.com/hoangnb24/lessmeet/issues/5),
+[#6 signing and internal TestFlight upload](https://github.com/hoangnb24/lessmeet/issues/6),
+[#7 signed-build release QA](https://github.com/hoangnb24/lessmeet/issues/7),
+[#8 listing/reviewer package](https://github.com/hoangnb24/lessmeet/issues/8), then
+[#9 final candidate and App Review submission](https://github.com/hoangnb24/lessmeet/issues/9).
+Each issue records dependencies, observable acceptance evidence and reopen
+conditions. Creating this plan does not authorize production deployment, paid
+provider use, destructive provider calls, certificate/private-key handling,
+signing, upload, App Review submission or public release; those external actions
+retain their explicit Human checkpoints. No issue is assigned and no implementation
+write ownership is active from this planning action.
+
 ## Integration acceptance checkpoint (2026-09-25)
 
 Corrected backend batch chat ACCEPTED for default-off offline workflow:

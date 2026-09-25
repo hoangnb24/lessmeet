@@ -1,4 +1,4 @@
-# Lessmeet Terms of Use — unpublished draft
+# LessMeet Terms of Use — unpublished draft
 
 NOT FOR PUBLICATION until reviewed and completed by the operator. This is product
 copy for review, not a complete jurisdiction-specific legal agreement.
@@ -29,7 +29,7 @@ requires verification before submission.
 ## Recording and AI
 
 You are responsible for having permission to record and upload content, including
-other participants' information. Lessmeet provides local recording and optional
+other participants' information. LessMeet provides local recording and optional
 cloud transcription, recording chat, summaries and action items. AI output may be
 inaccurate or incomplete; review it before relying on it. Local recording and
 playback are not subject to subscription usage quotas. Technical/device limits
@@ -59,11 +59,11 @@ Apple's subscription management. Cancellation stops future renewal; access remai
 until the verified paid period ends, subject to refunds/revocation. Handle purchase
 and refund requests through Apple's available processes and applicable rights.
 
-Sign in to Lessmeet before purchasing. Subscription access is tied to the original
-Lessmeet account; using the same Apple account with a different Lessmeet login does
-not transfer it. Use Restore Purchases while signed in to the original Lessmeet
+Sign in to LessMeet before purchasing. Subscription access is tied to the original
+LessMeet account; using the same Apple account with a different LessMeet login does
+not transfer it. Use Restore Purchases while signed in to the original LessMeet
 account. Contact support if you cannot recover that account. Do not repurchase
-under another Lessmeet account as an account-recovery workaround.
+under another LessMeet account as an account-recovery workaround.
 
 Subscription cancellation does not delete stored data. See the Privacy Policy for
 current retention and the approved privacy-request process.
@@ -74,7 +74,7 @@ and approved operational retention workers are deployed to development with inta
 and automation gates off. Clerk transport is accepted only as a disconnected module;
 Clerk/Apple/RevenueCat destructive fulfillment is not integrated and completion
 notification delivery remains unverified. Do not present this as an available
-end-to-end deletion service. Deletion may remove access tied to the original Lessmeet
+end-to-end deletion service. Deletion may remove access tied to the original LessMeet
 account; do not promise recovery, subscription transfer or a new allowance after
 re-registration. Explain these consequences without making cancellation or a
 support conversation a prerequisite for requesting deletion.
