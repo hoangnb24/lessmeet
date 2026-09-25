@@ -1,6 +1,284 @@
 # LessMeet delivery
 
+## Landing live on Cloudflare / Git handoff (2026-09-25)
+
+Human authorized landing publication, commit and push. Lead ACCEPTS the deployed
+pre-release landing at https://www.lessmeet.2m0r.com after exact-content HTTPS checks.
+This supersedes earlier landing-only publication holds, not policy approval,
+Google publishing, native release or provider activation gates. Lead owns all writes;
+room inspection found no other running Peer or outstanding ownership.
+
+Wrangler 4.136.3 confirmed target account 6031f1f85e189c44fb3bcd150ca65920 and
+Worker absence before creating `lessmeet-legal`. Dry-run passed with four assets,
+no bindings. Deploy and deployments readback confirm 100% version
+`9550542c-f6e1-48f7-8a08-cd962a49ff00` on the exact custom hostname. Domain API
+confirms enabled production binding to this Worker, preview URLs disabled, and
+certificate ID 294d025f-f40c-42cb-a2fb-25af04046fba. No other website/email/auth
+record, paid plan, backend, OAuth configuration or activation flag changed.
+Only publication copy change: "Unpublished preview" to "Pre-release preview";
+visual style and explicit fictional-content/legal limitations preserved.
+
+Verification: `node website/verify-drafts.mjs` PASS (4 assets, 9 HTML/25 Markdown
+links); `node website/verify-local.mjs` PASS all six paths; `git diff --check` PASS;
+pinned Wrangler dry-run and deploy PASS. Public Node fetch smoke over verified HTTPS
+PASS: `/` and `/style.css` 200, `/privacy`, `/terms`, `/docs/legal/PRIVACY_DRAFT.md`
+and `/_headers` 404. All six bodies equal their local source bytes and have CSP,
+noindex/nofollow and nosniff headers. HTML SHA256
+84d33c3ef9958ce6d92d2e6940ae42e4ac1bb7f359759c3f926d02129ce988f1;
+CSS SHA256 3457327eb2088d42702beaf3fc8b3ff86549f72f859a75481737102854224788.
+Initial HTTPS probes failed TLS handshake during provisioning; subsequent probes
+above passed. Certificate-pack API read was denied (9109); no scopes expanded.
+No fresh rendered-browser/native/OAuth testing; Human's prior appearance approval
+remains distinct from this public HTTP verification.
+
+Smart-commits grouping: production configuration/policy review evidence separately
+from the landing implementation, verification, design reference and delivery log.
+Remote preflight fetch found main and origin/main aligned at ef19469; no force push,
+merge or history rewrite needed. Push result is reported in the final handoff.
+Usable now: public pre-release landing and docs/DESIGN.md for a later authorized
+SwiftUI refactor. Policies remain unapproved/outside public assets; Google remains
+Testing and issue #2 OPEN. Next dependency is Human policy/effective-date and #4
+eligibility decisions before policy publication, Branding and end-to-end login.
+
+## Visual style approved / native design reference saved (2026-09-25)
+
+Human accepted the landing-page appearance and asked to preserve the style for a
+later Swift UI refactor. Lead created docs/DESIGN.md: exact CSS-derived light palette,
+typography/spacing/depth references, component translation, accessibility and
+explicit distinction between website illustration and real native functionality.
+Markdown chosen to keep rationale and mappings together; no duplicate JSON or
+premature native theme layer. Website README links the reference. No Swift code,
+website styling, app icon, provider configuration or publication changed this turn.
+Existing unrelated edits preserved; no Peer dispatched or ownership reopened.
+Human appearance approval does not resolve legal/provider/publication blockers or
+constitute native runtime/dark-mode/accessibility verification. Next native frontier
+is a separately authorized presentation refactor against this reference; no new
+product feature, state-machine or data-policy change implied.
+Verification: website draft verifier PASS (4 assets, 9 HTML/25 Markdown links),
+design-reference check PASS (20 exact CSS color literals plus local links), and
+`git diff --check` PASS. No app tests run for this documentation-only change.
+
+## Landing page visual redesign (2026-09-25)
+
+Lead ACCEPTS exact three-hash candidate below for Human local preview after
+source inspection, unchanged hash readback and independent read-only Peer
+9c9886c1-0604-4dde-8f5e-99584868b44c found no concrete source-level defect.
+Peer notified ACCEPT and closed; no ownership outstanding. Verifier and six local
+HTTP assertions rerun passed; six principal foreground/background pairs measured
+5.22:1–11.82:1 using WCAG luminance calculation (not a complete accessibility audit).
+Final diff check passed. Rendered layout/keyboard/zoom remain unverified due to
+browser tooling; acceptance is preview implementation, not visual/public approval.
+Human can inspect the running local preview. No public deployment, provider change,
+legal approval, commit or push. Prior policy/production blockers remain unchanged.
+
+Human approved warmer premium Mac direction after rejecting the text-heavy design.
+Lead owns website HTML/CSS/verifier/README and status; room check found only current
+Lead running. Prior #2 and legal edits preserved; no legal/provider behavior changed.
+New design: ivory/olive editorial hero, fictional CSS app window, numbered workflow,
+dark-green data section, native details disclosures, anchor navigation and support
+footer. No scripts/external fonts/images or new public assets; no migration to Sites.
+The illustration uses fictional data and explicit visible/accessibility labeling,
+not an actual app screenshot/live result. Public availability stays pre-release.
+
+Read-only Peer inspection dispatched against frozen HTML
+bd46f8c06892b9c5a7a9120db413fc760e174d2ac54c488235567f9337c9d8e4,
+CSS 3457327eb2088d42702beaf3fc8b3ff86549f72f859a75481737102854224788,
+verifier 4744d147936377949ec27056d64ce451e31b165995c8bc1464e20399469f807c.
+No write/browser ownership delegated. Static verifier PASS (4 assets, 9 HTML links,
+24 Markdown links), local HTTP verifier PASS six paths, diff check PASS. Chrome
+skill bootstrap retried for visual inspection but still fails on missing
+browser/26.917.62051/scripts/browser-service.mjs; no rendered/interactive desktop
+or mobile acceptance claim. Existing preview remains at http://127.0.0.1:8793.
+
+## Website review candidate accepted for Human review only (2026-09-25)
+
+Lead ACCEPTS Peer 273ccf0d-e958-46f6-badb-97db4fe33ac4 findings after source
+inspection: Create Transcript now prepares chunks, so privacy uses route-neutral
+"audio from the selected recording". Final privacy SHA256
+dcaed3dbf33f275e2a485a707079d2fa79d92b9f5b9be64d9ef3191ecd272e75;
+homepage/terms/CSS/verifier unchanged from reviewed hashes below. README gained
+local reproduction steps (c4c11ba346ed96a600d8a1f0fc326a97c69ec0cea9fef651a13052a2be72b9e7).
+Lead ACCEPTS corrected candidate for content review, not publication/legal readiness.
+Peer notified ACCEPT and closed; no outstanding ownership. Public hostname remains
+configured: noindex/preview text is not an access control or deploy authorization.
+
+Verification rerun: `node website/verify-drafts.mjs` PASS (4 public assets,
+3 HTML/24 Markdown links); `node website/verify-local.mjs` PASS six routes
+(homepage/CSS 200; privacy/terms/draft path/_headers 404; noindex/CSP on each);
+`git diff --check` PASS. Wrangler 4.136.3 local-only preview on 127.0.0.1:8793
+remains running for Human inspection. No public deploy/DNS/Google changes, paid
+calls, app tests, commit or push. Rendered desktop/mobile UI not visually checked;
+HTTP success is not visual acceptance. No legal approval or completed OAuth claim.
+
+Usable downstream: homepage local preview plus linked Privacy/Terms candidates and
+owner decision table in website/README.md. Human confirmed operator/contact only;
+full content/effective-date approval, age/provider eligibility, provider retention/
+data settings and deletion fulfillment remain unresolved. Next frontier: Human
+content review and #4 decisions before any policy-page promotion/publication;
+continue independent Apple/provider setup when required access is available. #2
+remains open; do not deploy this preview merely to unblock Google Branding.
+
+## Website / Google Branding review preparation (2026-09-25)
+
+Human authorized next step: prepare homepage/privacy/terms for approval, not
+publication. Confirmed operator Hoang Bang and website support/privacy
+hoang@2m0r.com. Lead owns website/** and docs/legal/** updates plus status/config;
+room inspection found only current Lead running. Existing #2 docs edits preserved.
+No provider settings or Google email changed; Google hoang@kieng.io.vn public-support
+field must be reconciled later, without inferring an organization-account change.
+
+Homepage candidate now explains actual local capture/replay, optional upload/AI,
+login versus content processing, indefinite cloud retention and pre-release limits.
+English matches approved release language. No scripts/forms/tracking, assets beyond
+the prior four-file allowlist, purchase/download CTA or 120-minute quality promise.
+Privacy/terms remain outside public assets, clearly unapproved with no effective
+date; Google disclosure added, stale single-upload versus chunked-path wording
+reconciled. Approved prices/allowances/retention unchanged. No 18+ restriction or
+worldwide provider eligibility invented. Gemini terms rechecked Sep 25 leave the
+existing 10+ eligibility decision unresolved under Human/#4, not a copy-edit fix.
+README supplies one content-review entry point; STATUS remains the work tracker.
+
+Read-only Peer 273ccf0d-e958-46f6-badb-97db4fe33ac4 examines frozen eight-file
+candidate (homepage SHA256 bb782063881633783ec47519dcd4a075d2fa8946201f7aaf9992f15e52bf56ee;
+privacy 18e608e66b168f537ac755b934833560a3a30be9d7ba477bf72debe4f1af41fb;
+terms ec13062824c65ffc95b95afce45db6846edca30c117374af817de9d3c88de736).
+Question: unsupported claims or accidental publication, suitability for Human
+review only. No write/provider/browser ownership delegated. A separate local-only
+smoke script is Lead-owned and does not change the frozen candidate inputs.
+
+## Issue #2 Google credential handoff accepted; branding dependency (2026-09-25)
+
+Human supplied Google setup handoff. Lead ACCEPTS credential-configuration outcome,
+not public production readiness: exact-instance Clerk API confirms Google enabled
+and client ID 1040637696359-gkvivq7fqteo84b59ouf7lk671o5q4pq.apps.googleusercontent.com;
+session audience remains convex. `npx --no-install clerk deploy status` returns
+oauth_pending (exit 1), Google configured, Apple pending, DNS/SSL/mail all complete.
+This supersedes earlier SSL wait and missing-Google-credential checkpoints. Do not
+recreate the Google project/client, reenter its secret or keep waiting for SSL.
+
+Human-reported, not independently inspected Google dashboard evidence: project
+lessmeet in kieng.io.vn, External audience, support/contact hoang@kieng.io.vn,
+owner accepted Google User Data Policy; Web client LessMeet Clerk Production,
+redirect https://clerk.auth.lessmeet.2m0r.com/v1/oauth_callback, JS origins empty,
+basic openid/email/profile scopes only. Secret saved only in Clerk. Sign-in page
+reached Google account chooser, but no completed callback/session or backend JWT
+acceptance. Google remains Testing, no test users; Publish app blocked on Branding
+homepage/privacy/terms URLs. Exact API scope read returned null for the selected
+field; do not treat that as independent scope verification.
+
+Dependency decision: public Google readiness in #2 depends on approved public
+homepage/privacy/legal inputs owned by Human under #4; do not fill placeholder URLs
+or publish current drafts to clear Branding. Current DNS lookup for
+www.lessmeet.2m0r.com returned no answer (SOA only). Local website remains unpublished
+and intentionally serves no approved privacy/terms pages. Lead owns preparation and
+verification; Human owns legal/content approval and publication authority. Return
+checkpoint: approved content + authorized hosting, then verified HTTPS URLs, Google
+Branding/publishing readback and full OAuth/native callback/backend smoke. Apple
+credential setup can continue independently. No release/publication or legal
+approval inferred from this handoff; issue #2 remains OPEN. Existing Convex cost/state,
+Gemini/RevenueCat checks remain open. Lead retains docs ownership; no Peer dispatched,
+no provider mutation, secret output, live AI, deployment, commit or push this turn.
+
+## Issue #2 Human DNS additions verified (2026-09-25)
+
+Human reports completing the five Clerk CNAMEs. Lead ACCEPTS exact DNS targets:
+`dig @newt.ns.cloudflare.com +noall +answer CNAME <host>` returns all five
+matching CONFIGURATION with TTL 300. Initial recursive lookup exposed only three;
+later lookup exposed the other two, so initial absence is not a current failure.
+Exact Clerk domain status verifies four records, DKIM2 pending. Lead POSTed the
+documented domain dns_check endpoint (no DNS mutation): DNS in_progress, SSL/mail
+not_started, no failure hints. Provider verification remains distinct from correct
+authoritative DNS. Built-in `clerk deploy status --wait` started for bounded
+verification; Google/Apple OAuth and other #2 blockers remain. No code deployment,
+new credential, billing/AI/deletion activation, signing or upload. Lead retains
+documentation ownership, no Peer dispatched; prior closed scopes remain closed.
+
+Later exact-domain readback: all five CNAMEs verified; DNS/mail complete, API-host
+SSL complete, account-portal SSL in_progress. ACCEPT DNS/provider-domain binding
+and mail DNS verification, not actual email delivery or login. Public JWKS GET
+succeeds (one RSA key); HEAD returned 405. Account-portal TLS probe failed handshake
+while SSL pending; preserve failed result, do not claim full HTTPS success. No
+secrets or signed-in user data requested. `git diff --check` and
+`node website/verify-drafts.mjs` passed (4 assets; 3 HTML/21 Markdown links).
+Built-in `clerk deploy status --wait` finished with exit 1: DNS/mail complete,
+pendingDnsRecords empty, SSL pending; Apple/Google OAuth still pending. No monitoring
+process remains. Human need not change Cloudflare records; next checkpoint is
+certificate completion followed by custom OAuth credentials/signed-in smoke, while
+Convex cost/state verification and other #2 provider work remain open.
+
+## Issue #2 Chrome retry after Human sign-in (2026-09-25)
+
+Human reports Cloudflare signed in again in Chrome. Lead retried the installed
+control-chrome skill's explicit Chrome bootstrap; it still fails before selection
+on missing browser/26.917.62051/scripts/browser-service.mjs. No tab/account/session
+readback was possible. This is not an authentication failure and does not call for
+another Cloudflare sign-in. No DNS or provider changes performed this retry;
+existing local documentation changes preserved, no Peer dispatched. Required next
+input is repaired browser-tool runtime or an approved scoped DNS API credential,
+not renewed production/domain approval. DNS/OAuth and prior deployment hold remain.
+
+## Issue #2 production provisioning / access handoff (2026-09-25)
+
+Human approved production setup and necessary credentials without paid upgrades,
+billable AI/deletion activation, and approved auth.lessmeet.2m0r.com plus required
+Clerk DNS additions only. Lead owns all moving writes. CLI created production
+Clerk ins_3JoKJsnX2ro7wXXYQfu94imtJNX within exact LessMeet app
+app_3JggBoRulgsbt70ZFjgy9h7UjqQ. ACCEPT provisioning/configuration only: API
+readback confirms production instance/domain, Native API enabled, session aud=convex,
+and newly added com.lessmeet.app://callback (exactly one). Dev audience/callback
+readback unchanged. No provider secret exported/printed or local secret file created.
+CLI workflow intentionally paused at Apple OAuth; both custom OAuth providers remain
+unconfigured. Five exact CNAME targets are in CONFIGURATION; not added, DNS/TLS/mail
+pending. This is not working production login or issue #2 completion.
+
+Convex read-only explicit hoang-bang:lessmeet:prod resolves uncommon-narwhal-733;
+no env names and no usage limits configured. No production deployment created or
+code/env changed. Actual plan/region, data/storage/scheduled-work state still unknown.
+Lead ACCEPTS read-only Peer 60b1c4a6-3aaa-4539-ae71-53b9b850d0dc findings and
+REOPEN_REQUEST against exact HEAD ef194699c03b4dbe9618c0d77004ec74c56904a1 after
+inspecting auth/crons/revenuecat/purge handlers. Five minute crons plus two daily
+purges mean nominal 7,202 invocations/day even with feature gates false; gates
+do not stop existing work or retention purges. No amount of paid usage established.
+Decision: hold backend code deployment until plan/cost boundary and genuinely empty
+deployment/no inherited work are verified. Do not disable accepted retention logic
+to bypass the finding. Peer notified ACCEPT and assignment closed; no ownership
+outstanding. Clerk configuration is usable downstream once DNS/OAuth are completed.
+
+Access blocker: installed Chrome skill read and browser setup attempted twice;
+runtime fails on missing browser/26.917.62051/scripts/browser-service.mjs before
+any browser is selected. This is a tool initialization failure, not evidence of
+missing Human sign-in. CLI remains functional. Existing Wrangler OAuth scopes show
+zone read but not DNS write; no DNS mutation attempted. No applicable provider
+connector discovered. Need restored dashboard/browser access (or approved scoped
+alternative) for DNS and Apple/Google OAuth, Convex plan and Gemini/RC exact account
+settings. Human owns access recovery and any cost/storage decision; resume at that
+checkpoint, without asking again for already-approved production/domain authority.
+
+Verification: exact Clerk app/config/native/redirect API readbacks as above;
+`clerk deploy status` correctly reports incomplete/domain_pending and Apple+Google
+pending; `dig +short CNAME` returned no API/account-host records. Convex names-only
+and usage-limit inventories succeeded. No runtime, signed-in smoke, tests, paid calls,
+recordings, purchase, signing/upload, commit or push. Issue #2 remains OPEN.
+Documentation verification: `git diff --check` passed;
+`node website/verify-drafts.mjs` passed (4 public assets, 3 HTML/21 Markdown links).
+
 ## Issue #2 started — production authority checkpoint (2026-09-25)
+
+Human subsequently approved the proposed production/credential scope (Sep 25).
+Production setup is now authorized within the existing LessMeet accounts, preserving
+dev; no paid upgrades, billable AI activation, deletion or signing/upload authority.
+Lead retains sole configuration/provider write ownership. Fresh room list shows
+prior Peers idle; their closed assignments are not reopened. Working tree was clean
+at resumption, HEAD ef19469 (prior changes committed outside this run).
+The pending-approval paragraphs below describe the earlier checkpoint, superseded
+by this approval. Use provider secret stores; ask before a new durable local/vault
+storage choice or cost increase. Current task remains production setup/verification.
+
+Human also approved `auth.lessmeet.2m0r.com` for Clerk production and only the
+required Clerk DNS additions, preserving website/current DNS/email. Read-only Peer
+60b1c4a6-3aaa-4539-ae71-53b9b850d0dc examines exact HEAD ef19469 backend for
+empty-production dark-deploy side effects, switches and smoke checks; no writes or
+provider/browser ownership delegated. Lead owns Clerk setup and all integration.
 
 Human requested starting #2. GitHub issue #2 is OPEN with no comments; its explicit
 owner approval requirement for production deployments, new credentials and costs

@@ -20,11 +20,40 @@ for (const name of assets) {
   assert.equal(fs.lstatSync(path.join(publicRoot, name)).isSymbolicLink(), false);
 }
 let htmlLinks = 0;
+const homepage = fs.readFileSync(path.join(publicRoot, 'index.html'), 'utf8');
+assert.match(homepage, /<html lang="en">/);
+assert.match(homepage, /<meta name="viewport"/);
+assert.match(homepage, /<meta name="robots" content="noindex, nofollow">/);
+assert.equal((homepage.match(/<h1\b/g) || []).length, 1);
+assert.match(homepage, /Operator: Hoang Bang/);
+assert.match(homepage, /mailto:hoang@2m0r\.com/);
+assert.match(homepage, /Pre-release preview/);
+assert.match(homepage, /not the final Google OAuth homepage/);
+assert.match(homepage, /Layout illustration with fictional content/);
+assert.match(homepage, /not a screenshot, live demo or verified AI result/);
+assert.match(homepage, /class="skip-link" href="#main"/);
+assert.equal((homepage.match(/<details>/g) || []).length, 2);
+const ids = [...homepage.matchAll(/\bid="([^"]+)"/g)].map(match => match[1]);
+assert.equal(new Set(ids).size, ids.length, 'duplicate homepage IDs');
+assert.doesNotMatch(homepage, /pk_live_|sk_live_|AIza[\w-]+|<iframe\b|<img\b/i);
+for (const draft of ['PRIVACY_DRAFT.md', 'TERMS_DRAFT.md']) {
+  const content = fs.readFileSync(path.join(root, 'docs/legal', draft), 'utf8');
+  assert.match(content, /NOT FOR PUBLICATION/);
+  assert.match(content, /Effective date: \[REQUIRED\]/);
+  assert.match(content, /Hoang Bang/);
+  assert.match(content, /hoang@2m0r\.com/);
+}
 for (const name of ['index.html', '404.html']) {
   const html = fs.readFileSync(path.join(publicRoot, name), 'utf8');
   assert.doesNotMatch(html, /<script\b|<form\b/i);
   for (const match of html.matchAll(/(?:href|src)="([^"]+)"/g)) {
     if (match[1].startsWith('mailto:')) continue;
+    if (match[1].startsWith('#')) {
+      const ids = [...html.matchAll(/\bid="([^"]+)"/g)].map(value => value[1]);
+      assert.ok(ids.includes(match[1].slice(1)), `missing anchor ${match[1]}`);
+      htmlLinks++;
+      continue;
+    }
     assert.ok(match[1].startsWith('/'));
     const target = path.resolve(publicRoot, `.${match[1] === '/' ? '/index.html' : match[1]}`);
     assert.ok(target.startsWith(`${publicRoot}/`));

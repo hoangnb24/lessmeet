@@ -1,20 +1,17 @@
 # LessMeet legal hosting
 
-Unpublished preparation, reconciled 2026-09-24 against
-`b42a7a00a9e0f60a72eaeeadaa17b0c9c190f605` and accepted working-tree evidence.
+Pre-release landing page, deployed 2026-09-25 with Human authorization.
+Legal policies remain unpublished review candidates for issue #2 Google Branding.
 This document holds Store drafts as
 well as the hosting runbook; it is not a second delivery-status tracker.
 Execution/acceptance remains in [STATUS](../docs/STATUS.md).
 
-The current finish line is owner internal TestFlight testing with a requested
-120-minute transcription capability, not public launch or App Review. That
-capability is not established: accepted synthetic evidence covers local capture/
-export, and the 120-minute export exceeds the current 18 MiB upload cap. Do not
-add a long-transcription claim to listing copy until implemented and verified.
-Public legal hosting and the Store-publication checklists below are separate from
-internal-beta acceptance. Existing packaging gates are project policy and remain
-unchanged here; Lead owns any scoped internal-beta packaging decision. This draft
-does not claim that Apple requires published legal pages for every internal beta.
+Current scope: publish the accepted landing page; keep privacy/terms outside the
+public asset root until approved. Google Branding remains incomplete.
+The earlier owner-internal-TestFlight milestone is
+historical, not the current release scope. Chunked transcription has accepted
+offline implementation, but no public production/120-minute quality claim is
+established. Do not market it as available. Packaging and release gates remain.
 
 Cloudflare Workers static assets, separate from the existing `meetless-website`.
 The historical zone API check confirmed `2m0r.com` belongs to account
@@ -24,8 +21,56 @@ Only `public/` is uploaded. Draft legal documents remain outside the asset root.
 
 ## Current state
 
-Prepared, NOT deployed. `/privacy` and `/terms` are intended to return 404 rather
-than serve a support page as a valid legal document; live routing was not checked.
+Human confirmed operator **Hoang Bang** and website support/privacy
+**hoang@2m0r.com** on Sep 25. Google still has hoang@kieng.io.vn as its support/contact;
+reconcile the public support field before Branding submission, not organization or
+account ownership. No external settings changed by this content preparation.
+
+Review these together:
+
+Visual direction (Sep 25 redesign): warm ivory/olive, oversized sans/serif hero,
+CSS-built fictional Mac window, editorial numbered workflow and expandable data
+disclosures. The illustration is explicitly labeled, not a screenshot of the app
+or evidence of AI performance. System fonts only; no JS, remote fonts/images,
+analytics or new deployment assets. Navigation anchors/skip link and native
+details controls work without scripts; reduced-motion preference is respected.
+This is the published pre-release landing design, not a production app release.
+
+Human accepted this visual direction. [Design reference](../docs/DESIGN.md) records
+the palette, typography and future native SwiftUI translation boundaries; consult
+it before changing the style. Subsequent Human authority covers landing publication,
+not legal-policy approval or native refactoring.
+
+- [Homepage candidate](public/index.html): English to match the release language;
+  describes local recording, optional upload/AI and sign-in data separately. No
+  download/purchase CTA, recording-duration promise or invented public availability.
+- [Privacy candidate](../docs/legal/PRIVACY_DRAFT.md): Google profile/login data,
+  optional content processing, indefinite cloud retention, provider/deletion limits.
+- [Terms candidate](../docs/legal/TERMS_DRAFT.md): permissions, AI uncertainty,
+  approved allowances/prices and original-account restore; no new legal defaults.
+
+### Owner review before publication
+
+| Decision/input | Current boundary |
+| --- | --- |
+| Operator and contact | Hoang Bang / hoang@2m0r.com approved; legal seller/DSA and any required address still belong to #4. |
+| Effective date and content approval | Unset; approving identity is not approving these full policies. |
+| Audience and markets | 10+ target/all storefronts remain product intent; Gemini eligibility conflict unresolved. No invented 18+ clause or worldwide eligibility claim. |
+| Provider data handling | Exact production Gemini billing/sharing and provider regions/logs/backups/support retention remain unverified. No no-training/no-retention claim. |
+| Deletion and rights | Describe only verified workflow; no provider-erasure deadline or universal legal-compliance promise. #3/#4 remain dependencies. |
+| Publication | Landing deploy authorized Sep 25; policies and Google Publish app remain outside that authorization. |
+
+Google's [OAuth policies](https://developers.google.com/identity/protocols/oauth2/policies)
+(checked Sep 25) require a public owned/verified-domain homepage describing the app
+and linking to privacy/terms. This draft deliberately does not link to missing
+policies. After approval, add the real pages/links and verify HTTPS before entering
+the URLs in Google Branding. Merely deploying this preview does not meet that gate.
+
+Deployed to `www.lessmeet.2m0r.com` as Worker `lessmeet-legal`, version
+`9550542c-f6e1-48f7-8a08-cd962a49ff00`. Live verification is recorded in STATUS.
+Public HTTPS checks passed: homepage/CSS 200 with exact local content; policy and
+internal-file probes 404; CSP, noindex/nofollow and nosniff headers present.
+`/privacy` and `/terms` must return 404 rather than serve a support page as a valid legal document.
 Do not put these URLs in
 the app until real reviewed policies are published and verified over HTTPS.
 
@@ -38,12 +83,18 @@ node website/verify-drafts.mjs
 git diff --check -- docs/legal website
 ```
 
+For local HTTP checks only, start
+`npx --no-install wrangler@4.136.3 dev --config website/wrangler.jsonc --local --ip 127.0.0.1 --port 8793`,
+then run `node website/verify-local.mjs` in another terminal. It checks homepage/CSS
+200, unpublished-policy/internal-file 404 and noindex/CSP headers. It does not
+deploy, verify public HTTPS or establish visual acceptance. Stop the preview when done.
+
 The offline check verifies the exact asset root/inventory, no symlinks, absence of
 draft routes, local Markdown/HTML link targets, and draft metadata lengths. It
 does not establish HTTP responses, Wrangler runtime behavior, DNS or certificates.
 No deployment/dry-run, dashboard call or dependency installation is needed.
-If separately authorized later, use pinned Wrangler `4.136.3` for local routing
-checks and a deployment dry-run. No such check is claimed by this preparation.
+Use pinned Wrangler `4.136.3` for local routing checks and a deployment dry-run.
+Sep 25 landing release passed both checks before the authorized deployment.
 
 Historical documentation-lane verification on 2026-09-23, macOS 26.4 (25E246), Node v22.22.3:
 `node website/verify-drafts.mjs` passed: four allowed public assets, three HTML
@@ -63,7 +114,7 @@ cover the five scoped Markdown files, not just tracked diff lines. This is docum
 and asset-inventory evidence only, not a runtime, provider, HTTP or beta acceptance.
 No public asset, route, effective date, audience, market or completion SLA changed.
 
-## Before deployment
+## Before publishing policies / completing Google Branding
 
 1. Resolve the publication checklists in `docs/legal/PRIVACY_DRAFT.md` and
    `docs/legal/TERMS_DRAFT.md`; get operator approval and effective date.
@@ -85,8 +136,8 @@ No public asset, route, effective date, audience, market or completion SLA chang
    legal URLs into app public configuration. `www.lessmeet.2m0r.com` is the only
    requested hostname; no apex or additional alias is configured implicitly.
 
-The configured `404-page` handling and absence of privacy/terms assets support the
-intended unpublished state, not a live-response claim. Cloudflare remains the
+The configured `404-page` handling and absence of privacy/terms assets preserve the
+unpublished policy state. Cloudflare remains the
 chosen host; do not migrate to Sites or another site. See [Cloudflare HTML
 handling](https://developers.cloudflare.com/workers/static-assets/routing/advanced/html-handling/)
 and [provider disclosures](../docs/legal/PROVIDER_DISCLOSURES.md).
@@ -105,7 +156,7 @@ claims into App Store Connect. No screenshots have been generated or captured.
 | Keywords | meeting,recorder,transcription,notes,audio,summary,productivity |
 | Primary category | Productivity — Human approved, saved and reopened on Apple Sep 25 |
 | Platform | macOS 15+; bundle `com.lessmeet.app`; team `63M98WD275` |
-| Support URL | `https://www.lessmeet.2m0r.com/` — proposed, HTTPS/public support verification pending |
+| Support URL | `https://www.lessmeet.2m0r.com/` — pre-release landing verified HTTPS 200 Sep 25; not submitted to Apple |
 | Privacy URL | `https://www.lessmeet.2m0r.com/privacy` — intentionally unpublished |
 | Terms link | `https://www.lessmeet.2m0r.com/terms` — intentionally unpublished |
 | License | Apple Standard EULA, approved choice; App Information readback confirms Sep 25 |
