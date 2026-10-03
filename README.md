@@ -172,3 +172,9 @@ Stop, quit, reopen and listen to the beginning/end and both source files. Repeat
 with denied permissions. Test on the intended microphone/headphones.
 
 Current decisions, ownership and acceptance: [docs/STATUS.md](docs/STATUS.md).
+
+### Agent native UI checks
+
+Use the project skill [lessmeet-app-check](.agents/skills/lessmeet-app-check/SKILL.md)
+for native UI diagnosis and verification. `AGENTS.md` defines when it is required.
+The skill contains the Computer Use procedure, evidence requirements and limits.

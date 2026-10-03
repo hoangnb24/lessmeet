@@ -1,5 +1,58 @@
 # LessMeet delivery
 
+## Agent native UI capability (2026-10-03)
+
+Enforcement update: Lead added root `AGENTS.md` with explicit activation conditions
+and a required runtime-evidence-or-UNVERIFIED handoff rule. The local workspace
+protocol applies it to Lead acceptance, Supervisor checks and Peer responses.
+The project skill now contains the procedure. This is instruction
+and acceptance enforcement, not a runtime hook that can guarantee model behavior.
+Existing sessions must reread the instructions before their next applicable task;
+this edit does not establish that their cached instructions have refreshed.
+Lead ACCEPTS the instruction change after checking the trigger, role boundaries,
+blocked path and references. No app/source changes or new runtime test in this
+update. `git diff --check` passes. UI ownership remains released.
+
+Decision: reuse the installed Computer Use runtime (`@oai/sky` through
+`mcp__node_repl__js`). No new automation framework, MCP server, dependency or
+runtime source change. The project protocol routes agents to
+`.agents/skills/lessmeet-app-check/SKILL.md`. Existing provider work and
+operator-owned `.codex/` remain unchanged.
+
+Packaging update: moved the procedure and runtime examples into the project
+skill `lessmeet-app-check`. Root `AGENTS.md` retains the mandatory activation rule
+and a direct-file fallback for sessions without refreshed skill discovery.
+README now links to the skill instead of duplicating its procedure. No global
+skill or operator configuration changed. Lead owns this documentation-only scope;
+live UI ownership remains released. Skill Creator validation PASS; diff whitespace
+check PASS; references resolve and the skill is not Git-ignored. Lead ACCEPTS the
+packaging after inspecting trigger scope, ownership, safety and evidence limits.
+No new UI run or fresh-session automatic-discovery test was performed. Existing
+sessions can read the explicit skill path; automatic catalog refresh is unverified.
+
+Lead owned the bounded live UI check; no Peer was dispatched. Other project
+agents were idle. Target was the existing bundle at
+`dist/issue3-production-rehearsal-20261003/LessMeet.app`.
+Observed: runtime import PASS; native accessibility tree PASS; window screenshot
+PASS. Lead clicked the observed Hide Sidebar control, read Show Sidebar in the
+next snapshot, clicked that freshly observed control, then verified Hide Sidebar
+and visually inspected the restored window. No recording was opened, no Refresh
+was clicked, and no deletion, purchase, upload or configuration action was issued.
+App background network activity was not measured. Raw account/library content
+is not copied into this status record.
+
+ACCEPT this bounded native observation/interaction capability. It supplies a
+working read/action/read loop, not full product E2E acceptance. The screenshot
+was inspected in-session; no durable raw capture is committed. Live UI ownership
+is released. Other agents must check runtime/permissions in their own session.
+
+Remaining frontier: Lead owns the next authorized UI scenario. End-to-end
+click/request/applied-state correlation is still missing for deletion Refresh.
+At the next Refresh diagnosis, first establish a safe evidence path; add scoped,
+sanitized instrumentation if existing evidence cannot distinguish the outcomes.
+Do not infer that this smoke test closes that gap or issue #3. Production deletion
+authority and the existing rehearsal conditions are unchanged.
+
 ## Landing live on Cloudflare / Git handoff (2026-09-25)
 
 Human authorized landing publication, commit and push. Lead ACCEPTS the deployed
