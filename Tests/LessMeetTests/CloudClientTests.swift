@@ -125,6 +125,33 @@ final class CloudClientTests: XCTestCase {
         catch { XCTAssertTrue(error.localizedDescription.contains("unexpected response")) }
     }
 
+    func testRefreshDiagnosticsDistinguishHTTPDecodeAndValidationWithoutPrivateData() async {
+        for scenario in ["ok", "http", "decode", "invalid", "network", "cancel"] {
+            var lines: [String] = []
+            let log = RefreshDiagnostics(expires: Date().addingTimeInterval(60), sink: { lines.append($0) })
+            CloudFixtureProtocol.handler = { request in
+                XCTAssertFalse(request.allHTTPHeaderFields!.keys.contains { $0.lowercased().contains("correlation") })
+                if scenario == "network" { throw URLError(.networkConnectionLost) }
+                if scenario == "cancel" { throw URLError(.cancelled) }
+                if scenario == "http" { return (401, Data(#"{"error":"private-error"}"#.utf8)) }
+                if scenario == "decode" { return (200, Data("private-body".utf8)) }
+                let body = scenario == "invalid"
+                    ? #"{"userId":"private-owner","requested":false,"localComplete":true,"providersComplete":false,"requestedAt":null}"#
+                    : #"{"userId":"private-owner","requested":false,"localComplete":false,"providersComplete":false,"requestedAt":null}"#
+                return (200, Data(body.utf8))
+            }
+            await RefreshDiagnostics.$current.withValue(log.trace(origin: .manual)) {
+                do { _ = try await client.deletion(token: "private-token"); XCTAssertEqual(scenario, "ok") }
+                catch { XCTAssertNotEqual(scenario, "ok") }
+            }
+            let expected = ["ok": "decoded", "http": "httpRejected", "decode": "decodeFailed",
+                            "invalid": "invalidStatus", "network": "transportError", "cancel": "transportCancelled"][scenario]!
+            XCTAssertTrue(lines.last!.contains("phase=\(expected)"))
+            XCTAssertEqual(lines.contains { $0.contains("phase=httpSucceeded") }, ["ok", "decode", "invalid"].contains(scenario))
+            XCTAssertFalse(lines.joined().contains("private-"))
+        }
+    }
+
     func testHTTPStatusSafeErrorAndMalformedMutationResponse() async throws {
         for status in [401, 404, 409, 413, 415, 502, 503] {
             CloudFixtureProtocol.handler = { _ in (status, Data(#"{"error":"Service temporarily paused."}"#.utf8)) }

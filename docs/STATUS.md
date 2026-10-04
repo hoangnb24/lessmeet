@@ -1,5 +1,120 @@
 # LessMeet delivery
 
+## Refresh diagnostic instrumentation — code accepted; runtime blocked (2026-10-04 local)
+
+Human authorized native logging/build and a production GET trial. Lead d72f118f
+owns integration, acceptance, AccountDeletionModel.swift, AccountPanel.swift,
+CloudClient.swift, new RefreshDiagnostics.swift, related native tests, STATUS and
+isolated build/evidence artifacts. No Peer owns these scopes. Room reread shows
+all other sessions idle; previous explicit scope closures remain authoritative.
+Lead d72f118f held the sole live UI scope, now RELEASED. Old trial process was
+relaunched; restored UI is UNVERIFIED due to timeout. Peer9bcc3682's read-only
+assignment is closed with ACCEPT; no Peer write/UI scope remains.
+Preserve provider work and operator .codex.
+No backend/business/UI behavior changes, flags, destructive actions, sends,
+recording/upload, paid calls, purchases, commit or push.
+
+Plan: opt-in dev-only logging, expiry plus event cap, typed allowlisted metadata
+and local-only correlation. Prove manual Refresh through transport/decode/apply
+or a safe reason for early return/discard/error. Keep the previous trial and normal
+app intact; package a separate signed artifact using the same public config and
+no RC key. Tests/build are not native UI acceptance. Issue #3 remains OPEN.
+This authorization resolves the instrumentation dependency in the older entry.
+Tests26 PASS; release swiftbuild PASS; isolated artifact strict codesign PASS.
+New trial: dist/issue3-refresh-diagnostic-20261004/LessMeet.app. Copied the previous
+trial bundle/resources/public config, replaced only the compiled executable, added
+the dev diagnostic expiry property, then ad-hoc signed. Normal dist/LessMeet.app
+and the original trial were not replaced. Diagnostic deadline epoch1791049200;
+readback rounded that real value to1791049216 (2026-10-03T17:40:16Z).
+Logging stops after ten minutes from logger initialization or120 events, or at the
+bundle deadline if earlier. UI and native response/application proof remain UNVERIFIED.
+Peer9bcc3682 returned six unchanged hashes and bounded no-blockers. Lead ACCEPTS
+the source findings: metadata allowlist, no network correlation header, POST silent,
+guards and UI presentation unchanged. Assignment closed; disposition sent to Peer.
+Limits retained: wall-clock rollback can extend elapsed expiry; event cap still
+applies. Expiry/budget can truncate a trace. Client/server linkage is temporal only.
+
+### Exact candidate and verification
+
+HEAD remains a94277265cd0026dce6326a7d5365f103e78df96; accepted provider base is
+8edfceec3fba8713ebf196ffa06e81f273b5e5a1 plus the preserved dirty/untracked work.
+All seven provider anchors matched before this work. No provider files changed.
+This round changes only the following six native source/test files plus STATUS:
+
+| Path | SHA256 |
+| --- | --- |
+| Sources/LessMeet/Account/RefreshDiagnostics.swift (new) | 698ffc220f67978698ee5c4c3e2c0b5e995b18164eb0fa042946f901482f2cef |
+| Sources/LessMeet/Account/AccountDeletionModel.swift | 1e173ece56f35fe65189765683fa7352ae8bb1289d8ce4a73fde6164be195987 |
+| Sources/LessMeet/Account/AccountPanel.swift | 4cf106a4565e2064c6ebedabae4df12bc8009d072dc3a0b4a2956b9a79a8f15c |
+| Sources/LessMeet/Cloud/CloudClient.swift | cec71cf40ac8c24a47563596e494242a9acb3a5a1c19449c185d0bdedb40122e |
+| Tests/LessMeetTests/RefreshDiagnosticsTests.swift (new) | a082e2277acd8eefd2ec109dd7fa75e3029965da52b32afa67c111a5a343fd94 |
+| Tests/LessMeetTests/CloudClientTests.swift | 104b0d659c90451c9d171b124859a8828daffd700013c109a44c2e535c110141 |
+
+Diagnostic app executable SHA256:
+c30384e8a17fd566ec9552ef920f7a95dd2295236f877806cf5bae9890f72447.
+Diagnostic Info.plist SHA256:
+a2f4a1abd9f2cb3cb2eb5db24c69078a6d1259f533e2491a4e53d13b3eb0b3b3.
+Bundle com.lessmeet.app, version1.0.0/build1, dev, ad-hoc signed. These hashes and
+the separate path identify the trial; the marketing version alone does not.
+Plist comparison confirms only LessMeetRefreshDiagnosticsUntil differs from the
+old trial. Public production config is identical; RC key remains absent. No
+process environment overrides were added. The source plist has no opt-in key.
+
+Lead verification on Darwin arm64:
+- `swift test --disable-automatic-resolution --filter 'RefreshDiagnosticsTests|AccountDeletionTests|CloudClientTests'`: PASS26 (8+12+6).
+- `swift build -c release --build-system swiftbuild --disable-automatic-resolution`: PASS.
+- Bundle copied from old trial to the new unused path; only executable and expiry
+  changed before `codesign --force --sign - --options runtime --entitlements Resources/LessMeet.entitlements` on the new app.
+- `codesign --verify --strict --verbose=2` on the new app: PASS.
+- `git diff --check`: PASS. Original trial and normal app executable/plist hashes
+  remain unchanged. No commit/push, server change or production activation.
+
+### Runtime observation and missing evidence
+
+Read full project/Computer Use skills again. Before switching, the old trial
+returned native state/screenshot at2026-10-03T17:15:52.511Z: library available,
+Account closed, no Stop recording control. Quit through Computer Use; new trial
+launched at the exact isolated process path (PID83019). State reads timed out with
+`Computer Use server error -10005: timeoutReached`; one call was interrupted.
+Fresh retries did not yield new-trial accessibility or screenshot. App listing
+reports a running LessMeet, but bundle-ID lookup is ambiguous across retained
+artifacts. No guessed click, Account open or Refresh was attempted on this trial.
+
+A one-second read-only process sample shows main-thread startup in
+LessMeetApp.init -> AccountSession.init -> Clerk.configure -> CacheManager
+loadClientServerFetchDateFromKeychain -> SecItemCopyMatching -> SecurityServer
+decrypt/mach_msg wait. This establishes a Keychain-read startup wait during the
+sample, not its root cause. No diagnostic code frame occurs in that stack.
+No running SecurityAgent was returned by Computer Use's app list; this does not
+prove that no system prompt exists. No keychain content, credentials or permissions
+were read/changed. Do not infer that logging caused the stall or that permission
+was denied. A scoped OSLog query returned zero RefreshDiagnostics events.
+
+Stopped only the verified new trial process with SIGTERM to restore the prior
+state. Relaunched the old trial through Computer Use; PID84651 matches its exact
+path, but its native state also timed out. Restore is process-level only; UI restore
+is UNVERIFIED. No recording/upload or account mutation was started. No backend log
+stream was started without a new UI event. Previous server evidence is unchanged.
+Private ignored evidence directory: `.artifacts/refresh-instrumented-20261004/`.
+It contains 01-old.png and startup-sample.txt. There is no new-trial or restored-UI
+capture; do not claim one from a planned filename. Evidence directory is0700;
+files are0600. No raw screenshot or account tree is attached to this report.
+
+Disposition: ACCEPT the six-file diagnostic implementation and scoped test/build
+evidence. Runtime click -> HTTP/decode -> applied goal is NOT achieved. Reject any
+claim that these tests close the response/application gap or issue #3. New code
+can distinguish phases once startup access works; all live new-trial paths remain
+UNVERIFIED. Older observed HTTP200s still have no known response body.
+
+Smallest next path: Human/runtime operator resolves the blocked startup/Keychain
+interaction (inspect any visible system prompt; no implicit reset/permission grant).
+Lead resumes on a restored fresh native state. Reuse the isolated candidate; if its
+deadline has elapsed, create a new private trial copy with a fresh bounded deadline
+and signature before the single evidenced GET. No auth behavior fix is authorized.
+If a code bug is established, propose its separate scope first. Lead retains
+integration/acceptance; live UI scope is RELEASED. Issue #3 remains OPEN. Exact
+account selection/confirmation is still required for any later destructive rehearsal.
+
 ## Agent native UI capability (2026-10-03)
 
 Enforcement update: Lead added root `AGENTS.md` with explicit activation conditions

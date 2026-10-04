@@ -74,14 +74,14 @@ private struct AccountDeletionView: View {
                 Button("Delete Account…", role: .destructive) { model.prepareConfirmation() }
                     .disabled(model.busy || billingBusy)
             }
-            Button("Refresh deletion status") { Task { await model.refresh() } }.disabled(model.busy)
+            Button("Refresh deletion status") { Task { await model.refresh(origin: .manual) } }.disabled(model.busy)
             if model.busy { ProgressView().controlSize(.small) }
             if let error = model.error { Text(error).foregroundStyle(.red).textSelection(.enabled) }
             Text("Local recordings and saved results stay on this Mac. Account deletion does not cancel Apple subscriptions.")
             Link("Manage or cancel subscription", destination: URL(string: "https://apps.apple.com/account/subscriptions")!)
         }
         .font(.caption)
-        .task(id: sessionID) { model.contextChanged(); await model.refresh() }
+        .task(id: sessionID) { model.contextChanged(); await model.refresh(origin: .automatic) }
         .confirmationDialog("Delete this LessMeet account?", isPresented: Binding(get: { model.confirming }, set: { if !$0 { model.cancelConfirmation() } }), titleVisibility: .visible) {
             Button("Delete Account and Cloud Data", role: .destructive) { _ = model.confirm() }
                 .disabled(billingBusy)

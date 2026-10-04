@@ -144,8 +144,9 @@ struct CloudClient {
         var request = try request(path: "account/deletion", method: requestDeletion ? "POST" : "GET",
                                   token: token, contentType: requestDeletion ? "application/json" : nil)
         if requestDeletion { request.httpBody = Data(#"{"confirm":"delete-account"}"#.utf8) }
-        let result: AccountDeletionStatus = try await send(request, expectedStatus: requestDeletion ? 202 : 200)
-        guard result.isValid else { throw malformed(mutating: requestDeletion) }
+        let trace = requestDeletion ? nil : RefreshDiagnostics.current
+        let result: AccountDeletionStatus = try await send(request, expectedStatus: requestDeletion ? 202 : 200, trace: trace)
+        guard result.isValid else { trace?.event(.invalidStatus); throw malformed(mutating: requestDeletion) }
         return result
     }
 
@@ -212,7 +213,8 @@ struct CloudClient {
         return request
     }
 
-    private func send<Value: Decodable>(_ request: URLRequest, fileURL: URL? = nil, expectedStatus: Int) async throws -> Value {
+    private func send<Value: Decodable>(_ request: URLRequest, fileURL: URL? = nil, expectedStatus: Int,
+                                      trace: RefreshTrace? = nil) async throws -> Value {
         let mutating = request.httpMethod != "GET"
         let data: Data
         let response: URLResponse
@@ -224,10 +226,14 @@ struct CloudClient {
             }
         } catch {
             let cancelled = error is CancellationError || (error as? URLError)?.code == .cancelled
+            trace?.event(cancelled ? .transportCancelled : .transportError)
             throw CloudClientError(message: (cancelled ? "Cloud request was cancelled." : "Could not reach the cloud service. Check your connection.") + ambiguity(mutating))
         }
-        guard let http = response as? HTTPURLResponse else { throw malformed(mutating: mutating) }
+        guard let http = response as? HTTPURLResponse else {
+            trace?.event(.invalidHTTP); throw malformed(mutating: mutating)
+        }
         guard http.statusCode == expectedStatus else {
+            trace?.event(.httpRejected)
             if (200..<300).contains(http.statusCode) { throw malformed(mutating: mutating) }
             if (300..<400).contains(http.statusCode) {
                 throw CloudClientError(message: "Cloud redirect rejected to protect your sign-in token. Check the configured endpoint." + ambiguity(mutating), statusCode: http.statusCode)
@@ -240,8 +246,13 @@ struct CloudClient {
             }
             throw CloudClientError(message: "Cloud service (HTTP \(http.statusCode)): \(detail ?? "Request failed. Sign in again or contact the app owner.")" + ambiguity(mutating && http.statusCode >= 500), statusCode: http.statusCode)
         }
-        do { return try JSONDecoder().decode(Value.self, from: data) }
-        catch { throw malformed(mutating: mutating) }
+        trace?.event(.httpSucceeded)
+        do {
+            let value = try JSONDecoder().decode(Value.self, from: data)
+            trace?.event(.decoded)
+            return value
+        }
+        catch { trace?.event(.decodeFailed); throw malformed(mutating: mutating) }
     }
 
     private func malformed(mutating: Bool) -> CloudClientError {
