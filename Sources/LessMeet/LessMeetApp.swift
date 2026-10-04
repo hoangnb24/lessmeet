@@ -1,5 +1,16 @@
 import SwiftUI
 
+#if LESSMEET_OFFLINE_CHECK
+@main
+struct LessMeetOfflineApp: App {
+    var body: some Scene {
+        WindowGroup("LessMeet Offline Check") {
+            OfflineAccountCheckView().frame(minWidth: 580, minHeight: 440)
+        }
+        .defaultSize(width: 640, height: 520)
+    }
+}
+#else
 @main
 struct LessMeetApp: App {
     @StateObject private var model: AppModel
@@ -50,3 +61,4 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
 
     func applicationShouldTerminateAfterLastWindowClosed(_ sender: NSApplication) -> Bool { true }
 }
+#endif

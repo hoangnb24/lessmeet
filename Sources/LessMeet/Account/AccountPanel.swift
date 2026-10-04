@@ -26,6 +26,7 @@ struct AccountPanel: View {
     private var accountSubtitle: String {
         if session.error != nil { return "Account needs attention" }
         if session.configurationIssue != nil { return "Account unavailable" }
+        if session.needsConnection { return "Local mode · Connect account" }
         return session.isSignedIn ? "Account settings" : "Sign in for transcripts & chat"
     }
 
@@ -34,6 +35,12 @@ struct AccountPanel: View {
             Label("Account", systemImage: "person.crop.circle").font(.headline)
             if let issue = session.configurationIssue {
                 Text(issue).font(.caption).foregroundStyle(.secondary)
+            } else if session.needsConnection {
+                Text("Recording works without connecting your account. Connect to restore your saved session or sign in.")
+                    .font(.caption).foregroundStyle(.secondary)
+                Text("macOS may ask permission to read LessMeet's saved sign-in data in Keychain. Account connection may wait until you handle that prompt.")
+                    .font(.caption).foregroundStyle(.secondary)
+                Button("Connect Account") { session.connect() }.disabled(session.busy)
             } else if session.isSignedIn {
                 Text(session.displayName).font(.subheadline)
                 if let email = session.email, email != session.displayName {
@@ -58,10 +65,11 @@ struct AccountPanel: View {
     }
 }
 
-private struct AccountDeletionView: View {
+struct AccountDeletionView: View {
     @ObservedObject var model: AccountDeletionModel
     let sessionID: String?
     let billingBusy: Bool
+    var allowsExternalActions = true
 
     var body: some View {
         VStack(alignment: .leading, spacing: 8) {
@@ -72,19 +80,24 @@ private struct AccountDeletionView: View {
                 Text(status.providersComplete ? "Provider handling verified. Contact the operator for the completion record and remaining retention limits." : "Provider handling is pending. This is not confirmation that all copies have been erased.")
             } else {
                 Button("Delete Account…", role: .destructive) { model.prepareConfirmation() }
-                    .disabled(model.busy || billingBusy)
+                    .disabled(model.busy || billingBusy || !allowsExternalActions)
             }
             Button("Refresh deletion status") { Task { await model.refresh(origin: .manual) } }.disabled(model.busy)
             if model.busy { ProgressView().controlSize(.small) }
             if let error = model.error { Text(error).foregroundStyle(.red).textSelection(.enabled) }
             Text("Local recordings and saved results stay on this Mac. Account deletion does not cancel Apple subscriptions.")
-            Link("Manage or cancel subscription", destination: URL(string: "https://apps.apple.com/account/subscriptions")!)
+            if allowsExternalActions {
+                Link("Manage or cancel subscription", destination: URL(string: "https://apps.apple.com/account/subscriptions")!)
+            }
         }
         .font(.caption)
         .task(id: sessionID) { model.contextChanged(); await model.refresh(origin: .automatic) }
         .confirmationDialog("Delete this LessMeet account?", isPresented: Binding(get: { model.confirming }, set: { if !$0 { model.cancelConfirmation() } }), titleVisibility: .visible) {
-            Button("Delete Account and Cloud Data", role: .destructive) { _ = model.confirm() }
-                .disabled(billingBusy)
+            Button("Delete Account and Cloud Data", role: .destructive) {
+                guard allowsExternalActions else { model.cancelConfirmation(); return }
+                _ = model.confirm()
+            }
+                .disabled(billingBusy || !allowsExternalActions)
             Button("Cancel", role: .cancel) { model.cancelConfirmation() }
         } message: {
             Text("Cloud access will be locked and deletion of your account, uploaded audio, transcripts and chat will begin. This cannot be undone here. Provider fulfillment takes additional time and remains pending until verified; no completion date is promised. Local recordings and saved results remain. Apple billing continues unless you cancel separately; cancellation is not required to request deletion. Deleting this account does not transfer purchases to another account.")

@@ -3,11 +3,27 @@ set -euo pipefail
 cd "$(dirname "$0")/.."
 mode="${1:-dev}"
 action="${2:-build}"
-if [[ $# -gt 2 || ! "$mode" =~ ^(dev|sandbox-dev|store|testflight)$ || ! "$action" =~ ^(build|--preflight)$ ]]; then
-  printf 'Usage: bash scripts/build-app.sh [dev|sandbox-dev|store|testflight] [--preflight]\n' >&2
+if [[ $# -gt 2 || ! "$mode" =~ ^(dev|offline-check|auth-check|sandbox-dev|store|testflight)$ || ! "$action" =~ ^(build|--preflight)$ ]]; then
+  printf 'Usage: bash scripts/build-app.sh [dev|offline-check|auth-check|sandbox-dev|store|testflight] [--preflight]\n' >&2
   exit 1
 fi
 output_dir="$PWD/dist"
+profile_mode=false
+if [[ "$mode" =~ ^(sandbox-dev|store|testflight)$ ]]; then
+  profile_mode=true
+fi
+signing_identity="${LESSMEET_SIGNING_IDENTITY:--}"
+if [[ "$mode" == offline-check ]]; then
+  # Offline checks must not unlock a signing key inherited from the shell.
+  signing_identity="-"
+fi
+if [[ "$mode" == auth-check ]]; then
+  identity_text="${signing_identity//[[:space:]]/}"
+  if [[ -z "$identity_text" || "$identity_text" == - ]]; then
+    printf 'auth-check requires explicit non-ad-hoc LESSMEET_SIGNING_IDENTITY.\n' >&2
+    exit 1
+  fi
+fi
 if [[ "$mode" != dev ]]; then
   output_dir="$output_dir/$mode"
   node scripts/configure-app.mjs --check "$mode"
@@ -15,7 +31,9 @@ if [[ "$mode" != dev ]]; then
     python3 scripts/store-package.py inputs --mode "$mode"
   fi
   if [[ "$action" == --preflight ]]; then
-    python3 scripts/packaging-signing.py "$mode"
+    if [[ "$profile_mode" == true ]]; then
+      python3 scripts/packaging-signing.py "$mode"
+    fi
     exit 0
   fi
 elif [[ "$action" == --preflight ]]; then
@@ -24,15 +42,18 @@ elif [[ "$action" == --preflight ]]; then
 fi
 mkdir -p "$output_dir"
 staging_dir="$(mktemp -d "$output_dir/build.XXXXXX")"
-signing_identity="${LESSMEET_SIGNING_IDENTITY:--}"
 entitlements="Resources/LessMeet.entitlements"
-if [[ "$mode" != dev ]]; then
+if [[ "$profile_mode" == true ]]; then
   python3 scripts/packaging-signing.py "$mode" --output "$staging_dir/signing"
   signing_identity="$(<"$staging_dir/signing/identity.txt")"
   entitlements="$staging_dir/signing/entitlements.plist"
 fi
-swift build -c release --build-system swiftbuild
-binary_dir="$(swift build -c release --build-system swiftbuild --show-bin-path)"
+build_args=(-c release --build-system swiftbuild)
+if [[ "$mode" == offline-check ]]; then
+  build_args+=(--scratch-path "$output_dir/swift-build" -Xswiftc -DLESSMEET_OFFLINE_CHECK)
+fi
+swift build "${build_args[@]}"
+binary_dir="$(swift build "${build_args[@]}" --show-bin-path)"
 app_dir="$staging_dir/LessMeet.app"
 mkdir -p "$app_dir/Contents/MacOS" "$app_dir/Contents/Resources"
 cp "$binary_dir/LessMeet" "$app_dir/Contents/MacOS/LessMeet"
@@ -44,7 +65,7 @@ fi
 # Swift Build generates resource lookup through Bundle.main.resourceURL.
 cp -R "$binary_dir/Clerk_ClerkKit.bundle" "$app_dir/Contents/Resources/"
 cp -R "$binary_dir/RevenueCat_RevenueCat.bundle" "$app_dir/Contents/Resources/"
-if [[ "$mode" != dev ]]; then
+if [[ "$profile_mode" == true ]]; then
   cp "$staging_dir/signing/embedded.provisionprofile" "$app_dir/Contents/embedded.provisionprofile"
 fi
 codesign --force --sign "$signing_identity" --options runtime \

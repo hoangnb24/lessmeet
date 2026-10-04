@@ -6,21 +6,25 @@ import { execFileSync } from "node:child_process";
 const plist = process.argv[2];
 if (!plist) throw new Error("Expected the app Info.plist path.");
 const mode = process.argv[3] ?? "dev";
-if (!["dev", "sandbox-dev", "store", "testflight"].includes(mode)) throw new Error("Unknown packaging mode.");
+if (!["dev", "offline-check", "auth-check", "sandbox-dev", "store", "testflight"].includes(mode)) throw new Error("Unknown packaging mode.");
 // Signed modes use only explicitly supplied public values, never local secrets.
 const local = mode === "dev" && existsSync(".env.local") ? parseEnv(readFileSync(".env.local", "utf8")) : {};
 const entries = [["LessMeetPackagingMode", mode]];
-for (const [variable, property] of [
+const publicProperties = [
   ["CLERK_PUBLISHABLE_KEY", "ClerkPublishableKey"],
   ["CONVEX_SITE_URL", "ConvexSiteURL"],
   ["REVENUECAT_PUBLIC_APPLE_KEY", "RevenueCatPublicAppleKey"],
   ["LESSMEET_PRIVACY_URL", "LessMeetPrivacyURL"],
   ["LESSMEET_TERMS_URL", "LessMeetTermsURL"],
-]) {
+];
+for (const [variable, property] of publicProperties) {
+  // Do not even read service environment values for offline packaging.
+  if (mode === "offline-check") continue;
   const value = (process.env[variable] ?? local[variable] ?? "").trim();
   if (!value) {
     const internalLegal = ["sandbox-dev", "testflight"].includes(mode) && ["LESSMEET_PRIVACY_URL", "LESSMEET_TERMS_URL"].includes(variable);
-    if (mode !== "dev" && !internalLegal) throw new Error(`Missing required public configuration: ${variable}`);
+    const optionalAuth = mode === "auth-check" && !["CLERK_PUBLISHABLE_KEY", "CONVEX_SITE_URL"].includes(variable);
+    if (mode !== "dev" && !internalLegal && !optionalAuth) throw new Error(`Missing required public configuration: ${variable}`);
     continue;
   }
   if (variable === "CLERK_PUBLISHABLE_KEY" && !/^pk_(test|live)_[A-Za-z0-9+/=]+$/.test(value)) {
@@ -44,6 +48,10 @@ for (const [variable, property] of [
   }
   entries.push([property, value]);
 }
+if (mode === "dev" && (process.env.LESSMEET_SIGNING_IDENTITY || "-") === "-" &&
+    entries.some(([property]) => ["ClerkPublishableKey", "ConvexSiteURL"].includes(property))) {
+  console.error("Warning: dev uses ad-hoc signing with auth configuration; use auth-check with an explicit signing identity for auth checks.");
+}
 // Store-only restrictions: URL shape does not establish deployment provenance.
 // build-app additionally requires the explicit public Store approval record.
 if (mode === "store") {
@@ -57,6 +65,20 @@ if (mode === "store") {
 }
 // Validate every field before writing anything. Never include values in errors.
 if (plist !== "--check") {
+  if (mode === "offline-check" || mode === "auth-check") {
+    // Replace stale configuration too, including optional values now omitted.
+    const existing = JSON.parse(execFileSync("/usr/bin/plutil", ["-convert", "json", "-o", "-", plist], { encoding: "utf8" }));
+    const remove = ["LessMeetPackagingMode", ...publicProperties.map(([, property]) => property)];
+    if (mode === "offline-check") {
+      remove.push("CFBundleURLTypes", "CFBundleIdentifier", "CFBundleDisplayName");
+      entries.push(["CFBundleIdentifier", "com.lessmeet.app.offline-check"], ["CFBundleDisplayName", "LessMeet Offline Check"]);
+    }
+    for (const property of remove) {
+      if (Object.hasOwn(existing, property)) {
+        execFileSync("/usr/libexec/PlistBuddy", ["-c", `Delete :${property}`, plist], { stdio: "pipe" });
+      }
+    }
+  }
   for (const [property, value] of entries) {
     try {
       execFileSync("/usr/libexec/PlistBuddy", ["-c", `Add :${property} string ${value}`, plist], { stdio: "pipe" });

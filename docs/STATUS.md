@@ -1,5 +1,114 @@
 # LessMeet delivery
 
+## Keychain-independent agent checks — ACCEPTED offline; live auth unverified (2026-10-04)
+
+Usable now: `bash scripts/build-app.sh offline-check`, then open
+`dist/offline-check/LessMeet.app`. The isolated UI covers applied false/true,
+request failure, waiting/completion and account-switch response discard. No
+Keychain approval or live account is needed for this path. README contains the
+procedure and the bounded Keychain-blocker workflow.
+
+Normal startup no longer configures Clerk. Users explicitly select Connect
+Account after each launch; existing saved sessions are not cleared. This behavior
+is unit-tested and release-build verified, not a new live-auth acceptance.
+Clerk still reads Keychain synchronously when connecting. Live sign-in/session
+restore and SDK failure-path behavior are UNVERIFIED. No signing identity was
+selected or authorized for this round; auth-check enforces an explicit non-ad-hoc
+identity but does not establish certificate availability or Keychain permission.
+Next real-auth checkpoint: operator supplies the approved stable signing identity
+and test configuration, Lead verifies the exact artifact and any scoped system
+prompt. No reset/session deletion or blanket authorization is implied.
+Issue #3 production Refresh/deletion evidence is unchanged and remains OPEN.
+
+Final acceptance: Lead inspected source, accepted bounded Peer findings and
+verified the isolated native UI through Computer Use on macOS26.4 arm64.
+Full native suite: PASS, 141 tests with 3 opt-in skips; hardened focused suite: PASS, 34 tests.
+Final full native rerun exits 0. Packaging suite: PASS, 59 tests after Lead additionally
+forced offline signing to `-`, ignoring inherited private signing identities.
+Both normal and offline release builds PASS. Offline strict signature PASS.
+Final native source anchors: AccountSession5a51ddb5, AccountPanel13818566,
+OfflineAccountFixture5618e6e2, OfflineAccountCheckViewd5ca1b0b,
+LessMeetApp65fcd48d, AccountSessionTests215ee742, OfflineAccountFixtureTestsa4e32df9.
+Final packaging anchors: build-app.sh `a7df67b7`, configure-app.mjs `415e0229`,
+test_agent_checks.py `cb6ef828`. Prior provider/diagnostic source work is preserved.
+
+Observed offline UI interval:2026-10-04T03:32:45Z–03:35:12Z.
+Bundle:com.lessmeet.app.offline-check, version1.0.0/build1, ad-hoc.
+Executable SHA256:f0d7c1fa392c45d54c24b05e3474b3eef018d4d89eed9c79e7e7097dba2a584e.
+Info.plist SHA256:9a7becbb37ab9b024fb352231e07a3d9ad12b3d48c339f0a0c4ca91cdddb2219.
+Readback confirms no OAuth scheme or service public configuration. Separate
+entry-point source and mocked model calls establish application-level isolation;
+this is not a system-wide network audit of every linked library.
+Private screenshots: `.artifacts/keychain-agent-check-20261004/01-ready.png`
+through06-requested.png (waiting, completed, switched and failure between them).
+Observed waiting indicator and disabled Refresh; completion applied false;
+switching Alice to Bob discarded Alice's response; failure showed synthetic error;
+requested=true showed pending cleanup with no false erasure-success claim.
+Screenshots inspected for ready/requested layout. Delete remained disabled and
+external subscription link absent. Reopening reset the in-memory fixture to Alice.
+Offline app quit after verification; process check left only the pre-existing
+production trial. Live UI ownership RELEASED. No production app actions, real
+auth, Keychain changes, uploads, recording, billing, commit or push occurred.
+
+Implementation and review record follows; final disposition above supersedes
+the in-progress steps below. All Peer scopes are closed and returned to Lead.
+
+Human authorized implementation of the Keychain investigation recommendations.
+Lead d9c6c82 owns integration, native account/startup changes, native tests,
+README and this status entry. Lead d72f118f explicitly transferred overlapping
+AccountSession, AccountPanel, AccountDeletionModel, CloudClient, RefreshDiagnostics,
+native tests and diagnostics documentation; no old assignment remains active.
+Preserve prior dirty provider/diagnostic work, artifacts and operator `.codex`.
+No production actions, Keychain permission/reset, session deletion, commit or push.
+
+Outcome: agents can verify account states without Clerk, Keychain, real recordings
+or network access. Real auth checks must use an explicitly selected stable signing
+identity. Clerk1.5.5 configures synchronously on MainActor; a Task cannot make that
+nonblocking. Defer real connection until explicit user action, not app startup.
+This removes the launch dependency; it does not make Clerk's later reads nonblocking.
+Offline checks use a separate compile-time LESSMEET_OFFLINE_CHECK entry path,
+bundle com.lessmeet.app.offline-check, no OAuth scheme/public service config,
+and fixture-only AccountDeletionModel inputs. Normal builds cannot select this
+path through environment variables. Existing diagnostic tracing stays intact.
+Acceptance requires focused tests, packaging policy checks, native build and
+observed offline UI, or an explicit runtime blocker. Issue #3 remains OPEN.
+Peer4a431fda owns only scripts/build-app.sh, scripts/configure-app.mjs,
+scripts/check-app-identity.sh and Tests/packaging/test_agent_checks.py.
+Accepted packaging contract: offline-check compile flag and isolated bundle above;
+auth-check requires explicit non-ad-hoc identity and explicit public environment
+configuration. No .env.local in either mode. No Peer UI or real signing actions.
+Live UI scope is not yet claimed. Signing/profile changes need separate authority.
+
+Peer4a431fda candidate ACCEPTED after Lead inspected the three-file implementation:
+build-app.sh5d4105af, configure-app.mjs415e0229, test_agent_checks.py3589b975.
+Explicit signing guard, isolated compile output and public-config stripping satisfy
+the bounded brief. Peer returned ownership; no identity-report script was needed.
+README uses codesign directly. Peer evidence:58 mocked packaging tests, syntax and
+diff checks pass. Real signing/auth remains UNVERIFIED. Lead native suite:141 tests,
+3 skipped, zero failures. Initial malformed synthetic key fixture was corrected;
+initial compile isolation annotation was corrected before this passing run.
+
+Peer5e54f549 read-only native assessment ACCEPTED for seven-file source snapshot
+(AccountSession5ecc99ed, AccountPanel10693967, OfflineAccountFixture5760804a,
+OfflineAccountCheckViewd5ca1b0b, LessMeetApp65fcd48d plus native tests).
+No source blocker; snapshot preserves identity/token guards and structurally
+isolates the offline entry point. Explicit Connect each launch is intentional;
+saved sessions remain untouched. Lead will harden fixture test completion and
+disabled confirmation. SDK fallback-instance handling will be inspected before
+final acceptance; real SDK failure-path runtime evidence remains a later auth
+checkpoint owned by Lead. Assignment closed; no Peer owns a moving scope.
+Lead independently repeated all58 packaging tests:PASS. Offline release build
+is in progress with an isolated scratch directory; normal app is not replaced.
+
+Review follow-up: confirmation now guards its action as well as its control;
+fixture tests use readiness expectations and bounded completion instead of yields;
+Connect rejects a nil or mismatched/empty publishable-key SDK fallback instance.
+The SDK's matching configured key is read from in-memory configuration only.
+Initial offline release build/signature PASS; rebuilding the hardened candidate.
+Lead d9c6c82 now claims sole live UI scope for the isolated offline-check bundle.
+Allowed actions: synthetic scenario/Refresh/complete/switch and quit only.
+Do not open Account in the existing production trial, recordings, or system prompts.
+
 ## Refresh diagnostic instrumentation — code accepted; runtime blocked (2026-10-04 local)
 
 Human authorized native logging/build and a production GET trial. Lead d72f118f

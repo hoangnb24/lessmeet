@@ -22,23 +22,44 @@ final class AccountSession: ObservableObject {
 
     // Clerk is itself @Observable. Reading these values in a SwiftUI body tracks
     // restored sessions, expiration and profile changes without a polling task.
-    let clerk: Clerk?
+    @Published private(set) var clerk: Clerk?
     let configurationIssue: String?
+    private let publishableKey: String?
+    private let configure: @MainActor (String) -> Clerk?
 
-    init(configuration: AppConfiguration? = nil) {
+    init(configuration: AppConfiguration? = nil,
+         configure: @escaping @MainActor (String) -> Clerk? = { Clerk.configure(publishableKey: $0) }) {
+        self.configure = configure
         do {
             let configuration = try configuration ?? AppConfiguration.load()
             if let key = configuration.clerkPublishableKey {
-                clerk = Clerk.configure(publishableKey: key)
+                publishableKey = key
                 configurationIssue = nil
             } else {
-                clerk = nil
+                publishableKey = nil
                 configurationIssue = "Sign-in is not configured. Set CLERK_PUBLISHABLE_KEY or rebuild with ClerkPublishableKey. Local recording is still available."
             }
         } catch {
-            clerk = nil
+            publishableKey = nil
             configurationIssue = "Account configuration could not load: \(error.localizedDescription) Local recording is still available."
         }
+    }
+
+    var needsConnection: Bool { clerk == nil && publishableKey != nil }
+
+    /// Clerk 1.5.5 reads Keychain synchronously on MainActor. Only an explicit
+    /// account action may start it; launching or opening the panel must not.
+    func connect() {
+        guard !busy, clerk == nil else { return }
+        guard let publishableKey else { error = configurationIssue; return }
+        error = nil
+        // In release builds Clerk can return an unconfigured fallback instance.
+        // Keep Connect available if that instance has no matching configuration.
+        guard let connected = configure(publishableKey), connected.publishableKey == publishableKey else {
+            error = "Account connection did not start. Local recording remains available."
+            return
+        }
+        clerk = connected
     }
 
     var isSignedIn: Bool { clerk?.session?.status == .active }
@@ -55,7 +76,7 @@ final class AccountSession: ObservableObject {
     func signIn() async {
         guard !busy else { return }
         error = nil
-        guard let clerk else { error = configurationIssue; return }
+        guard let clerk else { error = configurationIssue ?? "Connect your account before signing in."; return }
         busy = true
         defer { busy = false }
         do {
@@ -72,7 +93,7 @@ final class AccountSession: ObservableObject {
         guard !busy else { return }
         revokeBillingAdmission?()
         error = nil
-        guard let clerk else { error = configurationIssue; return }
+        guard let clerk else { error = configurationIssue ?? "Account is not connected. The saved session has not been changed."; return }
         busy = true
         defer { busy = false }
         do {

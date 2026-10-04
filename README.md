@@ -178,3 +178,64 @@ Current decisions, ownership and acceptance: [docs/STATUS.md](docs/STATUS.md).
 Use the project skill [lessmeet-app-check](.agents/skills/lessmeet-app-check/SKILL.md)
 for native UI diagnosis and verification. `AGENTS.md` defines when it is required.
 The skill contains the Computer Use procedure, evidence requirements and limits.
+
+#### Checks without Keychain
+
+Build the isolated fixture app:
+
+```sh
+bash scripts/build-app.sh offline-check
+open dist/offline-check/LessMeet.app
+```
+
+This build uses `LESSMEET_OFFLINE_CHECK` at compile time. Its entry point never
+creates Clerk, a recording library, a cloud client or billing. It uses a separate
+bundle ID, `com.lessmeet.app.offline-check`, and no OAuth callback. Packaging
+ignores `.env.local` and service configuration from the environment. A runtime
+environment variable cannot enable the fixture entry point in a normal build.
+Offline packaging always uses ad-hoc signing. It ignores an inherited signing
+identity so the build does not need to unlock a private signing key.
+
+1. Select a synthetic response.
+2. Click **Refresh deletion status**.
+3. Check the applied response or synthetic error.
+4. For **Wait for response**, click **Complete pending response** to finish it.
+5. To check stale-response handling, select **Wait for response**, click Refresh,
+   then click **Switch synthetic account**. The previous response must not apply.
+
+The fixture shares the real deletion view/model. Delete and subscription links
+are disabled or absent. These checks do not verify OAuth, Keychain permissions,
+HTTP transport, billing, recording or production deletion.
+
+#### Real account connection
+
+Normal app startup stays local. Opening Account does not access Clerk. Click
+**Connect Account** to restore the saved session, then sign in if needed.
+This does not sign out or delete the saved session between launches.
+Clerk 1.5.5 still reads Keychain synchronously on the main thread when connecting.
+The connection can wait for a macOS prompt; it is not a background-safe SDK call.
+
+For live auth checks, use `bash scripts/build-app.sh auth-check --preflight`
+before building with `bash scripts/build-app.sh auth-check`. This mode requires
+an explicit `LESSMEET_SIGNING_IDENTITY` other than `-` and explicit public
+`CLERK_PUBLISHABLE_KEY` and `CONVEX_SITE_URL` values. It does not read `.env.local`.
+Use the same approved signing identity across trial builds. A switch from an
+ad-hoc signature can still require one new Keychain authorization. A valid
+signature alone does not prove the item allows access. Do not change profiles,
+Keychain access rules or production configuration to make a check pass.
+
+If connection stalls:
+
+1. Identify the exact running app path and signing requirement with
+   `codesign -d -r- --verbose=4 /absolute/path/to/LessMeet.app`.
+2. Inspect a short stack sample of that exact process. Distinguish a Keychain
+   wait from an ordinary event loop or a Computer Use connection failure.
+3. Inspect the current system prompt through Computer Use if available. Do not
+   repeat timed-out clicks or infer permission denial from a timeout.
+4. If authorization is needed, ask the operator to approve only the identified
+   app/item. The operator enters any password directly; never request it in chat.
+5. Read fresh app state after the operator action, then resume the bounded check.
+
+Do not reset Keychain, delete cached sessions or grant blanket access. Continue
+offline work while live auth is blocked. Record live results as UNVERIFIED until
+the exact artifact and requested behavior have runtime evidence.
