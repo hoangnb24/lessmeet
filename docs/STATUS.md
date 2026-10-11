@@ -1,6 +1,489 @@
 # LessMeet delivery
 
-## Commit and push of accepted local work (2026-10-11)
+## Local pivot — WS1/WS2 contract (2026-10-11)
+
+### Current frontier
+
+Auth, Responses streaming, local conversation storage, chat lifecycle and the
+native account/chat shell are accepted as code inputs. Native build passed.
+The full Swift suite passed 265 tests with 3 skipped and no failures. The
+corrected offline packaging suite passed 69 tests. No live OAuth, chat, UI or
+signed model-capable bundle is accepted by those results.
+
+WS1 owns shell/package/scripts and integration. All WS1 Peer write scopes are
+closed. WS2 supplies the exact inference controller/setup/hook candidate next;
+its implementation is not yet an accepted input in this worktree. On delivery,
+inspect/import it, replace the temporary sidecar display, wire shared instances
+and run integration checks. Do not wait for that input to preserve ready WS1 work.
+Metal Toolchain availability and the required Computer Use capability remain
+runtime prerequisites. No installation or system-setting change is authorized.
+The current single UI reservation is recorded below.
+
+Local source checkpoint: `8b3281b` on `pivot/chatgpt-signin`, parent `b2df5d4`.
+This commit contains accepted auth/chat, the native shell, official logo resource
+and coupled offline tests. Packaging and this evidence record form the next local
+checkpoint. No push or merge is authorized. Scratch `.build-*` directories remain
+untracked and are not delivery inputs. Preserve them for local test evidence.
+
+**Shared UI reservation (current):** agent
+`45d6fb78-db0a-4baf-844c-e8a091178bc9` owns the single live UI scope for the bounded
+WS2 model-setup component check. Before reservation, both workstream status sources
+showed no current owner, WS1 had no UI driver, and process inspection found no
+LessMeet app or local-model-ui fixture. Historical ownership entries below do not
+claim the current desktop.
+Target: an explicit ad-hoc-signed synthetic SwiftUI app under WS2
+`.artifacts/verify-lessmeet/local-model-ui/`, built from its accepted manager
+`9ee218d` and LocalModelSetupView. Allowed: progress, cancel, resume and ready-state
+checks through Node REPL/sky with URLProtocol synthetic transport; optional
+read-only readiness check of the accepted model cache. No auth/account, user
+recordings, cloud, system settings, tool installation or production replacement.
+The driver must record the exact bundle/PID/hash and required skill availability
+before launch. Return event: evidence handoff or blocker, fixture cleanup, and
+explicit UI ownership release. WS1 and its Peers must not drive UI meanwhile.
+WS1 shell/build work continues independently; this reservation is not UI acceptance.
+
+Human chose an open-source, local macOS app. ChatGPT sign-in and transcript
+chat replace the app's cloud chat path. WS2 owns local WhisperKit large-v3
+transcription and Nemotron-3-Diarization. These decisions supersede conflicting
+historical architecture, release and next-action instructions below.
+No cloud mutation, deployment, account-deletion trial, push, publication or
+release is authorized. Local commits are allowed. One Human-assisted ChatGPT
+sign-in and one real chat turn are allowed after advance notice; other checks
+use offline fixtures. Never log or commit credentials or real email addresses.
+
+Branches start at `b08b3cdae5aeb4cbbd5c771a5f887584afaa518c`:
+WS1 `pivot/chatgpt-signin`; WS2 `pivot/local-models`. Each edits only its own
+worktree. WS1 accepts the following interface and ownership agreement, sent
+directly to WS2. This is not acceptance of an implementation or runtime behavior.
+
+### Transcript read contract
+
+- Keep `Recording.swift` and legacy `Recording.transcript: String?` unchanged.
+  Do not add a competing transcript field.
+- WS2 adds `LocalTranscription/LocalTranscriptStore.swift`, an extension of
+  `RecordingStore`: `loadLocalTranscript(for id: UUID) throws -> LocalTranscript?`
+  and `saveLocalTranscript(_:for:)`. Only WS2 uses the write API.
+- `LocalTranscript: Codable, Equatable` has `version: Int = 1` and
+  `segments: [LocalTranscriptSegment]`. Segment fields stay exactly
+  `startMs: Int64?`, `endMs: Int64?`, `speaker: String?`, `text: String`.
+  Timestamps are absolute milliseconds. Paired null timestamps remain supported;
+  local inference emits timed segments.
+- Sidecar path: `root/<recording UUID>/transcript.json`. A missing file returns
+  nil. Invalid data or an unsupported version throws. No stale cloud fallback.
+- WS1 reads through the existing store and `recording.id`; it never writes
+  transcripts. This avoids competing writes to recording metadata.
+
+### Write ownership and integration order
+
+- WS2 owns new `LocalModels/`, `LocalTranscription/`, `LocalModelSetupView`,
+  `LocalTranscriptView`, and the capture-completion hook in `AppModel.swift`.
+  `RecordingStore.swift` remains unchanged unless both sides agree otherwise.
+- WS1 owns auth/chat and app shell files `LibraryView.swift` and
+  `LessMeetApp.swift`. Three independent new-file scopes are dispatched below.
+- Agreed shell slots: a sidebar **Local models** button opens the setup sheet
+  through `LocalModelSetupView(manager:)`; the selected recording's Transcript
+  tab embeds `LocalTranscriptView(model:, recordingID:)`.
+- Pending before WS2 controller/hook injection: WS2 supplies exact implementation,
+  constructors, lifecycle and transcript-completion notification. The app shell
+  supplies one shared set of instances, also used by the capture hook. WS1 must
+  refresh its transcript read after completion and before chat submission.
+- WS2's pinned package handoff is accepted and imported as `b2df5d4`. WS1 now
+  owns manifest integration and added the official sign-in logo resource. Keep
+  dependencies while source imports them. No parallel manifest writes.
+
+Read-contract input is accepted as `1125de6`; catalog/notices as `254290e`.
+Next input owner: WS2, for the implementation of the agreed controller/setup/hook.
+Shared signatures below are settled; unseen implementation bytes remain pending.
+The independent ChatGPT shell is implemented and code-accepted. UI and live
+ChatGPT flows remain UNVERIFIED. See the current UI reservation above.
+
+### Controller/shell agreement — accepted, implementation input pending
+
+WS2 confirmed the read contract and recorded it on its branch. Peer `97e9fec9`
+owns only its three new read-contract source/test files. WS2 will inspect, test
+and commit that input before delivery. No package edit has begun.
+
+WS1 accepts this controller shape as an interface, not an implementation:
+
+- `@MainActor LocalModelManager: ObservableObject`, `init(root: URL? = nil)`,
+  async `start()`, `cancel()`, `retry()`.
+- `@MainActor LocalTranscriptionModel: ObservableObject`,
+  `init(app: AppModel, manager: LocalModelManager)`,
+  `transcribe(recordingID: UUID)`, `cancel()`. Published read-only state includes
+  `revision: Int`, `completedRecordingID: UUID?`, activity and error.
+- `LocalModelSetupView(manager: LocalModelManager)` and
+  `LocalTranscriptView(model: LocalTranscriptionModel, recordingID: UUID)`.
+- The shell creates AppModel, then one manager, then one transcription model.
+  Views and the capture hook share those instances. The controller holds a weak
+  AppModel reference and never rewrites Recording metadata.
+
+Both workstreams accept these lifecycle rules before shared writes:
+
+1. Add async `prepare()` for passive local readiness inspection on app appearance.
+   Human already authorized automatic first-launch model downloads in WS2.
+   Shell awaits `prepare()`, then calls `start()` once per app session when
+   required models are missing and state is neither canceled nor failed.
+   Show download size, progress and cancel. Keep the once-per-session guard in
+   shared manager/controller state, not a transient view flag. Repeated appearance
+   or window recreation must not restart downloads. Ready models do not download
+   again. `start()` also serves the setup button; `retry()` is user-triggered.
+   Canceled/error state never auto-retries within that session. This supersedes
+   WS1's earlier explicit-button-only proposal; no new Human approval is needed.
+2. `AppModel.onRecordingFinalized: ((UUID) -> Void)?` fires once after successful
+   audio stop and successful ready-metadata save. It does not fire for interrupted
+   capture or failed saves. Current `persist(_:)` catches save errors; hook work
+   must observe save success. Wire the hook before recording can start.
+3. Deduplicate pending/active recording IDs. Wait for model readiness without
+   changing the target when UI selection changes. Cancellation also clears pending
+   jobs. Preserve a previous sidecar on failure and label it as previous output.
+   Do not add automatic retry loops.
+4. After atomic save, set `completedRecordingID`, then increment `revision`.
+   Neither changes for failed/canceled work. WS1 rereads on appearance, selection,
+   revision and before sending chat; each request freezes its transcript snapshot.
+   Restart reads durable storage; revision is process-local only.
+
+The original review-only checkpoint is complete. WS2 confirmed rules 2–4 and
+the automatic-download rule 1 is accepted. No lifecycle question remains open.
+The read contract is imported. Only WS2 controller/setup/hook injection remains
+pending; independent ChatGPT shell work is complete. Runtime evidence is pending.
+
+### WS1 independent implementation — dispatched (2026-10-11)
+
+Read-contract delivery blocks real-transcript integration only. It does not
+block OAuth, Responses transport or chat persistence. The earlier whole-WS1
+wait was a dependency-framing error. Continue these independent scopes now.
+
+All three Codex Peers use `codex-peer/gpt-6-astra` with explicit `auto` mode,
+base `b08b3cd`, in this worktree. Initial creation without an explicit mode was
+rejected without creating agents; the corrected calls succeeded. No Peer may
+commit, edit manifests/shared files, operate UI or call live authenticated APIs.
+Each returns complete paths, SHA256, offline tests and limits for inspection.
+
+| Owner | Exclusive new-file scope | Ready input |
+| --- | --- | --- |
+| `217bb360-f5bc-4f35-ae81-96e48ae149ec` | `ChatGPTAuth/*.swift`, `ChatGPTAuth*Tests.swift` | Official SIWC OAuth contract and native macOS frameworks |
+| `be35ff77-6ee6-4960-b307-63e8e891bcf5` | `ChatGPTChat/ResponsesClient.swift`, Responses-prefixed helpers, `ResponsesClientTests.swift` | Official Responses contract and existing `ChatMessage` |
+| `220641a5-12a4-48b3-ab61-380a4a14ee5e` | `ChatGPTChat/ConversationStore.swift`, `ConversationStoreTests.swift` | Existing `RecordingStore` and `ChatMessage` |
+
+Source scopes are relative to `Sources/LessMeet/`; test scopes are relative to
+`Tests/LessMeetTests/`. Each uses a separate `.build-<scope>` scratch path.
+Lead retains docs, integration, verification and acceptance. No moving writer
+scope overlaps another. No candidate is accepted yet.
+
+Frozen WS1 boundaries:
+
+- `ChatGPTSession` is a main-actor observable session. It exposes saved profile
+  identities, active ID, busy/error, sessionIdentifier and plan permission.
+  `signIn(profileID:requestPlanConsent:)`, `cancelSignIn()`, `signOut()` and
+  async throwing `accessToken()` own OAuth, Keychain and token lifecycle.
+  Tokens never appear in observable profile state. Storage/network are injected
+  for offline tests; no actual credential access is delegated.
+- `ResponsesClient.models(accessToken:)` returns ordered visible model choices.
+  `reply(accessToken:model:transcript:history:question:onDelta:)` accepts plain
+  transcript text and existing `[ChatMessage]`, awaits incremental text callbacks
+  and returns the full answer only after `response.completed`. It never owns
+  credentials, storage or automatic retries. No sidecar dependency.
+- `ConversationStore(recordingStore:)` loads/saves `LocalConversation`
+  (`version`, `recordingID`, `messages`) at `<recording UUID>/chat.json`.
+  It persists complete user/assistant pairs atomically, preserves corrupt files
+  with a visible error, and never touches recording/transcript metadata.
+
+Next ready integration: inspect each returned candidate independently, then wire
+sign-in, model selection and one synthetic in-memory transcript request with
+local save/reopen. Real WS2 transcript reading follows accepted artifact import.
+Live sign-in/chat remains subject to advance notice and Human browser action.
+UI/live results remain UNVERIFIED. No shared shell/hook/package edits yet.
+
+Auth dependency disposition: ACCEPT `217bb360`'s AppKit request for the
+`NSWorkspace.shared.open` browser adapter only. AppKit is a native framework
+already used in this app; no package change is needed. It avoids authorization
+URL/ID-token hints in subprocess arguments. Offline tests inject a no-op browser.
+The returned no-code handoff establishes the dependency, not a usable candidate.
+The same Peer reclaims its original exclusive auth source/test scope and resumes
+implementation. No real sign-in, UI operation or credential access is delegated.
+
+### Read-contract candidate ACCEPTED and imported (2026-10-11)
+
+ACCEPT WS2 `b67fc0a1ad7ea575157851d4bb88ed86e0c16248`, parent `b08b3cd`.
+All three artifacts were read and supplied SHA256 matched before/after import:
+
+- `LocalTranscript.swift`: `c6cc789172781383e32d90d47cf4ad7f26c15840823deb16dded9674f2d4b7ee`.
+- `LocalTranscriptStore.swift`: `af6ce160c51bf7ad03b9d5cd1f5ddc8dc90a4fd79bae19322f875a6d0066cdc9`.
+- `LocalTranscriptStoreTests.swift`: `5d060400cb4458be0d899282c5825b474bc5059f69078f274e3cd3f8e3b118e4`.
+
+Imported code only as `1125de6f3f28defdc48e9bda97db19b48801761a` on WS1.
+No WS2 status commit or shared-source/package edit was imported. Existing WS1
+writer changes and this status document were preserved.
+WS1 rerun: `swift test --scratch-path .build-ws1-integration --filter
+'LocalTranscriptStoreTests|RecordingStoreTests'` built successfully and passed
+11 tests (8 transcript + 3 recording), zero failures, exit 0. This does not
+accept the concurrently developing ConversationStore candidate.
+
+Reason: exact agreed schema/read API, explicit nulls, duplicate/version rejection,
+missing-vs-invalid distinction, no metadata mutation and no cloud fallback meet
+the bounded contract. The read-contract dependency is resolved. WS1 can now read
+through the existing store and recording ID; WS2 remains the sole transcript writer.
+Acceptance/import disposition sent to WS2. Its already-authorized model/controller
+and owned hook work can continue when their own inputs are ready. WS1 retains
+shell ownership. Package changes remain sequential, WS2 additions first.
+
+Limits retained: filesystem replacement-failure injection, concurrent readers,
+power-loss durability and peak encoding RAM are not verified. UI, model downloads
+and inference remain UNVERIFIED. No live sign-in/chat or cloud action occurred.
+
+### ConversationStore candidate — ACCEPTED
+
+Writer `220641a5` returned its two-file candidate and write ownership. Scope CLOSED.
+Lead read both files and matched source SHA256
+`7d0a47d3a3775ae3bdb5883da5b51f77c0214053657547347c16d4e3fed511d9`
+and test SHA256
+`bcae3f2243cba7fc5579ddb71384a60765252859190b022f9656cb19411285ad`.
+Writer reports 16 tests PASS. Lead rerun also passed 16 tests, zero failures/skips,
+exit 0, using `swift test --scratch-path .build-ws1-integration --filter ConversationStoreTests`.
+Read-only Peer `7f6376ae-95a8-4de8-935b-0714da1f951b` returned no blocking
+filesystem/API findings against those exact hashes. Lead ACCEPTS the candidate:
+complete-pair save/reopen, corrupt-file preservation, unsafe-entry rejection,
+atomic replacement and metadata/transcript isolation meet the assigned scope.
+The exact two hashes define the inspection snapshot; no further writes are active
+in this scope. Disposition sent to writer. Auth/Responses remain independently ready.
+Power-loss, ACL inheritance, hostile concurrent filesystem changes and UI remain
+unverified. Partial-write, fsync and rename failures were not injected; root-path
+ancestors remain trusted. Caller must supply an existing recording ID and save
+only completed responses; role order is not proof of successful inference.
+Concurrent saves are last-writer-wins. Dispositions sent to writer and inspector;
+both scopes CLOSED. Lead can integrate this accepted API without waiting for WS2.
+
+WS2 ownership update: read-contract dependency resolved there too. Separate WS2
+writers own pinned Package.swift/Package.resolved validation (`cd68b7de`), model
+manifest/licenses (`01531be2`) and pure merge/attribution (`32328d4c`). WS2 retains
+AppModel hook/integration. WS1 retains LibraryView/LessMeetApp. No package edit or
+unaccepted controller implementation is consumed by WS1. Exact package and
+controller handoffs remain separate inputs; neither blocks independent auth/chat.
+
+### ResponsesClient candidate — REJECTED, bounded correction active
+
+Writer `be35ff77` returned source
+`9894bcb0892c79d9f5f9d894c1ae6c25c646449ebbf81db202f27fbb00251d27`
+and tests `b3351bb5297f08aef2e6bbb6394f998160691aef5e85dc6d6154a2ec4f5d43f9`.
+Lead matched hashes and read both files. Writer scope CLOSED; disposition sent.
+Lead rerun `swift test --scratch-path .build-ws1-integration --filter ResponsesClientTests`
+PASS: 16 tests, zero failures/skips, exit 0. Read-only inspector
+`1222a138-a7ec-4801-b90d-c7313da37775` returned a completion-contract blocker.
+Lead ACCEPTS the finding and REJECTS the above candidate: final-only output or
+refusal becomes empty success; partial deltas become partial success even when
+the completed output contains more text; a bare completed event also succeeds.
+Passing fixtures currently bless this behavior and do not establish correctness.
+
+Writer `be35ff77` reclaims only its same two source/test files. Correction: validate
+terminal response/status/output, reconcile final text with provisional deltas,
+recover terminal-only text or fail explicitly, reject divergent text, and surface
+refusal as a safe explicit error. No blank/partial successful result. Preserve
+bounds/cancellation and add realistic terminal/refusal regression fixtures.
+Read-only scope CLOSED; dispositions sent to both Peers. Lead owns reinspection
+and acceptance of the corrected hashes. Dependent integration waits for that
+specific correction; auth/store work does not. UI/live OAuth/network/model output
+remain UNVERIFIED. No tools/multimodal scope is added.
+
+### Packaging ownership — model notices
+
+WS1 exclusively owns `scripts/build-app.sh` and `scripts/configure-app.mjs`
+if auth packaging needs changes. WS2 does not edit these scripts. On consuming
+the exact accepted WS2 catalog plus `Resources/ModelLicenses/` candidate, WS1
+copies the notice directory unchanged to `Contents/Resources/ModelLicenses`
+before signing. Verification must compare packaged notice inventory/hashes and
+check the final signature. A model-bearing package must not silently omit notices.
+WS2 supplies exact resource candidate and notice inventory; implementation of
+that copy waits for accepted bytes. This ownership agreement does not accept
+model dependencies or imply package, runtime, UI or release readiness.
+Script ownership/disposition sent directly to WS2. No script edit was made here.
+
+Catalog ACCEPTED/imported: WS2 `c9eec5047d1895481bc99d41501c9cfc993a01b9`
+became WS1 `254290ebecbbb79204c208127dea56113f7a4f16`. Inspected manifest,
+tests, provenance docs and notice inventory; all ten supplied hashes matched.
+`LocalModelManifestTests` rerun in `.build-ws1-integration`: 6/6 PASS.
+Initial shell hash-loop attempt failed from a shell variable naming collision;
+the direct ten-file hash check then succeeded. No data was altered by that failure.
+Lead added the owned build-app.sh notice check/copy/diff before codesign.
+`bash -n`, `git diff --check` and executing the exact copy block into a fresh
+temporary bundle skeleton PASS; all seven copied notice hashes match originals.
+Full signed packaging has not run for this change. No package/controller edits
+were imported. Model payload/runtime, total dependency license coverage and UI
+remain UNVERIFIED. Disposition sent to WS2.
+
+Corrected Responses candidate ACCEPTED: source
+`d717bb623364b5b6cb201e9662abdb03ce05ce1af0245eb3433ebac51d74d990`, tests
+`76107f7e88ef845c2be34ecf82fbdb309ba6077e76756e2193a96fad1a7bf718`.
+Lead inspected terminal validation and all added regression tests, matched hashes,
+and reran 25/25 PASS. Final-only/suffix output is reconciled; divergent, bare,
+empty, malformed and refusal output fails explicitly. The original blocker is
+resolved. Writer scope CLOSED, disposition sent. Deltas remain provisional until
+successful return; tools/multimodal and live/UI remain unverified or unsupported.
+
+Auth candidate: seven-file snapshot recorded by
+`.build-chatgpt-auth/auth-sha256.txt`, digest
+`db24639e99900e6fa75a3a045e8915433d7607ff0550d0248377062dfe4bb93c`.
+Lead matched hashes/read all source and reran 32/32 auth tests PASS.
+Lead ACCEPTS read-only `7db11578`'s three blockers and REJECTS that candidate:
+ordinary sign-in requests identity-only scopes; switching/logout can discard a
+successfully rotated refresh token before save; a failed local logout save loses
+the target, preventing later retry. Existing passing fixtures bless parts of this
+behavior. Writer `217bb360` reclaims only original auth source/tests to correct
+full ordinary scopes vs explicit consent, drain/persist dispatched refresh without
+stale active publication, and retain pending logout target until cleanup succeeds.
+Regression tests are required. Read-only scope CLOSED, dispositions sent. No real
+Keychain/browser/OAuth/refresh was exercised. Auth acceptance waits for new hashes.
+
+Chat lifecycle implementation now has accepted inputs: ResponsesClient,
+ConversationStore and imported sidecar reader. Peer
+`ac488062-71c9-4812-9f53-7e7370644ba5` exclusively owns new
+`ChatGPTChat/LocalChatModel.swift` and `LocalChatModelTests.swift`. It uses injected
+session-ID/token closures rather than unaccepted auth source, and real accepted
+transport/storage with offline fixtures. Required behavior: frozen transcript and
+history per send, provisional deltas, successful complete-pair atomic persistence,
+and cancellation/stale-account/selection protection. No shell/package/WS2 edits.
+
+### Dependency import and current frontier
+
+Imported exact WS2 package candidate `6f14832a6349e597a6f607616e798f1e402c4044`
+as WS1 `b2df5d4`. Both supplied SHA256 values match before and after import:
+Package.swift `6a8024516448500de23f4f3d7e30dcee3f3ac1d56b8022d44431df5f3f92d07c`;
+Package.resolved `33263aff5301de85e6069f002616ae635d1f394a49259081439875952ce26608`.
+Inspected complete two-file diff and dependency handoff. Four old pins remain
+unchanged; 40 were added. WS1 now owns package edits and preserves both inference
+imports/pins. Local integration build with public resolution switches
+`--disable-keychain --disable-netrc` PASS, exit 0 (113.53s). Lead ACCEPTS the exact
+package candidate as build/link input: selected inference products resolve and
+link with WS1 sources. This does not accept moving auth/chat files compiled in
+the same build. Regression rerun PASS: 55 tests across ConversationStore,
+ResponsesClient, LocalTranscriptStore and LocalModelManifest, zero failures.
+Upstream test execution failed for an unknown reason. A 403 blocked public logs.
+That failure is not classified as harmless. No real model or UI is accepted here.
+
+Read-only Peer `3bfd64e2-8361-4a62-9e4c-2ff80404bcbc` inspects pinned resource and
+metallib lookup requirements. It owns no files or live UI. Lead retains package,
+scripts and shell writes. Auth correction and chat lifecycle writers continue in
+their separate scopes above. No controller artifact has been delivered yet.
+The installed skill catalog and local skill search do not expose `computer-use`.
+Its absence blocks required Computer Use verification; UI remains UNVERIFIED.
+Do not substitute another automation stack or change system permissions.
+
+Lead prepared an independent `ChatGPTSignInButton` action-closure component.
+The unchanged original black logo comes from the official OpenAI SIWC asset URL
+`https://developers.openai.com/assets/siwc/sign-in-buttons/chatgpt-logo-black.svg`.
+`NSImage` decoded it as 21x21. Package resources now copy that SVG; the packaging
+script copies `LessMeet_LessMeet.bundle` and disables public resolver credential
+lookups. Inference dependency pins remain unchanged. This is not auth integration
+or visual acceptance. Current post-resource build is pending. Official UI/UX
+instructions require first-use plan confirmation, usage indicator and Manage
+usage link; these remain integration work after auth/chat candidate acceptance.
+
+LocalChatModel candidate ACCEPTED: source
+`0c010e490efbbd04fe88f39c59c0688576489a8eb9cd4064ae377f0fc7012106`, tests
+`c6578baa8045d707822eff7cfcd304d87e1ae1828f94f371b01f4bb1af1c3721`.
+Lead read both complete files, matched hashes and reran 19/19 tests PASS against
+current dependencies. Snapshot isolation, stale-context rejection and successful
+complete-pair persistence meet the bounded controller contract. Writer scope
+CLOSED. Lead can build its view with accepted inputs, independently of auth.
+History belongs to the recording and remains visible across accounts; only explicit
+send transmits it. UI, real network and power-loss behavior remain unverified.
+Post-resource app build also PASS, exit 0 (9.71s).
+
+Packaging findings ACCEPTED from read-only `3bfd64e2`; scope CLOSED. Lead inspected
+pinned resource declarations, Metal loader and complete upstream shader builder.
+Added Hub/Crypto resource copies, explicit build scratch path, clean pinned-checkout
+checks and staged metallib build/copy before signing. `mlx.metallib` goes beside
+the executable, not directly in Contents/Resources. Full release/accessor/runtime
+checks remain pending; this technical correction needs no new Human permission.
+
+Corrected auth candidate ACCEPTED: seven-file manifest
+`.build-chatgpt-auth/auth-correction-sha256.txt`, digest
+`460af8ca534c1394673db77516a44d32da0c23ffebc8166ff412ab312f6f5302`.
+All hashes matched. Lead inspected corrected scope generation, complete session
+implementation and regressions, then reran 37/37 auth tests PASS. The three
+rejected behaviors are corrected: plan scopes on ordinary authorization;
+dispatched refresh maintenance persists before stale callers are rejected;
+failed logout cleanup retains its exact retry target. Writer scope CLOSED.
+Auth and chat can now integrate. No real Keychain/OAuth/JWKS/revocation occurred.
+Residual limit: failed logout cleanup blocks access only in the current process.
+Its visible error warns that credentials may remain after restart. Durable
+restart lockout is not implemented. Do not label a failed cleanup as sign-out
+success. Storage failure after server rotation can require reauthentication.
+
+Peer `5b7d17ee-d4c2-4332-b0a6-7941cb522d60` owns only new
+`ChatGPTChat/ChatGPTAccountView.swift` and `ChatGPTChat/LocalChatView.swift`.
+Inputs are accepted auth/controller, existing editor/Markdown and official
+sign-in button. It owns no UI runtime. Parent shell owns recording/account
+context changes. View actions never auto-submit inference; saved local history
+is visible without sign-in. Lead retains shell/package/scripts and acceptance.
+
+Full offline-check packaging FAILED before bundling/signing. Swift Build reports
+CompileMetalFile failures on generated MLX kernels and CompileSwift failures for
+arm64/x86_64. `xcrun -sdk macosx metal --version` independently fails with
+`cannot execute tool 'metal' due to missing Metal Toolchain`. The Swift compile
+diagnostics are not yet classified; missing Metal is not claimed as their cause.
+No prior bundle was replaced or launched. No offline-check process was present.
+Added a fail-fast compiler check; no toolchain download or installation attempted.
+Owner of environment setup: Human. Return event: Metal Toolchain becomes available.
+Continue independent auth/chat integration and native component tests meanwhile.
+
+Lead added explicit `local` packaging mode. It ignores cloud config sources,
+removes stale service keys/URL callbacks and uses `com.lessmeet.app.local`.
+Legacy build modes remain explicit and unchanged in intent. Syntax/config checks
+PASS; full build remains blocked above. Release-generated Hub and LessMeet
+resource accessors were inspected: both search Bundle.main.resourceURL first,
+which supports Contents/Resources placement. Runtime lookup remains unverified.
+Packaging test Peer owns `Tests/packaging/test_agent_checks.py`, `test_packaging.py`
+and an optional local fixture helper only. Production script hashes frozen during
+that assignment: build `6ce6bcaba5fc37431f23f2fd31c7363496a8252fb0080434300fe61d7b40753d`;
+configure `6f0dba4918f86f84a6b3951accc0c4878c4314a16c3b506d4b4ff2d7294886cc`.
+Tests must use inert tools and cannot establish real signing/Metal/UI success.
+Packaging test scope `f661f081-57b9-4263-8cce-054932507a14` is CLOSED. Its first candidate
+was inspected but REJECTED for a fixture HOME/home override prohibited by execution
+instructions. The corrected candidate is ACCEPTED after source inspection and
+Lead rerun: 69 tests PASS in 35.670s. Exact SHA256 values:
+`local_packaging_fixtures.py` `a0e8ea8a97d694b769426f229673340b7506ecbbddbb8897fe8110b088a2d03d`;
+`test_agent_checks.py` `b6af0c432bdb777ab7393271fa23ce46a475651a28d59fd1fc33d963652eafc9`;
+`test_packaging.py` `f472485e628fd45f7bbf657e430fac930b6822f9aca83b22bde66eaf1a7dd0d1`.
+The prohibited override is removed; Git isolation and assertions remain.
+Production scripts stayed at the hashes above. Acceptance covers only synthetic
+orchestration. Actual Metal output, signing and UI remain UNVERIFIED.
+
+Account/chat view candidate ACCEPTED as code input, not UI outcome:
+ChatGPTAccountView `76c0dcb5e971a03a689c10103dd467998ea8e73d0714196807fdf3c88834625c`;
+LocalChatView `a5af4c81f8ba3c90b5e2c7882bd56f1740465c93932b5425cad1600a0c11a32b`.
+Lead read both files and matched hashes. Current native test build compiled both.
+No appearance-time request, explicit model/send controls, guarded draft clearing,
+safe errors and failed-logout retry meet the assigned code contract. Scope CLOSED.
+Computer Use unavailable; no claim of layout or user-flow success.
+
+Lead added three integration tests using real auth/controller/transport/store APIs
+and injected synthetic credentials/network. All three PASS. First test attempt
+failed because its terminal fixture omitted the required message ID; corrected
+fixture then passed without production relaxation. Real trust/sign-in and UI
+are not tested by restored-session fixtures.
+
+Ready shell increment: replace instantiated legacy cloud/account/billing path with
+accepted ChatGPT session/chat, and read accepted local sidecars in the owned shell.
+This does not require the still-undelivered inference controller. Reopen the
+earlier whole-shell wait: only WS2 controller/setup/hook injection waits for its
+exact candidate. Shared controller signatures/invariants remain unchanged.
+Lead will use a minimal sidecar display in LibraryView until LocalTranscriptView
+is accepted; it writes no transcript and does not implement model operations.
+Automatic local-model setup/hook wiring remains a deferred WS2 delivery dependency.
+
+Shell code increment ACCEPTED: LessMeetApp
+`545a73b6982203eff30b2e78b66a360ad9fed84e9b66922fee61fbb55b7625b4`, LibraryView
+`93284a61495d9286b28c9a6e060ba51c8236dd2b5b5638bd517c161eb08fdd46`.
+Read-only `0d66c211` matched all inputs and found no bounded wiring blocker;
+inspection accepted, scope CLOSED. Native build PASS (11.05s). Full Swift suite
+PASS: 265 tests, 3 skipped, zero failures. The first full compile caught the old
+optional cloud-shell screenshot helper calling the retired initializer; removed
+that unused snapshot branch and AppKit/SwiftUI imports, preserving every cloud
+business assertion. No tests drove live UI. README now describes current local
+build/chat use and clearly separates historical cloud documentation.
+This accepts code integration, not runtime usability, live OAuth or inference.
+
+## Historical pre-pivot commit and push (2026-10-11; authority superseded)
 
 - Human authorized commit and push to origin/main only. No deploy, flag change
   (including GOOGLE_DELETION_ENABLED), email, token lookup, revoke, data deletion
