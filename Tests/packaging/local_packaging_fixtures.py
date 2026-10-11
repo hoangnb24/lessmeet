@@ -91,6 +91,10 @@ if name == "codesign":
         assert inventory(source) == inventory(app / "Contents/Resources" / source.name)
     assert inventory(root / "Resources/ModelLicenses") == inventory(app / "Contents/Resources/ModelLicenses")
     assert (app / "Contents/MacOS/mlx.metallib").read_bytes() == b"synthetic metallib\\x00fixture\\n"
+    assert (app / "Contents/MacOS/mlx.metallib").is_symlink()
+    assert os.readlink(app / "Contents/MacOS/mlx.metallib") == "../Resources/mlx.metallib"
+    assert not (app / "Contents/Resources/mlx.metallib").is_symlink()
+    assert (app / "Contents/Resources/mlx.metallib").read_bytes() == b"synthetic metallib\\x00fixture\\n"
     if any(part in ("sandbox-dev", "store", "testflight") for part in app.parts):
         assert (app / "Contents/embedded.provisionprofile").is_file()
     if "--sign" in args:

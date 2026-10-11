@@ -51,7 +51,8 @@ if [[ "$profile_mode" == true ]]; then
   entitlements="$staging_dir/signing/entitlements.plist"
 fi
 scratch_dir="$output_dir/swift-build"
-build_args=(-c release --build-system swiftbuild --disable-keychain --disable-netrc --scratch-path "$scratch_dir")
+# The pinned SpeechVAD dependency requires Apple Silicon (including Float16).
+build_args=(-c release --build-system swiftbuild --arch arm64 --disable-keychain --disable-netrc --scratch-path "$scratch_dir")
 if [[ "$mode" == offline-check ]]; then
   build_args+=(-Xswiftc -DLESSMEET_OFFLINE_CHECK)
 fi
@@ -85,7 +86,9 @@ ln -s "$checkouts_dir" "$metal_build/checkouts"
 BUILD_DIR="$metal_build" MACOSX_DEPLOYMENT_TARGET=15.0 MLX_METAL_LANGUAGE_VERSION=3.2 \
   bash "$checkouts_dir/speech-swift/scripts/build_mlx_metallib.sh" release
 test -s "$metal_build/release/mlx.metallib"
-cp "$metal_build/release/mlx.metallib" "$app_dir/Contents/MacOS/"
+cp "$metal_build/release/mlx.metallib" "$app_dir/Contents/Resources/"
+# Keep shader bytes out of the nested-code directory while preserving MLX lookup.
+ln -s ../Resources/mlx.metallib "$app_dir/Contents/MacOS/mlx.metallib"
 cmp "$metal_build/release/mlx.metallib" "$app_dir/Contents/MacOS/mlx.metallib"
 # Model notices must be present and unchanged before signing.
 model_notices=(Nemotron-LICENSE.txt Nemotron-NOTICE.txt OpenAI-Whisper-LICENSE.txt

@@ -4,29 +4,171 @@
 
 ### Current frontier
 
-Auth, Responses streaming, local conversation storage, chat lifecycle and the
-native account/chat shell are accepted as code inputs. Native build passed.
-The full Swift suite passed 265 tests with 3 skipped and no failures. The
-corrected offline packaging suite passed 69 tests. No live OAuth, chat, UI or
-signed model-capable bundle is accepted by those results.
+Local shell/bridge checkpoint: `f7bff13` on `pivot/chatgpt-signin`, parent `1a9e7f0`.
+The packaged artifact below contains the same production source bytes. No push.
 
-WS1 owns shell/package/scripts and integration. All WS1 Peer write scopes are
-closed. WS2 supplies the exact inference controller/setup/hook candidate next;
-its implementation is not yet an accepted input in this worktree. On delivery,
-inspect/import it, replace the temporary sidecar display, wire shared instances
-and run integration checks. Do not wait for that input to preserve ready WS1 work.
-Metal Toolchain availability and the required Computer Use capability remain
-runtime prerequisites. No installation or system-setting change is authorized.
-The current single UI reservation is recorded below.
+2026-10-11 integration update: imported the six WS2 implementation commits plus
+zero-duration-word correction `bbcc8a8`, without the WS2 status-only commit.
+Local chain is `03d007d`, `83e8941`, `bf98b71`, `b5e7f77`, `a54f03b`, `718e625`,
+`1a9e7f0`. All 26 source/test/helper paths match the supplied candidate; controller
+and transcript-view hashes match the handoff. No import conflict occurred.
+Imported code inputs through `bbcc8a8` ACCEPTED after inspection and independent
+full Swift suite PASS: 345 tests, 5 skipped, zero failures (46.925 seconds).
+Log: `full-package-metal/integrated-tests.log`. This includes the adapter correction;
+it is not a local real-inference rerun. Lead owns shell wiring. The shell now shares
+one manager/controller, binds finalization before capture, starts setup once,
+shows setup progress/cancel, and renders LocalTranscriptView instead of the
+temporary sidecar display. Fresh read-only inspection and full Swift tests passed
+against the frozen shell candidate. No full-shell runtime acceptance yet.
+
+Packaging now targets arm64. Real signing-copy evidence established that shader
+bytes in Resources with a relative MacOS symlink pass strict signing. The actual
+script uses that layout; full integrated package build passed. First updated
+regression run: 68 passed, one stale test expected no Resources metallib. That
+assertion now checks the new byte-identical resource and symlink. The new 69-test
+run PASSED (47.270 seconds), `packaging-symlink-tests-2.log`. Keep failed evidence.
+
+WS2 reports 31.174-second generated dialogue passes real Whisper/Nemotron and
+JSON roundtrip after `bbcc8a8`. The subsequent controller/save/reopen receipt is
+recorded below. Long-audio and transcript-UI acceptance remain pending.
+Shared UI remains RELEASED.
+
+Integrated packaging PASS: `scripts/build-app.sh local` completed with explicit
+ad-hoc signing. Final path `dist/local/LessMeet.app`; executable SHA256
+`9f920690a58a2f5160fe01d6b59cdd82a77df4da3a8c5d409960aeb4f95924f5`,
+Info.plist `66933d4d39449faec0783fa42876027d7e9e102efef63a38aab8f99901e69182`,
+shader `85ef32aaf5ca52f7b670168087f6b204213570e2a8342c8d0f091c5f39c52718`.
+Both script strict verification and separate `--strict=symlinks` PASS. This
+artifact has not been launched. Log `package-integrated-symlink.log`.
+Independent Metal check loaded the exact packaged MacOS symlink and found 15,005
+functions (`shader-load.log`). This proves Metal can read the library. It does
+not prove MLX execution from the app or transcription quality.
+Fresh read-only assessment `1a6a4f02` ACCEPTED and scope CLOSED: frozen shell
+App `8cefc7e1…`, Library `1075df18…` has no concrete source integration blocker.
+Lead accepts code candidate; runtime is still separate.
+
+Peer `24b4d07e` candidate `LocalPivotIntegrationTests.swift` SHA256
+`edbb5dd4e95561cc6c755067525ae0b874e72052a887f37d8ff20335bd987b89`
+ACCEPTED after complete inspection and independent 3-test PASS (0.139s), log
+`full-package-metal/pivot-bridge-tests.log`. Scope CLOSED. It verifies the injected
+capture-to-transcript-to-chat bridge using actual sidecars, full speaker/timing
+JSON, explicit send, history reopen and stale-selection isolation. No real capture,
+auth, inference or UI is established by these tests.
+Peer `e97c583d` owns only `.artifacts/verify-lessmeet/full-shell-ui/` to build
+a synthetic full-shell fixture without launch. Lead owns all production writes
+and will reserve UI only after inspecting the artifact. No driver is active.
+
+WS2 real finalization receipt inspected: one offline synthetic-capture callback
+through controller/real models/atomic save/new-store reopen passed (51.585s,
+10 segments, maxRSS1,971,585,024 bytes). Long650s FAILED invalidTiming in window2;
+mixed sentence/word overlap duplication is another confirmed WS2-owned issue.
+Both remain failed/pending; neither is relabelled by short-run acceptance.
+
+WS1 owns auth/chat, shell/package/scripts and integration. Active Peer scopes are
+listed above; earlier auth/chat and packaging implementation scopes are closed.
+WS2 owns the remaining timing/overlap corrections and real-inference evidence.
+Metal Toolchain prerequisite is resolved: Human installed 17F109 and WS1 verified
+`Apple metal version 32023.883`, target `air64-apple-darwin25.4.0`. Computer Use
+instructions and runtime are available and worked for the bounded component UI.
+No release, installation, system-setting change or full-app launch follows from
+building the bundle.
+
+### Earlier packaging and capability evidence
+
+Full local retry FAILED (exit 1). Metal now runs; the concrete Swift errors are
+SpeechVAD Float16 references for x86_64 in the default universal Swift Build.
+Pinned speech-swift README requires Apple Silicon. Secondary CompileSwift arm64
+and CompileC arm64 summary failures had no diagnostic cause. A read-only
+release-build experiment used `--arch arm64` in the same scratch directory;
+log `full-package-metal/arm64-build.log` records that path independently.
+Package pins and dependency sources are unchanged. Do not infer Intel support.
+The arm64-only release experiment PASSED in 56.46 seconds. Secondary arm64
+summary errors did not recur; their cause in the universal attempt is still not
+proven. Script now fixes `--arch arm64` for the pinned Apple-Silicon dependency;
+69 packaging regressions PASS (36.032s), including the architecture assertion.
+Full corrected package retry compiled app and 33 Metal sources, then FAILED at
+outer signing: Contents/MacOS/mlx.metallib is treated as unsigned nested code.
+Read-only Peer `0314c9ac` diagnosed that exact staged artifact; scope is closed.
+The corrected integrated package result above supersedes this failure, which
+remains retained. No app launch occurred during these builds.
+
+Computer Use capability correction (2026-10-11): the earlier missing-skill claim
+was a discovery gap. The installed marketplace at
+`~/.codex/.tmp/bundled-marketplaces/openai-bundled/.agents/plugins/marketplace.json`
+points to `plugins/computer-use`; its complete `skills/computer-use/SKILL.md`
+was read independently. Direct `await import('@oai/sky')` in WS1 Node REPL passed;
+`get_app_state` and `click` are functions. No UI API was called during discovery. Working-directory
+`createRequire().resolve()` returned MODULE_NOT_FOUND but does not test the
+bundled import route. This corrects historical capability claims below, not UI
+acceptance. Subsequent released UI reservations and observed component results
+are recorded below. Human performs real browser sign-in.
 
 Local source checkpoint: `8b3281b` on `pivot/chatgpt-signin`, parent `b2df5d4`.
 This commit contains accepted auth/chat, the native shell, official logo resource
-and coupled offline tests. Packaging and this evidence record form the next local
-checkpoint. No push or merge is authorized. Scratch `.build-*` directories remain
+and coupled offline tests. Packaging followed as `be48843`, then the imported
+WS2 chain listed above. No push or merge is authorized. Scratch `.build-*` directories remain
 untracked and are not delivery inputs. Preserve them for local test evidence.
 
-**Shared UI reservation (current):** agent
-`45d6fb78-db0a-4baf-844c-e8a091178bc9` owns the single live UI scope for the bounded
+**Shared UI reservation (current): RELEASED.** No driver remains. WS1 completed
+the bounded ChatGPT component subset below; exact fixture quit and PID/path checks
+were clean. Any later full-shell check needs a new single-owner reservation.
+
+**Previous WS1 reservation:** agent `7030593f-4910-4e8c-9cf2-235c38d8d9f0`
+owned the bounded ChatGPT component check, under the original WS1 UI scope.
+WS2 explicitly released its reservation after cleanup at 06:57:35 UTC. Its
+RESULT.md was inspected; the accepted model-setup result does not accept ChatGPT
+or full-shell behavior. WS1 exact app-path process inspection found no fixture
+or LessMeet instance before that check.
+Target: a private synthetic ChatGPTScreenCheck.app under
+`.artifacts/verify-lessmeet/chatgpt-ui/`, built from accepted production views and
+controllers with injected memory credentials, fake browser/listener/network, and
+an isolated disk library. OS network denial and isolated defaults are required.
+No real sign-in, account, credentials, user recordings or usage links may be used.
+Peer `7cf68b96` owned only fixture preparation until its artifact handoff;
+it did not launch or drive UI. Lead performed inspection, launch, UI and acceptance.
+Fixture handoff ACCEPTED as runtime input; Peer scope CLOSED. Exact app:
+`chatgpt-ui/build.zSOvdr/ChatGPTScreenCheck.app`, executable
+`1e495cb9e63742c07d6194fab0bc7001efb33470bd782e5134ef660e9a2d7d29`.
+Complete fixture/support/build/sandbox source inspected, all input/artifact hashes
+matched, strict signature PASS. Lead proceeds only with sandboxed synthetic UI.
+First launch FAILED before UI: the fixture suite equaled its bundle identifier,
+so UserDefaults returned nil. PID33971 exited1 and is absent. Lead changed only
+the fixture suite suffix to `.preferences`; retained failed artifact/evidence.
+Fresh build.RgZOQW was signed and launched as PID36434 under offline.sb. Executable
+`a480293c7a85d6d8cbed807f8dcefafdd1eefc11a6bf2028ee7150280a3b426f`.
+Observed: signed-out logo/button, no-consent account, disabled chat/model
+controls and plan welcome. Cleanup and release are recorded below.
+Final subset ACCEPTED: explicit model load/select, completed synthetic Send,
+composer clearing, actual local chat.json and visible history after process
+reopen while signed out. PID36434 and reopened PID39043 quit via Sky, each exited0;
+exact PID/path searches found no process. UI RELEASED. Evidence and limits:
+`.artifacts/verify-lessmeet/chatgpt-ui/RESULT.md`, captures01–17 and actions.jsonl.
+Cancel/quota/keyboard UI were not exercised; real auth/chat/fullshell remain unverified.
+
+Packaging diagnosis `0314c9ac` ACCEPTED, scope CLOSED. Lead inspected pinned loader
+and installed codesign manual, then tested a copy at
+`dist/local/signature-probe.YvCxys/LessMeet.app`. Shader bytes in Resources plus
+relative MacOS/mlx.metallib symlink preserve lookup and pass strict signing and
+strict=symlinks verification. Original failed stage is retained. Script updated
+to this layout; corrected full package passed. Actual packaged MLX load is unverified.
+
+Original component acceptance scenarios: signed-out rendering and disabled chat; restored synthetic
+plan welcome and acknowledgement; explicit model load/select; completed synthetic
+reply saved to chat.json and visible after reopen; provisional answer and Cancel
+without persistence; quota error with retained draft; no-consent state. Use only
+production controls for each behavior assertion. Fixture scenario controls supply
+inputs, not pass results. Usage links and real authorization stay untouched.
+Fixture compile dependency resolved: `RecordingStore` requires `AccountError`,
+which shares a file with Clerk-dependent legacy code. Lead inspected the five-line
+LocalizedError wrapper and permits exact declaration extraction into fixture-only
+compile support, with source/hash attribution. No substituted behavior, production
+edit or Clerk initialization is permitted. All tested production files stay intact.
+The same narrow extraction is approved for `CloudClientError` at CloudClient.swift
+269–273 after inspection. This avoids compiling unrelated cloud-account code;
+it does not substitute transport or grant cloud access.
+
+**Previous shared UI reservation (RELEASED):** agent
+`45d6fb78-db0a-4baf-844c-e8a091178bc9` owned the single live UI scope for the bounded
 WS2 model-setup component check. Before reservation, both workstream status sources
 showed no current owner, WS1 had no UI driver, and process inspection found no
 LessMeet app or local-model-ui fixture. Historical ownership entries below do not
@@ -39,7 +181,7 @@ read-only readiness check of the accepted model cache. No auth/account, user
 recordings, cloud, system settings, tool installation or production replacement.
 The driver must record the exact bundle/PID/hash and required skill availability
 before launch. Return event: evidence handoff or blocker, fixture cleanup, and
-explicit UI ownership release. WS1 and its Peers must not drive UI meanwhile.
+explicit UI ownership release, received at 06:57:35 UTC.
 WS1 shell/build work continues independently; this reservation is not UI acceptance.
 
 Human chose an open-source, local macOS app. ChatGPT sign-in and transcript
@@ -83,17 +225,16 @@ directly to WS2. This is not acceptance of an implementation or runtime behavior
 - Agreed shell slots: a sidebar **Local models** button opens the setup sheet
   through `LocalModelSetupView(manager:)`; the selected recording's Transcript
   tab embeds `LocalTranscriptView(model:, recordingID:)`.
-- Pending before WS2 controller/hook injection: WS2 supplies exact implementation,
-  constructors, lifecycle and transcript-completion notification. The app shell
-  supplies one shared set of instances, also used by the capture hook. WS1 must
-  refresh its transcript read after completion and before chat submission.
+- Controller/hook input is imported through `1a9e7f0`. The app shell supplies one
+  shared set of instances, also used by the capture hook. The transcript view
+  reloads after completion; chat reads the saved sidecar before submission.
 - WS2's pinned package handoff is accepted and imported as `b2df5d4`. WS1 now
   owns manifest integration and added the official sign-in logo resource. Keep
   dependencies while source imports them. No parallel manifest writes.
 
 Read-contract input is accepted as `1125de6`; catalog/notices as `254290e`.
-Next input owner: WS2, for the implementation of the agreed controller/setup/hook.
-Shared signatures below are settled; unseen implementation bytes remain pending.
+Next input owner: WS2, for the long-timing and mixed-granularity overlap corrections.
+Shared signatures below are settled; implementation through `bbcc8a8` is accepted.
 The independent ChatGPT shell is implemented and code-accepted. UI and live
 ChatGPT flows remain UNVERIFIED. See the current UI reservation above.
 

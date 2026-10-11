@@ -377,6 +377,7 @@ fi
                     self.assertIn("--disable-netrc", call)
                     self.assertEqual(call[call.index("--scratch-path") + 1], str((output / "swift-build").resolve()))
                     self.assertEqual(call[call.index("--build-system") + 1], "swiftbuild")
+                    self.assertEqual(call[call.index("--arch") + 1], "arm64")
                     self.assertEqual(call[call.index("-c") + 1], "release")
 
     def test_preflight_never_builds_signs_or_creates_artifacts(self):
