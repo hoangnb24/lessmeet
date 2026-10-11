@@ -344,7 +344,9 @@ struct ResponsesClient: Sendable {
                         requestID: response.value(forHTTPHeaderField: "x-request-id"), token: token)
                 }
                 if request.httpMethod == "POST" {
-                    guard response.mimeType?.lowercased() == "text/event-stream" else {
+                    // Missing MIME still requires bounded SSE parsing and a valid completion.
+                    let mime = response.mimeType?.lowercased()
+                    guard mime == nil || mime == "text/event-stream" else {
                         throw ResponsesClientError(.malformed, diagnosticStage: .contentType,
                             mimeCategory: .init(parsedMIME: response.mimeType))
                     }

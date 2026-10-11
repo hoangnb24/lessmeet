@@ -99,6 +99,43 @@ final class LocalChatModelTests: XCTestCase {
         XCTAssertEqual(transcript.segments[0].text, "Initial transcript")
     }
 
+    func testNilMIMECompletedSaveReopenAndIncompletePreservesHistory() async throws {
+        wire = ChatWire(postMIME: nil)
+        let model = makeModel()
+        await ready(model)
+        let sending = Task { await model.send("Synthetic question") }
+        await waitFor { self.wire.postCount == 1 }
+        wire.delta("Final")
+        await waitFor { model.partialAnswer == "Final" }
+        XCTAssertFalse(FileManager.default.fileExists(atPath: chatURL.path))
+        wire.complete("Final answer")
+        let saved = await sending.value
+        XCTAssertTrue(saved)
+        XCTAssertEqual(model.messages.map(\.text), ["Synthetic question", "Final answer"])
+        let original = try Data(contentsOf: chatURL)
+        let reopened = makeModel()
+        reopened.select(recordingID: recording)
+        XCTAssertEqual(reopened.messages, model.messages)
+
+        for terminal in ["eof", "bare", "response.failed", "response.incomplete", "response.refusal.delta"] {
+            wire = ChatWire(postMIME: nil)
+            let failing = makeModel()
+            await ready(failing)
+            let attempt = Task { await failing.send("Another synthetic question") }
+            await waitFor { self.wire.postCount == 1 }
+            wire.delta("Partial")
+            await waitFor { failing.partialAnswer == "Partial" }
+            if terminal == "eof" { wire.finish() }
+            else { wire.event(["type": terminal == "bare" ? "response.completed" : terminal]) }
+            let result = await attempt.value
+            XCTAssertFalse(result, terminal)
+            XCTAssertEqual(try Data(contentsOf: chatURL), original)
+            XCTAssertEqual(failing.messages, model.messages)
+            XCTAssertFalse(failing.busy)
+            XCTAssertEqual(failing.partialAnswer, "")
+        }
+    }
+
     func testFailureRefusalIncompleteEOFAndDivergenceNeverSave() async throws {
         let earlier = try seedHistory()
         let original = try Data(contentsOf: chatURL)
@@ -483,7 +520,11 @@ private final class ChatWire: @unchecked Sendable {
     private var modelCancellations = 0
     private var catalogs: [AsyncThrowingStream<ResponsesTransportEvent, Error>.Continuation] = []
     private let holdModels: Bool
-    init(holdModels: Bool = false) { self.holdModels = holdModels }
+    private let postMIME: String?
+    init(holdModels: Bool = false, postMIME: String? = "text/event-stream") {
+        self.holdModels = holdModels
+        self.postMIME = postMIME
+    }
     var requestCount: Int { lock.withLock { requests.count } }
     var postCount: Int { lock.withLock { posts.count } }
     var postCancellations: Int { lock.withLock { cancellations } }
@@ -497,8 +538,9 @@ private final class ChatWire: @unchecked Sendable {
             if isPost { posts.append(pair.continuation) }
             else { catalogs.append(pair.continuation) }
         }
+        let mime = isPost ? postMIME : "application/json"
         pair.continuation.yield(.response(HTTPURLResponse(url: request.url!, statusCode: 200, httpVersion: nil,
-            headerFields: ["Content-Type": isPost ? "text/event-stream" : "application/json"])!))
+            headerFields: mime.map { ["Content-Type": $0] } ?? [:])!))
         if !isPost, !holdModels { finishModels() }
         return ResponsesStream(events: pair.stream, cancel: { [self] in
             if isPost { lock.withLock { cancellations += 1 } }

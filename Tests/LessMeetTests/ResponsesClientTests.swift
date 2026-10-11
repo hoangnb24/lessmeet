@@ -122,7 +122,6 @@ final class ResponsesClientTests: XCTestCase {
     func testMIMECategoriesRejectBeforeReadingBodyAndCancelWithoutLeaking() async {
         let secret = diagnosticSecret
         let cases: [(String?, ResponsesClientError.MIMECategory)] = [
-            (nil, .missing),
             ("application/json", .json),
             ("APPLICATION/JSON; private=\(secret)", .json),
             ("text/html", .html),
@@ -208,14 +207,17 @@ final class ResponsesClientTests: XCTestCase {
     }
 
     private func client(_ text: String, status: Int = 200, headers: [String: String] = [:],
+                        mime: String? = "text/event-stream",
                         limits: ResponsesLimits = ResponsesLimits(), chunkSize: Int = 7,
                         inspect: @escaping @Sendable (URLRequest) -> Void = { _ in }) -> ResponsesClient {
         ResponsesClient(transport: { request in
             inspect(request)
             let bytes = Data(text.utf8)
             let stream = AsyncThrowingStream<ResponsesTransportEvent, Error> { continuation in
+                let defaults = mime.map { ["Content-Type": $0] } ?? [:]
                 let response = HTTPURLResponse(url: request.url!, statusCode: status, httpVersion: nil,
-                    headerFields: headers.merging(["Content-Type": "text/event-stream"]) { old, _ in old })!
+                    headerFields: headers.merging(defaults) { old, _ in old })!
+                if mime == nil, headers["Content-Type"] == nil { XCTAssertNil(response.mimeType) }
                 continuation.yield(.response(response))
                 for start in stride(from: 0, to: bytes.count, by: chunkSize) {
                     continuation.yield(.data(bytes.subdata(in: start..<min(start + chunkSize, bytes.count))))
@@ -468,6 +470,140 @@ final class ResponsesClientTests: XCTestCase {
         await fulfillment(of: [stopped], timeout: 2)
     }
 
+    func testURLSessionNilMIMECompletedSSE() async throws {
+        let configuration = URLSessionConfiguration.ephemeral
+        configuration.protocolClasses = [ResponsesFixtureProtocol.self]
+        let session = URLSession(configuration: configuration)
+        defer { session.invalidateAndCancel(); ResponsesFixtureProtocol.handler = nil }
+        ResponsesFixtureProtocol.handler = { fixture in
+            let response = HTTPURLResponse(url: fixture.request.url!, statusCode: 200,
+                httpVersion: nil, headerFields: ["X-Content-Type-Options": "nosniff"])!
+            XCTAssertNil(response.mimeType)
+            fixture.client?.urlProtocol(fixture, didReceive: response, cacheStoragePolicy: .notAllowed)
+            fixture.client?.urlProtocol(fixture, didLoad: Data((Self.delta("ok") + Self.completion("ok")).utf8))
+            fixture.client?.urlProtocolDidFinishLoading(fixture)
+        }
+        let answer = try await reply(ResponsesClient(session: session))
+        XCTAssertEqual(answer, "ok")
+    }
+
+    func testNilMIMEByteSplitsUnicodeAndTerminalSuffix() async throws {
+        let final = "e\u{301} 🐢!"
+        let prefix = "\u{feff}: heartbeat\r\nevent: response.output_text.delta\r\n" +
+            "data: {\"type\":\"response.output_text.delta\",\r\ndata: \"delta\":\"e\"}\r\n\r\n"
+        for wire in [Self.completion(final), prefix + Self.completion(final)] {
+            for size in [1, 2, 7, 64, wire.utf8.count] {
+                let sink = ResponsesDeltaSink()
+                let answer = try await reply(client(wire, mime: nil, chunkSize: size)) { await sink.append($0) }
+                let deltas = await sink.values
+                XCTAssertEqual(Array(answer.utf8), Array(final.utf8))
+                XCTAssertEqual(deltas, wire.hasPrefix("\u{feff}") ? ["e", "\u{301} 🐢!"] : [final])
+            }
+        }
+    }
+
+    func testNilMIMENonSSEAndIncompleteBodiesCannotSucceed() async {
+        for body in ["", "<html>not a stream</html>\n\n", "plain text\n\n",
+                     "{\"type\":\"response.completed\"}\n\n", Self.delta("partial"),
+                     String(Self.completion("Hello").dropLast(2))] {
+            await expect(.incomplete) { _ = try await self.reply(self.client(body, mime: nil)) }
+        }
+        for body in ["data: nope\n\n", "data: [DONE]\n\n", "data: {}\n\n",
+                     Self.event(["type": "response.completed"]),
+                     Self.delta("partial") + Self.completion("different")] {
+            await expect(.malformed) { _ = try await self.reply(self.client(body, mime: nil)) }
+        }
+        for body in [Self.completion(""), Self.completion(" \n\t")] {
+            await expect(.incomplete) { _ = try await self.reply(self.client(body, mime: nil)) }
+        }
+    }
+
+    func testNilMIMEFailureEventsAndLimitsRemainEnforced() async {
+        let failures: [(String, ResponsesClientError.Kind)] = [
+            ("response.failed", .http), ("response.error", .http), ("error", .http),
+            ("response.incomplete", .incomplete), ("response.refusal.delta", .refusal)]
+        for (type, kind) in failures {
+            await expect(kind) {
+                _ = try await self.reply(self.client(Self.delta("partial") + Self.event(["type": type]), mime: nil))
+            }
+        }
+        let quota = Self.event(["type": "response.failed", "response": ["error": [
+            "code": "subscription_sharing_usage_limit_exceeded", "message": diagnosticSecret]]])
+        do {
+            _ = try await reply(client(quota, mime: nil))
+            XCTFail("Expected quota error")
+        } catch let error as ResponsesClientError {
+            XCTAssertEqual(error.kind, .quota)
+            XCTAssertFalse(String(reflecting: error).contains(diagnosticSecret))
+        } catch { XCTFail("Unexpected error") }
+        for keyPath in [\ResponsesLimits.eventBytes, \.outputBytes, \.streamBytes] {
+            var limits = ResponsesLimits()
+            limits[keyPath: keyPath] = 3
+            await expect(.limit) { _ = try await self.reply(self.client(self.completed, mime: nil, limits: limits)) }
+        }
+    }
+
+    func testNilMIMEStillChecksStatusURLDuplicateHeaderAndUTF8() async {
+        for status in [401, 403, 429, 503] {
+            let kind: ResponsesClientError.Kind = status == 401 ? .scope : status == 403 ? .permission : status == 429 ? .quota : .temporary
+            await expect(kind) { _ = try await self.reply(self.client("{}", status: status, mime: nil)) }
+        }
+        let header = HTTPURLResponse(url: URL(string: "https://api.openai.com/v1/responses")!,
+            statusCode: 200, httpVersion: nil, headerFields: [:])!
+        let wrongURL = HTTPURLResponse(url: URL(string: "https://example.invalid")!,
+            statusCode: 200, httpVersion: nil, headerFields: [:])!
+        let cases: [([ResponsesTransportEvent], ResponsesClientError.DiagnosticStage)] = [
+            ([.response(wrongURL)], .responseURL),
+            ([.response(header), .response(header)], .duplicateHeader),
+            ([.response(header), .data(Data([0xff, 10]))], .sseUTF8)
+        ]
+        for (events, stage) in cases {
+            let cancelled = ResponsesCounter()
+            let client = ResponsesClient(transport: { _ in
+                ResponsesStream(events: AsyncThrowingStream { continuation in
+                    for event in events { continuation.yield(event) }
+                    continuation.finish()
+                }, cancel: { cancelled.increment() })
+            })
+            await expectStage(stage) { _ = try await self.reply(client) }
+            XCTAssertEqual(cancelled.value, 1)
+        }
+    }
+
+    func testNilMIMERetainsExistingSSEFieldAndFirstCompletionSemantics() async throws {
+        // Characterize the existing parser. MIME fallback is not a strict content detector.
+        let wire = "<html>ignored non-data line\n" + Self.completion("Hello") + "data: malformed\n\n"
+        let mimes: [String?] = ["text/event-stream", nil]
+        for mime in mimes {
+            let answer = try await reply(client(wire, mime: mime, chunkSize: 1))
+            XCTAssertEqual(answer, "Hello")
+        }
+    }
+
+    func testURLSessionNilMIMECancellationStopsIncompleteStream() async {
+        let configuration = URLSessionConfiguration.ephemeral
+        configuration.protocolClasses = [ResponsesFixtureProtocol.self]
+        let session = URLSession(configuration: configuration)
+        defer { session.invalidateAndCancel(); ResponsesFixtureProtocol.handler = nil; ResponsesFixtureProtocol.stopped = nil }
+        let entered = expectation(description: "nil MIME delta consumed")
+        let stopped = expectation(description: "nil MIME transport stopped")
+        ResponsesFixtureProtocol.handler = { fixture in
+            fixture.client?.urlProtocol(fixture, didReceive: HTTPURLResponse(url: fixture.request.url!,
+                statusCode: 200, httpVersion: nil, headerFields: ["X-Content-Type-Options": "nosniff"])!,
+                cacheStoragePolicy: .notAllowed)
+            fixture.client?.urlProtocol(fixture, didLoad: Data(Self.delta("partial").utf8))
+        }
+        ResponsesFixtureProtocol.stopped = { stopped.fulfill() }
+        let task = Task {
+            try await self.reply(ResponsesClient(session: session)) { _ in entered.fulfill() }
+        }
+        await fulfillment(of: [entered], timeout: 2)
+        task.cancel()
+        do { _ = try await task.value; XCTFail("Expected cancellation") }
+        catch { XCTAssertTrue(error is CancellationError) }
+        await fulfillment(of: [stopped], timeout: 2)
+    }
+
     func testURLSessionRejectsRedirectWithoutSendingToDestination() async {
         let configuration = URLSessionConfiguration.ephemeral
         configuration.protocolClasses = [ResponsesFixtureProtocol.self]
@@ -524,6 +660,11 @@ final class ResponsesClientTests: XCTestCase {
     }
 
     func testURLSessionBoundedReceiveQueueFailsWithoutSilentTruncation() async {
+        await checkBoundedReceiveQueue(headers: ["Content-Type": "text/event-stream"])
+        await checkBoundedReceiveQueue(headers: ["X-Content-Type-Options": "nosniff"])
+    }
+
+    private func checkBoundedReceiveQueue(headers: [String: String]) async {
         let configuration = URLSessionConfiguration.ephemeral
         configuration.protocolClasses = [ResponsesFixtureProtocol.self]
         let session = URLSession(configuration: configuration)
@@ -533,7 +674,7 @@ final class ResponsesClientTests: XCTestCase {
         let gate = ResponsesCallbackGate()
         ResponsesFixtureProtocol.handler = { fixture in
             fixture.client?.urlProtocol(fixture, didReceive: HTTPURLResponse(url: fixture.request.url!, statusCode: 200,
-                httpVersion: nil, headerFields: ["Content-Type": "text/event-stream"])!, cacheStoragePolicy: .notAllowed)
+                httpVersion: nil, headerFields: headers)!, cacheStoragePolicy: .notAllowed)
             fixture.client?.urlProtocol(fixture, didLoad: Data("data: {\"type\":\"response.output_text.delta\",\"delta\":\"first\"}\n\n".utf8))
             // A single oversized receive callback exceeds the bounded queue while consumption is paused.
             fixture.client?.urlProtocol(fixture, didLoad: Data(repeating: 32, count: 2 * 1024 * 1024))
