@@ -7,6 +7,9 @@ supersedes the historical cloud delivery and push instructions below for this
 workstream. Branch `pivot/local-models` starts at `b08b3cd`. No deploy, cloud
 mutation, account-deletion trial, push, release, repository publication or paid
 API call is authorized. Local model downloads and local commits are allowed.
+Human selected Apple Silicon-only support on 2026-10-11. arm64 is the supported
+architecture; Intel Macs are not supported. Arm64-only packaging is accepted
+product policy, not an unresolved exception. WS1 retains packaging ownership.
 
 Outcome: download pinned WhisperKit large-v3 and Nemotron-3-Diarization models,
 show progress/cancel/resume/retry, verify integrity, then transcribe and diarize
@@ -143,13 +146,96 @@ Current ownership and plan:
   max RSS 1,925,922,816 bytes). Exact diagnosis: raw word ` We` has 0.02..0.02
   seconds while its parent sentence has valid 0.02..1.72 seconds. `convert`
   rejects the zero-duration word. Evidence: `raw-timings.log` in the same folder.
-  Owner `45d6fb78` will add the regression, handle zero-duration word alignment
-  using valid parent timing without inventing word duration, and rerun the real
-  offline dialogue through diarization and sidecar save/reopen. Reject malformed
-  or reversed times as before. Then check silence and the 650-second fixture.
+  Owner `45d6fb78` corrected this as `bbcc8a8b56866fcc5cbae8d0c882cb685006e8c4`.
+  Regression reproduced `invalidTiming` before the fix. The fix uses valid
+  parent sentence timing for a finite zero-duration word inside parent/audio,
+  without inventing word duration. Other malformed or reversed times still fail.
+  Independent focused OS-network-denied tests PASS 27/27, including both new
+  regression cases. Evidence: `.artifacts/dependency-validation/zero-duration-red.log`
+  and `zero-duration-offline.log`. Correction ACCEPTED and handed to WS1.
+  Real 31.174-second offline synthetic dialogue now PASS: 10 segments, two
+  speaker labels, one unknown-speaker segment; 47.06 seconds inference and
+  max RSS 1,924,136,960 bytes. Output JSON round-trip passed. Receipts:
+  `.artifacts/local-inference/dialogue-run-2.log` and `dialogue-result-2.json`.
+  Full finalization-hook/controller/real-engine/store save/reopen PASS with
+  generated M4A in a private library under OS network denial: 10 segments,
+  one callback, ready metadata preserved byte-for-byte, sidecar reopened through
+  a new RecordingStore. Receipt `.artifacts/local-inference/finalization-run-1.log`:
+  one actual-model test PASS, 51.59 seconds, max RSS 1,971,585,024 bytes.
+  This injects synthetic capture at the existing boundary; it does not prove
+  microphone/system-audio capture, UI or full shell wiring. The first 650-second
+  real-model check FAILED `invalidTiming` in window 2 after 119.72 seconds;
+  no output was saved. Evidence: `.artifacts/local-inference/long-run-1.log`.
+  Raw long-window diagnosis: the final sentence spans 296.78..308.68 seconds
+  although the input ends at 300 seconds. Its last three words start at or
+  beyond the real audio end. WhisperKit pads its decoder input to 30 seconds.
+  The adapter now excludes only bounded, parent-contained tail predictions from
+  a sentence crossing that real end, reports their count, and retains all
+  in-window words. Malformed or unexplained out-of-window intervals still fail.
+  Red regression reproduced two failures; corrected standalone tests PASS14/14
+  with OS network denial. Replaying the entire captured window passed:
+  20 input sentences, 761 retained word segments, three excluded tail words.
+  Evidence: `raw-long-window-2.log`, `padded-tail-red.log`, `padded-tail-green.log`
+  and `replay-timings.log` under `.artifacts/local-inference/`.
+  Tail correction is committed as `c0f60560f931798474a87b0791cc4988826da3ae`.
+  Fresh read-only Peer `3581ee13` found a concrete mixed-granularity overlap
+  defect on `bbcc8a8`: one fallback sentence versus its two word segments cannot
+  match the one-to-one merger, so both survive. Finding ACCEPTED; review CLOSED.
+  Decision: add the reproducer and match only unambiguous contiguous equal-text
+  sequences with compatible outer timing. Preserve ambiguous/unmatched text.
+  Integration owner `45d6fb78` owns the timing diagnosis and long/silence reruns.
+  Peer `eb431e35` owned only `LocalSegmentMerger.swift` and its tests for the
+  mixed-granularity correction, against accepted `bbcc8a8`. Short-file and
+  controller acceptance stand; long-overlap quality is not accepted.
+  Its first candidate `d8081267` / `aafefaeb` was REOPENED: actual adapter rounding
+  creates 1 ms internal overlaps, which the first sequence matcher rejects.
+  Requested bounded 1 ms rounding tolerance with monotonic endpoints, continued
+  preservation for larger overlaps, and bounded sequence enumeration. Revised
+  hashes `643ef0cc` / `fb36fbf5` ACCEPTED after full inspection, hash match and
+  independent 19/19 standalone tests PASS in `.artifacts/overlap-correction/acceptance.log`.
+  Committed as `9a5eb1035795769b416b33282816393a21ab956f`; writer scope CLOSED.
+  It matches both directions, bounds each overlap side to 64 contained entries,
+  and preserves ambiguous, crossing or crowded boundaries. That preservation
+  can retain duplicates; it is not blanket duplicate-free acceptance.
+  Combined SwiftPM tests PASS105/105 (23.45 seconds). Second real 650-second
+  run completes all three windows and JSON round-trip: 229 segments, two speaker
+  labels, 182.65 seconds inference, max RSS 1,897,381,888 bytes. Receipt:
+  `.artifacts/local-inference/long-run-2.log` and `long-result-2.json`.
+  Runtime/save is PASS, but content inspection REJECTS blanket overlap quality:
+  near 590 seconds output contains `We We`, repeated `are`, and `project project`.
+  Owner `45d6fb78` is comparing raw windows 2/3 before a further correction.
+  Raw comparison identifies >250 ms drift on `We`/`are` and a `project` word
+  ending 60 ms beyond the overlap edge. Peer `eb431e35` again owns only merger
+  and merger tests for an evidence-bounded correction. Keep normal tolerance;
+  proposed higher-drift matching requires a consecutive confirmed text run.
+  It must preserve ambiguous and unmatched text. Main owns the silence adapter
+  correction and private runtime harnesses; no concurrent writes to merger files.
+  The ten-second digital-silence run FAILED `invalidTiming` before diarization;
+  its raw output is under diagnosis. No silence output was saved. Evidence:
+  `.artifacts/local-inference/silence-run-1.log`.
+  Raw silence output is `you` at 29.52..29.62 seconds for ten seconds of zero
+  PCM. Main added an exact-zero PCM fast path, not a quiet-audio threshold.
+  Correction `384fde3547ae7d59c7036e01060198a6557c3954` ACCEPTED for this case:
+  15/15 focused tests PASS with pinned tokenizer and OS network denial.
+  Full ten-second silence pipeline PASS with real model loading, Whisper
+  decoding skipped, Nemotron execution, and empty JSON save/reopen. Elapsed
+  inference 28.77 seconds; max RSS 1,922,613,248 bytes. Evidence:
+  `.artifacts/local-inference/digital-silence-tests-with-tokenizer.log`,
+  `silence-run-2.log` and `silence-result-2.json`. Harness used the unchanged
+  accepted merger from `9a5eb10`, not concurrently edited merger bytes.
+  Ambient-noise hallucination and quiet-speech accuracy remain unverified.
+  WS1 ACCEPTED/imported exact `384fde3` as
+  `63042543ad2d02f08be1df79816cd776fd019ad1`; both file hashes matched.
+  It independently passed all 15 adapter tests with the pinned tokenizer and
+  OS network denial, and inspected the empty JSON and runtime receipt.
+  Evidence in its worktree:
+  `.artifacts/verify-lessmeet/full-package-metal/digital-silence-pinned-xctest.log`.
+  Its packaged app predates this correction. No further silence work requested;
+  current implementation frontier remains the bounded long-overlap correction.
   This work keeps the accepted engine/controller API unchanged. The smallest
-  path still needs that real-model pass plus WS1 hook wiring; live capture/UI
-  verification waits for the shared UI reservation and an authorized fixture.
+  code path now has real-model save/reopen proof. WS1 owns shell hook wiring;
+  live capture/UI verification still needs the exact integrated artifact and
+  an authorized fixture. No new Human decision blocks the code path.
 - Model setup component UI ACCEPTED for `9ee218d` on 2026-10-11.
   Observed progress/bytes, Cancel, persistent pause after view recreation,
   Resume, integrity error/Retry, and ready state. Synthetic transport covers
@@ -163,10 +249,21 @@ Current ownership and plan:
   at 2026-10-11T06:57:35Z. Earlier fixture sessions exited 0. Private evidence
   and caches remain; no deletion or account/browser/settings action occurred.
   UI reservation `45d6fb78` RELEASED. No WS2 UI driver remains active.
-  Subsequent bounded ChatGPT component UI ownership is reserved to WS1
-  `7030593f`. WS2 must not claim or drive UI until its evidence/blocker and
-  explicit release. Only synthetic fixture data and OS network denial are in
-  that check; this environment update adds no UI or account authority.
+  WS1 `7030593f` subsequently completed its bounded synthetic ChatGPT component
+  subset and explicitly released UI. It reports fixture PIDs 36434/39043 exited
+  0 and absent from exact process searches. Its RESULT.md under its own
+  `.artifacts/verify-lessmeet/chatgpt-ui/` owns that evidence and limits.
+  WS1 `7030593f` completed and RELEASED its bounded full-shell fixture check.
+  Exact target in its worktree: `.artifacts/verify-lessmeet/full-shell-ui/build.thopoyf4/FullShellFixture.app`,
+  executable SHA-256 `c8e94cce6755333e2db984afd354f385568a5fd002e65682b6d60823896a296c`.
+  Only injected synthetic capture/models/auth/Responses/library are in scope;
+  the sandbox denies network, normal recordings and Keychain. WS1 reports
+  observed production transcript progress/save/refresh, sidecar-to-chat request,
+  keyboard Send, stream tab/cancel, quota/draft retention and process reopen.
+  Its `.artifacts/verify-lessmeet/full-shell-ui/RESULT.md` and captures 01–41
+  own the evidence. PIDs 64291/69153 exited 0 and exact process searches were
+  absent. Real models and live auth were not used. No current UI owner here;
+  timing/overlap work continues without UI. No new auth or permission authority.
   WS1 independently read the installed Computer Use skill and imported bundled
   `@oai/sky`; its skill/runtime blocker is resolved. Target-app permissions
   remain UNVERIFIED. Release adds no auth/account or other UI authorization.
