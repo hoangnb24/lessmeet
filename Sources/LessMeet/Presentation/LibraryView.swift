@@ -4,9 +4,12 @@ struct LibraryView: View {
     @ObservedObject var model: AppModel
     @ObservedObject var session: ChatGPTSession
     var chat: LocalChatModel?
+    @ObservedObject var modelManager: LocalModelManager
+    @ObservedObject var transcription: LocalTranscriptionModel
     @State private var search = ""
     @State private var showingLibrary = true
     @State private var showingAccount = false
+    @State private var showingModels = false
     @FocusState private var searchFocused: Bool
 
     private var filteredRecordings: [Recording] {
@@ -37,7 +40,8 @@ struct LibraryView: View {
                 if showingLibrary || model.selected == nil {
                     library
                 } else if let recording = model.selected {
-                    RecordingDetailView(model: model, session: session, chat: chat, recording: recording)
+                    RecordingDetailView(model: model, session: session, chat: chat,
+                                        transcription: transcription, recording: recording)
                         .id(recording.id)
                 }
             }
@@ -58,6 +62,12 @@ struct LibraryView: View {
         }
         .onChange(of: search) { _, value in if !value.isEmpty { showingLibrary = true } }
         .onDisappear { chat?.cancel() }
+        .sheet(isPresented: $showingModels) {
+            VStack(alignment: .trailing, spacing: 0) {
+                Button("Done") { showingModels = false }.padding([.top, .trailing], 16)
+                LocalModelSetupView(manager: modelManager)
+            }
+        }
         .sheet(isPresented: $showingAccount) {
             VStack(alignment: .trailing, spacing: 0) {
                 Button("Done") { showingAccount = false }.padding([.top, .trailing], 16)
@@ -134,6 +144,19 @@ struct LibraryView: View {
                 }.padding(.horizontal, 8)
             }
             Spacer(minLength: 12)
+            VStack(alignment: .leading, spacing: 6) {
+                Button { showingModels = true } label: {
+                    Label("Local models", systemImage: "internaldrive")
+                }.buttonStyle(.plain)
+                Text(modelManager.state == .ready ? "Ready for transcription" : "Model setup: \(modelManager.state.rawValue)")
+                    .font(.caption).foregroundStyle(.secondary)
+                if modelManager.state == .downloading || modelManager.state == .checking {
+                    ProgressView(value: modelManager.progress)
+                    Text("\(ByteCountFormatter.string(fromByteCount: modelManager.completedBytes, countStyle: .decimal)) / \(ByteCountFormatter.string(fromByteCount: modelManager.totalBytes, countStyle: .decimal))")
+                        .font(.caption2).foregroundStyle(.secondary)
+                    Button("Cancel model setup") { modelManager.cancel() }.font(.caption)
+                }
+            }.padding(.horizontal, 18).padding(.bottom, 14)
             Label("Saved on this Mac", systemImage: "internaldrive")
                 .font(.caption).foregroundStyle(.secondary).padding(.horizontal, 18).padding(.bottom, 14)
             Divider().opacity(0.5)
@@ -296,11 +319,10 @@ private struct RecordingDetailView: View {
     @ObservedObject var model: AppModel
     @ObservedObject var session: ChatGPTSession
     let chat: LocalChatModel?
+    @ObservedObject var transcription: LocalTranscriptionModel
     let recording: Recording
     @State private var title = ""
     @State private var selectedTab = DetailTab.transcript
-    @State private var transcript: LocalTranscript?
-    @State private var transcriptError: String?
     @FocusState private var titleFocused: Bool
 
     private enum DetailTab: String, CaseIterable {
@@ -342,14 +364,13 @@ private struct RecordingDetailView: View {
             PlaybackBar(player: model.playback).disabled(model.phase != .idle)
                 .padding(.horizontal, 28).padding(.vertical, 14)
         }
-        .onAppear { title = recording.title; loadTranscript() }
+        .onAppear { title = recording.title }
         .onDisappear { saveTitle() }
         .onChange(of: titleFocused) { _, focused in if !focused { saveTitle() } }
-        .onChange(of: selectedTab) { _, _ in loadTranscript() }
     }
 
     private var document: some View {
-        ScrollView {
+        VStack(spacing: 0) {
             VStack(alignment: .leading, spacing: 0) {
                 Image(systemName: "doc.text").font(.system(size: 34, weight: .ultraLight))
                     .foregroundStyle(.secondary).padding(.bottom, 22)
@@ -364,58 +385,16 @@ private struct RecordingDetailView: View {
                     Spacer()
                     Menu {
                         Button("Show Files", systemImage: "folder") { model.revealSelected() }
-                        Button("Refresh local transcript", systemImage: "arrow.clockwise") { loadTranscript() }
                     } label: { Image(systemName: "ellipsis") }
                         .menuStyle(.borderlessButton).fixedSize().help("Recording options")
                 }.font(.system(size: 12)).foregroundStyle(.secondary).padding(.bottom, 30)
-                Label("Local transcript", systemImage: "text.alignleft")
-                    .font(.system(size: 13, weight: .medium)).padding(.bottom, 12)
-                Divider().padding(.bottom, 24)
                 if let failure = recording.failure { notice(failure) }
-                if let transcriptError { notice(transcriptError) }
-                if let transcript, !transcript.segments.isEmpty {
-                    VStack(alignment: .leading, spacing: 18) {
-                        ForEach(Array(transcript.segments.enumerated()), id: \.offset) { _, segment in
-                            VStack(alignment: .leading, spacing: 6) {
-                                HStack(spacing: 10) {
-                                    if let speaker = segment.speaker { Text(speaker).fontWeight(.medium) }
-                                    if let start = segment.startMs {
-                                        Text(durationLabel(Double(start) / 1_000)).monospacedDigit()
-                                    }
-                                }.font(.caption).foregroundStyle(.secondary)
-                                Text(segment.text).textSelection(.enabled)
-                                    .frame(maxWidth: .infinity, alignment: .leading)
-                            }
-                        }
-                    }
-                } else {
-                    VStack(alignment: .leading, spacing: 12) {
-                        Text(recording.status == .recording ? "Recording locally…" : "No local transcript yet")
-                            .font(.title2.weight(.semibold))
-                        Text("Audio stays on this Mac. Chat uses only this recording’s local transcript, never an old cloud copy.")
-                            .foregroundStyle(.secondary)
-                        Button("Refresh local transcript", systemImage: "arrow.clockwise") { loadTranscript() }
-                    }.padding(.vertical, 24)
-                }
             }
             .frame(maxWidth: 740, alignment: .leading)
-            .padding(.horizontal, 44).padding(.top, 44).padding(.bottom, 48)
+            .padding(.horizontal, 44).padding(.top, 28)
             .frame(maxWidth: .infinity)
-        }
-    }
-
-    private func loadTranscript() {
-        transcriptError = nil
-        do {
-            guard let store = model.store else {
-                transcript = nil
-                transcriptError = "The local recording library is unavailable."
-                return
-            }
-            transcript = try store.loadLocalTranscript(for: recording.id)
-        } catch {
-            transcript = nil
-            transcriptError = "Could not read the local transcript. The saved file was not changed."
+            LocalTranscriptView(model: transcription, recordingID: recording.id)
+                .padding(.horizontal, 28)
         }
     }
 

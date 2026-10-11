@@ -5,15 +5,16 @@ macOS app. The current app shell records locally and uses **Continue with ChatGP
 for transcript chat. It no longer instantiates the legacy Clerk, Convex or billing
 controllers. Legacy source and backend services remain unchanged.
 
-ChatGPT auth, streaming and local history have offline component tests. UI and
-live sign-in/chat are not yet accepted. Local-model controller integration is
-pending; this branch currently reads local transcript sidecars. See
+ChatGPT auth, streaming and local history have offline component tests. The
+synthetic account/chat UI subset passed, including saved history after reopening.
+Live sign-in/chat and the full app UI are not yet accepted. The shell now shares
+the local-model manager and transcription queue. See
 [current ownership, evidence and limits](docs/STATUS.md) and the pinned
 [local-model contract](docs/LOCAL_MODELS.md). No release or publication is implied.
 
 ## Run locally
 
-Requires macOS 15+, Swift 6.3 with the Swift Build engine, Node 22+, and the
+Requires Apple Silicon, macOS 15+, Swift 6.3 with the Swift Build engine, Node 22+, and the
 Xcode Metal Toolchain for packaged builds. The build stops if Metal is unavailable.
 
 ```sh
@@ -30,6 +31,20 @@ default. Set `LESSMEET_SIGNING_IDENTITY` to a stable signing identity for real
 Keychain/auth checks. The `local` mode uses `com.lessmeet.app.local`, reads no
 `.env.local` or cloud service settings, and includes no legacy OAuth URL callback.
 ChatGPT uses a temporary loopback listener on `127.0.0.1`.
+
+## Local model setup
+
+The first app launch checks pinned model files and automatically downloads missing
+files. The payload is 3,200,167,866 bytes. Allow extra space for partial files and
+Core ML caches. Open **Local models** to see progress, cancel, resume or retry.
+Failed or cancelled setup does not retry automatically during that app session.
+The model cache is `~/Library/Application Support/LessMeet/Models/`.
+
+After **Stop & Save** finishes successfully, LessMeet queues local transcription.
+If models are not ready, the job waits for setup. Open **Transcript** to see the
+job and saved output. **Transcribe on this Mac** also processes an existing ready
+recording. **Cancel all transcription** cancels the active job and pending jobs.
+Cancellation or failure preserves a previous saved transcript.
 
 ## Chat with a local transcript
 
