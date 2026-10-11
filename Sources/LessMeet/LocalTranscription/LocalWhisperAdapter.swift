@@ -55,6 +55,9 @@ actor LocalWhisperAdapter {
         if converted.segmentFallbackCount > 0 {
             Self.logger.warning("Word alignment absent or zero-duration; used timed segments: \(converted.segmentFallbackCount)")
         }
+        if converted.discardedTailWordCount > 0 {
+            Self.logger.warning("Excluded word predictions beyond input audio: \(converted.discardedTailWordCount)")
+        }
         return converted.segments
     }
 
@@ -65,11 +68,12 @@ actor LocalWhisperAdapter {
     }
 
     static func convert(_ input: [TranscriptionSegment], sampleCount: Int) throws
-        -> (segments: [LocalTranscriptSegment], segmentFallbackCount: Int) {
+        -> (segments: [LocalTranscriptSegment], segmentFallbackCount: Int, discardedTailWordCount: Int) {
         guard sampleCount > 0, sampleCount <= 16_000 * 300 else { throw LocalWhisperError.invalidSamples }
         let durationMs = Int64(sampleCount / 16)
         var segments: [LocalTranscriptSegment] = []
         var fallbackCount = 0
+        var discardedTailWordCount = 0
         func bounds(_ start: Float, _ end: Float) throws -> (Int64, Int64) {
             guard start.isFinite, end.isFinite, start < end else { throw LocalWhisperError.invalidTiming }
             let clampedStart = min(max(Double(start) * 1000, 0), Double(durationMs))
@@ -86,7 +90,21 @@ actor LocalWhisperAdapter {
         for segment in input {
             if let words = segment.words, !words.isEmpty {
                 var needsParentTiming = false
+                var retained: [WordTiming] = []
                 for word in words {
+                    // Whisper pads its final decoder input to 30 seconds. A sentence
+                    // that crosses the real audio end can include predictions in that
+                    // padding. Do not clamp those words into the saved transcript.
+                    let duration = Double(sampleCount) / 16_000
+                    if word.start.isFinite, word.end.isFinite, word.start <= word.end,
+                       Double(word.start) >= duration,
+                       segment.start.isFinite, segment.end.isFinite,
+                       segment.start >= 0, Double(segment.start) < duration,
+                       Double(segment.end) > duration, Double(segment.end) <= duration + 30,
+                       word.end <= segment.end {
+                        discardedTailWordCount += 1
+                        continue
+                    }
                     if word.start.isFinite, word.end.isFinite, word.start == word.end {
                         // Alignment can assign no duration to a recognized word. Use the
                         // original sentence timing; do not drop text or invent a word span.
@@ -99,19 +117,22 @@ actor LocalWhisperAdapter {
                         // Check every word even if another word needs the parent fallback.
                         _ = try bounds(word.start, word.end)
                     }
+                    retained.append(word)
                 }
                 if needsParentTiming {
-                    try append(segment.text, segment.start, segment.end)
+                    // Parent text includes padding predictions when words were removed.
+                    let text = retained.count == words.count ? segment.text : retained.map(\.word).joined()
+                    try append(text, segment.start, segment.end)
                     fallbackCount += 1
                 } else {
-                    for word in words { try append(word.word, word.start, word.end) }
+                    for word in retained { try append(word.word, word.start, word.end) }
                 }
             } else if !segment.text.isEmpty {
                 try append(segment.text, segment.start, segment.end)
                 fallbackCount += 1
             }
         }
-        return (segments, fallbackCount)
+        return (segments, fallbackCount, discardedTailWordCount)
     }
 }
 

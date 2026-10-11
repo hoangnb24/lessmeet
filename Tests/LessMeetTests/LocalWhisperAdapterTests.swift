@@ -183,6 +183,51 @@ final class LocalWhisperAdapterTests: XCTestCase {
         }
     }
 
+    func testPaddedTailPredictionsDoNotInvalidateRealAudioWords() throws {
+        let input = TranscriptionSegment(start: 296.78, end: 308.68,
+            text: " We are testing a local meeting recorder. The project is in progress.", words: [
+                WordTiming(word: " We are testing a local meeting recorder.", tokens: [], start: 296.78, end: 299.02, probability: 1),
+                WordTiming(word: " The", tokens: [], start: 299.38, end: 299.7, probability: 1),
+                WordTiming(word: " project", tokens: [], start: 299.7, end: 300, probability: 1),
+                WordTiming(word: " is", tokens: [], start: 300, end: 300.2, probability: 1),
+                WordTiming(word: " in", tokens: [], start: 300.2, end: 300.4, probability: 1),
+                WordTiming(word: " progress.", tokens: [], start: 300.4, end: 308.68, probability: 1)
+            ])
+        let result = try LocalWhisperAdapter.convert([input], sampleCount: 4_800_000)
+        XCTAssertEqual(result.segments.map(\.text).joined(), " We are testing a local meeting recorder. The project")
+        XCTAssertEqual(result.segments.last?.endMs, 300_000)
+        XCTAssertEqual(result.segmentFallbackCount, 0)
+        XCTAssertEqual(result.discardedTailWordCount, 3)
+    }
+
+    func testZeroDurationFallbackDoesNotRestorePaddedTailText() throws {
+        let input = TranscriptionSegment(start: 0.125, end: 2,
+            text: " We agree extra", words: [
+                WordTiming(word: " We", tokens: [], start: 0.125, end: 0.125, probability: 1),
+                WordTiming(word: " agree", tokens: [], start: 0.125, end: 1, probability: 1),
+                WordTiming(word: " extra", tokens: [], start: 1, end: 2, probability: 1)
+            ])
+        let result = try LocalWhisperAdapter.convert([input], sampleCount: 16_000)
+        XCTAssertEqual(result.segments, [.init(startMs: 125, endMs: 1_000, speaker: nil, text: " We agree")])
+        XCTAssertEqual(result.segmentFallbackCount, 1)
+        XCTAssertEqual(result.discardedTailWordCount, 1)
+    }
+
+    func testPaddedTailDoesNotHideMalformedOrUnrelatedOutOfWindowTimes() {
+        for (start, end): (Float, Float) in [(.nan, 2), (1, .infinity), (2, 1), (-2, -1), (3, 4)] {
+            let input = TranscriptionSegment(start: 0, end: 2, text: "valid parent", words: [
+                WordTiming(word: " valid", tokens: [], start: 0, end: 1, probability: 1),
+                WordTiming(word: " bad", tokens: [], start: start, end: end, probability: 1)
+            ])
+            XCTAssertThrowsError(try LocalWhisperAdapter.convert([input], sampleCount: 16_000))
+        }
+        XCTAssertThrowsError(try LocalWhisperAdapter.convert([
+            TranscriptionSegment(start: 2, end: 3, text: "outside", words: [
+                WordTiming(word: "outside", tokens: [], start: 2, end: 3, probability: 1)
+            ])
+        ], sampleCount: 16_000))
+    }
+
     func testInvalidTimingIsNotSilentlyDiscardedOrReplaced() throws {
         for (start, end): (Float, Float) in [(.nan, 1), (0, .infinity), (1, 0), (1, 1), (2, 3), (-2, -1)] {
             XCTAssertThrowsError(try LocalWhisperAdapter.convert([
@@ -257,7 +302,7 @@ final class LocalWhisperAdapterTests: XCTestCase {
     static func main() {
         let suite = XCTestSuite(forTestCaseClass: LocalWhisperAdapterTests.self)
         suite.run()
-        guard let run = suite.testRun, run.executionCount == 9, run.hasSucceeded else { exit(1) }
+        guard let run = suite.testRun, run.executionCount == 14, run.hasSucceeded else { exit(1) }
     }
 }
 #endif
