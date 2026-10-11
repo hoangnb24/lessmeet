@@ -1,5 +1,915 @@
 # LessMeet delivery
 
+## Commit and push of accepted local work (2026-10-11)
+
+- Human authorized commit and push to origin/main only. No deploy, flag change
+  (including GOOGLE_DELETION_ENABLED), email, token lookup, revoke, data deletion
+  or release is authorized by this step.
+- Re-run before commit: `npm run typecheck:backend` pass; `npm run test:backend`
+  1190/1190 pass; `swift test` 151 XCTest executed, 3 skipped, 0 failures.
+  `scripts/test-ui.sh` was not re-run here, so UI behavior is UNVERIFIED in this step.
+- Excluded: `.codex/` (operator-owned). The diff scan found no secrets or credentials.
+
+## Takeover and live test-account registration (2026-10-08)
+
+Lead DROID_LEAD_BIRCH_52 owns #3 integration, verification, this entry and the
+single live UI scope for registration. No Peer is dispatched; no other writer.
+Protocols, AGENTS, CONFIGURATION and DELETION_RUNBOOK reread. Dirty/untracked
+work, `.codex` state, recordings and credentials preserved untouched.
+Input recheck: four accepted SHA256 anchors match; backend1190/1190 PASS,
+backend typecheck PASS, Swift151 tests,3 skipped,0 failures. Inputs ready.
+Human authorizes registering one LessMeet test account with a Human-selected
+email (kept private). Read-only Clerk count: production instance
+`ins_3JoKJsnX2ro7wXXYQfu94imtJNX` 0 users with that email; development has 1
+(untouched). Whether it equals the deleted old case is not established.
+Registration app: `dist/issue3-production-rehearsal-20261003/LessMeet.app`,
+executable SHA256 `0548f573…b19a`, strict codesign PASS, production Clerk/Convex.
+It predates the Oct5 native Google copy. Correction: no current decision gates a
+local build (build/test is within delegated implementation; STATUS forbids only
+deploy/flag/send/delete/revoke/push without authority). Lead built local candidate
+`dist/issue3-google-trial-20261008/LessMeet.app` (dev packaging, ad-hoc, production
+public Clerk/Convex values copied from the registration app): executable SHA256
+`a59ff046a7c903315995d091564e5f0e2bd63beca5392dc0deccd63426ab8a1d`, Info.plist
+`e38b2f0c5ee19c45c9521fae7f06190aab9f2a0200d992de3f6286e5e021419b`, strict codesign
+PASS, contains Oct5 Google copy (old app does not). `dist/LessMeet.app` restored.
+Not launched; its UI is UNVERIFIED and it is not yet accepted as the trial build.
+Lead's Computer Use runtime (`@oai/sky`) is unavailable in this
+Droid seat: UI driving and visual proof are UNVERIFIED; Human performs Google
+sign-in; Lead verifies result through read-only Clerk API (exactly one Google link).
+Registration grants no deletion, token lookup, Google revoke, deploy, flag, send,
+commit or push. Google OAuth was Human-reported Testing/no test users: sign-in may
+be blocked for this email (consent-screen decision belongs to Human).
+
+## Google deletion product path — current decision (2026-10-05)
+
+Current handoff: Lead ACCEPTS the local integrated Google prerequisite increment.
+All Peer scopes are CLOSED; no UI owner or active fixture remains. The chronological
+ownership entries below are historical. The Google extension is not deployed or
+enabled. #3 remains OPEN for exact-target live proof and scoped completion notice.
+
+Human requires initiation in LessMeet and service-managed applicable Google
+revocation before Clerk user/session prerequisites are destroyed. Customer manual
+Google Connections disconnection is NOT normal-flow feature acceptance. KISS
+still applies; operator exceptions remain for genuine evidence/provider limits.
+Lead owns capability validation, technical route, integration, docs and acceptance.
+A read-only Peer audits pinned Clerk1.5.5 and current primary APIs; no write scope
+or UI is delegated. No active UI owner. Existing dirty/native/provider work and
+verification setup are preserved. No commit/push or external support send.
+Old case: Clerk account deleted, LessMeet Google connection observed present.
+It remains historical evidence, not automated-revocation proof. No old-case
+disconnect or recreation is authorized. Prepare offline fixtures and tests first;
+live destructive/revoke trial needs a newly selected exact account and confirmation.
+Email7-calendar-day policy and accepted status receipt remain unchanged. No send,
+flag change or broad erasure claim follows from this decision. #4 scope unchanged.
+This section supersedes the manual-disconnect next step and closure criteria below.
+
+Lead ACCEPTS Peer e1108cf7 capability audit against SDK08885b7737abdfa5fd6bdb69146f08074350143b
+and Clerk OpenAPI3b078e5e0c17ad5261f06cb00e0a0943614dacb0. Read-only scope CLOSED.
+Chosen route: existing Clerk execution worker + BAPI provider-token lookup +
+Google revoke before Clerk session/user destruction. No Swift FAPI/SPI or new OAuth.
+Google tokeninfo is a fail-closed diagnostic identity guard, not an availability
+guarantee. Bind aud/azp separately to trusted client configuration; project-wide
+revocation consequence needs selected live trial scope. Unknown never authorizes
+destructive downstream work. Token lookup can refresh; no blind mutation replay.
+New bounded writer scope for that Peer: ONLY googleDeletionTransport.ts and its
+backend test. Lead owns worker/schema/API integration and docs; native/UI scope
+not yet dispatched. No UI owner or live target. Disposition sent before new brief.
+
+Current write ownership: transport remains with e1108cf7. Peer83d92594 owns
+`clerkExecution.ts`, `clerkExecutionContract.ts` and their worker tests. A separate
+native Peer owns AccountDeletionModel/Panel/Copy, OfflineAccountFixture and their
+two unit suites. Lead owns schema, intake/status/completion guards, integration,
+docs and runtime acceptance. Schema metadata and additive `googleStatus` API are
+fixed inputs. No UI driver is active. No token or credential enters the ledger.
+Durable bounded Google proof stays on the deletion row until ledger purge so
+child-batch cleanup cannot strand a completed request.
+
+Lead ACCEPTS the pure Google transport candidate: source SHA256
+`4ae48752c4ff5ab8ccb4e19efc9ae6acc8830156238a3005ad6a525d0df3a6bd`, tests
+`6d77db28434a3dfd697babe6a443b8f85912a5c2f8c27281bad347039ec56bba`.
+Lead read both artifacts, rechecked the pinned BAPI token schema/refresh semantics
+and reran123 transport tests: PASS. Identity binding, final authorization, bounded
+time/bytes and sanitized no-replay failures meet the transport brief. Peer e1108cf7
+write scope CLOSED; disposition sent. Worker Peer received this accepted input.
+This is mocked transport acceptance, not live provider or whole-flow proof.
+Lead's new completion/purge guard tests PASS11. Integration test attempts during
+moving worker changes failed; these are not acceptance evidence. Final stable
+suite, independent candidate inspection and native runtime checks remain pending.
+
+Lead ACCEPTS Peera479bdfb's six-file native source/unit candidate after reading
+the changes and matching its SHA256 manifest (model44748798, panel a03c964b,
+copy09e52bf0, fixture44b5a86d, tests bd271b6e/25f5742d). Optional decoding and
+unknown-state validation preserve identity guards; copy does not equate Google
+acknowledgement with broad completion. Writer reports151 tests,3 skipped,0 failures.
+Native Peer write scope CLOSED; disposition sent. UI is not accepted yet.
+Lead d72f118f now owns the single offline-check UI scope and Tests/UI additions.
+No existing offline-check process was found. XCUITest runs first; Computer Use
+follows only after its runner releases the fixture. Only synthetic responses are
+authorized here; production app, old account and Connections tab stay untouched.
+
+First exact-artifact runtime attempt: XCUITest runner failed before tests with
+"Timed out while enabling automation mode". Cleanup PASS. Evidence retained at
+`.artifacts/verify-lessmeet/xcode.9B7dSW/`. No system permission/settings change.
+Computer Use on the same executable6848fb0e confirmed pending/exception Refresh
+but screenshots showed truncated Google exception and timing text. Lead REJECTS
+that UI layout, owns a minimal shared-view wrapping fix and stopped the owned app.
+Private captures remain at `.artifacts/verify-lessmeet/google.Cj9AQi/`. Unit/source
+acceptance is not a visual pass. Rebuild and new runtime evidence are required.
+
+Lead ACCEPTS the repaired shared-view offline runtime on executable
+`910e994410f1d2250e537e65439ddf820adb307d824e34ced56036b25c1facb9`.
+Computer Use observed Google pending/exception/acknowledgement through Refresh,
+provider status staying pending, failed refresh preserving the prior result,
+project consequence and7-day confirmation, Cancel, and account switch clearing
+Google state. Screenshots confirmed full wrapping. Focused unit23/23 PASS after
+the fix. Evidence: `.artifacts/verify-lessmeet/google.Cj9AQi/result.md`.
+XCUITest remains UNVERIFIED due to runner initialization timeout, not a test pass.
+Live entry/HTTP/provider effects remain UNVERIFIED. Owned fixture exited0; no
+network socket/recording handle observed in point checks. UI ownership RELEASED.
+
+Worker dependency decisions: Lead ACCEPTS the minimal additive evidence fields
+`googleAccounts[].evidence` and `googleOperatorEvidence` on the existing execution.
+Lead added both to schema. They preserve per-target and empty-inventory operator
+attestations when final bounded proof receives its own reference. No new table.
+Peer83d92594 continues worker/test ownership against those ready fields. Lead owns
+the two failing providerExecution test-fixture updates for the new prerequisite;
+the Peer must not change that file. These decisions resolve both dependency requests.
+
+Worker83d92594 returned stable source2a5fd616, contract35003e43, tests a1975a40/
+f5fdc47f. Lead matched all four hashes and read the worker. Writer reports101 owned
+and1187 full backend PASS, plus typecheck. Scope CLOSED. Acceptance is DEFERRED,
+owner Lead, until fresh read-only Peer6a8f380e returns the bounded integrated review.
+No writer action remains. Lead's identified review question: second-account
+provider-wide token lookup may re-fetch already acknowledged Google credentials.
+The current multiple-account mock proves ordering only after the final ack, not
+that stronger invariant. Do not treat passing mocks as provider behavior proof.
+Native UI ownership stays released; no external provider action is authorized.
+
+Lead ACCEPTS fresh Peer6a8f380e's two REOPEN_REQUEST findings and REJECTS the
+2a5fd616 integrated worker candidate. Provider-wide token lookup repeats after
+the first acknowledgement in a multiaccount run, including operator recovery.
+Also legacy completed status plus invented Google`unknown` conflicts with native
+validation. The Peer reproduced both in memory; no live effects were observed.
+Decision: exactly one current Google link may use the automatic path. Multiple
+links stop before token lookup as an operator exception and preserve Clerk state.
+Missing legacy Google status becomes null, not acknowledgement; new-request proof
+requirements remain unchanged. Lead owns repairs and tests. Both Peers received
+the disposition; writer and read-only scopes CLOSED. Return checkpoint: repaired
+artifact inspection and invariant-specific tests, followed by full verification.
+
+Lead ACCEPTS the repaired worker and legacy-status candidate after artifact
+inspection, invariant tests and the fresh read-only follow-up. Peer6a8f380e found
+both defects resolved; all four entry/exit hashes matched. Follow-up scope CLOSED;
+disposition sent. Accepted SHA256 values:
+
+- `convex/clerkExecution.ts`: `dae5184d7cc1b0003b41977cdfed6a75d4d4c435dc02a503dbfd977e279b005d`
+- `convex/deletion.ts`: `2ee5cdd44ef3c7a79dd5d5b983afde5b3b252d5c57af0777252a66ed7c82d9ed`
+- `Tests/backend/googleExecution.test.ts`: `c809f3b9072dfa38d428a9e3e2df37ff05288164c4d7da25701ab73d19d5b78d`
+- `Tests/backend/googleCompletion.test.ts`: `2533a80b31eeae6cccfecfae7df11c70fa9cceff3c49a4631c8dbd903b50f4b1`
+
+Exactly one current Google link can advance automatically. Multiple links stop
+before token lookup; claim, authorization, recovery and manual resolution preserve
+that stop. Acknowledgement advances only to metadata verification. Missing legacy
+status returns null; new requests still require independent Google proof.
+Final Lead verification: backend1190/1190 PASS across29 files; backend typecheck
+PASS; Swift151 tests,3 skipped,0 failures; whitespace check PASS. Runtime and
+XCUITest results remain separate as recorded above. Backend mocks do not prove
+live token availability, compatibility or Google connection propagation.
+
+Usable downstream input: local backend/native implementation, synthetic Google
+pending/exception/acknowledgement fixtures and the bounded recovery/live procedure
+in `docs/legal/DELETION_RUNBOOK.md`. Human must select a new exact active account
+and confirm the Google client/project effect before the live trial. Do not reuse
+or recreate the deleted old case. Lead owns multiaccount route review if such a
+real case appears; it remains an operator exception, not customer manual work.
+No live provider call, credential lookup, deployment, flag change, send, commit or
+push occurred in this increment. Email7-calendar-day policy and #4 remain unchanged.
+
+## Google connection check — resumed read-only scope (2026-10-04)
+
+Lead d72f118f-1edd-4c95-a5f3-09e0d3371f31 has read the current protocols,
+installed Computer Use instructions and OAuth configuration. Human prepared the
+existing connections tab for the selected case. Do not request another tab.
+Human confirms explicit Xcode UI release, consistent with the completed entry below.
+Prior ownership dependency is resolved. Lead d72f118f claimed the single browser
+UI scope and performed one fresh app-state read. Observed address control was
+present but did not match myaccount.google.com/connections. The current tree had
+no matching connections URL or verified selected-account control. Account binding
+therefore FAILED preflight; no connection inspection occurred. This does not prove
+any grant absence. No unrelated page/body is retained as evidence or reported.
+Lead REJECTS this observation as Google grant evidence. Browser UI scope RELEASED.
+No navigation, tab selection/closure, click, revoke, login, settings change or send
+occurred; the browser was left unchanged. Existing prepared tab remains the input.
+Later authorized metadata enumeration resolved the tab-selection gap. Lead used
+the installed Chrome plugin to claim the one existing connections tab. Exact
+account-control aria-label privately matched the selected account before inspection.
+At16:22UTC, LessMeet connection PRESENT: Sign in with Google, name/email/profile
+picture; "Access given to"2m0r.com. A separate Clerk entry exists but was not opened
+or attributed to LessMeet. App name/domain/permission type match recorded production
+OAuth configuration. Numeric OAuth client ID is not exposed by the inspected UI;
+do not claim exact numeric-client verification or exhaustive token inventory.
+Lead ACCEPTS this bounded presence/scopes observation, NOT Google revocation.
+Available action: "Stop using Sign in with Google" on the LessMeet detail page.
+UI consequence: Google will no longer automatically sign in to LessMeet if enabled.
+Removal needs exact action-time authority; no click on this action occurred.
+Private evidence: selected-deletion-20261004/google-connection-observation.json and
+09-google-lessmeet-scopes.png (0600). Back twice restored the original connections
+page; no new/closed tabs, unrelated contents, login, settings change or email send.
+Browser UI ownership RELEASED. Claimed Human tab remains open.
+Next: authorized LessMeet sign-in disconnection and readback, final integrated
+disposition, then scoped completion notice. #3 remains OPEN; no broad flags change.
+Email recipient-reported receipt remains accepted. No send, revoke or config change.
+
+## Xcode verification setup (2026-10-04)
+
+Lead owns `Tests/UI/`, `scripts/test-ui.sh`, verification skill updates, README
+guidance, one picker accessibility identifier in `OfflineAccountCheckView.swift`,
+and this entry. Lead ACCEPTS the Xcode verification setup. UI ownership RELEASED.
+Existing app/backend edits remain outside this write scope. Scope: synthetic
+account-status checks, Xcode test/debug instructions and durable test evidence.
+No live account or paid work occurred.
+
+`bash scripts/test-ui.sh` PASS: 5 XCUITests, 0 failures/skips, Xcode26.6 on
+macOS26.4 arm64. Shared `LessMeetOfflineUI` scheme runs the same packaged fixture
+from Xcode or the command line. Ready/pending refresh, failure preservation,
+delayed completion, stale-response rejection and confirmation cancellation passed.
+Focused AccountDeletion/OfflineAccountFixture/ChatTextEditor suites PASS14/14.
+Computer Use observed the exact same executable's waiting controls and indicator,
+then offline-bob with no old response applied. Screenshots inspected.
+Evidence: `.artifacts/verify-lessmeet/xcode.9yptY2/result.md`, `Tests.xcresult`,
+`summary.json`, `identity.json`, unit log and Computer Use captures.
+
+The first harness run lacked a picker identifier. The second found a duplicate
+Cancel control in the Touch Bar. A stable picker ID and window-scoped queries
+resolved these test-harness issues. Both failed attempts closed their fixture and
+retained their reports. Final XCUITest and Computer Use cleanup PASS; evidence
+survived teardown. The guard rejected rebuilding an already-running fixture.
+Skill validation, project parsing and scoped whitespace checks PASS.
+
+Interactive Xcode breakpoint stepping is documented, not runtime-verified.
+The optimized packaged app's debugger attachment is not configured here.
+Live account, network, recording, transcripts, chat and billing remain UNVERIFIED
+by this suite. Existing app behavior and prior acceptance decisions are preserved.
+
+## Verification skill creation (2026-10-04)
+
+Lead owns `.agents/skills/verify-lessmeet/` and this status entry. The isolated
+`dist/offline-check/LessMeet.app` UI rehearsal is complete; UI ownership RELEASED.
+Existing native/backend edits and operator state remain outside this write scope.
+The rehearsal uses synthetic status responses only. No recording, live account,
+upload, billing, deletion or paid inference is authorized by this task.
+Lead ACCEPTS the generated skill for the bounded offline rehearsal. Build,
+signature, Doctor and skill validation PASS. Computer Use observed ready,
+pending and failed refresh responses through the shared account-status UI.
+Pending selection alone kept the old result; Refresh applied requested=true.
+Failure showed its error and retained the previous result. Screenshots inspected.
+Evidence: `.artifacts/verify-lessmeet/run.pJDe4j/result.md`, action log, AX text,
+screenshots and exact executable/plist hashes in `doctor.json`.
+Owned PID97829 quit; launch session exited0. Evidence survived cleanup.
+Point-in-time lsof found no IP sockets or recording-store handles; transient
+access is not established by this check. Doctor rejects the stopped instance.
+Five feature maps are usable for later scoped checks. Live account entry, HTTP,
+recording, transcripts, chat and billing remain UNVERIFIED by this rehearsal.
+Waiting, stale-response and confirmation recipes were not exercised in this run.
+Existing app source and prior acceptance decisions remain unchanged.
+
+## Issue #3 KISS scope decision — current authority (2026-10-04)
+
+### One-message rehearsal result (10:33UTC)
+
+Correlation disposition: Human now reports the exact subject "LessMeet account
+deletion update" in the intended mailbox. Lead ACCEPTS recipient-reported receipt
+for the scoped status email: exact subject and intended recipient match the single
+recorded send accepted at10:33:14.525UTC. No competing send is recorded in this
+case; this is not a global provider-history audit. Exact receipt time and inbox
+message-ID matching are unknown. No further timestamp is required for this bounded
+manual-delivery acceptance. Exact provider GET at11:49UTC returned HTTP401, so
+independent provider delivery-event readback remains UNVERIFIED. No key change,
+send, retry or activation is permitted. Email correlation scope is closed. Lead owns a
+bounded Google connection browser check; no revoke/login recreation is authorized.
+All Peers are idle. Browser UI scope is RELEASED: the owned new tab reached
+Google connections with the selected account matching its account control, but
+the active page changed to an unrelated site before the connection list could
+be verified. No unrelated content is retained as evidence. No revoke or sign-in
+occurred. Do not close an unverified Human tab. Google grant remains UNVERIFIED;
+resume when Human leaves the selected account's connections page available.
+The earlier "not sent" wording described the offline increment before the later
+authorized10:33UTC send; it must not be used as evidence that no send occurred.
+
+Human approved the exact selected verified recipient and one received/status email.
+Lead sent that message once through the existing restricted Resend credential.
+HTTP200 returned a valid provider message ID at10:33:14.525UTC. Human subsequently
+reported an inbox message on2026-10-04 and then supplied its exact matching subject.
+Lead ACCEPTS recipient-reported receipt with the limits above. Private attempt metadata is in
+issue3-kiss-email-20261004/send-rehearsal-attempt.json (0600); no real address or
+credential is stored in Git. The email states the actual receipt time and normal
+deadline2026-10-11T04:56:03.634Z. It is not a completion certificate.
+Production DELETION_EMAIL_ENABLED was verified false before sending. No config,
+deployment or automatic gate changed. No retry or extra message was sent.
+Expected subject is "LessMeet account deletion update", sent from
+notifications@lessmeet.2m0r.com. Reported subject matches; receipt time is unknown.
+No extra send is authorized by the receipt.
+Google grant handling remains UNVERIFIED. Lead needs the selected account's exact
+connection disposition. A scoped completion notice remains due after acceptance;
+this received/status message is not that notice or proof of automatic delivery.
+#3 stays OPEN. All Peer/UI scopes remain closed.
+
+Human supersedes the broad completion criteria below. #3 delivers the smallest
+usable account-deletion path, not full privacy clearance. Lead owns integration,
+issue3/4 reconciliation, runbook and a focused status-semantics regression.
+Room readback: prior Peer scopes closed. Lead ACCEPTS read-only findings from
+637b46ba-4af4-4af0-8ef0-3fade449aa16 against unchanged Clerk source hashes:
+Google grant revocation is not established by Clerk user/session deletion. The
+Frontend API has a separate revocation endpoint; no backend-equivalent guarantee
+was found. Manual exact Google connection verification is the smallest current
+route. Native pre-delete hook deferred to a selected case needing that route;
+owner Lead, return if manual handling is insufficient. Disposition sent; scope CLOSED.
+
+New binding policy: normal scoped deletion within7 CALENDAR days from receipt;
+email for updates and result. This is an operating commitment, not a promise that
+all provider copies are erased or every applicable law is satisfied. Exceptions
+need status, reason and next-update time. Contact must be verified/account-bound
+before Clerk deletion and usable after sign-out. Human now authorizes one exact
+received/status rehearsal email to the selected case's verified primary contact.
+Lead owns this bounded send and its private evidence. Automatic sends stay off.
+Completed write scope: Peer d502736b-c854-418e-b882-d5e9db713356 owned notificationAdapter,
+deletionNotifications, deletion.ts, clerkExecution and necessary schema/backend
+tests for offline capture/send separation, pre-delete contact safeguards and email
+draft helpers. Lead owns integration; native/UI and Peer scopes are now closed.
+Exact candidate acceptance is recorded below. No other writer overlaps those files. Existing
+deletionCompletion.test.ts remains Lead-owned; its new fourth case PASS970 full suite.
+Preserve accepted dirty/native/provider work, private cases and operator .codex.
+
+Minimum acceptance: native initiation/confirmation; exact-owner account/cloud
+deletion and access lock; applicable sessions/login grants; known account-linked
+provider records handled or substantiated disposition; local-file/subscription
+preservation; timing and completion communicated through a suitable simple channel.
+Manual fulfillment is accepted. Resend, full automation and new layers are not gates.
+No additional production seed/deletion is mandatory merely to repeat accepted live
+intake/Clerk evidence plus populated/race/isolation offline proof. A new synthetic
+account is required only if a remaining changed runtime path needs a live test.
+
+Broad Gemini project/tier/retention, generic provider logs/backups, legal
+applicability and public disclosures move to existing #4. Owner: Hoang Bang for
+policy/provider authority; Lead for inventory/evidence. Checkpoint: #4 acceptance
+before public claims/submission, or earlier when a known account-linked record or
+restore makes the question relevant. Such concrete data stays in #3; unknown is
+not erased. Full guard rollback/post-purge restore stays prohibited without a
+reviewed plan; deferral does not authorize restore or change retention.
+
+`providersComplete` remains the broader runtime conjunction. #3 closure does not
+set it, start the90-day purge, enable email or claim all copies erased. No new
+completion field/framework is needed for a manual scoped receipt. Keep the private
+case disposition and #4 residuals explicit. Add a regression for this separation.
+RC exact404 is exact-ID absence only. Review case-linked billing/purchase/alias
+evidence once; escalate only an actual inconsistency or known record, not an
+unbounded historical audit. Current trial omitted RC SDK initialization and the
+case's cloud/billing/work inventories were empty. Historical aliases remain unknown.
+
+GitHub #3/#4 were edited and exact readback verified; both OPEN. The7-calendar-day
+email policy, offline contact-before-delete path and native copy are implemented
+and verified as recorded below. Google grant disposition remains. Exact-recipient
+manual recipient-reported delivery is accepted with limits above. No new
+destructive operation is implied. This section
+supersedes the older broad #3 frontier below.
+
+Native copy candidate ACCEPTED for the isolated shared view: AccountPanel SHA256
+7a0c6b8e83b0b548bd544276af820eb7e900256fa60c3ce7386573240fcc7d05.
+AccountDeletion/OfflineAccountFixture tests PASS13/13; offline-check release build
+and signature verification PASS. Executable53c9b5e6a5f4133d8557efd6583f72c4f9e414c86cf2f408e6148f72c751ccf9,
+plist9a7becbb37ab9b024fb352231e07a3d9ad12b3d48c339f0a0c4ca91cdddb2219,
+bundlecom.lessmeet.app.offline-check. lessmeet-app-check and discovered Computer Use
+verified ready/pending copy and confirmation at09:35–09:37UTC. The final destructive
+button is disabled; no actual deletion/network/Keychain/recording store was used.
+Private captures issue3-kiss-email-20261004/01-timing.png,02-confirmation.png,
+03-pending.png inspected. Native app quit; native UI scope RELEASED. This does not
+prove production deployment or email delivery. Lead now owns only read-only browser
+scope for the selected account's exact Google connection; no removal/login/recreation.
+Browser check stopped after Human switched windows. One navigation displaced an
+unrelated active tab; Lead restored its original page through Back and made no
+permission change. Discard the Google page as case evidence because account binding
+was not verified. Browser ownership RELEASED. The originally opened blank tab may
+remain in another window; do not close an unverified Human tab to tidy it up.
+Google selected-case grant status remains UNVERIFIED.
+
+Email writer returned eight-file candidate archive
+c18f3639498d833ef369528a8de61324d628aea759042a5827ff2f73aaa96273
+and relinquished scope. Lead inspected the delta and preserved its handoff/archive
+under private issue3-kiss-email-20261004/backend-candidate. Fresh read-only Peer
+f3896284-aaef-4cd3-9ee5-ba10675a84a9 checks that exact candidate for contact,
+historical-execution and deadline regressions. No writer holds the backend now;
+Lead will disposition after the bounded check. Native focused suite expanded to
+35/35 PASS. No UI owner, backend deployment/config change or email send is active.
+
+### Current acceptance and next usable step
+
+Lead ACCEPTS exact eight-file email candidate archivec18f3639498d833ef369528a8de61324d628aea759042a5827ff2f73aaa96273
+for OFFLINE support. All working hashes match the preserved handoff; direct source
+inspection, Lead995/995 backend tests, typecheck and diff-check PASS. Fresh Peer
+independently verified995/995 and found no regression. Both writer and read-only
+responses are explicitly ACCEPTED and dispositions sent; all Peer scopes CLOSED.
+Lead's broader-status regression is deletionCompletion.test.ts
+a02af898de985f5a738081c8c6c51d3950e1a676fbe65ff9450134ee93fd87b4.
+No schema change, new completion flag, send pipeline or retention shortcut.
+
+Usable now: independent verified contact capture with sends off; contact checks
+before new Clerk adoption/destructive effects; historical readback without DELETE
+replay; pure7-calendar-day receipt/exception/scoped-result email drafts. Shared native
+copy is accepted in the isolated runtime, with35 focused tests PASS. Production
+contact capture/deployment remain UNVERIFIED. Manual recipient-reported receipt is accepted.
+No gates changed.
+Existing signed/production artifacts and local recordings are preserved.
+
+Minimum live frontier: verify the selected case's exact Google connection (the
+interrupted browser observation belonged to a different account and was discarded),
+then handle any applicable permission with exact action-time authority. No recreated
+account or new synthetic deletion is needed merely for that check. For email, one
+received/status message to the selected case's pre-deletion verified primary
+contact was sent; exact matching subject and intended-mailbox report now support
+accepted recipient-reported receipt. Its draft is preserved privately
+in email-rehearsal-draft.txt. It is NOT a completion certificate. Do not enable
+automatic sending. An active selected test account is needed only for a separate
+live test of the new automatic capture path, not for manual use of existing evidence.
+
+#3 remains OPEN for applicable Google permission handling and the subsequent scoped
+completion notice and final integrated acceptance;
+mock/UI tests alone do not satisfy delivery. Broad RC/Gemini/residual flags remain false.
+#4 owns general privacy and the pending-ledger retention limit. The ordinary7-day
+commitment is not changed into a legal or all-copies erasure claim. No commit/push,
+provider mutation, paid call or deployment occurred during the offline increment.
+The later single authorized send and scoped recipient-reported receipt are recorded above.
+
+## Prior broad-scope increment — evidence retained, gates revised above (2026-10-04)
+
+Latest disposition: Lead ACCEPTS both test candidates after direct inspection.
+`deletionCompletion.test.ts` SHA2560d58aa88ecf48dfface89b232921a222699d432a7d688c0c2ad9fcd90307a878
+and `providerExecution.test.ts` SHA2561c7541ff4d7530979dee13040c78ff7435bbe3a813fd7871f2fe4ea1462a45c1
+provide the bounded evidence below. Both Peer scopes are CLOSED; dispositions
+were sent to the affected Peers. No runtime defect was demonstrated that warrants
+changing provider guards or adding a framework. Existing source changes remain intact.
+
+Lead rerun on Darwin arm64/Node22: `npm run test:backend` PASS969/26 files;
+`npm run typecheck:backend` PASS; `git diff --check` PASS. Five new cases cover
+populated cleanup and direct RC exception reconciliation. All provider calls are
+mocked or denied. The writer's initial timestamp assertion failed and was corrected;
+it is not a current runtime failure. No native candidate changed or UI claim added.
+
+| Outcome | Result and proof | Remaining acceptance |
+| --- | --- | --- |
+| Populated rows/blobs, isolation, race/retry | PASS OFFLINE: deletionCompletion.test.ts, 3 original cases. Two other issuer-bound owners preserved; late writes denied; failed batch retried. | Production populated rehearsal UNVERIFIED; no longer a default #3 gate. |
+| Apple applicable path | PASS existing mocked guards; independent inspection found no safe basis to relax expiry checks. | UNVERIFIED exact-client live revocation and Clerk expiry units. |
+| RC exception handling | PASS OFFLINE: providerExecution.test.ts, 2 added cases. Initial404/alias conflict makes zero DELETE calls; exact evidence/fence/revision required. | Historical aliases UNVERIFIED; bounded no-known-resource disposition for #3, reopen on concrete evidence. |
+| Gemini actual scope | Existing known-file/unknown-work guards PASS in backend suite. | Broad project/retention goes to #4; known case resources stay #3. |
+| Restore suppression | PASS OFFLINE with retained deletion guard. | Full rollback/post-purge policy goes to #4; no restore authorized. |
+| Completion channel | Exact live inventory: email_disabled, contact_missing, completionEligible=false. |7-calendar-day email policy approved; implementation/real delivery pending. |
+
+Read-only exact-case checks at07:53UTC preserve local/Apple/Clerk=true and
+RC/Gemini/residuals=false, with zero pending work. RC v2 exact-subject aliases
+GET returned404/resource_missing, not a history list. No destructive call occurred.
+Production dashboard read at08:01UTC shows Backup Never, no backups in this
+deployment, and no snapshot export requested yet. This resolves the visible
+schedule/inventory only, not provider-internal copies, prior external exports or
+log retention. Private evidence: selected-deletion-20261004/07-production-snapshots.png
+and08-production-backups.png. Failed CLI system-query attempt remains UNVERIFIED;
+the subsequent dashboard observation is separate evidence.
+Sanitized readback is retained in private completion-metadata.json (0600, ignored).
+
+Lead closed only its new browser tab. UI ownership RELEASED; native app remains
+closed. No deployment, config, provider mutation, sends, costs, commit or push.
+Runbook now contains a bounded synthetic rehearsal, restore stop conditions,
+residual evidence fields, unsent provider requests and policy/channel proposals.
+These are usable next inputs, not accepted provider completion. Issue #3 stays OPEN.
+Revised frontier: Google permission disposition and email delivery remain in #3.
+Gemini project/admin and generic residual evidence belong to #4. A synthetic account
+is conditional on a new live test, not a blanket input. No need to repeat selected-case
+deletion permission. Do not recreate it.
+
+### Implementation trail — superseded ownership snapshots
+
+Human authorizes change/build/test against the unchanged GitHub #3 outcome and
+acceptance. Do not close on pending evidence or replace the milestone. Selected
+case native intake/Refresh/lock, Clerk deletion/session revocation/signed-out and
+case-specific Apple non-applicability remain accepted. Populated cloud deletion,
+Apple applicable live path, RC alias/history, Gemini actual scope, residuals and
+customer completion channel still need the evidence described below.
+
+Lead d72f118f reread shared/local protocols, AGENTS, current STATUS/runbook and
+live issue #3. Room readback: all other prior agents idle, old scopes closed.
+HEAD c466a211ca9c8707768e3ed28f12affdaf4cb9ae; dirty provider anchors match the
+accepted handoff. Baseline backend suite PASS964/25 files. Preserve all existing
+dirty/untracked provider/native work, .codex, local recordings and private cases.
+
+Ownership: Lead owns integration, STATUS/runbook, private exact-case read-only
+metadata and rehearsal preparation. No live UI claimed yet; app stays closed.
+Peer A receives only new Tests/backend/deletionCompletion.test.ts for populated
+end-to-end fixtures, isolation/race/retry and restore-suppression evidence using
+accepted runtime contracts. Peer B receives read-only exact provider/Apple
+candidate inspection; no source or live-provider writes. Lead will record exact
+agent IDs, bounded results and ACCEPT/REJECT dispositions here. No overlap.
+Active assignments: Peer A5f7074b3-15b7-4a5f-a497-66a035bdf8fe owns only the
+new integrated fixture file. Peer B0789b91c-534b-4676-852c-7d03ad170c9c is
+read-only on provider/Apple contracts and primary-source semantics.
+Lead claims sole browser UI scope for read-only exact-production backup settings.
+No native app launch/login, backup creation/download/restore, settings Save or
+provider mutation. Browser captures remain private; release scope after readback.
+
+Peer B review ACCEPTED on supplied runtime/test anchors: no demonstrated safety
+defect. Apple seconds/ms expiry semantics remain an evidence dependency; do not
+relax validation based on guessed units. Lead/operator owns return on primary
+endpoint/version evidence. New Peer B write scope: only providerExecution.test.ts,
+cover RC initial404/alias-conflict manual reconciliation, owner/fence/revision
+rejection and zero destructive calls. Source/other tests remain unowned by Peer B.
+Peer A returned c10ad17d integrated test file and relinquished scope. Lead inspected
+it, corrected its nonexistent notification flag to actual email/contact gates for
+fixture isolation, and is verifying the corrected candidate. No runtime changes.
+Lead ACCEPTS corrected deletionCompletion.test.ts SHA256
+0d58aa88ecf48dfface89b232921a222699d432a7d688c0c2ad9fcd90307a878:
+focused3/3 PASS after inspection/correction. Peer original full suite967/26 and
+typecheck passed; integrated final rerun still due. Populated/isolation/late-write,
+failure-retry and retained-guard restore proof is OFFLINE only. No production
+seed/delete, guard rollback or post-purge restore is claimed. Peer A loop CLOSED.
+
+Ready path: integrated offline evidence first; exact-case/provider metadata in
+parallel; implement only demonstrated code gaps; reconcile runbook and prepare
+a bounded synthetic production rehearsal with exact seed/cleanup scope. A new
+account must be selected/confirmed before deletion; do not sign in the deleted
+case again. Existing deploy/config authority is unchanged but does not prove
+acceptance. No paid AI, real audio, purchases, provider support sends, notification
+sends, new legal claims, policy defaults, commit/push or submission.
+Manual exceptions remain supported and incomplete until substantiated. Policy
+deadlines, residual retention and completion-channel choices go to Human with
+options; unrelated ready implementation continues while those inputs are pending.
+
+## Selected-account deletion — Clerk deleted; residual handling incomplete (2026-10-04)
+
+Continuation: Human confirms the selected account used only Google for Clerk
+sign-in. Lead accepts this first-party history with the exact-subject verified
+Google-only inventory as case-specific historical Apple non-applicability.
+This is an operator disposition, not an Apple revocation or exhaustive audit-log
+claim. The previous Apple evidence dependency is resolved for this exact case.
+Lead owns STATUS/runbook/private evidence and exact-case provider execution.
+No code/flag changes or broad provider deletions. Next: record Apple disposition,
+adopt guarded Clerk execution, inspect/reconcile actual result, then handle RC.
+Clerk execution reached observed: one inventoried session exactly revoked,
+user deletion acknowledged, then typed user absence observed. Lead accepts this
+bounded account/session scope for reconciliation; provider logs/backups remain
+outside that acceptance. Lead claims sole UI scope to check post-deletion state
+and quit the current trial before RC handling. No fresh sign-in is allowed.
+
+### Latest result — supersedes the earlier Apple blocker below
+
+Recorded Apple non-applicability through exact-owner deletion.confirm with the
+fresh automationRevision and private evidence selected-deletion-20261004-apple.
+Read back manual Apple stage, then adopted Clerk with exact Clerk/Apple fences.
+The guarded worker finished inventory of one session, returned exact_session_revoked,
+acknowledged user DELETE and observed typed user absence. Lead inspected this
+candidate and called clerkExecution.reconcile with the exact execution/fence and
+selected-deletion-20261004-clerk evidence. Clerk flag is now true; no blind retry,
+direct DELETE bypass or invented provider success was used.
+
+Using lessmeet-app-check, exact old-trial Account at05:14:34.200Z showed Sign In
+with Google or Apple, no Sign Out, and four local library entries. Screenshot
+06-clerk-deleted.png inspected. This verifies the visible signed-out state after
+remote deletion; no fresh login/access-token probe was made. Quit normally through
+Computer Use before RevenueCat inspection. Process check shows no LessMeet app
+running. UI ownership RELEASED; leave app closed to avoid customer recreation.
+
+Exact-subject RevenueCat v2 GET at05:14:38.560Z returned404/resource_missing from
+the configured deletion project. No customer was created and no DELETE was sent.
+Accept this as exact-ID absence, not proof of historical aliases or all billing
+copies erased. Alias inventory is unavailable for the absent exact customer;
+RevenueCat flag remains false under the approved incomplete manual-exception route.
+Gemini legacy copies and provider logs/backups remain unresolved; their flags
+also remain false. No sends, purchases, Apple cancellation or local-file deletion.
+
+Durable private inputs: apple-history.md, clerk-scope.md and provider-result.json
+in the existing0700 case directory; files0600, no credentials/raw provider bodies.
+provider-result.json retains exact request/execution evidence and final flags.
+Lead ACCEPTS Clerk account deletion, bounded session revocation and native signed-out
+state. Full provider erasure remains NOT ACCEPTED; issue #3 remains OPEN for the
+remaining evidence, not the now-resolved Apple/Clerk dependency.
+
+Remaining owner/checkpoint: operator/provider support supplies exact-case historical
+RevenueCat alias evidence and Gemini/log/backup retention disposition. Return when
+those records are available; do not confirm missing evidence as completed or delete
+unrelated shared-provider data. No further account-deletion permission is needed.
+No active Peer or agent-started job remains. No code/deploy/flag/signature change,
+commit or push. Existing provider/native edits and .codex preserved.
+
+Human selected the currently signed-in personal account for actual LessMeet
+deletion. A new disposable account is not required. Do not put the email or
+provider identifiers in tracked evidence. This supersedes the earlier disposable
+account selection requirement; it does not broaden scope to Gmail, local files,
+Apple subscription cancellation, paid work or unrelated accounts.
+Lead d72f118f owns STATUS, private evidence and the sole live UI scope for this
+check. Fresh room readback shows other agents idle and prior scopes closed.
+No Peer dispatched. Preserve all existing dirty/untracked files and operator .codex.
+Read shared/local protocols and both app-check/Computer Use skills. Prepare the
+exact native account/confirmation surface. Computer Use requires action-time
+confirmation before the final destructive button. Human then confirmed; one native
+deletion request was sent as recorded below.
+Provider fulfillment and deletion E2E remain UNVERIFIED; approved manual exceptions
+do not become completed stages. Use the authenticated native request to bind the
+target; never invent an issuer-bound owner from the email.
+
+Preparation result: exact running old-trial path
+`dist/issue3-production-rehearsal-20261003/LessMeet.app`, PID36864. Executable
+0548f573b29586d525e5f241802d4d17d7f8706b84e96e8954eed20dd010b19a and plist
+cdd7eadd986daa30bd8e6914b1a571365d2b3c78b7a9a4ecb71da2a13a7065a8 match the
+accepted production trial. No restart, signing or connection change was needed.
+Fresh native Account tree shows the exact selected email (private comparison=true).
+During preparation, clicked only Delete Account…; final deletion was still unclicked.
+Confirmation screenshot inspected; it states access lock, irreversible intake,
+pending provider handling, local-file preservation and separate Apple billing.
+Private screenshots: `.artifacts/selected-deletion-20261004/01-account.png` and
+`02-confirmation.png` (directory0700/files0600). No raw account evidence in Git.
+
+Explicit read-only queries on hoang-bang:lessmeet:prod returned zero, untruncated,
+for recordings, quotaBuckets, billingAccounts, deletionWork, deletions,
+transcriptionBatches, transcriptionChunks, transcriptionAttempts,
+transcriptionInventory, batchChatContexts, batchChats, batchChatOperations and
+system _storage. Therefore the selected account has zero rows/blobs in those
+tables now; this says nothing about Clerk, RevenueCat, Apple, Gemini or backups.
+No media/content export, identity impersonation, provider operation or backend
+mutation occurred. Exact issuer-bound owner will come from authenticated intake,
+not email construction. Provider target/history checks precede their adoption.
+
+### Confirmed execution and current frontier
+
+Human supplied action-time confirmation. Same PID36864 and fresh confirmation tree
+verified before one final click at2026-10-04T04:56:00.962Z. Native result returned
+04:56:04.165Z: Account deletion requested; cleanup/provider handling pending.
+Exactly one new production request exists, requestedAt04:56:03.634Z, inside this
+click interval. Before-state had zero requests. Its stored subject and issuer-bound
+owner were retained privately; no identity was invented or supplied by the client.
+Exact-owner inventory returned localComplete=true, zero work and complete pagination.
+
+One native Refresh returned at04:56:58.713Z: Account deletion requested / Cloud
+storage cleanup verified / Provider handling is pending. Screenshot inspected.
+Exact-owner after-counts remain zero for recordings, quotas, billing, admitted
+work, transcription batches/chunks/attempts and batch chat contexts/chats/operations.
+Global storage remains zero. No content existed in the before inventory, so this
+does not prove populated-content deletion. Exact-owner read-only deletion:check
+returns the expected cloud-access-locked error. This is live guard evidence, not
+a new recording/upload or an assertion of Clerk session invalidation.
+
+Read-only Clerk inspection at04:57:35.649Z bound the credential to the configured
+instance, matched the stored subject, and matched the selected verified email.
+Current external accounts contain verified oauth_google only. This is NOT proof
+of historical Apple non-applicability. No provider mutation or session revocation
+was sent. Dedicated credential remained in memory and was cleared after use;
+no secret, token or raw provider response was logged or saved.
+
+All five generic provider/residual stages are blocked/adapter_unimplemented,
+fence1. They require exact-case handling; flags remain false. Clerk adoption
+requires evidence-backed Apple disposition (clerkExecution.adopt); the current
+Google-only link cannot satisfy it. RevenueCat adoption depends on completed
+Clerk handling. Gemini/residual copies are unknown, not automatically absent.
+The approved manual exception is retained as INCOMPLETE. Do not bypass this fence,
+mark Apple complete, or directly DELETE Clerk to hide the missing evidence.
+
+Lead ACCEPTS the actual native intake, requested=true Refresh, empty cloud cleanup
+and exact-owner access guard. Full account/provider deletion is NOT ACCEPTED and
+issue #3 remains OPEN. No claim of Clerk deletion, session invalidation, RevenueCat
+deletion, Apple revocation, Gemini erasure or backup erasure is made.
+
+Private case: `.artifacts/selected-deletion-20261004/case.json` (0600 in0700 ignored
+directory) stores exact request/owner/subject, times, sanitized stage evidence and
+after-counts. Screenshots03-submitted.png,04-refreshed.png,05-library.png stay private.
+Escape closed Account at04:58:36.383Z; library still shows four local recordings.
+No local file deletion occurred; no playback/file-content verification claimed.
+UI scope RELEASED. No Peer/job remains active. Existing code/artifacts/config and
+unrelated work preserved; only STATUS/runbook/private evidence changed.
+
+The earlier Apple-history input is now resolved by the first-party history and
+case disposition above. Clerk handling continued and finished. Remaining provider
+evidence and owners are in Latest result. The deletion guard remains in place.
+Do not sign in through Google after Clerk deletion because that can create a new
+account; no claim that an old account would be restored.
+
+## Stable-signed Refresh trial — ACCEPTED bounded live Refresh; UI released (2026-10-04)
+
+Human approves exactly Apple Development: Long Le (335C7MY4H4), fingerprint
+24E5A98A599DCBBA0FF05C1B9B1554A2DB101C3C, for signing the local auth-check
+diagnostic trial. This resolves the signer decision below. No distribution/upload,
+Keychain grant/reset, session change/deletion, account deletion or production mutation
+is included. Private signing material stays in the system; no export.
+Lead d72f118f owns RefreshDiagnostics.swift, its focused tests, STATUS and isolated
+build/evidence scope. Room/current candidate reread: no overlapping write/UI owner;
+other live sessions idle with scopes already closed, d9c6c82 workflow archived.
+No Peer dispatched. Lead d72f118f held sole UI scope for signing-prompt observation
+and the exact auth-check trial; scope now RELEASED. Preserve prior dirty/untracked work.
+
+Current base c466a211ca9c8707768e3ed28f12affdaf4cb9ae. Exact approved identity is
+present in fresh codesigning enumeration. Plan: allow only dev/auth-check opt-in,
+keep finite future expiry, ten-minute/120-event budget and metadata privacy unchanged;
+run focused tests; build separate auth-check with explicit old-trial public prod
+config and RC absent; sign with exact fingerprint; verify before native Connect/GET.
+No signing/Keychain permission action was needed or issued by Lead. No auth fix,
+backend change, flags, sends, recording/upload, paid calls, commit or push.
+
+### Candidate, build and usable input
+
+Changed only RefreshDiagnostics.swift, RefreshDiagnosticsTests.swift and STATUS.
+The logger accepts dev/auth-check with an explicit finite future expiry. Other
+modes stay excluded, including store/testflight/sandbox-dev/offline-check. Default
+off, metadata allowlist, local-only correlation, ten-minute and120-event budget are
+unchanged. No AccountSession/AccountPanel/CloudClient behavior changes.
+Source SHA256: RefreshDiagnostics.swift
+fbb811bbcd0880a921ab368e5c6587c92a78bfde13b3f293da55962a651226df;
+RefreshDiagnosticsTests.swift
+910da3a8416a6cdce9335b5239bb9850b2387ad91d677ba8c61ce51c0ebb3535.
+Existing AccountSession5a51ddb5/AccountPanel13818566 and provider anchors remain
+unchanged. HEAD is still c466a211ca9c8707768e3ed28f12affdaf4cb9ae, not this full
+dirty candidate. Operator .codex was not read or changed.
+
+Exact trial: `dist/issue3-auth-check-20261004/LessMeet.app`.
+Executable SHA256: fb75d87ab1f3e4a119401544ad08183c9730109b2c42fdf62898e1364350b3c3.
+Info.plist SHA256: b65ab44f26f4b96c44d4a60758b1c728b9be0f6f5513af25dd5c64d61e70d0fb.
+Bundle com.lessmeet.app, version1.0.0/build1, packagingMode auth-check.
+Approved signer fingerprint rechecked immediately before codesign. Readback:
+Authority Apple Development: Long Le (335C7MY4H4), TeamIdentifier63M98WD275;
+designated requirement binds com.lessmeet.app to the Apple certificate chain and
+that leaf subject. No signing material exported; private key remains in system.
+Signing succeeded without an agent permission/password action.
+
+Preflight used scripts/build-app.sh auth-check --preflight with exact approved
+identity and explicit public Clerk/Convex values from the accepted production trial.
+RC and public legal values explicitly empty; no .env.local fallback. Release built
+with swiftbuild, packaged into a new unused directory using the accepted script's
+resource/configuration steps, then stamped expiry before signing once. It did not
+replace dist/LessMeet.app, dist/auth-check or either older rehearsal artifact.
+Readback matches old public production Clerk key/Convex endpoint; RC key absent.
+Diagnostic expiry readback:2026-10-04T04:54:51Z. All observations below occurred
+before expiry and the per-process budget. Do not assume future runs still log.
+
+Verification:
+- Focused native suite PASS30: RefreshDiagnosticsTests6, AccountDeletionTests8,
+  CloudClientTests12, AccountSessionTests4. Includes auth-check opt-in/expiry guards,
+  excluded modes, metadata privacy, early returns/discards/errors and existing auth.
+- Explicit auth-check preflight PASS. Release swiftbuild PASS.
+- Strict signature verify PASS. Exact path/process35321 confirmed before Connect.
+- `git diff --check` PASS. Normal app and old trial executable/plist hashes unchanged;
+  all seven accepted provider anchors still match.
+
+### Observed UI, native response and server evidence
+
+Computer Use loaded old-trial state at04:25:36.411Z: Account closed, no recording.
+Quit the old trial normally and launched the exact signed trial. Startup returned
+state/screenshot at04:26:00.877Z without configuring Clerk. Account opening showed
+Connect Account at04:26:12.387Z. Screenshot inspected. This establishes the usable
+local startup/explicit Connect surface on the current production-configured build.
+
+One Connect click:2026-10-04T04:26:31.576Z–04:26:51.055Z. Returned signed-in Account
+with Refresh; no Sign In/Connect control. No password, Allow, Always Allow or other
+authorization action was issued. Saved-session restoration works for this exact
+trial. A transient system prompt was not continuously observed; do not claim no
+prompt can ever occur or that another actor did not interact with the system.
+Automatic refresh trace547EEBD2 completed HTTP/decode/received/applied at04:26:50.268Z,
+with requested=false, localComplete=false, providersComplete=false.
+
+One manual Refresh click:2026-10-04T04:27:51.566Z–04:27:53.547Z.
+Local-only correlation375F5AF7-1572-4D48-897B-7F95B559E5CE:
+
+| UTC | Native phase |
+| --- | --- |
+| 04:27:51.610Z | started, origin=manual |
+| 04:27:51.611Z | tokenStarted |
+| 04:27:53.087Z | sendStarted |
+| 04:27:53.436Z | httpSucceeded, decoded |
+| 04:27:53.437Z | received, applied; requested=false, localComplete=false, providersComplete=false |
+
+These events come from the exact process's scoped OSLog category. `httpSucceeded`
+occurs only after the expected HTTP200; `decoded` follows successful JSON decoding;
+`applied` follows response validity/owner/context checks and model state assignment.
+No early-return/discard/error phase occurred in this complete manual trace.
+No body, token, user/session ID or raw error was logged. The safe bool result is
+direct new native evidence, not inferred from earlier HTTP200 or empty tables.
+
+Bounded production log observation04:27:51.565Z–04:28:11.570Z (history10,20s stream,
+terminated by SIGTERM) yielded deletion:status completed04:27:53.377Z and parent
+GET /account/deletion completed04:27:53.380Z, HTTP200, identityType user, error=false.
+Query parent/request relationship matched internally; cachedResult=true, payload=null.
+No raw server IDs exported. Server/native linkage is temporal, not an exact shared
+request identifier; native task-local trace independently proves response application.
+
+Fresh before/after manual accessibility trees match. Screenshot inspected: Account
+shows Delete/Refresh controls with no new error or deletion-requested/success message.
+Final state has no progress indicator; no claim about a transient spinner. This UI
+matches AccountPanel's requested=false branch. No Delete control was activated.
+Private evidence: `.artifacts/auth-check-signed-20261004/` (0700), screenshots
+01-prior.png through06-restored-prior.png and refresh-metadata.txt (0600).
+Raw account screenshots stay ignored/private; do not attach or commit them.
+
+### Acceptance, restoration and remaining frontier
+
+Lead ACCEPTS the narrow allowlist/test change, exact signed artifact, saved-session
+Connect and manual Refresh decoded/applied=false observation. The earlier Refresh
+application gap is closed for this exact scenario. Older requests remain body-unknown;
+do not retroactively assign them the new result. This does not accept deletion E2E.
+
+Closed the signed trial's Account popover at04:29:05.575Z, quit it normally, then
+restored the prior production trial. Fresh state/screenshot at04:29:29.856Z shows
+Account closed and library available. Process readback leaves only old-trial PID36864.
+No sign-out, session deletion, Keychain grant/reset or provider mutation was performed.
+UI ownership RELEASED; no job/Peer remains active. Old artifacts/public configuration,
+native auth workflow and provider work are preserved. No commit/push.
+
+No missing input remains for this bounded Refresh check. Fresh OAuth Google/Apple
+sign-in, other machines/signatures/accounts, repeated Keychain authorization, live
+error/discard cases, requested=true and actual deletion/provider fulfillment remain
+UNVERIFIED. Root cause of the earlier ad-hoc startup wait is not proven by this pass.
+Future diagnostic trials must renew expiry on a new preserved copy and sign with
+the same approved identity; no broader Keychain authorization is implied.
+Issue #3 remains OPEN. Human's selected-account decision above replaces the prior
+disposable-account prerequisite; action-time confirmation and verification remain.
+Approved manual exceptions remain unchanged.
+
+## Prior real-auth diagnosis — signer dependency resolved above (2026-10-04)
+
+Lead d72f118f takes bounded issue #3 diagnosis after Human transfer. Room readback
+confirms d9c6c82 and its Peers closed/archived; prior assignments have explicit
+acceptance. No overlapping writer exists. Lead owns only STATUS/private diagnostic
+evidence for this step. Sole live UI observation scope was claimed before runtime
+inspection and is now RELEASED. No Peer was dispatched.
+No signing identity selection, auth behavior fix, Keychain authorization/reset,
+session deletion, destructive/provider action, flags, paid work, commit or push.
+Preserve all provider/diagnostic work and operator .codex. No old agent resumed.
+
+Read shared/local protocols, root AGENTS, authoritative handoff, README workflow,
+full lessmeet-app-check and discovered installed Computer Use skill1.0.1001365.
+Current HEAD c466a211ca9c8707768e3ed28f12affdaf4cb9ae includes native workflow
+and diagnostic commits; AccountSession5a51ddb5/AccountPanel13818566 and packaging
+anchors match the current handoff. Prior provider dirty/untracked work remains.
+Safe codesigning identity enumeration reports one valid Apple Development identity,
+fingerprint24E5A98A599DCBBA0FF05C1B9B1554A2DB101C3C; no private key accessed.
+No identity has yet been selected/approved. Existing diagnostic deadline
+2026-10-03T17:40:16Z has expired. Do not use that trial for new log acceptance.
+RefreshDiagnostics.configured currently allows only dev, not auth-check; deadline
+renewal alone cannot enable diagnostics in the required stable-signed auth-check.
+Identity label: Apple Development: Long Le (335C7MY4H4). Availability does not
+authorize selecting it or prove the private key will sign without a prompt.
+
+### Fresh observations and disposition
+
+Computer Use import and list_apps succeeded. Runtime exposes only list_apps,
+get_app_state and app-targeted click/drag/paste/secondary action/key/scroll/text
+operations. No separate whole-desktop/system-prompt API is exposed by the installed
+skill/runtime or current tool catalog. New capability does not imply broader
+Keychain permission. No alternative automation stack was installed or used.
+The app list shows LessMeet running but no running SecurityAgent/Keychain app.
+Process metadata shows CoreServicesUIAgent already running. Its exact-path native
+state read at2026-10-04T03:52:58.613Z–03:53:03.740Z failed with
+`Computer Use server error -10005: timeoutReached`. No tree/screenshot returned.
+This is an observation gap, not proof that no prompt exists or access was denied.
+No password field, requested item or permission scope has been identified.
+Private ignored path `.artifacts/real-auth-barriers-20261004/` was prepared0700;
+no capture was produced. No account/recording data or credentials were exported.
+
+`env -u LESSMEET_SIGNING_IDENTITY bash scripts/build-app.sh auth-check --preflight`
+correctly refused: `auth-check requires explicit non-ad-hoc LESSMEET_SIGNING_IDENTITY.`
+No build/sign/key access followed. Existing production trial PID84651 still points
+to dist/issue3-production-rehearsal-20261003/LessMeet.app; codesign metadata confirms
+ad-hoc and no TeamIdentifier. It predates Connect Account and cannot verify the new
+startup path. That process was not stopped/relaunched or used for a Refresh here.
+No UI controls, system permissions or persistent settings were changed, so no
+reversible control change needed restoring.
+
+Source inspection confirms current AccountSession defers Clerk until connect(),
+and AccountPanel's explicit Connect action uses that function. This is not a new
+runtime real-auth result. Current AccountSession/AccountPanel hashes match the
+accepted workflow; AccountDeletionModel1e173ece/CloudClientcec71cf4/diagnostics698ffc22
+match preserved diagnostics. Provider/schema sampled anchors still match.
+The earlier diagnostic app still has explicit production endpoint and no RC key,
+but its deadline is expired. Do not renew/reuse the old native binary because it
+also predates the accepted Connect workflow. `git diff --check` passes.
+
+Disposition: ACCEPT read-only identity, guard, candidate and capability evidence.
+Real-auth/system-prompt content and live Refresh response/application are UNVERIFIED.
+No new Account/Connect/Refresh click, HTTP/backend correlation or decoded/applied
+event was obtained. Offline acceptance and older server HTTP200 evidence are
+unchanged; neither closes this gap. No auth behavior or source file changed.
+Issue #3 remains OPEN. All UI/write assignments are closed except Lead's retained
+integration/acceptance responsibility.
+
+Smallest next path / decision owner:
+1. Human explicitly approves identity fingerprint24E5A98A599DCBBA0FF05C1B9B1554A2DB101C3C
+   for the local auth-check trial, or supplies a different approved stable identity.
+   No production/Keychain permission is bundled with that decision.
+2. Once selected, Lead uses current native source and explicit public production
+   config with RC absent. Under existing instrumentation authority, adapt the
+   diagnostic-only mode allowlist to auth-check with a focused test, then package
+   a new preserved-path trial with a fresh bounded expiry before signing. Do not
+   relabel auth-check as dev or bypass its signing guard. No auth behavior fix.
+3. Verify exact signature/build, then observe Connect and at most one evidenced
+   manual Refresh. If a system prompt appears, identify app/item/scope and ask
+   only for the required action. Human enters any password directly; no blanket
+   allow/reset/session deletion. If supported prompt observation still fails,
+   operator supplies that specific missing prompt context, not repeated Refresh.
+
+No generic production approval is requested again. Existing manual exceptions and
+destructive-account selection boundaries remain unchanged.
+
 ## Keychain-independent agent checks — ACCEPTED offline; live auth unverified (2026-10-04)
 
 Usable now: `bash scripts/build-app.sh offline-check`, then open
@@ -224,6 +1134,366 @@ If a code bug is established, propose its separate scope first. Lead retains
 integration/acceptance; live UI scope is RELEASED. Issue #3 remains OPEN. Exact
 account selection/confirmation is still required for any later destructive rehearsal.
 
+## Incoming Lead diagnosis — observed Refresh; UI released (2026-10-03)
+
+Lead `d72f118f` accepts the transfer and owns integration/technical acceptance.
+This round is bounded diagnosis only; issue #3 remains OPEN. The outgoing
+handoff below remains the preserved candidate and authority record.
+Room recheck: outgoing Lead `ddb7b8da`, instruction-only Lead `9fd91657`,
+Peer `b6b79dba` and Supervisor `cf349c63` are idle. Prior scope closure comes
+from the handoff, not idle lifecycle alone. No Peer is dispatched.
+Lead `d72f118f` claimed the sole live UI scope before the trial and released it
+after the observations below. Lead retains integration/technical acceptance.
+This round wrote only STATUS/private evidence. No runtime/code/config changes, Delete,
+adopt, revoke, send, recording/upload, paid AI, purchase, activation change,
+commit or push. Existing production authority and manual exceptions are retained;
+no destructive case/account is selected.
+
+Read shared/local protocols, root AGENTS, the complete current handoff and
+lessmeet-app-check. Discovered Computer Use through the installed plugin manifest
+and read its full skill (1.0.1001365). HEAD/base relationship, all seven source/test
+anchors and both app hashes match the handoff. Dirty/untracked paths match the
+preserved inventory; HEAD alone is not the candidate. `git diff --check` PASS.
+Operator-owned `.codex/` is not read or changed.
+New private evidence path: `.artifacts/refresh-diagnosis-new-lead-20261003/`;
+ignore rule verified. Captures are private, not tracked or attached to the report.
+
+### Observed result and disposition
+
+Computer Use import and exact-path state access succeeded in this new session,
+2026-10-03T16:52:55.467Z–16:52:55.666Z. Both accessibility and screenshot returned.
+The prior native-pipe blocker did not reproduce; its cause is still unknown.
+Running process path matches the trial. Strict codesign passes. Bundle is
+com.lessmeet.app, version1.0.0/build1. Artifact configuration is unchanged by hash;
+effective process environment overrides remain uninspected.
+
+Account opening interval: 16:53:55.344Z–16:53:58.155Z on 2026-10-03.
+One Refresh click interval: 16:54:20.097Z–16:54:21.293Z on the same date.
+Private captures: 01-initial.png, 02-fresh.png, 03-account.png,
+04-after-refresh.png and 05-restored.png under the new evidence path.
+Fresh accessibility trees before/after Refresh were identical. The inspected
+after screenshot shows the Account popover, Delete Account and Refresh deletion
+status controls. No new error, deletion-requested message or success message is
+visible. No progress indicator appears in the final state; a transient spinner
+is not verified. No Delete control was activated.
+
+Bounded Convex log observation targeted hoang-bang:lessmeet:prod using history10,
+success JSONL and a 20-second stream. The child process ended by SIGTERM.
+Only relevant metadata is reported; raw identities/request IDs are not recorded here.
+
+| Completion UTC | Event | Evidence |
+| --- | --- | --- |
+| 16:53:57.631Z | deletion:status | identityType user, error false, cachedResult false |
+| 16:53:57.634Z | GET /account/deletion | HTTP200, identityType user, error false |
+| 16:54:20.837Z | deletion:status | identityType user, error false, cachedResult true |
+| 16:54:20.840Z | GET /account/deletion | HTTP200, identityType user, error false |
+
+Each query's parent execution and request IDs match its HTTP event internally.
+The cached query retains an older executionTimestamp; the table uses completion
+timestamp, not that older value. Query success payload is null in logs. No HTTP
+response body was captured. Timing is consistent with Account's automatic refresh
+and the manual Refresh respectively. This is temporal correlation, not a client
+request ID trace or proof that either response was applied by the app.
+
+Source explanation checked in AccountPanel.swift and AccountDeletionModel.swift:
+the view shows the requested state only when model.status exists and requested
+is true. For example, status=nil and a valid requested=false response both leave
+the Delete/Refresh controls visible. Identical UI therefore cannot distinguish
+those cases. Do not assign requested=false to these or the older handoff GETs.
+
+Disposition: ACCEPT bounded native Account/Refresh observation and server HTTP
+authentication evidence. Response content/application remain UNVERIFIED.
+Do not promote configuration/build acceptance to product deletion E2E acceptance.
+Issue #3 stays OPEN. No runtime fix, build, deployment, activation or account
+mutation was performed; existing implementation/docs/operator files are preserved.
+Escape restored the closed Account popover at16:55:19.821Z, with fresh state and
+screenshot. Live UI ownership RELEASED. No Peer assignment or log job remains.
+
+Smallest next path: no repeated click is needed now. Lead owns the missing
+client-response/application evidence. Human can authorize a separate, narrow
+diagnostic instrumentation scope if that distinction is required; do not add it
+under this diagnosis. Resume when that scope is granted or an existing safe
+response/application evidence source becomes available. No generic production
+approval is requested again. Disposable-account selection and exact destructive
+case confirmation remain separate Human-owned inputs for a later rehearsal.
+
+## Outgoing Lead handoff — preserved candidate and authority (2026-10-03)
+
+The incoming diagnosis above is current. This outgoing handoff preserves the
+candidate and authority record. Older dated entries below retain historical evidence.
+Project: `/Users/tubakhuym/projects/lessmeet`. Issue #3 remains OPEN.
+This round is documentation-only. Do not resume implementation or diagnosis in
+the outgoing session. No commit, push, archive, deletion or runtime edit is part
+of this handoff. The next Lead can use the accepted configuration and exact app
+artifact for bounded diagnosis. Product end-to-end deletion is NOT accepted.
+
+### Repository and preserved candidate
+
+Current HEAD: `a94277265cd0026dce6326a7d5365f103e78df96`.
+Accepted implementation/deployment base: `8edfceec3fba8713ebf196ffa06e81f273b5e5a1`.
+The single intervening commit adds native verification instructions: root AGENTS,
+project skill, README, local protocol and a STATUS entry. It does not commit the
+dirty provider implementation. HEAD alone cannot reproduce the accepted runtime.
+Fresh handoff hashes match these accepted SHA256 anchors:
+
+| Path | SHA256 |
+| --- | --- |
+| convex/providerExecution.ts | 284c7a828f1afd6bf6d0113c02b0866c161c1b5ab01ea9598a0e065c12e127a2 |
+| Tests/backend/providerExecution.test.ts | 6427a3b6edab2ca807716c7481644bb3d5c66f1600dec56be5389cc541fb5793 |
+| convex/clerkExecution.ts | 680a2898ebfc3768ee0a3db305af078b0664702a38c387b99fbcf934776aa893 |
+| Tests/backend/clerkExecution.test.ts | 7e2fa4da9615b792fe4a559557dc0e39642551255be93bab44a4b539dc027447 |
+| convex/schema.ts | 144d62f9caee2fc9fa4786ba35c53d144f9b62374c699638bcb972a86e484ca1 |
+| convex/appleDeletionTransport.ts | 7ee0fcf2dd776a437ce89c5af9eef64ca99dec780026d36dbebf760f3718073c |
+| convex/revenuecatDeletionTransport.ts | 5d0ed4d289da72e3a7006ef7cbe5adfe784a6a34221e03bbbdbb5f753677033f |
+
+Preserve these modified tracked paths:
+
+```text
+Tests/backend/clerkDeletionTransport.test.ts
+convex/_generated/api.d.ts
+convex/clerkDeletionTransport.ts
+convex/deletion.ts
+convex/deletionAutomation.ts
+convex/deletionAutomationState.ts
+convex/deletionRetention.ts
+convex/schema.ts
+docs/BACKEND.md
+docs/CONFIGURATION.md
+docs/STATUS.md
+docs/legal/DELETION_RUNBOOK.md
+```
+
+Preserve these untracked paths:
+
+```text
+.codex/
+Tests/backend/appleDeletionTransport.test.ts
+Tests/backend/clerkExecution.test.ts
+Tests/backend/providerExecution.test.ts
+Tests/backend/revenuecatDeletionTransport.test.ts
+convex/appleDeletionTransport.ts
+convex/clerkExecution.ts
+convex/clerkExecutionContract.ts
+convex/providerExecution.ts
+convex/providerExecutionContract.ts
+convex/revenuecatDeletionTransport.ts
+```
+
+Provider source/tests are accepted prior work, not disposable files. Docs contain
+integration decisions. The incoming Lead receives no permission to overwrite them
+by accepting this handoff. `.codex/` remains operator-owned; do not read or modify
+it. Preserve ignored `keys/.env`, `.env.local`, `.artifacts/` and existing build
+artifacts. Do not copy secrets or private account captures into Git or reports.
+Handoff validation: `git diff --check` PASS. HEAD stayed unchanged. This handoff
+edited only `docs/STATUS.md`; the larger existing dirty diff predates this edit.
+
+### Production configuration and authority
+
+Exact target: `hoang-bang:lessmeet:prod` / `uncommon-narwhal-733`.
+HTTP URL: `https://uncommon-narwhal-733.convex.site`.
+Cloud URL: `https://uncommon-narwhal-733.convex.cloud`.
+The Sep26 accepted dirty runtime was deployed with Convex1.45.0; readback showed
+126 functions. There was no Oct3 redeploy. Final Oct3 inventory had29 env names.
+These are dated observations, not a new production read at handoff.
+
+- Enabled/readback verified: `ACCOUNT_DELETION_ENABLED`,
+  `DELETION_AUTOMATION_ENABLED`, `CLERK_DELETION_ENABLED`,
+  `REVENUECAT_DELETION_ENABLED`.
+- Disabled: `DELETION_PREFLIGHT_ENABLED`, `DELETION_EMAIL_ENABLED`,
+  `GEMINI_BILLABLE_ENABLED`, `BILLING_ENFORCEMENT_ENABLED`.
+  Provisioning records also retain false for `DELETION_PREFLIGHT_RETENTION_APPROVED`,
+  `DELETION_CONTACT_RETENTION_APPROVED`, `CLERK_CONTACT_INVENTORY_ENABLED`,
+  `BATCH_CHAT_ENABLED`, `BATCH_TRANSCRIPTION_ENABLED`; not all were freshly reread
+  during the last UI attempt. Apple deletion is absent/default-off.
+- Clerk production app `app_3JggBoRulgsbt70ZFjgy9h7UjqQ`, instance
+  `ins_3JoKJsnX2ro7wXXYQfu94imtJNX`, issuer `https://clerk.auth.lessmeet.2m0r.com`,
+  audience `convex`, callback `com.lessmeet.app://callback` are bound.
+  `CLERK_CONTACT_ISSUER` and `CLERK_CONTACT_INSTANCE_ID` carry that binding.
+  `CLERK_DELETION_SECRET_KEY` comes from Clerk production's existing `default`
+  standard admin key. `CLERK_DELETION_CONFIG_REF` is
+  `clerk_lessmeet_prod_deletion_20261003_v1`. Pinned API2026-05-12
+  GET `/v1/instance` returned200 for the exact production instance.
+  The credential has shared admin-level rotation implications; it is not a new
+  least-privilege key. No contact or Apple credential was implicitly reused.
+- RevenueCat project `a83a7730` / `proja83a7730`: preflight source is the existing
+  dev read key in `zany-octopus-315`, with prior approved storage in ignored
+  `keys/.env` (mode0600). Dev remained unchanged. Production names are
+  `REVENUECAT_PREFLIGHT_SECRET_KEY`, `REVENUECAT_PREFLIGHT_PROJECT_ID`,
+  `REVENUECAT_PREFLIGHT_CONFIG_REF`, `REVENUECAT_PREFLIGHT_PROJECT_VERIFIED`.
+  Ref: `rc_lessmeet_prod_preflight_20261003_v1`; verified flag true.
+  The separately approved new V2 key is `LessMeet production deletion`, dashboard
+  ID `apikeya8bb87e231`. Saved scope: Customers Configuration Read & write;
+  other groups No access; Issue token off. Production names are
+  `REVENUECAT_DELETION_SECRET_KEY`, `REVENUECAT_DELETION_PROJECT_ID`,
+  `REVENUECAT_DELETION_CONFIG_REF`; ref `rc_lessmeet_prod_deletion_20261003_v1`.
+  Both keys returned404/resource_missing for a synthetic missing subject.
+  That is not DELETE compatibility, project-binding proof by itself, or erasure.
+- Resend source: 1Password `Private` / `LessMeet Resend` / `credential`.
+  Production names: `RESEND_API_KEY`, `RESEND_DELETION_CONFIG_REF`;
+  ref `resend_lessmeet_prod_deletion_20261003_v1`. Readback equality passed.
+  Team `kieng`, domain `lessmeet.2m0r.com` verified in Tokyo; existing
+  `LessMeet transactional` key is sending-only for that domain. No send test.
+  Initial vault timeout was resolved on retry; no remaining request to fill it.
+- Hosted Apple login is configured. This is not revocation-client provenance.
+  `APPLE_DELETION_CLIENT_SECRET` and dedicated Apple Clerk credential/config are
+  absent. Original-client evidence is still required for applicable identities.
+
+Existing authority covers production deployment, real deletion enablement and
+necessary provider configuration. Do not ask again for generic approval of those
+settled actions. It does not select a deletion target. No disposable account has
+been selected/confirmed for the destructive rehearsal. Obtain exact-case scope
+and Human confirmation before a real destructive run. Missing Apple evidence and
+RevenueCat alias exceptions may remain approved manual/incomplete cases. Do not
+make full automation of all exceptions a gate for the ready normal path.
+No authority for recording/upload, paid AI, purchases, unrelated account changes,
+notification sends or deletion of an unselected account. Diagnosis does not
+authorize code fixes. Technical acceptance does not authorize push or release.
+
+### Exact app and verification limits
+
+Artifact: `/Users/tubakhuym/projects/lessmeet/dist/issue3-production-rehearsal-20261003/LessMeet.app`.
+Bundle `com.lessmeet.app`, version1.0.0/build1, `packagingMode=dev`, ad-hoc signed.
+Production Clerk public key and Convex HTTP URL were injected into the build.
+RevenueCat public key and public legal settings are absent. SDK identify/purchase
+admission is disabled in this trial. Previous `dist/LessMeet.app` was restored.
+The observed running process later matched the exact trial path. Process-level
+environment overrides were not inspected. Config is not native callback proof.
+
+- Executable SHA256: `0548f573b29586d525e5f241802d4d17d7f8706b84e96e8954eed20dd010b19a`.
+- Info.plist SHA256: `cdd7eadd986daa30bd8e6914b1a571365d2b3c78b7a9a4ecb71da2a13a7065a8`.
+- `npm run typecheck:backend`: PASS.
+- `npm run test:backend`: PASS964 tests /25 files.
+- `swift test --disable-automatic-resolution --filter AccountDeletionTests`: PASS8/8.
+- `bash scripts/build-app.sh dev`: PASS release build with explicit production
+  public configuration in the child environment. Running the bare command does
+  not guarantee the same configuration.
+- `codesign --verify --strict --verbose=2 dist/issue3-production-rehearsal-20261003/LessMeet.app`: PASS.
+- `node website/verify-drafts.mjs`: PASS4 assets,9HTML,27Markdown; not publication proof.
+
+These checks ran earlier Oct3, not as a replacement for UI evidence at handoff.
+Local provider tests use mocks. Real provider deletion, populated cloud cleanup,
+other-owner/in-flight behavior, backup suppression, RC recreation and delivery are
+untested. ACCEPT scoped configuration/build and prior bounded implementation.
+Native Refresh response application and product deletion E2E remain UNVERIFIED.
+
+### Refresh evidence and runtime blocker
+
+The notification time was about `2026-10-03T16:18:18Z`, not an exact click time.
+Bounded server logs showed these two authenticated HTTP successes:
+
+| Internal status query UTC | Parent GET /account/deletion UTC | Result |
+| --- | --- | --- |
+| 2026-10-03T16:17:40.838Z | 2026-10-03T16:17:40.842Z | HTTP200, identityType user, error false |
+| 2026-10-03T16:17:43.666Z | 2026-10-03T16:17:43.668Z | HTTP200, identityType user, error false |
+
+Parent execution/request relationships matched internally. Raw IDs and identities
+are not exported here. These requests passed server authentication. The logs do
+not establish which device/account/click sent them. Query success payload was
+null in logs; no HTTP response body or app applied-state capture exists.
+Do not label either result `requested=false`. At16:14:34.806Z, `deletions`,
+`deletionStages`, `deletionClerkExecutions`, `deletionProviderExecutions` were
+empty. That earlier observation does not prove a later click's response.
+
+Prior source inspection: `AccountPanel.swift` shows status only when requested
+is true and can refresh on popover/session changes. `AccountDeletionModel.swift`
+can return on missing identity/busy state or discard a changed-session result.
+`CloudClient.swift` uses GET for Refresh; `convex/http.ts` authenticates then calls
+the status query. These are possible explanations, not observed UI outcomes.
+
+Required project skill:
+`/Users/tubakhuym/projects/lessmeet/.agents/skills/lessmeet-app-check/SKILL.md`.
+Read it completely after shared/local protocols and root AGENTS. The new Lead
+must discover the installed `computer-use` skill from the current plugin catalog
+and read it fully before using its runtime. Do not hard-code a cache version.
+Prior discovery found `openai-bundled/computer-use/1.0.1001365` and
+`skills/computer-use/SKILL.md` through its `.codex-plugin/plugin.json`.
+Use the installed supported `@oai/sky` runtime through `mcp__node_repl__js`.
+
+In this Lead session import succeeded. Both exact-artifact `get_app_state`
+attempts failed before accessibility state or screenshot with the exact error:
+`Sky Computer Use native pipe startup failed`.
+Second attempt started `2026-10-03T16:36:53.512Z`. No Account open or Refresh
+click followed. No fresh backend correlation was attempted without a UI event.
+`.artifacts/refresh-diagnosis-20261003` was prepared privately but got no capture.
+No permission prompt was observed. Accessibility/Screen Recording denial is NOT
+an established cause. No runtime install, reset, settings change or alternative
+automation stack was tried. Another session's successful sidebar smoke is not
+proof of connectivity in this session and did not test Refresh.
+The earlier Chrome Apple Events restriction is separate; Chrome plugin access
+later worked. Do not treat that restriction as the native-pipe diagnosis.
+
+### Ownership, pending outcomes and smallest next path
+
+All prior actionable Peer assignments have explicit closed/accepted dispositions
+below; no unresolved moving Peer write scope remains. No Peer was dispatched in
+this session. Room readback at handoff: Supervisor `cf349c63`, instruction Lead
+`9fd91657` and old Peer `b6b79dba` are idle. Idle lifecycle is not archival or task
+closure evidence by itself; the recorded dispositions establish scope closure.
+Outgoing Lead `ddb7b8da` releases every write scope upon saving this handoff and
+already released live UI. No agent holds live UI ownership in this handoff.
+The outgoing Lead waits for explicit transfer; the next Lead must recheck ownership.
+
+No mutation, request adoption, DELETE, session revocation or send is in progress
+under this session. Earlier authorized production config mutations are complete.
+Bounded log streams completed; no tool job remains from this session. Enabled
+backend workers can act independently. Global quiescence and other actors' current
+activity were not observed and are not claimed. No production/UI refresh was
+performed solely to prepare this document.
+
+1. After Lead transfer, read the shared protocol, local protocol, AGENTS and this
+   handoff. Verify the exact local candidate and current room ownership.
+2. Read the project skill and discover/read the current Computer Use skill.
+   Establish fresh native state access to the exact artifact in the new session.
+   If native-pipe startup still fails, report that failure to the runtime host
+   owner. Wait for restored connectivity; do not install/reset runtime implicitly.
+3. Once a fresh evidence path works, claim the single live UI scope. Verify build
+   identity and safe environment metadata. Capture private native state/screenshot
+   and a UTC interval for bounded Account/Refresh observation. Correlate minimal
+   backend metadata. Do not repeat clicks without a path to new evidence.
+4. Report observed UI, server evidence and unknowns separately. If response
+   application remains unknowable, identify the missing evidence. Request a fix
+   scope before adding code instrumentation. Record disposition and release UI.
+5. For a later destructive rehearsal, Human owns disposable-account selection and
+   exact-case confirmation. Lead owns private before/after scope and evidence.
+   Continue only when those inputs exist. Missing Apple provenance belongs to
+   Lead/provider operator when an Apple-linked case is selected; manual cases
+   remain incomplete. Issue #3 stays open until its actual outcome is verified.
+
+## Refresh UI diagnosis — runtime blocked; scope released (2026-10-03)
+
+Lead ddb7b8da took the single live Account/Refresh UI scope on
+dist/issue3-production-rehearsal-20261003/LessMeet.app. Prior UI ownership was
+released; room peers/other Lead are idle. Scope: fresh native accessibility and
+private screenshots, one evidenced Refresh, bounded backend metadata correlation.
+No account change, recording, upload, AI, purchase, deletion, send, activation or
+runtime source edit. Captures stay under ignored .artifacts/. No Peer dispatched.
+
+Read root AGENTS, shared/local protocols, the full lessmeet-app-check skill and
+the installed Computer Use skill. Plugin discovery/manifest identifies the installed
+computer-use package and its skills directory; no alternate stack was installed.
+Observed running process path matches the exact rehearsal artifact. Executable
+and Info.plist hashes still match the Oct3 anchors below; bundle com.lessmeet.app,
+version1.0.0/build1, production Convex URL and Clerk host match, RC key absent.
+These are artifact settings; effective process environment overrides were not read.
+
+Computer Use import succeeded, but both exact-path get_app_state attempts failed
+with "Sky Computer Use native pipe startup failed" before any accessibility state
+or screenshot returned. Second attempt started2026-10-03T16:36:53.512Z.
+No Account open/Refresh click was issued. Ignored capture directory
+.artifacts/refresh-diagnosis-20261003 was prepared, but no UI capture was obtained.
+No new backend correlation was attempted without a new UI event.
+
+Disposition: UNVERIFIED for new live UI, spinner/error rendering, response body
+and applied-state correlation. The prior two HTTP200 authenticated GETs remain
+server-only evidence; this failure does not invalidate them or prove the app failed.
+Do not repeat Human clicks or infer requested=false from empty tables. No basis
+yet to attribute the native-pipe failure to Accessibility/Screen Recording denial.
+The supported skill exposes no native-pipe repair operation. Runtime host/integration
+must restore Computer Use connectivity in this agent session; Lead resumes with a
+fresh state read when that input is available. Prior smoke in another session does
+not establish this session's connectivity. No code/config/activation change or
+project acceptance test was made. Issue #3 remains open. Live UI ownership RELEASED.
+
 ## Agent native UI capability (2026-10-03)
 
 Enforcement update: Lead added root `AGENTS.md` with explicit activation conditions
@@ -272,10 +1542,673 @@ is released. Other agents must check runtime/permissions in their own session.
 
 Remaining frontier: Lead owns the next authorized UI scenario. End-to-end
 click/request/applied-state correlation is still missing for deletion Refresh.
-At the next Refresh diagnosis, first establish a safe evidence path; add scoped,
-sanitized instrumentation if existing evidence cannot distinguish the outcomes.
+At the next Refresh diagnosis, first establish a safe evidence path. If existing
+evidence cannot distinguish outcomes, request a fix scope before adding scoped,
+sanitized instrumentation; the current diagnosis authority excludes code edits.
 Do not infer that this smoke test closes that gap or issue #3. Production deletion
 authority and the existing rehearsal conditions are unchanged.
+
+## Issue #3 provider integration refresh (2026-10-03)
+
+Lead resumed integration/acceptance after reading both workspace protocols and
+the current decisions. Room inventory shows this Lead and an idle Supervisor;
+no active Peer or moving delegated scope. No new assignment was created.
+HEAD remains 8edfceec3fba8713ebf196ffa06e81f273b5e5a1. Existing dirty work,
+untracked provider sources/tests and operator-owned `.codex/` are preserved.
+SHA256 for providerExecution.ts, clerkExecution.ts and schema.ts matches the
+final accepted Sep 26 anchors below. No runtime source edit or redeploy yet.
+
+Observed production configuration before changes: exact
+hoang-bang:lessmeet:prod / uncommon-narwhal-733 still had14 environment names.
+Intake and automation read back true. Preflight, email, Gemini billable and billing
+enforcement read back false. No provider execution credential was present.
+
+Configured and readback-verified on that production deployment:
+- Reused the existing scoped dev RevenueCat v2 read credential in memory, via
+  stdin only. No secret value in argv, logs, chat or repository. Dev key unchanged.
+- Set REVENUECAT_PREFLIGHT_SECRET_KEY, PROJECT_ID=proja83a7730,
+  CONFIG_REF=rc_lessmeet_prod_preflight_20261003_v1 and PROJECT_VERIFIED=true
+  (all names prefixed REVENUECAT_PREFLIGHT_).
+- Fresh exact-project GET for synthetic nonexistent subject
+  user_LessMeetDeletionProbe20261003NoAccount returned404/resource_missing.
+  The Sep24 accepted project binding plus Oct3 dashboard evidence supports reuse;
+  the404 alone does not prove project ownership, write permission or erasure.
+- Set CLERK_CONTACT_ISSUER to the existing production JWT issuer and
+  CLERK_CONTACT_INSTANCE_ID=ins_3JoKJsnX2ro7wXXYQfu94imtJNX. Exact Clerk CLI
+  GET /instance independently matches that production instance. No credential or
+  invented configuration revision was supplied for the Clerk worker.
+
+Clerk scoped CLI refresh: audience convex, Native API enabled, callback present;
+Apple enabled with com.lessmeet.app.signin /63M98WD275 /9QG4X948Z4, login secret
+present and email-source field populated. No secret values emitted. These are
+login configuration facts, not revocation-client provenance or relay delivery.
+
+Chrome plugin now connects successfully to the existing browser. The first
+AppleScript DOM attempt was blocked by the browser setting; no setting was changed.
+Do not repeat the old missing-browser-runtime claim or require Apple Events.
+Chrome readback: RevenueCat Lessmeet/a83a7730 contains only the existing v1 key
+and v2 preflight key. Preflight Customers Configuration is Read only; subscriptions,
+purchases and invoices have No access. No v2 deletion-write key exists in that
+list. Convex dashboard confirms production uncommon-narwhal-733, CLI version1.45.0,
+running, deployed7 days ago and No backup yet. Clerk and Resend show sign-in pages
+in this browser; Lead requested login in those tabs. CLI Clerk access still works.
+
+### Final Oct3 disposition — ACCEPT scoped configuration/build, not live E2E
+
+Human completed Clerk/Resend login. Fresh Chrome reads now verify LessMeet
+production and kieng/lessmeet.2m0r.com. Those login blockers are resolved, not a
+remaining request for access. Resend domain is verified in Tokyo. Its existing
+LessMeet transactional key has Sending access restricted to that domain and0 uses.
+
+Lead reused Clerk production's existing standard `default` admin key for the
+dedicated CLERK_DELETION_SECRET_KEY variable. Direct pinned GET /v1/instance
+returned200 and the exact production id/environment. Key and immutable revision
+clerk_lessmeet_prod_deletion_20261003_v1 were provisioned/readback-matched.
+This is an admin-level shared credential, not a new least-privilege key; future
+rotation must account for its existing consumers. No contact/Apple key was silently
+substituted. Initial UI reads returned a truncated/masked value; validation stopped
+before provisioning. Reading the complete scoped field resolved that failure.
+No secret values entered logs/chat/repository; temporary copy clipboard was cleared.
+
+Human specifically confirmed creation of RevenueCat's LessMeet production deletion
+V2 key. Dashboard ID apikeya8bb87e231, project a83a7730/proja83a7730. Saved readback
+shows Customers Configuration Read & write, all other groups No access and Issue
+token off. Existing preflight key unchanged. Exact synthetic missing-subject GET
+returned404/resource_missing. Separate REVENUECAT_DELETION_SECRET_KEY, PROJECT_ID
+and CONFIG_REF=rc_lessmeet_prod_deletion_20261003_v1 were provisioned and matched.
+Read permission and saved write scope are verified; actual DELETE compatibility
+is untested. A404 alone is not erasure or credential/project binding proof.
+
+Existing Resend vault credential was copied in memory/stdin to production
+RESEND_API_KEY with RESEND_DELETION_CONFIG_REF=resend_lessmeet_prod_deletion_20261003_v1;
+readback matched. First scoped vault read timed out; second succeeded. No credential
+file was created. No real send or send-auth validation was attempted; email remains
+false. Contact capture is not provisioned or enabled. Browser domain verification
+and vault equality are not inbox/relay-delivery evidence.
+
+Preactivation checks found deletions, deletionClerkExecutions and
+deletionProviderExecutions empty. Enabled/readback-verified CLERK_DELETION_ENABLED
+and REVENUECAT_DELETION_ENABLED=true under existing production authority. The same
+three tables remained empty afterwards. No case adoption, account DELETE or session
+revocation was submitted. Initial empty-table parser expected JSON and stopped;
+the pinned CLI emits empty stdout plus an exact empty-table stderr message instead.
+Source inspection and a corrected check established emptiness before activation.
+Preflight/email/Gemini billable/billing enforcement remain false; Apple absent/off.
+Final names-only production inventory has29 names. No new backend deploy needed.
+
+Lead built the unchanged native candidate with explicit production public key and
+HTTP URL. RevenueCat SDK/public legal settings deliberately empty. This prevents
+SDK identify/purchase admission in this local trial; it does not prove RC customer
+deletion. Artifact: dist/issue3-production-rehearsal-20261003/LessMeet.app.
+Existing build-app.sh dev was used, with ad-hoc signing. After packaging, Lead
+moved the trial into this separate folder and restored the prior dist/LessMeet.app.
+No app launch, account login, signing-profile change or distribution upload.
+Plist readback: exact production Clerk/Convex, no RevenueCat key, packagingMode dev.
+Strict codesign passes after the move. Artifact anchors:
+- Executable SHA2560548f573b29586d525e5f241802d4d17d7f8706b84e96e8954eed20dd010b19a.
+- Info.plist SHA256cdd7eadd986daa30bd8e6914b1a571365d2b3c78b7a9a4ecb71da2a13a7065a8.
+
+Fresh local checks: backend typecheck PASS; backend tests PASS964/25; native
+AccountDeletionTests PASS8/8; release build and strict signature PASS. No runtime
+source/test/.env.local edits. Existing dirty work and final Sep26 candidate anchors
+remain intact. Documentation reconciles deployment/activation claims and includes
+the bounded production rehearsal in legal/DELETION_RUNBOOK.md. No commit or push.
+
+Next frontier/owners: Human selects a disposable account; Lead verifies native
+production callback/JWT and prepares private exact-case scope/evidence before the
+Human's destructive confirmation. Recommend a fresh Google-only account for the
+first bounded trial, without AI/purchases or notification send. Apple-linked cases
+still need a presigned signer/credential and per-identity original-client evidence,
+or the approved incomplete manual exception. Lead/provider operator owns that
+conditional integration when such a case is selected. Do not require automation
+of every Apple/RC alias exception before the normal ready path can continue.
+For this rehearsal, report sanitized results to Human in the handoff; this is not
+a verified public completion-email service. Populated cloud data, real provider
+deletion, other-owner/in-flight production behavior, residuals/backup suppression
+and RC SDK recreation remain untested. No account is selected; no deletion or real
+notification has run. Issue #3 stays OPEN. Accepted configuration/build evidence
+does not establish a successful native or provider end-to-end deletion.
+
+## Issue #3 implementation in progress (2026-09-26)
+
+### Production deployment and partial activation (2026-09-26)
+
+Human now explicitly authorizes production deployment and enabling real deletion,
+with a later Human-driven build rehearsal. This supersedes the earlier no-deploy/
+no-activation authority boundary, not the missing provider evidence or mock-only
+verification limits. Scope is deletion, not unrelated AI/billing activation.
+Both workspace protocols reread; only Lead active, no moving Peer scopes.
+
+Lead deployed the accepted local candidate to exact production
+hoang-bang:lessmeet:production / uncommon-narwhal-733 using pinned Convex1.45.0,
+codegen disabled and typecheck enabled. Dry-run and actual deploy PASS, schema
+validation complete, four execution indexes added and no indexes deleted.
+Candidate runtime anchors below remain identical. Metadata readback reports126
+functions, including all21 Clerk/provider execution handlers.
+
+Enabled and readback-verified ACCOUNT_DELETION_ENABLED=true and
+DELETION_AUTOMATION_ENABLED=true. This enables real account-scoped backend cleanup
+and durable staging, NOT complete provider fulfillment. Fresh preactivation checks
+found deletions, deletionStages, deletionWork and storage empty; postactivation
+deletions remained empty. No deletion request or synthetic identity was submitted.
+Unauthenticated GET /account/deletion returns401; authenticated native JWT and
+destructive runtime behavior remain untested.
+
+Full activation BLOCKED on actual provisioning: production names-only inventory
+still contains only14 names and lacks Clerk contact/execution credentials and
+binding, Apple execution credential/client-secret/configuration, RC v2 deletion
+write credential/configuration, and Resend sender configuration/credential.
+CLERK_DELETION_ENABLED, APPLE_DELETION_ENABLED and REVENUECAT_DELETION_ENABLED
+remain absent/default-off; existing preflight/contact/email gates remain unchanged.
+Do not manufacture evidence/config revisions or mark provider stages complete.
+Human's approved manual exceptions remain available. Lead owns configuration
+integration; Human/provider owner must supply secure production credential access
+and required identity/project/sender evidence before those branches are enabled.
+Return at provisioning availability, not another generic permission request.
+
+Fresh verification: npm run typecheck:backend PASS; npm run test:backend PASS964
+tests/25files; git diff --check PASS. No live provider deletion, notification send,
+native build/distribution, commit or push. Temporary nonsecret deploy-target file
+removed after use. Build rehearsal must explicitly select production configuration
+and use a disposable account; current native configuration was not changed.
+Issue #3 stays open and full production E2E readiness is NOT accepted.
+
+### Apple/RevenueCat continuation — local implementation (2026-09-26)
+
+#### Final disposition — ACCEPT bounded operator-assisted offline implementation
+
+Lead inspected both transport sources and the full integration fixture, reconciled
+the independent reopen finding, and ACCEPTS the final local candidate for bounded
+operator-assisted provider execution. This is NOT issue #3 closure, fully unattended
+fulfillment, live provider compatibility, deployment or activation approval.
+Apple original-client proof/case adoption and final provider-scope reconciliation
+remain trusted operator inputs. Missing evidence stays incomplete as approved.
+
+Final candidate anchors (SHA256):
+- providerExecution.ts:284c7a828f1afd6bf6d0113c02b0866c161c1b5ab01ea9598a0e065c12e127a2
+- providerExecution.test.ts:6427a3b6edab2ca807716c7481644bb3d5c66f1600dec56be5389cc541fb5793
+- clerkExecution.ts:680a2898ebfc3768ee0a3db305af078b0664702a38c387b99fbcf934776aa893
+- clerkExecution.test.ts:7e2fa4da9615b792fe4a559557dc0e39642551255be93bab44a4b539dc027447
+- schema.ts:144d62f9caee2fc9fa4786ba35c53d144f9b62374c699638bcb972a86e484ca1
+
+Lead verification on Darwin arm64/Node22.22.3:
+- npm run typecheck:backend PASS (both projects).
+- npm run test:backend PASS964tests/25files, including48 new provider integration
+  cases and27 Clerk worker cases. All provider HTTP mocked; no account/secret reads.
+- swift test --disable-automatic-resolution --filter AccountDeletionTests PASS8/8,
+  including local-file preservation. No signed-app UI/native production JWT test.
+- git diff --check and node website/verify-drafts.mjs PASS (4 allowed public assets,
+  9 HTML,27 local Markdown links). No publication/routing claim.
+
+Mock proof covers Apple→Clerk→RC→evidence-backed Gemini/residual confirmations→
+completion notification enqueue→completed-ledger purge, with other-owner retention.
+It does not actually send a notification; delivery stays pending. Arbitrary flags
+cannot bypass unresolved execution in public status/outbox/notification/retention.
+RC readback is bounded and never replays DELETE; Apple uncertainty is manual.
+Release of invalidated stages preserves prior evidence/budgets and requires a
+separate completion confirmation. Per-provider recovery indexing prevents disabled
+Apple backlog from starving ready RC; dedicated regression passed.
+
+Peer021049e7's REOPEN_REQUEST is CLOSED/ACCEPTED after source follow-up and31
+independent Clerk/retention tests. The subsequent recovery fairness change was
+Lead-inspected and regression-tested in the48-case fixture. Peer b6b79dba's exact
+fixture ACCEPTED after Lead hash/full-file inspection and full-suite rerun;
+dispositions sent. All Peer assignments closed; no moving Peer write scopes.
+Initial transport fixture/typing mistakes reported by writers were corrected
+before passing checks; initial source stranding defect was rejected and repaired,
+not silently counted as a pass. Conservative Apple token expiry-unit uncertainty
+remains explicit; seconds-scale/null values may require manual handling.
+
+Usable next inputs: default-off source, internal case adoption/inventory/reconcile/
+release handlers and reproducible mock pipeline. Next frontier requires exact
+provider credential/provenance provisioning and separately authorized synthetic
+production rehearsal, including native JWT, actual revocation/deletion readbacks,
+notification completion channel and RC SDK/other-device recreation handling.
+No new policy confirmation needed for already-approved manual exceptions. Do not
+silently enable gates or close #3 on this offline evidence. Production remains
+the #2 deployed HEAD; no deploy, environment change, real deletion/send, commit or
+push. Pre-existing dirty documentation and accepted Clerk changes preserved.
+
+Implementation decisions and intermediate evidence follow chronologically.
+
+Human directs implementation to continue without repeated policy confirmations.
+Both protocols reread; room had only this Lead active, all prior assignments closed.
+Accepted dirty Clerk candidate is preserved. No live provider mutation, secret
+provisioning, notification send, deploy or activation is inferred. Lead owns shared
+schema/worker/retention/status integration. Read-only Peer661e115c assesses current
+Apple token/revocation primary-source contract; separate transport Peer owns ONLY
+new revenuecatDeletionTransport.ts and its test. No overlapping write scopes.
+RC route decision: v2 only (read-only GET and asynchronous DELETE), fresh exact
+customer/project and alias checks immediately before execution. Any unexplained
+alias or incomplete traversal routes to operator; never follows aliases blindly.
+DELETE acknowledgement is queued, not erasure. Provider exceptions remain manual
+under the explicit Human decision below.
+Apple research ACCEPTED: pinned Clerk token REST is a bare array; join exact
+external-account/provider-user identities and require original-client evidence.
+Apple200 empty-body is acknowledgement, not independent provenance proof. Lead
+chooses dedicated pre-signed client-secret provisioning (no private-key custody
+or raw-token persistence). Peer661e115c now exclusively owns new
+appleDeletionTransport.ts and its test; no shared schema/worker ownership.
+Normal Apple path is exactly one verified bound identity; multi/missing/ambiguous
+identities stay manual. RC Peer b6b79dba owns its two isolated transport paths.
+Both transports ACCEPTED as bounded offline inputs after Lead full-source
+inspection, exact hash match and168 scoped tests: Apple7ee0fcf2dd77/tests87d972322fd8;
+RC5d0ed4d289da/tests9538ecad363f. Apple expires_at units remain unconfirmed in
+primary references; freshness must hold under both interpretations, otherwise
+manual. No live compatibility claim. Peer transport scopes returned to Lead.
+Lead integrated providerExecution and shared retention/status safeguards;
+typecheck and914existing tests pass. Frozen runtime candidate09c144bb65fb now
+under read-only inspection by021049e7. Peer b6b79dba exclusively owns the new
+providerExecution.test.ts integration fixtures; runtime/docs remain Lead-owned.
+REOPEN_REQUEST021049e7 ACCEPTED: generic complete:false advanced the stage fence
+and stranded an unreconciled execution. Initial runtime candidate NOT ACCEPTED at
+that boundary. Lead added exact-current-revision releaseInvalidated for provider
+and Clerk workers: rejects running execution, requires explicit remote-effects
+reconciliation and advanced manual stage fence, preserves history/budgets, never
+sets provider completion. Generic evidence-backed confirmation remains separate.
+Lead27 Clerk tests and typecheck pass, including queued/running reopen regression.
+Provider integration fixtures and read-only follow-up remain pending acceptance.
+
+### Human decision — manual provider exceptions approved (2026-09-26)
+
+Human explicitly accepts operator handling for missing Apple evidence or
+unverified RevenueCat aliases. Keep these cases incomplete/blocked until exact
+case evidence supports completion. This resolves the operating-policy question;
+do not ask again whether full automation is mandatory for these exceptions.
+Normal-path fulfillment remains in scope. Approval does not establish provenance,
+alias ownership, provider erasure, or permission for live deletion/notification.
+Lead owns applying this route; operator owns obtaining and reconciling evidence.
+Return to a blocked case when its missing evidence arrives, not by a timeout or
+automatic success override. Lead records this decision in the runbook; runtime
+code and all accepted candidate bytes remain unchanged in this decision turn.
+
+### Clerk local candidate ACCEPTED; #3 remains incomplete
+
+Lead ACCEPTS bounded default-off Clerk integration, not deployment or end-to-end
+account deletion. Fresh read-only Peer eda18d76-7cbc-4810-8c7e-927ca51025f1 matched
+all ten source/test snapshot hashes, found no concrete blocker and independently
+passed typecheck plus172 Clerk tests. Lead inspected source and passed typecheck,
+25 new worker tests,147 transport tests and full746 tests/22files. Disposition
+sent; all assignments closed and write ownership returned to Lead.
+
+Candidate anchors: clerkExecution.ts SHA256
+09ee79e3d6478b2c47a79b8f21e411e913857b0476f860e404889a70a9ab635a;
+clerkExecution.test.ts
+607344bf13e19e0a643d347b6b0b5fc47484a6775d06d0a192f87663a5eee59e.
+After review only the transport header comment and documentation were reconciled;
+runtime bytes otherwise unchanged. No failed typecheck or test was observed.
+Final post-documentation rerun: npm run typecheck:backend PASS; npm run
+test:backend PASS746/22; git diff --check PASS; node website/verify-drafts.mjs
+PASS (4 allowed assets,9 HTML,26 local Markdown links). No Swift/UI/native runtime
+or live deletion tests run; native source unchanged. New files remain untracked
+until a separately requested commit; pre-existing dirty documentation preserved.
+An initial agent-dispatch argument was rejected before creation; corrected to the
+tool's provider/model format. This was not an implementation/test failure.
+
+Usable downstream: exact-request `clerkExecution.adopt`, fresh session traversal,
+fenced mutation intent, observe-only recovery after ambiguous mutation, and
+operator reconciliation with retained evidence. New gate CLERK_DELETION_ENABLED
+defaults off; no env/credential changes. No additional cron was registered.
+Do not run these internal commands on live accounts based on offline acceptance.
+See BACKEND's durable Clerk execution contract for prerequisites and limits.
+
+Remaining #3 frontier: Apple per-identity original-client/token provenance and
+revocation route without new raw-token retention; RevenueCat alias ownership,
+asynchronous deletion/readback and SDK recreation policy; supportable completion
+channel after Clerk session deletion; native production JWT prerequisite and
+authorized exact-synthetic production rehearsal. Manual exceptions are explicitly
+approved above, not evidence that any provider was completed. Full automation of
+missing-evidence cases is not a completion requirement; evidence-backed handling is.
+Lead owns remaining technical integration; Human owns provider access/provenance,
+policy exceptions and exact destructive/send activation. No live calls, account
+data/keys read, deployment, gate activation, commit or push in this implementation.
+At this Clerk-only checkpoint Apple/RevenueCat workers were not implemented;
+the continuation above supersedes that source limitation. Live provider fulfillment
+and notification delivery remain unproven.
+Production source remains the #2 deployed HEAD; this local candidate is uncommitted.
+
+Historical dispatch/contract decisions for this implementation follow.
+
+Human authorized local implementation and verification after rereading both
+workspace protocols. Lead owns integration and all writes initially. Base HEAD
+8edfceec3fba8713ebf196ffa06e81f273b5e5a1; existing dirty CONFIGURATION/STATUS
+are preserved. Room inventory showed only this Lead running. Read-only Peer
+77125e09-484e-45ae-9676-add59e0fb532 assesses the durable provider contract.
+No provider mutation, notification send, deployment, activation, commit or push
+is authorized by this implementation checkpoint.
+
+Ready input: accepted #2 production provisioning and existing guarded deletion,
+preflight, notification/retention, and disconnected Clerk transport. Native JWT
+runtime remains a targeted prerequisite to production rehearsal, not a demand to
+finish all of #7 first. Current frontier: integrate separately gated durable Clerk
+execution with fresh inventory, Apple-evidence fencing and observe-before-retry.
+Do not reuse frozen preflight snapshots as execution authority. Apple original-
+client revocation and RevenueCat alias/write-policy gaps remain separate from
+code verification; no invented provider completion or new token retention.
+
+Lead ACCEPTS 77125e09's exact-base architecture assessment, not provider readiness.
+Decision: separate request-bound execution worker; typed Apple disposition and
+monotonic Apple-stage fence; fresh bounded session inventory; durable intent and
+observe-before-retry; explicit operator reconciliation for global session proof.
+New operational evidence joins existing completed-ledger retention, and unresolved
+execution blocks purge. Activation dependency belongs to Human at the rehearsal
+checkpoint (exact provider authority/provenance/alias and notification policy).
+Peer assessment is closed; no read-only write ownership outstanding.
+Peer 88b9428b-1896-4422-a62d-d9dbf2a7ce65 exclusively owns transport extension in
+convex/clerkDeletionTransport.ts and Tests/backend/clerkDeletionTransport.test.ts:
+bounded listSessions offset pages and sanitized getSession status, unchanged
+destructive semantics. Lead owns schema, worker, integration tests and docs.
+Transport candidate ACCEPTED: SHA256 2446f59ffa4683cc647ae0dfb33e6e76dc81d8d507cdeb53a27818c209b45b88,
+tests 208b4df3c0a3029ba9dbe7695f6c310bee70574f49e1cf323094f5bcb6cdff4e.
+Lead matched hashes, inspected exact diff and independently passed 147 scoped
+transport tests. Offset256 is an overflow signal, never a fetchable continuation.
+Peer relinquished scope; all writes return to Lead. No live acceptance inferred.
+
+## Issue #2 provisioning ACCEPTED under revised scope (2026-09-26)
+
+GitHub readback: issue #2 CLOSED/completed at 2026-09-26T03:39:26Z; #7 remains
+OPEN with the explicit deferred-test handoff. Temporary nonsecret deploy target
+file removed after use; no credential file was created or deleted.
+
+Human explicitly authorizes reuse of development GEMINI_API_KEY as the production
+credential, defers steps 3/4 (native JWT and live AI tests), and permits closing #2
+after backend deployment and Gemini provisioning. This replaces the former runtime
+smoke/cost-audit closure criteria, not a claim that deferred checks passed. Lead
+updated the existing issue body and handed off explicit runtime checks to #7;
+policy/Google public readiness stays #4, subscriptions #5, deletion #3.
+
+Lead ACCEPTS production provisioning: exact hoang-bang:lessmeet:prod resolves to
+uncommon-narwhal-733; pinned Convex 1.45.0 deploy reports schema validation and
+index/function push complete. Post-deploy function-spec returns 105 functions
+(Query/Mutation/Action/HttpAction) at https://uncommon-narwhal-733.convex.cloud.
+Source HEAD 8edfceec3fba8713ebf196ffa06e81f273b5e5a1; convex/** and Tests/backend
+unchanged before/after, codegen disabled to preserve accepted source. Existing
+read-only dark-deploy review applies to the unchanged backend; cost hold expressly
+revoked by Human. Fresh pre-deploy system query confirms storage and scheduled
+functions empty. Deployment now registers existing five minute crons/two purges;
+nominal 7,202 invocations/day remains real workload despite gates off.
+
+Production env provisioning: CLERK_JWT_ISSUER_DOMAIN matches production Clerk,
+GEMINI_MODEL=gemini-flash-latest (existing source fallback), GEMINI_API_KEY copied
+from exact dev zany-octopus-315 in memory via stdin. No key in argv, local file or
+output; child errors suppressed. Readback equality verified, dev key unchanged.
+All 11 activation flags explicitly false, readback verified; 14 names returned by
+fresh names-only inventory. No other provider secrets, owner allowlist, live AI,
+native config switch, billable/destructive activation or development deployment.
+Model access, Google project/data settings and native authentication not attested
+by provisioning. Shared credential means future rotation affects both environments.
+
+Verification: npm run typecheck:backend PASS; npm run test:backend PASS (658 tests,
+21 files); targeted dry-run PASS; actual deploy PASS; metadata/env readbacks PASS.
+First dry-run attempt with /dev/null env-file failed because explicit target config
+was required; no deployment performed by that attempt. Corrected using a nonsecret
+temporary env-file pinned to prod:uncommon-narwhal-733; dry-run and deployment then
+succeeded. No secret material was written to that file. Git diff check and website
+draft verifier passed. Lead sole writer; no Peer dispatched or unresolved ownership.
+Pre-existing dirty documentation/RevenueCat evidence retained. No commit/push.
+
+Containment and usable inputs are in CONFIGURATION. Keep gates off/native dev
+selected until QA; flags do not cancel inherited work or stop all crons/retention.
+No earlier production code revision exists to claim a known-good rollback. Do not
+delete production data or revoke the shared key as a rollback shortcut. Next work
+can consume provisioned backend/auth/secret configuration; runtime acceptance is
+explicitly deferred to #7, not required to re-open #2 solely because it is pending.
+
+## Production operating cost accepted; technical setup remains (2026-09-26)
+
+Human explicitly accepts operating costs and directs Lead not to require another
+billing/plan audit. This supersedes the cost-boundary/plan-readback deployment hold
+and requests for budget screenshots below. Do not ask again for a numeric budget
+as a prerequisite. This is authority for operating costs of the requested stack,
+not unrelated paid upgrades, destructive operations or changes to legal policy.
+
+Fresh read-only CLI checks: exact production uncommon-narwhal-733 has no environment
+variables and function-spec returns functions: []. Gemini is therefore not
+provisioned in production. Technical next steps: configure production Clerk issuer,
+deploy accepted backend with activation gates initially off, securely provision
+appropriate Gemini credential and explicit compatible model, then verify native
+production auth/JWT and controlled synthetic AI behavior under applicable test
+authority. Keep development unchanged; do not equate dev key presence with verified
+production provider binding. Billing audit is no longer the blocker. No production
+mutation or live AI test performed in this status-response turn.
+
+## Issue #2 Apple update published / Convex–Gemini decision checkpoint (2026-09-26)
+
+Human asked to update issue #2 and finalize Convex/Gemini. Lead updated the existing
+GitHub issue body with the Apple credential acceptance and Human-supplied hosted
+web login proof (authenticated Clerk profile with Apple linked and Hide My Email).
+Readback confirms update saved and issue OPEN. No user email, screenshot, token or
+private key included. This supersedes the web-login-pending checkpoint below;
+native callback/backend JWT, relay registration/delivery remain unverified.
+
+Lead owns current docs/issue writes; only current Lead running, no Peer dispatched.
+Existing dirty docs and independent RevenueCat readback preserved. Chrome skill
+connection retry in this session fails during bootstrap on missing
+browser/26.917.62051/scripts/browser-service.mjs, before dashboard selection. The
+earlier successful RevenueCat browser audit remains valid; it does not establish
+current browser access or Convex/Gemini plan readback. No browser auth bypass,
+session-store access, plan upgrade, credential creation or backend deploy.
+
+Decision: accepted Convex target remains uncommon-narwhal-733 / aws-us-east-1;
+do not treat an empty production environment as a cost approval. To finalize,
+Human supplies exact team plan/usage allowance (sanitized dashboard evidence),
+acceptable recurring spend and desired stop boundary. Gemini needs exact project
+ID/managing account plus current billing tier and data-sharing/logging evidence;
+OAuth project lessmeet remains only a candidate, not an accepted Gemini binding.
+Lead resumes setup on these inputs or restored dashboard access, with cost approval
+still required. No paid AI or deletion gates enabled. #2 remains OPEN.
+Fresh CLI names-only env and deployment usage-limits readbacks both empty for
+exact uncommon-narwhal-733. GitHub decision-input section saved and read back.
+`git diff --check` and `node website/verify-drafts.mjs` passed. No commit/push.
+
+## Apple production credentials accepted; login smoke pending (2026-09-26)
+
+Human reports saving Apple credentials in Clerk. Lead ACCEPTS credential setup
+after exact-instance readback for ins_3JoKJsnX2ro7wXXYQfu94imtJNX: Apple enabled,
+Services ID com.lessmeet.app.signin, Team ID 63M98WD275, Key ID 9QG4X948Z4,
+secret present (value suppressed), session aud=convex unchanged. Optional native
+bundle field empty; current app uses hosted auth, not native Apple-token exchange.
+`npx --no-install clerk deploy status` exited 0: complete=true, Apple and Google
+configured, no pending providers, DNS/SSL/mail complete. This supersedes Apple
+missing-credentials checkpoints below, not Google Publishing/Branding readiness.
+
+Only this Lead running; no Peer dispatched. Existing dirty CONFIGURATION/STATUS
+and fresh RevenueCat evidence preserved. No external mutation, private-key output,
+backend deployment, credential rotation, commit or push. Private-key backup and
+Apple relay Email Source registration not independently verified. Next checkpoint:
+Human signs in with Apple at https://accounts.auth.lessmeet.2m0r.com/sign-in and
+confirms return to an active Clerk session; native callback/backend JWT acceptance
+remains a separate smoke test. Issue #2 stays open; other provider/cost holds remain.
+Documentation checks: `git diff --check` and `node website/verify-drafts.mjs` passed.
+
+## RevenueCat fresh catalog readback — relationships accepted, V2 inventory dependency (2026-09-26)
+
+Lead inspected the configured SLP - Lead profile, shared/local protocols, current
+instructions/status, repository billing bindings and room inventory. HEAD remains
+`8edfceec3fba8713ebf196ffa06e81f273b5e5a1`. Only this Lead was running for LessMeet;
+no Peer dispatched or outstanding response created. Lead owns this status addition.
+Both pre-existing dirty documentation files were preserved; CONFIGURATION unchanged.
+
+Disposition: ACCEPT the fresh dashboard app/catalog relationships below, not full
+V2 pagination, App Store availability, sandbox purchase success or production
+readiness. The former dashboard-tool startup blocker is resolved for this check.
+An existing RevenueCat tab belonged to another browser session; it was left alone.
+A separate authenticated read-only audit tab was used. No Save/Create/Attach/Import,
+credential reveal, customer/purchase API, billing activation or catalog mutation.
+
+Sanitized fresh evidence, 2026-09-26 01:10–01:13 UTC, authenticated RevenueCat
+Chrome dashboard (rendered page/DOM, not browser session stores or private APIs):
+
+| Check | Observed readback |
+| --- | --- |
+| Project | Settings name `Lessmeet`; REST API v2 ID `proja83a7730`; dashboard path `/projects/a83a7730`. |
+| App | Apps table: `Lessmeet (App Store)`, `app0efc34c2fb`, bundle `com.lessmeet.app`. Public key stayed masked. |
+| Products, All filter | Two App Store products: monthly `prod372db77772` / `com.lessmeet.app.pro.monthly`; yearly `prod1543e0573c` / `com.lessmeet.app.pro.yearly`. Test Store `app2b707bf0f0` shows an empty products table. Both also appear in Active. Search empty; no next/load-more/page controls rendered. |
+| Product details | Both exact detail pages identify App Store / Lessmeet, Subscription, matching Apple Product Id, associated `lessmeet_pro` and `default`. Both Store Status fields say **Could not check**. |
+| Entitlements, All filter | One row, `lessmeet_pro`, `entl1530cb71d5`, two products; also present in Active. Detail lists both exact Apple products under Lessmeet (App Store). No pagination controls rendered. |
+| Offerings, All filter | One row, `default`, `ofrng201500d7e4`, display name Lessmeet Pro, two packages; also present in Active. No pagination controls rendered. |
+| Default designation | Row menu has Make Default disabled and explicitly says this default offering cannot be made inactive/deleted until another offering is made default. Menu inspected and dismissed; no action selected. This is independent of the name `default`. |
+| Packages | Offering detail: `$rc_monthly` → `com.lessmeet.app.pro.monthly` / `prod372db77772`; `$rc_annual` → `com.lessmeet.app.pro.yearly` / `prod1543e0573c`. Both package cards and product links inspected. |
+
+Reproduction entry points: [apps](https://app.revenuecat.com/projects/a83a7730/apps),
+[products](https://app.revenuecat.com/projects/a83a7730/product-catalog/products),
+[entitlement](https://app.revenuecat.com/projects/a83a7730/product-catalog/entitlements/entl1530cb71d5),
+[offering](https://app.revenuecat.com/projects/a83a7730/product-catalog/offerings/ofrng201500d7e4),
+[settings](https://app.revenuecat.com/projects/a83a7730/settings).
+Select All for each inventory; inspect exact detail links and the offering row menu.
+These are current rendered inventory observations, not a captured V2 response or
+proof of cursor exhaustion. No screenshots containing credentials were saved.
+
+Independent API check: inline Python `urllib.request` GET-only probe, TLS verified,
+redirects disabled, 20-second timeout, bounded response read; read only the named
+`REVENUECAT_PREFLIGHT_SECRET_KEY` from ignored `keys/.env` in memory. No key, full
+response, headers or customer data printed/persisted. At 01:10:22–01:10:23 UTC,
+all four requests below returned HTTP 403 `authorization_error`:
+
+| Path beneath `/v2/projects/proja83a7730/` | Required permission returned |
+| --- | --- |
+| `apps/app0efc34c2fb` | `project_configuration:apps:read` |
+| `products?limit=100` | `project_configuration:products:read` |
+| `entitlements?limit=100` | `project_configuration:entitlements:read` |
+| `offerings?limit=100` | `project_configuration:offerings:read` |
+
+DEPENDENCY_REQUEST — exhaustive V2 readback remains deferred to Human access input;
+Lead owns execution/acceptance when supplied. Existing authenticated dashboard
+access resolves the relationship-inspection dependency, but does not supply raw
+V2 pages. For the requested independently paginated API inventory, Human supplies
+an existing separate V2 key for this project via a secure local secret reference
+(not chat), or sanitized complete GET responses with page/continuation evidence.
+Minimum key permissions are the four above **plus**
+`project_configuration:packages:read`; all other permission groups No access,
+Issue token disabled. Keep the customer-inventory/preflight key and its deployment
+unchanged. Lead does not create, rotate, broaden, replace or provision any key.
+The fifth scope is documented for package list/product relationship reads in the
+[official Package API](https://www.revenuecat.com/docs/api-v2/package).
+
+Exact follow-up acceptance, base `https://api.revenuecat.com/v2/projects/proja83a7730`:
+
+1. GET `/apps/app0efc34c2fb`: require exact id/project, App Store type and bundle
+   `com.lessmeet.app`; reject a Test Store app as substitute.
+2. GET `/products?limit=100`, `/entitlements?limit=100`, `/offerings?limit=100`:
+   traverse every `next_page` to null, including inactive entries where supported;
+   record timestamp, page/item counts, IDs and terminal continuation. Validate
+   continuation origin/project/route, reject duplicate IDs/cursor loops; any failed
+   page or safety bound leaves inventory incomplete, never an empty-catalog pass.
+3. Resolve IDs from fresh results: monthly/yearly exact store identifiers under
+   `app0efc34c2fb`, type subscription; `lessmeet_pro` lookup key; active `default`
+   offering with `is_current=true`. Historical/dashboard IDs above are comparison
+   evidence, not substitutes for resolving fresh objects. Report mismatches.
+4. GET `/entitlements/{entitlement_id}/products?limit=100` through exhaustion:
+   require both resolved App Store product IDs attached; report extra bindings.
+5. GET `/offerings/{offering_id}/packages?limit=100` through exhaustion, then
+   `/packages/{package_id}/products?limit=100` for every package through exhaustion:
+   require `$rc_monthly` → monthly and `$rc_annual` → yearly for the exact app;
+   record eligibility criteria and report competing/unexpected product bindings.
+   Nested expansions are not accepted as complete unless their continuations
+   also terminate. All operations GET only; sanitize retained fields.
+
+API route/field acceptance also checked against official
+[Entitlement](https://www.revenuecat.com/docs/api-v2/entitlement) and
+[Offering](https://www.revenuecat.com/docs/api-v2/offering) documentation.
+No API inventory success or absence claim follows from the 403 results.
+
+Next safe frontier: complete this V2 inventory when the separate access input
+arrives. Independently, Human-supplied App Store Connect product/availability
+readback and a separately authorized signed-app StoreKit/sandbox check are needed
+for sale/purchase readiness; RevenueCat's **Could not check** is not an Apple
+availability verdict. No fresh ASC, price/territory/agreement, StoreKit product
+fetch, transaction/restore/renewal or server entitlement validation performed.
+Current source expects these two product IDs and `lessmeet_pro`, with offerings
+read from `offerings.current`; source agreement is not a live purchase test.
+
+Verification: four live GET probes above; authenticated dashboard observations;
+`git rev-parse HEAD`, scoped `rg` of billing bindings, filtered `paseo ls --json`
+room inventory and `git diff --check` passed. No app/backend test suite run for
+this evidence-only update. No deployment, commit, push or external mutation.
+
+## SLP Lead takeover — production hold retained (2026-09-25)
+
+Resolved workspace: `/Users/tubakhuym/projects/lessmeet`. Read shared/local
+protocols, full STATUS/CONFIGURATION/README and the Human-supplied AGENTS
+instructions; no on-disk AGENTS.md exists in the repository or inspected ancestors.
+Local main and cached origin/main both resolve to 8edfceec3fba8713ebf196ffa06e81f273b5e5a1;
+no remote fetch was performed. Preserved both pre-existing documentation changes.
+Room inventory shows only this Lead running. Latest Convex Peer response and its
+explicit acceptance/closure were inspected; no Peer write ownership is outstanding.
+Lead owns this handoff update; no new dispatch or provider action.
+
+ACCEPT checkpoint continuity, not production/TestFlight readiness. CONFIGURATION's
+dated provider inventory remains the downstream input, not a fresh live readback.
+Current crons.ts confirms five minute intervals plus two daily jobs (nominal 7,202
+invocations/day); disabled admission is not a zero-cost deployment guarantee.
+Next safe frontier is exact Convex team 252081 plan/remaining allowance/overage and
+spending-control evidence, via restored dashboard access or Human-supplied redacted
+readback. Human owns the monetary boundary (currency, period, scope and overage
+permission); Lead assesses whether available controls can enforce it. Keep deploy
+hold until both evidence and explicit applicable authority exist. Do not change
+team-wide limits or retention workers to manufacture readiness.
+
+Apple hosted OAuth, separate RevenueCat catalog-read access, Gemini project/managing
+account/billing identity, and legal approval remain the dependencies recorded below
+and in CONFIGURATION. No new credential, upgrade, live AI, destructive activation,
+policy publication, signing/upload or production deployment is authorized by takeover.
+README contains older single-upload/no-production wording; latest STATUS and
+CONFIGURATION checkpoints take precedence. No architecture change is needed here.
+
+Human's Sep 25 verification handoff reports Swift 128 tests / 0 failures / 3 opt-in
+skips, backend typecheck PASS and 658 tests / 21 files PASS, plus website checks.
+These suites were not rerun during takeover and do not prove live OAuth, provider
+deletion, audio/TCC, model quality or TestFlight upload. No commit or push.
+
+## Issue #2 resumed — exact provider/access checks (2026-09-25)
+
+Human authorized continuing Apple/Convex/RevenueCat/Gemini production work. Existing
+limits remain: no paid upgrades, AI generation, destructive activation or policy
+publication. Base 8edfcee was clean. Lead owns all writes/provider setup; read-only
+Peer f963e8e5-06e8-4d4c-8ccf-4312aae285d6 owns bounded Convex readiness inspection
+only (no env/code mutation, app actions, customer records or browser work).
+
+Lead verified exact Clerk production config and deployment status: Google client
+unchanged, Apple enabled but all custom credential fields empty, aud=convex,
+Native API enabled, one exact com.lessmeet.app://callback. DNS/SSL/mail complete;
+oauth_pending is Apple, not DNS propagation. Native source uses startHostedAuth,
+so retain hosted Services ID setup rather than changing auth architecture.
+Clerk Apple setup requirements checked against official documentation; exact
+remaining inputs are in CONFIGURATION. No partial/fake credentials were saved.
+
+RevenueCat GET exact production App Store app with existing scoped preflight key
+returned 403 authorization_error requiring project_configuration:apps:read.
+Decision: retain customer-inventory key scope; do not infer catalog correctness or
+broaden deletion-related credentials. Dashboard or separate configuration-read
+access is required for exact app/products/entitlement verification.
+
+Computer Use skill retry failed native pipe startup; control-chrome bootstrap
+also failed on missing browser-service module before browser selection. These are
+tool failures, not expired provider login. No browser/provider mutation or key
+creation. Apple dashboard access or Human-assisted credential setup is required;
+do not substitute unrelated IAP/ASC keys or read browser session stores.
+Gemini project/managing account requested from Human; no gcloud executable available.
+OAuth project identity and source model fallback do not prove Gemini configuration.
+Lead ACCEPTS Peer f963e8e5-06e8-4d4c-8ccf-4312aae285d6 read-only evidence and
+DEPENDENCY_REQUEST for exact HEAD 8edfcee, ending Sep 25 13:37 UTC. Peer notified
+of acceptance and assignment closure; no write ownership outstanding. Live exact
+production uncommon-narwhal-733 is prod/default, region aws-us-east-1, team 252081 /
+project 3049432: no env names, deployed functions or user tables; system storage
+and scheduled-functions bounded queries returned exact zero. CLI usage limits
+empty; team spending disableThresholdCents/state null. Team usage state Default
+does not establish plan/allowance. Tiny nonzero diagnostic compute usage is not
+zero billing. Installed CLI/API evidence supports empty-state acceptance, not
+affordability. No external configuration mutation this round.
+
+Disposition: retain backend deploy hold. Lead owns verifying exact team plan and
+remaining allowance once dashboard access is restored; Human owns acceptable cost
+boundary. Return checkpoint is those inputs, not another empty-state audit. Apple
+and RevenueCat need restored dashboard access or scoped Human-assisted setup;
+Gemini also needs exact project identity. No paid tier, budget cap, credentials or
+retention behavior silently chosen. Issue #2 remains OPEN. CONFIGURATION updated
+with exact accepted state and corrected stale unpublished-landing statement.
+`node website/verify-drafts.mjs` and `git diff --check` passed for documentation
+changes; no native/runtime/login test, code deployment, commit or push this round.
 
 ## Landing live on Cloudflare / Git handoff (2026-09-25)
 

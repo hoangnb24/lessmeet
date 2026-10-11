@@ -1,9 +1,20 @@
 # Configuration reference
 
-Last reconciled: 2026-09-25 (issue #2 production provisioning; older service observations retain their dates). This is the configuration inventory; decisions,
+Last reconciled: 2026-10-03 (issue #3 scoped provider provisioning; older service observations retain their dates). This is the configuration inventory; decisions,
 ownership and release gates remain in [STATUS.md](STATUS.md). Update this document
 after each configuration change, including environment, verification date/result,
 secret location and rollback limits. Never commit keys, tokens or private keys.
+
+Oct4 local email candidate: normal scoped deletion within7 calendar days of receipt,
+email updates/results, and explicit exception status/reason/next-update time are
+approved. This is not permission to send or enable automatic sends. Candidate
+separates contact capture from the send gate and checks durable verified contact
+before new Clerk deletion. OFFLINE tests accepted; not deployed or activated here.
+Production contact credential/gates below retain their observed state. Prepare
+exact Clerk issuer/instance-bound contact credentials and existing retention gate
+for a selected live capture; keep DELETION_EMAIL_ENABLED=false. Do not claim a usable
+real email path until capture and separately authorized exact-recipient delivery
+are verified. Broad privacy/retention review belongs to #4.
 
 ## First public Mac App Store release contract — issue #1
 
@@ -77,10 +88,10 @@ change performed. Reconcile the public support field before Branding submission.
 | Service | Exact target / public configuration | Verified state |
 | --- | --- | --- |
 | Convex | `hoang-bang/lessmeet`, dev `zany-octopus-315`; `https://zany-octopus-315.convex.site` | Sep 24: accepted backend and retention workers deployed; RC preflight configuration provisioned. Intake/automation/preflight activation gates absent after synthetic rehearsal. Production not established. |
-| Convex production | `hoang-bang:lessmeet:prod` resolves to `uncommon-narwhal-733` | Sep 25 CLI names-only inventory: no environment variables; usage-limits list: none configured. Discovered existing deployment; no create, env mutation or code deploy performed. Plan/region, code/data/scheduled-work state and cost boundary not yet verified. |
+| Convex production | `hoang-bang:lessmeet:prod` resolves to `uncommon-narwhal-733`; team `252081`, project `3049432`, region `aws-us-east-1` | Sep 26 candidate remains deployed. Oct3 Chrome confirms exact running production. Intake/automation and Clerk/RC execution true; exact case adoption still required. Apple, preflight and email off. No real E2E pass. |
 | Clerk development | LessMeet app `app_3JggBoRulgsbt70ZFjgy9h7UjqQ`, dev instance `ins_3JggBsWybMahxou8G4rXVmM2Snu` | Dashboard Sep 24: Apple/Google shared credentials. Sep 25 API readback: audience convex and exact callback still present; dev not modified. |
-| Clerk production | Same LessMeet app; new `ins_3JoKJsnX2ro7wXXYQfu94imtJNX`, domain `auth.lessmeet.2m0r.com` | Sep 25 latest CLI readback: DNS/SSL/mail complete, Google configured, Apple credentials pending. Native API and aud=convex verified; exact callback saved. Google Publishing/Branding and end-to-end auth still incomplete. |
-| Clerk production issuer | `https://clerk.auth.lessmeet.2m0r.com` | Matches generated domain/publishable key; public JWKS GET succeeds (one RSA key), CLI SSL complete. Backend JWT acceptance not tested; not provisioned to Convex. |
+| Clerk production | Same LessMeet app; `ins_3JoKJsnX2ro7wXXYQfu94imtJNX`, domain `auth.lessmeet.2m0r.com` | Sep 26 CLI complete=true: DNS/SSL/mail complete, Apple and Google configured, no pending providers. Apple exact config readback accepted below. Native API/callback previously verified; aud=convex rechecked. Google Publishing/Branding and end-to-end auth still incomplete. |
+| Clerk production issuer | `https://clerk.auth.lessmeet.2m0r.com` | Provisioned/readback verified on Convex production Sep 26; deployed auth config audience convex. Public JWKS/CLI SSL previously verified. Native JWT/backend runtime acceptance deferred to #7. |
 | Clerk issuer | `https://major-fish-4158.clerk.accounts.dev` | Explicit dev env value matches dashboard Sep 24. |
 | RevenueCat | **Lessmeet**, dashboard `a83a7730`, API v2 `proja83a7730` | Sep 24: Keep with original App User ID; separate sandbox transfer behavior off. Do not use unrelated Meetless project. |
 | RevenueCat apps | App Store `app0efc34c2fb`; Test Store `app2b707bf0f0` | Dashboard inventory Sep 24. |
@@ -164,8 +175,9 @@ dependency; the landing deployment does not authorize publishing legal drafts.
 Do not recreate this project/client or put any client secret into app configuration.
 Google project identity here establishes OAuth only, not Gemini API project/key binding.
 
-Rollback/current containment: do not point the native release at this unverified
-stack, do not deploy backend code or enable gates yet; development remains selected.
+Current containment: production backend is now deployed with activation gates off;
+do not point the native release at this runtime-unverified stack yet. Development
+remains selected. See Sep 26 provisioning/rollback checkpoint below.
 The new Clerk instance is retained for resumable setup, not deleted. Reopen if its
 domain/issuer or provider identity changes. Creating this instance does not prove
 production billing eligibility or authorize paid upgrades.
@@ -174,12 +186,14 @@ production billing eligibility or authorize paid upgrades.
 
 | Purpose | Storage / provisioned state | Scope |
 | --- | --- | --- |
-| Resend sending | 1Password **Private / LessMeet Resend / credential**; saved and readback verified. Not provisioned to Convex. | Key **LessMeet transactional**, Sending access only to `lessmeet.2m0r.com`. |
+| Resend sending | 1Password **Private / LessMeet Resend / credential**; saved/readback verified. Oct3 copied to production `RESEND_API_KEY` and readback matched; email gate false. | Key **LessMeet transactional**, Sending access only to `lessmeet.2m0r.com`. |
 | Existing RC backend | Convex dev `REVENUECAT_SECRET_API_KEY`; dashboard key **Lessmeet Convex Dev**, v1. Vault reference not audited. | Existing billing contract; not the new v2 inventory credential. |
 | RC preflight | Generated Sep 24; ignored local `keys/.env` is mode 0600 and not tracked. Provisioned to exact Convex dev `zany-octopus-315` with immutable revision `rc_lessmeet_preflight_20260924_v1`; secret readback matched without printing. Retention schema/functions are deployed; empty tables and no-op purge verified. 1Password storage was bypassed by Human direction after its CLI failed. | Key name **LessMeet deletion preflight read-only**, V2, Customers Configuration **Read only**; all other permission groups No access and Issue token disabled. Read-only synthetic 404 verified exact project `proja83a7730`; project-verified flag set. Intake and activation gates remain absent. |
 | Clerk contact/preflight | `CLERK_CONTACT_SECRET_KEY` absent in audited Convex dev; vault reference not established. | Exact configured Clerk instance, server only. |
-| Apple revocation signer | Original Services ID, applicable Key ID/private key and client provenance not established. | Do not substitute the native bundle ID or a different OAuth client. |
-| Gemini | Existing Convex dev `GEMINI_API_KEY`; value and vault reference not audited. | Backend only; do not copy into native/public build configuration. |
+| Clerk deletion production | Existing standard `default` key from exact production Clerk, copied to Convex `CLERK_DELETION_SECRET_KEY` Oct3. `/v1/instance` returned200 and matched production; secret readback matched. | Admin-level Clerk key, not a new least-privilege key. Shared rotation with its other existing consumers. No contact key or Apple credential copied implicitly. |
+| RC deletion production | Key `LessMeet production deletion`, V2, dashboard ID `apikeya8bb87e231`, created Oct3 with Human's specific confirmation. Stored in Convex `REVENUECAT_DELETION_SECRET_KEY`; readback matched. | Only Customers Configuration Read & write. All other groups No access, Issue token off; saved permission readback verified. No customer DELETE yet. |
+| Apple revocation signer | Current hosted Services ID/Team ID/Key ID and login-secret presence verified. Dedicated presigned revocation credential and per-identity historical client provenance are not established. | Do not substitute the native bundle ID or treat current login settings as historical provenance. |
+| Gemini | Human identifies existing Convex dev `GEMINI_API_KEY` as the production credential and authorizes reuse Sep 26. Copied in memory into exact production uncommon-narwhal-733; readback equals dev, dev unchanged. No key value persisted locally or printed. | Backend only; GEMINI_MODEL=gemini-flash-latest (existing source default), GEMINI_BILLABLE_ENABLED=false. Shared credential couples dev/prod rotation; runtime model access not tested. |
 
 Do not print secret-bearing `env list`, vault item JSON or `.env.local`. Use
 names-only inventory. Saving a key in 1Password does not provision the backend.
@@ -201,8 +215,9 @@ subdomain configured; opportunistic TLS unchanged. No paid upgrade performed;
 account billing tier was not verified. Provider acceptance is not inbox delivery;
 no delivery webhook/evidence path exists yet.
 
-The local legal-site candidate is `website/`, worker `lessmeet-legal`, proposed
-hostname `www.lessmeet.2m0r.com`; not published. Do not confuse it with existing
+The pre-release landing is `website/`, worker `lessmeet-legal`, live at
+`www.lessmeet.2m0r.com` with verified HTTPS Sep 25. Legal policies remain unpublished.
+Do not confuse it with existing
 unrelated `meetless.2m0r.com` / `meetless-website`. See [website README](../website/README.md).
 
 ## Backend configuration map — not an activation script
@@ -217,9 +232,15 @@ Source behavior is specified in [BACKEND.md](BACKEND.md).
 | --- | --- |
 | `ACCOUNT_DELETION_ENABLED` | New account-deletion intake; defaults off. |
 | `DELETION_AUTOMATION_ENABLED` | Durable worker admission; does not implement missing destructive adapters. |
-| `CLERK_CONTACT_ISSUER`, `CLERK_CONTACT_INSTANCE_ID`, `CLERK_CONTACT_SECRET_KEY` | Exact issuer/instance/credential binding; contact issuer must equal existing `CLERK_JWT_ISSUER_DOMAIN`. Current dev values are above, not production values. |
-| `CLERK_CONTACT_INVENTORY_ENABLED` | Optional verified-primary contact read; no JWT/client-address fallback; Apple relay contacts blocked. |
-| `DELETION_EMAIL_ENABLED`, `DELETION_CONTACT_RETENTION_APPROVED` | Both required for the notification adapter; approval is a Human decision, not a test flag. |
+| `CLERK_DELETION_ENABLED` | Oct3 production true; bound credential/revision provisioned. Requires automation gate, exact adoption and frozen Apple disposition. No live deletion tested. |
+| `GOOGLE_DELETION_ENABLED` | Local Oct5 extension, default-off. Required before new Clerk execution adoption or destructive effects. Not activated by tests or old-case approval. |
+| `GOOGLE_DELETION_CLIENT_ID`, `GOOGLE_DELETION_AUTHORIZED_PARTY_ID` | Exact trusted OAuth client IDs for tokeninfo `aud` and `azp`. Do not infer one from the other or use Clerk publishable keys. |
+| `GOOGLE_DELETION_PROJECT_REF`, `GOOGLE_DELETION_CONFIG_REF` | Verified project provenance label and immutable revision. Google revocation can affect this user's grants across clients in that project. Exact live scope confirmation is required. |
+| `APPLE_DELETION_ENABLED` | Deployed Sep 26, absent/default-off in production; dedicated credentials/configuration and original-client provenance required. |
+| `REVENUECAT_DELETION_ENABLED` | Oct3 production true; separate v2 write credential/configuration provisioned. Exact adoption, fresh alias checks and Clerk/recreation evidence still required. No live deletion tested. |
+| `CLERK_CONTACT_ISSUER`, `CLERK_CONTACT_INSTANCE_ID`, `CLERK_CONTACT_SECRET_KEY` | Oct3 production issuer/instance binding set and verified; contact credential absent. Contact issuer must equal `CLERK_JWT_ISSUER_DOMAIN`. Do not use dev identifiers in production. |
+| `CLERK_CONTACT_INVENTORY_ENABLED` | Oct4 local candidate: with contact-retention approval, permits verified-primary read even with sends off. No JWT/client-address fallback; Apple relay contacts blocked. |
+| `DELETION_EMAIL_ENABLED`, `DELETION_CONTACT_RETENTION_APPROVED` | Both required for automatic sending. Contact capture instead combines the retention gate with CLERK_CONTACT_INVENTORY_ENABLED. Approval is a Human decision, not a test flag. |
 | `RESEND_API_KEY`, `RESEND_DELETION_CONFIG_REF` | Server-only vault credential and immutable configuration revision label. |
 | `DELETION_PREFLIGHT_ENABLED`, `DELETION_PREFLIGHT_RETENTION_APPROVED` | Preflight also requires automation enabled; inventory is not deletion clearance. |
 | `CLERK_PREFLIGHT_CONFIG_REF` | Immutable Clerk inventory configuration revision, using the shared Clerk binding above. |
@@ -278,6 +299,159 @@ removed after use. `ACCOUNT_DELETION_ENABLED`, `DELETION_REHEARSAL_ENABLED`,
 `DELETION_PREFLIGHT_RETENTION_APPROVED` are absent; no provider deletion is active.
 
 ## Remaining setup decisions
+
+### Oct3 issue #3 configuration and rehearsal boundary
+
+Chrome plugin works with the existing session. Human completed Clerk/Resend login;
+fresh pages now show LessMeet production and kieng/lessmeet.2m0r.com respectively.
+The old browser-runtime failure below is historical. No Apple Events setting change
+is needed. No user/customer lists or unrelated secret values were read.
+
+Production has29 names after scoped provisioning. New nonsecret bindings:
+- CLERK_CONTACT_ISSUER=https://clerk.auth.lessmeet.2m0r.com;
+  CLERK_CONTACT_INSTANCE_ID=ins_3JoKJsnX2ro7wXXYQfu94imtJNX.
+- CLERK_DELETION_CONFIG_REF=clerk_lessmeet_prod_deletion_20261003_v1.
+- REVENUECAT_DELETION_PROJECT_ID=proja83a7730;
+  REVENUECAT_DELETION_CONFIG_REF=rc_lessmeet_prod_deletion_20261003_v1.
+- REVENUECAT_PREFLIGHT_PROJECT_ID=proja83a7730;
+  REVENUECAT_PREFLIGHT_CONFIG_REF=rc_lessmeet_prod_preflight_20261003_v1;
+  REVENUECAT_PREFLIGHT_PROJECT_VERIFIED=true. Existing dev read key reused;
+  dev value unchanged. Chrome reconfirmed the scoped read-only key permissions.
+- RESEND_DELETION_CONFIG_REF=resend_lessmeet_prod_deletion_20261003_v1.
+  Existing `Private / LessMeet Resend / credential` copied to RESEND_API_KEY
+  through memory/stdin; readback matched. Initial vault read timed out; second
+  scoped attempt succeeded. No new key or notification was sent.
+
+Resend Chrome evidence: exact domain verified in Tokyo; `LessMeet transactional`
+has Sending access only to lessmeet.2m0r.com and zero uses. This does not prove the
+stored credential still authorizes a send, inbox delivery or Apple relay delivery.
+Email/contact/preflight gates stay false. CLERK_CONTACT_SECRET_KEY and preflight
+revision are not provisioned. Oct4 local candidate now requires durable verified
+contact before new Clerk adoption/destructive work. Preflight remains independent.
+Do not enable email sending to make contact inventory work.
+
+Clerk/RC gates were enabled only after deletions, deletionClerkExecutions and
+deletionProviderExecutions returned empty. They remained empty after activation.
+No request/case was adopted. Apple signing/provenance remains conditional work:
+current hosted config and secret presence are verified, but no dedicated presigned
+APPLE_DELETION_CLIENT_SECRET or Apple execution credential has been provisioned.
+Current client configuration is not proof for an older identity. Keep Apple off;
+use the approved manual exception for missing evidence, not a fabricated success.
+
+Local rehearsal artifact: `dist/issue3-production-rehearsal-20261003/LessMeet.app`.
+Built with existing `build-app.sh dev`, explicit production publishable key and
+Convex URL, ad-hoc signature and empty RevenueCat/public-legal configuration.
+No source/.env.local change. Prior `dist/LessMeet.app` restored after build.
+This is a local account/JWT/intake trial, not TestFlight/App Store signing or a
+RevenueCat SDK/customer-deletion test. See the [rehearsal steps](legal/DELETION_RUNBOOK.md#oct3-production-rehearsal--prepared-not-run).
+
+### Sep 26 issue #2 provisioning scope accepted by Human
+
+Human explicitly narrows #2 closure to (1) production backend/Clerk issuer deployment
+and (2) Gemini secret/model provisioning. Native/JWT and live transcription/chat
+tests are deferred to release QA (#7), not reported as passing. Operating-cost
+approval supersedes billing audit holds. Gemini credential is reused from dev by
+explicit instruction; exact Google project and provider data settings are not
+independently attested by equality of secrets. Retain policy/eligibility work in #4.
+
+Production URLs: https://uncommon-narwhal-733.convex.cloud (deployment) and
+https://uncommon-narwhal-733.convex.site (HTTP routes). Issuer:
+https://clerk.auth.lessmeet.2m0r.com, audience convex. Native release config is not
+switched by this deployment. Names-only inventory (14 names):
+
+- CLERK_JWT_ISSUER_DOMAIN
+- GEMINI_API_KEY, GEMINI_MODEL
+- GEMINI_BILLABLE_ENABLED, BATCH_TRANSCRIPTION_ENABLED, BATCH_CHAT_ENABLED
+- BILLING_ENFORCEMENT_ENABLED
+- ACCOUNT_DELETION_ENABLED, DELETION_AUTOMATION_ENABLED
+- DELETION_PREFLIGHT_ENABLED, DELETION_PREFLIGHT_RETENTION_APPROVED
+- DELETION_EMAIL_ENABLED, DELETION_CONTACT_RETENTION_APPROVED
+- CLERK_CONTACT_INVENTORY_ENABLED
+
+At the issue #2 checkpoint all11 gates above were false. Issue #3 later enabled
+ACCOUNT_DELETION_ENABLED and DELETION_AUTOMATION_ENABLED, both readback verified;
+other gates unchanged. Missing provider execution gates default off. No RevenueCat,
+Clerk backend or email secret copied; no batch-owner allowlist. Deployment registers
+the existing five minute crons and two daily purges (nominal 7,202 invocations/day);
+flags prevent new gated work, not all Convex resource usage or retention execution.
+Pre-deploy storage/scheduled work were freshly checked empty. No live AI calls,
+recording upload, native login or destructive test performed.
+
+Containment/rollback: native config remains unchanged. Intake/automation activation
+is now authorized; provider gates stay off until provisioning is complete.
+To stop new deletion admission, set both intake and automation false on this exact
+production deployment before investigating; this does not cancel in-flight work
+or disable all crons. Do not delete data or revoke the shared Gemini key as a
+rollback shortcut. Code rollback requires an identified previously accepted
+production candidate; the prior #2 deployed source is HEAD8edfcee, but rollback
+compatibility with new execution records must be checked. Preserve issuer/key
+binding and evidence tables during any rollback.
+
+Earlier Sep 26 checkpoint (superseded by provisioning above): Human accepts operating costs and waives another billing/plan audit.
+Historical cost/allowance holds below are superseded; no numeric budget is required
+to continue technical production setup. Exact production CLI refresh still returns
+no env names and functions: []; production Gemini is not provisioned. Retain dev,
+secret hygiene and separate destructive/public-release boundaries.
+
+### Sep 26 Apple credential setup accepted
+
+Human saved credentials directly in Clerk production. Exact readback: enabled=true,
+Services ID com.lessmeet.app.signin, Team ID 63M98WD275, Key ID 9QG4X948Z4,
+secret present without printing/persisting its value. Optional native bundle ID is
+empty; current app uses hosted authentication. Deploy status complete=true with
+both Apple/Google configured, DNS/SSL/mail complete and no pending providers.
+This supersedes missing-Apple-credential observations below. Human subsequently
+tested Apple login and supplied an authenticated Clerk profile screenshot with
+Apple linked and Hide My Email. Hosted web login accepted as Human-supplied
+evidence; no account email or screenshot copied into Git. Key backup location,
+private-relay Email Source registration/delivery, native
+callback and backend JWT acceptance remain unverified. Do not treat configuration
+acceptance as a working revocation signer or change development shared credentials.
+
+### Sep 25 production access refresh
+
+Convex production empty-state and region are now verified by the bounded read-only
+audit accepted in STATUS. Team usage state Default does not identify its plan.
+Spending-limit readback has disableThresholdCents=null and state=null; deployment
+usage limits list is empty. Seeded usage reported nonzero query/mutation compute
+(4.1666666666666667e-7 GB-hours day/month) and eight other metrics zero before
+subsequent diagnostic reads. This is not zero-cost proof. Verify actual plan,
+remaining allowance and Human-approved spending boundary before deploying the
+backend with its nominal 7,202 scheduled invocations/day. Do not change team-wide
+limits without considering other deployments or silently disable retention crons.
+
+Clerk exact production config readback: Apple enabled, but Services ID, Team ID,
+Key ID, secret and optional native bundle ID fields are empty. Google enabled with
+the previously recorded client ID. Session aud=convex, Native API enabled and the
+single exact callback com.lessmeet.app://callback remain verified. Deploy status is
+oauth_pending (Apple only); DNS/SSL/mail complete. No configuration was changed.
+
+Apple next input: inspect existing Services IDs and Sign in with Apple keys under
+team 63M98WD275 before creating anything. Bind the hosted OAuth client to existing
+primary App ID com.lessmeet.app; do not substitute an IAP/ASC key. For hosted login,
+Clerk requires Services ID, Team ID, Key ID and Apple private key. Preserve dev's
+shared credentials. Obtain Return URL and private-relay Email Source from the exact
+production Apple connection; do not invent the relay sender. Keep private-key
+material out of Git/chat and decide durable secure storage before generating a
+download-once key. [Clerk Apple setup](https://clerk.com/docs/guides/configure/auth-strategies/social-connections/apple)
+checked Sep 25. Browser/computer-use startup is still broken, before authentication;
+there is no usable Apple management CLI credential established by this audit.
+
+RevenueCat exact read-only probe GET /v2/projects/proja83a7730/apps/app0efc34c2fb
+with the existing scoped preflight key returned 403 authorization_error, requiring
+project_configuration:apps:read. This is a permissions limit, not evidence of an
+incorrect app or absent products. Keep that customer-inventory key unchanged;
+complete app/products/entitlement readback using the dashboard or a separately
+approved least-privilege configuration-read credential. No customers, purchases or
+provider mutations occurred. Match bundle com.lessmeet.app, entitlement lessmeet_pro,
+and products com.lessmeet.app.pro.monthly / com.lessmeet.app.pro.yearly.
+
+Gemini exact production project/billing identity remains unverified; Human asked
+for Project ID and managing account, not an API key. Google OAuth project lessmeet
+does not establish Gemini binding. No gcloud executable available in the current
+shell. Source fallback model is gemini-flash-latest (convex/gemini.ts); a source
+default is not a verified production model or evidence of access/data settings.
+No live generation or secret copying is authorized by this check.
 
 Sep 24 authorized setup: enabled Sign In with Apple as primary App ID for Lessmeet
 `com.lessmeet.app` under team `63M98WD275`; saved and reopened the identifier to

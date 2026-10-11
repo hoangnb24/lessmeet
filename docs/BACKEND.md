@@ -157,20 +157,228 @@ The accepted A snapshot implemented in-app intake, guards, local cleanup and man
 provider evidence. Human subsequently chose normal-path automation with bounded
 retries and completion notification. The follow-up below implements the
 provider-neutral worker, exact-known Gemini-file cleanup, and a separately gated
-frozen Resend sender with read-only Clerk contact inventory. Destructive Clerk,
-Apple, RevenueCat and residual-copy fulfillment are **not implemented**;
-their worker stages stop as explicit exceptions. Email delivery remains pending,
+frozen Resend sender with read-only Clerk contact inventory. Local-only Clerk,
+Apple and RevenueCat execution now has separately gated explicit adoption;
+generic worker stages stop as exceptions until adopted. Residual-copy fulfillment
+remains operator-owned. Email delivery remains pending,
 never inferred from API acceptance. This is not full automation,
 provider readiness, legal compliance, or permission to deploy/enable anything.
 
-An accepted local [Clerk transport-only module](../Tests/backend/CLERK_TRANSPORT_HANDOFF.md)
-now provides injectable, bounded wire primitives with mocked verification. It has
-no registered handler, production caller, implicit credentials or completion writes;
-the existing worker still returns `adapter_unimplemented` for Clerk. A future
-trusted worker must supply Apple disposition, identity/config/fence validation,
-fresh execution inventory and durable observe-before-retry reconciliation. A DELETE
-acknowledgement, exact-resource absence or revoked session is not by itself full
-account-deletion completion.
+The original [Clerk transport](../Tests/backend/CLERK_TRANSPORT_HANDOFF.md) now has
+a separately gated [durable execution worker](#durable-clerk-execution--local-only).
+Deployed to production Sep 26, but provider activation remains off pending credentials.
+Generic stages still report `adapter_unimplemented`
+until explicitly adopted into that worker. A DELETE acknowledgement, exact-resource
+absence or revoked session is not by itself full account-deletion completion.
+
+### Durable Clerk execution — local only
+
+The2026-10-05 local extension inserts Google grant handling before Clerk session
+and user destruction. This extension is not deployed or live-verified yet. See
+the Google section below; historical Clerk-only evidence does not verify it.
+
+Historical heading retained for links: deployed to production; Clerk execution
+configured and enabled Oct3. Exact case adoption is still required. No live account
+deletion has been tested. See STATUS for configuration evidence and limits.
+
+`CLERK_DELETION_ENABLED=true` and `DELETION_AUTOMATION_ENABLED=true` are both
+required. The immutable binding uses `CLERK_JWT_ISSUER_DOMAIN`, matching
+`CLERK_CONTACT_ISSUER`, `CLERK_CONTACT_INSTANCE_ID`, and a nonsecret
+`CLERK_DELETION_CONFIG_REF`. A separate `CLERK_DELETION_SECRET_KEY` is used only
+in action memory. Never substitute the read-only contact key or silently repoint
+a revision to another instance. No credential is provisioned by this change.
+
+#### Google grant prerequisite
+
+Pinned Clerk iOS1.5.5 exposes external-account destroy/reauthorize, not a public
+Google grant-revoke method. The Clerk Frontend API has a provider-conditional
+token-revoke endpoint, but the native SDK does not expose its required authorized
+client transport. A LessMeet JWT is not that FAPI client credential. The selected
+route uses the existing backend credential while the Clerk user still exists.
+
+The Backend API returns Google provider access tokens and may refresh them during
+lookup. The pure `googleDeletionTransport` binds the Clerk instance/user and
+current external-account IDs. It checks token `aud`, `azp`, `sub`, expiry and narrow
+sign-in scopes through Google tokeninfo before posting to Google's revoke endpoint.
+`aud` and `azp` have separate trusted settings. A project label records operator
+provenance; it is not independently returned by tokeninfo. Never put access tokens,
+tokeninfo URLs, provider payloads or credentials in logs, errors or ledger rows.
+
+Google200 is a revocation acknowledgement, not proof of erased Google data or
+immediate disappearance from the Connections UI. Google documents eventual effects
+and revocation across that user's clients in the same project. Live acceptance must
+bind the actual client/project and selected account before authorizing this effect.
+Tokeninfo is a fail-closed diagnostic guard, not an availability guarantee.
+
+New intake sets `googleRequired=true` and `googleStatus=pending`. The status API
+returns an additive `googleStatus`, or null without a request. Legacy records with
+no Google state return null, which preserves legacy native decoding without
+asserting Google success. The broad completion helper also requires bound
+Google proof for new requests. Clerk deletion and generic provider confirmation
+cannot synthesize that proof. Keep its nonsecret reference on the deletion row
+until final purge so deleting execution children does not strand retention.
+
+No token is persisted. Unknown mutation results need operator recovery and must
+not automatically re-fetch a provider token or replay revoke. Empty current Google
+inventory is not evidence that a historical grant never existed. Pending cases
+remain operator-owned; customers do not have to disconnect Google for normal flow.
+
+The Google phases are `inventoryGoogle`, `revokeGoogle` and
+`verifyGoogleInventory`. Exact external-account/Google-subject pairs are frozen;
+automatic revocation permits exactly one current Google link. Multiple links stop
+before token lookup with `google_multiple_accounts_operator_required`. Known
+multiaccount executions cannot resume through claim, recovery or operator resolution,
+even if later inventory shrinks. Lead must reopen that route when a real case needs it.
+The single target keeps an acknowledgement marker and optional operator evidence ref.
+Empty-inventory attestation keeps `googleOperatorEvidence` separately from the
+final bounded `googleEvidence`. The worker rechecks metadata only before each
+Clerk mutation. It must not refresh Google tokens after accepted revocation.
+`resolveGoogle` requires exact owner/fence/stage/config/evidence and resolves one
+ambiguous target or evidenced historical non-applicability. `observeGoogleAgain`
+only resumes bounded metadata reads under the same configuration. Neither entry
+point resets budgets or blindly replays an unknown revoke. See the
+[recovery and live trial procedure](legal/DELETION_RUNBOOK.md#google-recovery-and-smallest-live-trial).
+
+Primary contracts: [Clerk BAPI](https://github.com/clerk/openapi-specs/blob/3b078e5e0c17ad5261f06cb00e0a0943614dacb0/bapi/2026-05-12.yml),
+[Clerk FAPI](https://github.com/clerk/openapi-specs/blob/3b078e5e0c17ad5261f06cb00e0a0943614dacb0/fapi/2026-05-12.yml),
+[Google revocation](https://developers.google.com/identity/protocols/oauth2/web-server#tokenrevoke),
+[Google token types/tokeninfo](https://docs.cloud.google.com/docs/authentication/token-types).
+
+Internal entry points (never expose these as user/client inputs):
+
+- `clerkExecution.adopt({id,owner,stageFence,appleFence,appleEvidence,disposition})`
+  adopts exactly one blocked `adapter_unimplemented` Clerk stage after local
+  cleanup. Refuses manual stages, exhausted legacy budgets, target/binding conflicts
+  or unverified Apple evidence. Disposition must be `revocation_verified` or
+  `historical_non_applicability_verified`: an operator attestation backed by the
+  private Apple case, not a conclusion from a missing current Apple link. Freeze
+  that evidence and the monotonic Apple-stage fence. Repeating the same adoption
+  is idempotent and never resets budgets; changed bindings are not auto-migrated.
+- `inventory({id,owner})` returns only the exact request's execution and sanitized
+  session evidence to trusted operators. It is not public status.
+- `observeAgain({execution,owner,fence})` only requeues a blocked GET phase after
+  mutation uncertainty; same binding and Apple proof must still hold. It never
+  rearms DELETE/POST or resets attempts. Unchanged active session/user remains an
+  operator exception, not an infinite destructive retry.
+- `reconcile({execution,owner,fence,evidence})` records explicit private-case
+  acceptance of residual/session scope, only after completed bounded inventory,
+  handling of every observed session and typed user absence. This alone sets
+  `clerk=true`; the generic confirmation path cannot bypass unresolved execution.
+- `releaseInvalidated({execution,owner,fence,stageFence,automationRevision,evidence,
+  remoteEffects:"reconciled"})` closes an execution hold after its generic stage
+  was explicitly reopened. Running leases must first expire. Requires the exact
+  current manual-stage fence and request revision, preserves prior results/budgets,
+  and does not set `clerk=true`. A separate evidence-backed confirmation follows.
+
+Each action verifies the pinned Clerk instance and exact target. New execution
+inventory is independent of frozen preflight snapshots: at most eight pages of32,
+and a full eighth page is incomplete/blocked. Duplicate/moving pagination blocks.
+Known sessions are observed and, if active/pending, revoked individually. Exact
+revocation, terminal status and typed absence remain different evidence. Account
+DELETE acknowledgement is followed by GET; absence alone never sets the Clerk
+completion flag. No claim of historical/global session completeness is made.
+
+Before every destructive request and before accepting its result, check gates,
+config, exact request, worker lease/fence and frozen Apple-stage evidence. Mutation
+intent is durable before submission. Lost leases, transport failures and malformed
+mutation responses transition to observation, never blind mutation replay. Fences
+cannot retract a request already sent to Clerk. Eight attempts per observation/
+page,1024 total claims,90-second leases and20-second transport deadlines bound work.
+The existing deletion recovery cron dispatches this gated recovery; no new cron.
+
+Minimal execution evidence survives30-day preflight compaction. Unresolved
+execution blocks the90-day completion clock/purge even if flags are inconsistent;
+reconciled execution is deleted with the completed ledger. Contact capture and
+delivery remain independent and must not delay revocation; relay/missing contact
+and loss of authenticated status refresh after Clerk deletion need the existing
+operator completion-notification process before live use.
+
+Source semantics: [pinned Clerk REST schema](https://raw.githubusercontent.com/clerk/openapi-specs/main/bapi/2026-05-12.yml).
+Mock-only acceptance is recorded in STATUS and `Tests/backend/clerkExecution.test.ts`.
+No live account, notification, Apple token or RevenueCat deletion was exercised.
+
+### Apple and RevenueCat execution — local only
+
+`providerExecution` shares one small durable case worker for these two providers,
+not a generic integration framework. Deployed to production Sep 26; RevenueCat is
+configured/enabled Oct3, Apple remains off (historical heading retained for links). All provider
+results are observations/acknowledgements until operator reconciliation. It retains
+no OAuth tokens, client secrets, private keys, raw responses or provider error text.
+
+Common prerequisites: automation gate plus the provider-specific gate, matching
+Clerk issuer/instance binding, exact deletion request/owner/subject/time, local
+cleanup complete, and a blocked `adapter_unimplemented` stage with expected fence.
+An immutable nonsecret configuration revision is frozen at adoption. Repeated
+identical adoption returns the same execution without resetting attempt budgets;
+no background scan adopts accounts. Generic confirmation cannot bypass an unresolved
+execution. New rows participate in the same90-day completed-ledger purge and block
+completion/notification/public status when unresolved, even with inconsistent flags.
+
+Apple configuration: `APPLE_DELETION_ENABLED`, `APPLE_DELETION_CONFIG_REF`,
+`APPLE_DELETION_CLIENT_ID`, `APPLE_DELETION_TEAM_ID`, `APPLE_DELETION_KEY_ID`,
+dedicated `APPLE_DELETION_CLERK_SECRET_KEY` and pre-signed
+`APPLE_DELETION_CLIENT_SECRET`. No new private-key signer/custody is introduced.
+The client-secret header/claims must match the frozen config, use ES256, have a
+valid time window and at least60seconds remaining. Structural checks are not
+signature verification; trusted provisioning is still necessary.
+
+`adopt({id,owner,provider:"apple",stageFence,safetyEvidence,apple})` accepts
+`apple:{externalAccountId,providerUserId,originalClientId}` only with original-client
+provenance attested by the private `safetyEvidence` reference. The current Services
+ID is not historical proof. Omitting the identity creates an explicit blocked
+manual case with no transport calls; a contradictory client is rejected. Run before
+Clerk deletion. Transport freshly verifies the Clerk instance/user and exactly one
+verified Apple link, obtains exactly one matching token via pinned Clerk REST,
+and submits form-encoded `/auth/revoke`. Tokens stay inside that action. The token
+GET can itself refresh credentials, so authorization is rechecked before it and
+again immediately before revocation. Multiple/missing/unverified identities,
+missing tokens and ambiguous results stay operator exceptions.
+
+Clerk `expires_at` is described as a Unix timestamp without explicit units in the
+inspected schema/SDK. The current conservative adapter requires freshness under
+both seconds and milliseconds interpretations; seconds-scale/null values may
+therefore route to manual handling. This is an explicit unverified live-compatibility
+limit, not invented unit conversion. Apple200 with empty body is acknowledgement,
+not proof of original-client identity or complete erasure. No automatic POST retry.
+
+RevenueCat configuration: `REVENUECAT_DELETION_ENABLED`,
+`REVENUECAT_DELETION_CONFIG_REF`, `REVENUECAT_DELETION_PROJECT_ID`, and separate
+`REVENUECAT_DELETION_SECRET_KEY` with appropriate v2 customer read/write access.
+Never reuse/upgrade the read-only preflight key implicitly. Adoption requires
+completed Clerk handling and freezes its stage fence; `safetyEvidence` covers
+SDK/other-device recreation handling for the exact case. V2 GET is used for
+observation, never the v1 GET that can create a missing customer.
+
+Before DELETE, transport freshly GETs the exact customer/project and aliases.
+Only the exact subject (or an empty alias list) is accepted; additional aliases
+or any non-null continuation become `alias_ownership_unverified` with no DELETE.
+The supported normal path deliberately does not follow unexplained alias links.
+HTTP200 DELETE means queued asynchronous handling, not disappearance. Subsequent
+bounded GETs retain present/unknown/absent distinctions. Eight observation attempts,
+provider retry hints and a nine-claim total bound readback; no automatic DELETE
+replay. Reappearance or unresolved visibility is manual, not a cancellation of
+Apple subscriptions or permission to transfer purchases.
+
+`inventory({id,owner})` returns at most two private execution rows. Internal
+`reconcile({execution,owner,fence,evidence,automationRevision})` is the explicit
+operator path for observed/blocked/exhausted cases: the private evidence must
+establish the actual scope, including unresolved Apple history/RC aliases and
+recreation risks. It marks the existing provider stage manual and sets its flag;
+it does not fabricate an automatic acknowledgement. Missing evidence keeps the
+case incomplete. Lost leases record uncertainty; RC may only observe afterwards,
+Apple requires operator handling. No additional periodic cron was added.
+
+`providerExecution.releaseInvalidated` has the same exact-revision contract as the
+Clerk entry point above. It handles an operator reopening during execution without
+stranding the case or restoring execution authority. Reopening cannot recall a
+remote request already sent: the private evidence must reconcile that possibility.
+Release alone keeps the provider flag false and does not start completed retention.
+
+Sources: [Clerk pinned BAPI](https://raw.githubusercontent.com/clerk/openapi-specs/main/bapi/2026-05-12.yml),
+[Apple revocation](https://developer.apple.com/documentation/signinwithapplerestapi/revoke-tokens),
+[Apple manual handling](https://developer.apple.com/documentation/technotes/tn3194-handling-account-deletions-and-revoking-tokens-for-sign-in-with-apple),
+[RevenueCat v2 customer API](https://www.revenuecat.com/docs/api-v2/customer).
+No live token/client binding, provider deletion or delivery is established by mocks.
 
 `GET /account/deletion` requires the current Clerk bearer token and no query
 parameters. `POST /account/deletion` requires that same authentication, no query
@@ -312,7 +520,11 @@ row, not an email match or an ID supplied by an unverified requester.
    failure/reopened verification and allows later retry. `complete:true` is rejected
    while local operations remain unresolved. Do not set a stage true just because
    a request was submitted or accepted asynchronously.
-7. Clerk: verify deletion of the exact account and its sessions. Apple: independently
+7. Before new Clerk deletion, retain the verified durable account-bound email for
+   the approved7-calendar-day email operation. Missing/relay/unverified contact
+   stays an operator exception; do not invent a recipient. Handle applicable Google
+   login permissions separately from Clerk sessions. Clerk: verify deletion of the
+   exact account and its sessions. Apple: independently
    verify token revocation through the responsible Clerk/Apple integration (or
    verified non-applicability when no Apple identity was linked). **Clerk deletion
    is not Apple revocation proof.** Verify revocation prerequisites before deleting
@@ -320,16 +532,19 @@ row, not an email match or an ID supplied by an unverified requester.
    subject/customer and aliases, without cancelling/transferring subscriptions or
    weakening original-owner restore policy. Aliases belonging to another owner
    require escalation before deletion, not a broad customer sweep.
-8. Gemini: reconcile known Files and unknown/legacy copies, settings and logs.
-   `residuals`: inventory backups/exports, provider logs, support records and any
-   required exceptions. Unknown copies keep progress pending. Independently retained
+8. Gemini: reconcile known case Files and ambiguous operations. Generic project
+   settings/logs/retention and `residuals` backup/export/support review now belong
+   to #4, unless a specific account-linked record makes them immediate case work.
+   Unknown copies keep broad progress pending, not necessarily narrowed #3 closure.
+   Independently retained
    Apple transaction records are not erased by LessMeet. Record and communicate
    scope/approved exceptions rather than claiming all copies gone.
 9. Re-read inventory/progress, test guard denial and other-owner preservation, then
    send the approved completion record through a verified private channel. After
    Clerk deletion, in-app status may return 401; a failed sign-in is not completion
-   evidence. Do not delete the guard. Identity/billing deletion adapters are not
-   implemented. The separate sender below can submit email only after exact scope
+   evidence. Do not delete the guard. The current durable Clerk/Apple/RevenueCat
+   workers are described above; do not infer completion from their activation.
+   The separate sender below can submit email only after exact scope
    completion and contact/configuration checks; submission is not delivery evidence.
 
 ### Partial automation worker (offline candidate)
@@ -444,13 +659,13 @@ remains unchanged for compatibility; it describes this provider-neutral intent,
 not the separate `deletionSends` record below. Read notification inventory for
 actual submission/pending state. The mutable intent is never itself sent.
 
-Remaining dependencies: native RevenueCat shutdown/startup and other-device
-quiescence; separate v2 read-only exact-project alias inventory with authorized
-credentials before v1 deletion; exact Clerk/Apple linked-token and original-client
+Remaining live dependencies: native RevenueCat shutdown/startup and other-device
+quiescence; separate exact-project v2 deletion credentials and evidence;
+exact Clerk/Apple linked-token and original-client
 verification with revocation before losing identity access; deployment of the
 default-off contact/sender candidate and an approved relay-only exception procedure.
-RC v1 GET creates missing
-customers and DELETE is asynchronous, so neither is implemented as verification.
+RC v1 GET creates missing customers and is not used for verification. The new
+local-only v2 route above supersedes the earlier planned v1 deletion route.
 Backups, logs, legacy orphans, identity suppression/retention and completion-time
 disclosures remain unresolved. Nothing here deletes the owner guard or claims all
 normal-path provider automation has shipped.
@@ -493,15 +708,19 @@ Do not read it for tests. Direct REST uses the existing runtime, no SDK/install.
 The public deletion response and routes are unchanged; no public contact setter,
 arbitrary-recipient endpoint or webhook endpoint is added.
 
-All notification collection/submission requires BOTH
-`DELETION_EMAIL_ENABLED=true` and `DELETION_CONTACT_RETENTION_APPROVED=true`.
-Missing/false values fail closed. These are activation checks, **not approval**:
-Human must first approve contact/send purpose, access, retention/purge/backup rules,
-provider disclosure and the completion message. No duration, SLA or guard purge is
-inferred. Keep both off until those decisions and deployment review are complete.
-The frozen payload and recipient are personal data even after identity deletion;
-there is no automatic purge here. Resend processing/privacy is a separate release
-gate, not covered by the existing indefinite audio-storage policy.
+Oct4 local candidate separates collection from sending. Contact capture requires
+`CLERK_CONTACT_INVENTORY_ENABLED=true` and `DELETION_CONTACT_RETENTION_APPROVED=true`.
+It works with `DELETION_EMAIL_ENABLED=false`. Automatic submission still requires
+`DELETION_EMAIL_ENABLED=true` plus the contact-retention gate and all existing
+completion/configuration checks. Missing/false values fail closed. Activation is
+not send permission. No production gate was changed for this candidate.
+
+Human approved normal scoped fulfillment within7 calendar days of receipt, with
+email updates/results and exception status/reason/next-update date. This does not
+alter broad completion flags or the90-day purge clock. Contact/send rows are
+personal data after identity deletion and follow the existing broad-ledger purge;
+pending retention and general provider privacy are #4 limits. No new retention
+period or all-copies-erased/legal claim is inferred.
 
 #### Exact-user contact inventory and wire version
 
@@ -532,8 +751,11 @@ Configuration prerequisites, set only by a separately authorized operator:
 - Provision an authorized server credential to `CLERK_CONTACT_SECRET_KEY` only
   after approving this read scope. None was read or provisioned here.
 
-Intake schedules one capture independently of deletion cleanup. It does not wait
-for contact lookup before Apple revocation or other fulfillment. Only address,
+Intake schedules one capture independently of deletion cleanup. Apple revocation
+does not wait for contact lookup. The Oct4 local Clerk candidate requires a durable
+bound verified non-relay contact at new adoption and before destructive effects.
+Historical observation/reconciliation remains possible without manufacturing one.
+Only address,
 exact owner/subject/issuer/instance, captured time and allowlisted outcome are saved
 to `deletionContacts`; the full response/metadata/other addresses never are. A
 successful captured recipient is immutable, including concurrent/repeated captures.
@@ -548,8 +770,8 @@ reverses Apple revocation; ambiguous Apple revocation remains an operator except
 
 #### Frozen send and retry contract
 
-`publishIntent` schedules an exact-owner freeze check; successful contact capture
-also schedules it, so either ordering works. Freeze requires current discovery and
+When sending is enabled, `publishIntent` schedules an exact-owner freeze check;
+successful contact capture also schedules it, so either ordering works. Freeze requires current discovery and
 stage classification `scope_complete`, no remaining owner work, exact intent
 revision, and all six independent flags true: `localComplete`, `clerk`, `apple`,
 `revenuecat`, `gemini`, `residuals`. No provider flag is written by email code.
@@ -616,11 +838,22 @@ Adding a verification dependency or public endpoint requires Lead's scope decisi
 
 Internal operator inspection/recovery (not authorization to invoke live):
 
+The narrowed #3 manual email path uses `manualDeletionEmailDraft` in
+`notificationAdapter.ts`, not the broad `freeze` path. It is a pure helper, with
+no handler, recipient or send effect. It adds exactly604800000ms to the recorded
+receipt time. Exceptions require a reason and future next-update time. A completion
+draft requires explicit trusted-operator acceptance, a private evidence reference,
+completed scope and retained/unresolved limits. It does not verify that evidence
+or accept the case itself. The operator supplies the immutable verified recipient
+separately and obtains exact send authority. Do not copy case evidence or private
+IDs into customer text. API submission remains distinct from delivery.
+
 - `deletionNotifications:inventory({id,owner})`: sanitized contact code, completion
   eligibility, availability/configuration gap, submission state and timing. No
   address/payload is returned. Missing contact remains `contact_missing` explicitly.
 - `captureContact({id,owner})`: bounded read-only exact-user retry after resolving
-  configuration/contact failure, only while identity remains accessible.
+  configuration/contact failure, only while identity remains accessible. Capture
+  does not require the send gate in the Oct4 local candidate.
 - `freeze({id,owner})`: reevaluate an unsent request after contact/configuration is
   made ready. Does not recreate or rearm a send; old intents need accepted automation
   discovery/start first. There is no bulk adoption of legacy requests.

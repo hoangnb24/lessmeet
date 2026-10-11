@@ -175,6 +175,20 @@ Current decisions, ownership and acceptance: [docs/STATUS.md](docs/STATUS.md).
 
 ### Agent native UI checks
 
+Use Xcode and the repeatable offline UI suite to validate agent changes:
+
+```sh
+bash scripts/test-ui.sh
+```
+
+The runner saves an Xcode `.xcresult` report, screenshots, accessibility text and
+build/test logs under ignored `.artifacts/verify-lessmeet/`. It checks account
+refresh, failures, delayed responses, account switching and confirmation without
+live accounts or paid calls. It requires a logged-in macOS desktop and UI automation
+permissions. See [Xcode testing and debugging](Tests/UI/README.md) for the shared
+Xcode scheme, model/component debugging and proof limits. These fixture tests do
+not establish live recording, cloud or billing behavior.
+
 Use the project skill [lessmeet-app-check](.agents/skills/lessmeet-app-check/SKILL.md)
 for native UI diagnosis and verification. `AGENTS.md` defines when it is required.
 The skill contains the Computer Use procedure, evidence requirements and limits.
