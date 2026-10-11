@@ -11,19 +11,49 @@ struct ResponsesClientError: Error, LocalizedError, Equatable, Sendable {
         case consent, scope, revoked, quota, temporary, unsupported, permission
         case http, malformed, incomplete, refusal, limit, redirect, transport
     }
+    // Fixed local labels only. Never derive a stage from response or request data.
+    enum DiagnosticStage: String, Sendable {
+        case requestInput = "request-input", catalog = "catalog"
+        case initialHeader = "initial-header", responseURL = "response-url"
+        case errorBodySequence = "error-body-sequence", contentType = "content-type"
+        case duplicateHeader = "duplicate-header", nonHTTPResponse = "non-http-response"
+        case sseUTF8 = "sse-utf8", sseJSON = "sse-json", eventType = "event-type", delta = "delta"
+        case completionStructure = "completion-structure", outputType = "output-type"
+        case messageStructure = "message-structure", contentPartType = "content-part-type"
+        case textValue = "text-value", textPrefix = "text-prefix"
+    }
+    // Classify the parsed MIME value. Never retain a raw header or its parameters.
+    enum MIMECategory: String, Sendable {
+        case missing, json, html, plain, other
+
+        init(parsedMIME: String?) {
+            switch parsedMIME?.lowercased() {
+            case nil: self = .missing
+            case "application/json": self = .json
+            case "text/html": self = .html
+            case "text/plain": self = .plain
+            default: self = .other
+            }
+        }
+    }
     let kind: Kind
     let statusCode: Int?
     let code: String?
     let requestID: String?
     let hasDetail: Bool
+    let diagnosticStage: DiagnosticStage?
+    let mimeCategory: MIMECategory?
 
     init(_ kind: Kind, statusCode: Int? = nil, code: String? = nil,
-         requestID: String? = nil, hasDetail: Bool = false) {
+         requestID: String? = nil, hasDetail: Bool = false, diagnosticStage: DiagnosticStage? = nil,
+         mimeCategory: MIMECategory? = nil) {
         self.kind = kind
         self.statusCode = statusCode
         self.code = code
         self.requestID = requestID
         self.hasDetail = hasDetail
+        self.diagnosticStage = diagnosticStage
+        self.mimeCategory = diagnosticStage == .contentType ? mimeCategory : nil
     }
 
     var errorDescription: String? {
@@ -45,6 +75,8 @@ struct ResponsesClientError: Error, LocalizedError, Equatable, Sendable {
         case .transport: message = "The connection to ChatGPT failed. Keep your sign-in and check your connection."
         }
         return message + (statusCode.map { " (HTTP \($0))" } ?? "")
+            + (diagnosticStage.map { " (stage: \($0.rawValue))" } ?? "")
+            + (mimeCategory.map { " (mime: \($0.rawValue))" } ?? "")
     }
 
     fileprivate static func server(status: Int, object: [String: Any]?, requestID: String?, token: String) -> Self {
@@ -140,7 +172,7 @@ struct ResponsesClient: Sendable {
             }
             guard let catalog = try? JSONDecoder().decode(Catalog.self, from: data),
                   catalog.models.allSatisfy({ !$0.slug.isEmpty && !$0.display_name.isEmpty }) else {
-                throw ResponsesClientError(.malformed)
+                throw ResponsesClientError(.malformed, diagnosticStage: .catalog)
             }
             return catalog.models.filter { $0.visibility == "list" }.map {
                 ResponsesModel(slug: $0.slug, displayName: $0.display_name)
@@ -151,7 +183,7 @@ struct ResponsesClient: Sendable {
     func reply(accessToken: String, model: String, transcript: String, history: [ChatMessage],
                question: String, onDelta: @escaping @Sendable (String) async -> Void) async throws -> String {
         guard !model.isEmpty, !question.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty else {
-            throw ResponsesClientError(.malformed)
+            throw ResponsesClientError(.malformed, diagnosticStage: .requestInput)
         }
         guard history.count <= limits.historyMessages else { throw ResponsesClientError(.limit) }
         var remaining = limits.requestBytes
@@ -193,11 +225,15 @@ struct ResponsesClient: Sendable {
                     total += data.count
                     for byte in data {
                         guard let event = try parser.append(byte) else { continue }
-                        guard let object = try? JSONSerialization.jsonObject(with: event) as? [String: Any],
-                              let type = object["type"] as? String else { throw ResponsesClientError(.malformed) }
+                        guard let object = try? JSONSerialization.jsonObject(with: event) as? [String: Any] else {
+                            throw ResponsesClientError(.malformed, diagnosticStage: .sseJSON)
+                        }
+                        guard let type = object["type"] as? String else {
+                            throw ResponsesClientError(.malformed, diagnosticStage: .eventType)
+                        }
                         switch type {
                         case "response.output_text.delta":
-                            guard let delta = object["delta"] as? String else { throw ResponsesClientError(.malformed) }
+                            guard let delta = object["delta"] as? String else { throw ResponsesClientError(.malformed, diagnosticStage: .delta) }
                             guard delta.utf8.count <= limits.outputBytes - answerBytes else { throw ResponsesClientError(.limit) }
                             answerBytes += delta.utf8.count
                             answer += delta
@@ -206,7 +242,7 @@ struct ResponsesClient: Sendable {
                         case "response.completed":
                             let finalText = try completedText(object)
                             // Compare bytes, not graphemes: a suffix can extend a combining character.
-                            guard finalText.utf8.starts(with: answer.utf8) else { throw ResponsesClientError(.malformed) }
+                            guard finalText.utf8.starts(with: answer.utf8) else { throw ResponsesClientError(.malformed, diagnosticStage: .textPrefix) }
                             let suffix = String(decoding: finalText.utf8.dropFirst(answerBytes), as: UTF8.self)
                             try Task.checkCancellation()
                             if !suffix.isEmpty {
@@ -240,22 +276,22 @@ struct ResponsesClient: Sendable {
               response["status"] as? String == "completed",
               response["error"] == nil || response["error"] is NSNull,
               response["incomplete_details"] == nil || response["incomplete_details"] is NSNull,
-              let output = response["output"] as? [[String: Any]] else { throw ResponsesClientError(.malformed) }
+              let output = response["output"] as? [[String: Any]] else { throw ResponsesClientError(.malformed, diagnosticStage: .completionStructure) }
         var text = ""
         var byteCount = 0
         for item in output {
-            guard let type = item["type"] as? String else { throw ResponsesClientError(.malformed) }
+            guard let type = item["type"] as? String else { throw ResponsesClientError(.malformed, diagnosticStage: .outputType) }
             // Reasoning is not user-facing answer text. Tools and other output types are unsupported.
             if type == "reasoning" { continue }
             guard type == "message" else { throw ResponsesClientError(.unsupported) }
             guard item["role"] as? String == "assistant", item["status"] as? String == "completed",
                   let id = item["id"] as? String, !id.isEmpty,
-                  let content = item["content"] as? [[String: Any]] else { throw ResponsesClientError(.malformed) }
+                  let content = item["content"] as? [[String: Any]] else { throw ResponsesClientError(.malformed, diagnosticStage: .messageStructure) }
             for part in content {
-                guard let type = part["type"] as? String else { throw ResponsesClientError(.malformed) }
+                guard let type = part["type"] as? String else { throw ResponsesClientError(.malformed, diagnosticStage: .contentPartType) }
                 if type == "refusal" { throw ResponsesClientError(.refusal) }
                 guard type == "output_text" else { throw ResponsesClientError(.unsupported) }
-                guard let value = part["text"] as? String else { throw ResponsesClientError(.malformed) }
+                guard let value = part["text"] as? String else { throw ResponsesClientError(.malformed, diagnosticStage: .textValue) }
                 guard value.utf8.count <= limits.outputBytes - byteCount else { throw ResponsesClientError(.limit) }
                 byteCount += value.utf8.count
                 text += value
@@ -289,14 +325,17 @@ struct ResponsesClient: Sendable {
                 try Task.checkCancellation()
                 // Pull the header before handing the same iterator to the body consumer.
                 var iterator = connection.events.makeAsyncIterator()
-                guard case .response(let response) = try await iterator.next(), response.url == request.url else {
-                    throw ResponsesClientError(.malformed)
+                guard case .response(let response) = try await iterator.next() else {
+                    throw ResponsesClientError(.malformed, diagnosticStage: .initialHeader)
+                }
+                guard response.url == request.url else {
+                    throw ResponsesClientError(.malformed, diagnosticStage: .responseURL)
                 }
                 if response.statusCode != 200 {
                     var data = Data()
                     while let event = try await iterator.next() {
                         try Task.checkCancellation()
-                        guard case .data(let chunk) = event else { throw ResponsesClientError(.malformed) }
+                        guard case .data(let chunk) = event else { throw ResponsesClientError(.malformed, diagnosticStage: .errorBodySequence) }
                         guard chunk.count <= limits.errorBytes - data.count else { throw ResponsesClientError(.limit) }
                         data.append(chunk)
                     }
@@ -305,7 +344,10 @@ struct ResponsesClient: Sendable {
                         requestID: response.value(forHTTPHeaderField: "x-request-id"), token: token)
                 }
                 if request.httpMethod == "POST" {
-                    guard response.mimeType?.lowercased() == "text/event-stream" else { throw ResponsesClientError(.malformed) }
+                    guard response.mimeType?.lowercased() == "text/event-stream" else {
+                        throw ResponsesClientError(.malformed, diagnosticStage: .contentType,
+                            mimeCategory: .init(parsedMIME: response.mimeType))
+                    }
                 }
                 let cursor = ResponsesCursor(iterator: iterator, header: response)
                 let events = AsyncThrowingStream<ResponsesTransportEvent, Error>(unfolding: { try await cursor.next() })
@@ -344,7 +386,7 @@ private final class ResponsesCursor: @unchecked Sendable {
     func next() async throws -> ResponsesTransportEvent? {
         if let header { self.header = nil; return .response(header) }
         let event = try await iterator.next()
-        if case .response = event { throw ResponsesClientError(.malformed) }
+        if case .response = event { throw ResponsesClientError(.malformed, diagnosticStage: .duplicateHeader) }
         return event
     }
 }
@@ -380,7 +422,7 @@ struct ResponsesSSEParser {
             firstLine = false
             if line.starts(with: [0xef, 0xbb, 0xbf]) { line.removeFirst(3) }
         }
-        guard String(data: line, encoding: .utf8) != nil else { throw ResponsesClientError(.malformed) }
+        guard String(data: line, encoding: .utf8) != nil else { throw ResponsesClientError(.malformed, diagnosticStage: .sseUTF8) }
         if line.isEmpty {
             eventBytes = 0
             guard !data.isEmpty else { return nil }
@@ -445,7 +487,7 @@ private final class ResponsesConnection: NSObject, URLSessionDataDelegate, @unch
     func urlSession(_ session: URLSession, dataTask: URLSessionDataTask, didReceive response: URLResponse,
                     completionHandler: @escaping (URLSession.ResponseDisposition) -> Void) {
         guard let response = response as? HTTPURLResponse else {
-            continuation.finish(throwing: ResponsesClientError(.malformed))
+            continuation.finish(throwing: ResponsesClientError(.malformed, diagnosticStage: .nonHTTPResponse))
             completionHandler(.cancel)
             return
         }

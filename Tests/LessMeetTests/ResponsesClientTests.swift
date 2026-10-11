@@ -3,6 +3,187 @@ import XCTest
 
 final class ResponsesClientTests: XCTestCase {
     private let token = "offline-fixture"
+    private let diagnosticSecret = "private-question-output-token-email@example.invalid"
+
+    private func expectStage(_ stage: ResponsesClientError.DiagnosticStage,
+                             mimeCategory: ResponsesClientError.MIMECategory? = nil,
+                             operation: () async throws -> Void,
+                             file: StaticString = #filePath, line: UInt = #line) async {
+        do {
+            try await operation()
+            XCTFail("Expected malformed response", file: file, line: line)
+        } catch let error as ResponsesClientError {
+            XCTAssertEqual(error.kind, .malformed, file: file, line: line)
+            XCTAssertEqual(error.diagnosticStage, stage, file: file, line: line)
+            XCTAssertEqual(error.mimeCategory, mimeCategory, file: file, line: line)
+            XCTAssertEqual(error.localizedDescription,
+                "ChatGPT returned an invalid response. The answer was not completed. (stage: \(stage.rawValue))"
+                    + (mimeCategory.map { " (mime: \($0.rawValue))" } ?? ""),
+                file: file, line: line)
+            XCTAssertNil(error.statusCode, file: file, line: line)
+            XCTAssertNil(error.requestID, file: file, line: line)
+            XCTAssertNil(error.code, file: file, line: line)
+            XCTAssertFalse(error.hasDetail, file: file, line: line)
+            for secret in [diagnosticSecret, token, "https://", "Bearer"] {
+                XCTAssertFalse(String(reflecting: error).contains(secret), file: file, line: line)
+                XCTAssertFalse(error.localizedDescription.contains(secret), file: file, line: line)
+            }
+        } catch { XCTFail("Unexpected error type", file: file, line: line) }
+    }
+
+    func testMalformedParserStagesDoNotExposePayloads() async {
+        let secret = diagnosticSecret
+        let cases: [(String, ResponsesClientError.DiagnosticStage)] = [
+            ("data: " + secret + "\n\n", .sseJSON),
+            ("data: []\n\n", .sseJSON),
+            (Self.event(["type": [secret]]), .eventType),
+            (Self.event(["type": "response.output_text.delta", "delta": [secret]]), .delta),
+            (Self.event(["type": "response.completed", "response": ["id": secret]]), .completionStructure),
+            (Self.delta(secret) + Self.completion("different"), .textPrefix)
+        ]
+        for (wire, stage) in cases {
+            await expectStage(stage) { _ = try await self.reply(self.client(wire,
+                headers: ["x-request-id": secret, "X-Private": secret])) }
+        }
+        let message: [String: Any] = ["id": secret, "type": "message", "role": "assistant", "status": "completed"]
+        let outputs: [([String: Any], ResponsesClientError.DiagnosticStage)] = [
+            (["type": [secret]], .outputType),
+            (message, .messageStructure),
+            (message.merging(["content": [["type": [secret]]]]) { _, new in new }, .contentPartType),
+            (message.merging(["content": [["type": "output_text", "text": [secret]]]]) { _, new in new }, .textValue)
+        ]
+        for (item, stage) in outputs {
+            var response = Self.terminalResponse(secret)
+            response["output"] = [item]
+            let wire = Self.event(["type": "response.completed", "response": response])
+            await expectStage(stage) { _ = try await self.reply(self.client(wire)) }
+        }
+        await expectStage(.catalog) { _ = try await self.client(secret).models(accessToken: self.token) }
+        await expectStage(.requestInput) {
+            _ = try await self.client("").reply(accessToken: secret, model: "", transcript: secret,
+                history: [], question: secret, onDelta: { _ in XCTFail("No delta expected") })
+        }
+    }
+
+    func testMalformedTransportStagesRemainDistinctAndCancel() async {
+        let secret = diagnosticSecret
+        let header = HTTPURLResponse(url: URL(string: "https://api.openai.com/v1/responses")!,
+            statusCode: 200, httpVersion: nil, headerFields: ["Content-Type": "text/event-stream", "x-request-id": secret])!
+        let wrongURL = HTTPURLResponse(url: URL(string: "https://example.invalid/" + secret)!,
+            statusCode: 200, httpVersion: nil, headerFields: nil)!
+        let wrongType = HTTPURLResponse(url: header.url!, statusCode: 200, httpVersion: nil,
+            headerFields: ["Content-Type": "application/" + secret])!
+        let failure = HTTPURLResponse(url: header.url!, statusCode: 403, httpVersion: nil, headerFields: nil)!
+        let cases: [([ResponsesTransportEvent], ResponsesClientError.DiagnosticStage)] = [
+            ([], .initialHeader), ([.data(Data(secret.utf8))], .initialHeader),
+            ([.response(wrongURL)], .responseURL), ([.response(wrongType)], .contentType),
+            ([.response(header), .response(header)], .duplicateHeader),
+            ([.response(failure), .response(header)], .errorBodySequence),
+            ([.response(header), .data(Data([0xff, 10]))], .sseUTF8)
+        ]
+        for (events, stage) in cases {
+            let cancelled = ResponsesCounter()
+            let client = ResponsesClient(transport: { _ in
+                ResponsesStream(events: AsyncThrowingStream { continuation in
+                    for event in events { continuation.yield(event) }
+                    continuation.finish()
+                }, cancel: { cancelled.increment() })
+            })
+            await expectStage(stage, mimeCategory: stage == .contentType ? .other : nil) {
+                _ = try await self.reply(client)
+            }
+            XCTAssertEqual(cancelled.value, 1)
+        }
+    }
+
+    func testNonHTTPResponseHasSafeStage() async {
+        let config = URLSessionConfiguration.ephemeral
+        config.protocolClasses = [ResponsesFixtureProtocol.self]
+        ResponsesFixtureProtocol.handler = { fixture in
+            fixture.client?.urlProtocol(fixture, didReceive: URLResponse(url: fixture.request.url!,
+                mimeType: nil, expectedContentLength: 0, textEncodingName: nil), cacheStoragePolicy: .notAllowed)
+            fixture.client?.urlProtocolDidFinishLoading(fixture)
+        }
+        defer { ResponsesFixtureProtocol.handler = nil }
+        let session = URLSession(configuration: config)
+        defer { session.invalidateAndCancel() }
+        await expectStage(.nonHTTPResponse) { _ = try await self.reply(ResponsesClient(session: session)) }
+    }
+
+    func testExistingErrorInitializerAndDescriptionsRemainCompatible() {
+        let error = ResponsesClientError(.malformed)
+        XCTAssertNil(error.diagnosticStage)
+        XCTAssertNil(error.mimeCategory)
+        XCTAssertEqual(error.localizedDescription, "ChatGPT returned an invalid response. The answer was not completed.")
+        XCTAssertEqual(ResponsesClientError(.quota, statusCode: 429).localizedDescription,
+            "ChatGPT usage is limited. Check ChatGPT Settings → Usage before sending another request. (HTTP 429)")
+    }
+
+    func testMIMECategoriesRejectBeforeReadingBodyAndCancelWithoutLeaking() async {
+        let secret = diagnosticSecret
+        let cases: [(String?, ResponsesClientError.MIMECategory)] = [
+            (nil, .missing),
+            ("application/json", .json),
+            ("APPLICATION/JSON; private=\(secret)", .json),
+            ("text/html", .html),
+            ("TEXT/HTML; charset=utf-8; private=\(secret)", .html),
+            ("text/plain", .plain),
+            ("TEXT/PLAIN; private=\(secret)", .plain),
+            ("application/octet-stream", .other),
+            ("application/\(secret)", .other),
+            ("application/problem+json", .other),
+            ("text/event-stream-\(secret)", .other)
+        ]
+        for (mime, category) in cases {
+            let cancelled = ResponsesCounter()
+            let pulls = ResponsesCounter()
+            let client = ResponsesClient(transport: { request in
+                var headers = ["x-request-id": secret, "X-Private": secret]
+                headers["Content-Type"] = mime
+                let response = HTTPURLResponse(url: request.url!, statusCode: 200,
+                    httpVersion: nil, headerFields: headers)!
+                return ResponsesStream(events: AsyncThrowingStream(unfolding: {
+                    pulls.increment()
+                    if pulls.value == 1 { return .response(response) }
+                    XCTFail("A rejected MIME must not consume the body")
+                    return nil
+                }), cancel: { cancelled.increment() })
+            })
+            await expectStage(.contentType, mimeCategory: category) {
+                _ = try await self.reply(client) { _ in XCTFail("No delta expected") }
+            }
+            XCTAssertEqual(pulls.value, 1)
+            XCTAssertEqual(cancelled.value, 1)
+        }
+    }
+
+    func testSSEMIMEParametersAndCaseStillAllowCompletedResponse() async throws {
+        for mime in ["text/event-stream", "text/event-stream; charset=utf-8",
+                     "TEXT/EVENT-STREAM; charset=UTF-8"] {
+            let answer = try await reply(client(completed, headers: ["Content-Type": mime]))
+            XCTAssertEqual(answer, "Hello")
+        }
+    }
+
+    func testSSEMIMEStillRequiresTerminalCompletion() async {
+        await expect(.incomplete) {
+            _ = try await self.reply(self.client(Self.delta("partial"),
+                headers: ["Content-Type": "TEXT/EVENT-STREAM; charset=UTF-8"]))
+        }
+    }
+
+    func testMIMECategoryIsScopedToContentTypeStage() {
+        let oldError = ResponsesClientError(.malformed, diagnosticStage: .contentType)
+        XCTAssertNil(oldError.mimeCategory)
+        XCTAssertEqual(oldError.localizedDescription,
+            "ChatGPT returned an invalid response. The answer was not completed. (stage: content-type)")
+        let stages: [ResponsesClientError.DiagnosticStage?] = [nil, .sseJSON]
+        for stage in stages {
+            let error = ResponsesClientError(.malformed, diagnosticStage: stage, mimeCategory: .json)
+            XCTAssertNil(error.mimeCategory)
+            XCTAssertFalse(error.localizedDescription.contains("mime:"))
+        }
+    }
     private var completed: String { Self.completion("Hello") }
 
     private static func event(_ object: [String: Any]) -> String {
