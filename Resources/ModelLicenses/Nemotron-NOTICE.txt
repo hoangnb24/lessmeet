@@ -1,0 +1,4 @@
+Nemotron 3 Diarization model weights © NVIDIA Corporation.
+Converted from https://huggingface.co/nvidia/Nemotron-3-Diarization
+Source revision: a435e9867d79e789e90053f9b6d6834053af564a
+The source model and derived weights are licensed under OpenMDW 1.1.
