@@ -29,8 +29,9 @@ all four fixture phrase counts match. Main accepts this exact synthetic fixture
 outcome, not general meeting accuracy. No writable Peer remains active. No new
 Human decision is required for WS2. Live capture, broad speech accuracy and
 current integrated release packaging remain separate limits. WS1 `7030593f`
-has RELEASED the shared UI. No further live calls are authorized. Merger
-`ec5cd67` import is under local verification there; disposition remains pending.
+has RELEASED the shared UI. No further live calls are authorized. WS1 ACCEPTED
+merger `ec5cd67` as `8e8e135`; the integration input is ready and its dependency
+is CLOSED. No further WS2 work is requested.
 
 Current ownership and plan:
 
@@ -320,10 +321,20 @@ Current ownership and plan:
   chat FAILED with a generic malformed-response error. No retry occurred.
   These are WS1 observations, not independent WS2 UI verification. No more live
   calls are authorized. UI release grants no new auth, recording or model work.
-  WS1 has inspected exact merger `ec5cd67` source/tests and resumed its import
-  verification. WS1 owns local tests and the return checkpoint for the exact
-  import disposition. WS2 runtime evidence is delivered; no further work is
-  requested here pending a concrete integration finding.
+  WS1 ACCEPTED exact merger `ec5cd67252790674f5152ac134f7bc1553a83521`, imported
+  as `8e8e135` on `pivot/chatgpt-signin`. Both supplied file hashes matched;
+  it inspected the complete production/test diff and independently passed
+  28/28 standalone tests with OS network denial in 0.089 seconds. Receipt in
+  its worktree: `.artifacts/verify-lessmeet/anchored-merge/tests.log`.
+  It verified harness/adapter/merger hashes, read runtime/audit receipts and
+  independently parsed the saved JSON: 229 segments, 41 unknown speakers,
+  ordered valid times within 0..650000 ms and phrase counts 21/21/21/20.
+  WS1 ACCEPTED the exact 650-second synthetic outcome: 169.374 seconds engine,
+  171.58 seconds wall time, max RSS 1,922,285,568 bytes. General quality,
+  Vietnamese, noise, two-hour input and UI remain outside this acceptance.
+  Prior failures remain retained. Merger integration input is ready; dependency
+  and handoff scope CLOSED. No further WS2 work is requested. No API, schema
+  or package contract changed, and no UI owner remains active.
 - WS1 contact: `7030593f`, separate `pivot/chatgpt-signin` worktree.
 - WS1 accepted the read contract and file ownership on 2026-10-11.
   Existing `Recording.transcript` is
