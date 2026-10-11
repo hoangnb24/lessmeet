@@ -17,7 +17,7 @@ let package = Package(
             .product(name: "RevenueCat", package: "purchases-ios-spm"),
             .product(name: "WhisperKit", package: "WhisperKit"),
             .product(name: "SpeechVAD", package: "speech-swift")
-        ]),
+        ], resources: [.copy("Resources/ChatGPTLogo.svg")]),
         .testTarget(name: "LessMeetTests", dependencies: ["LessMeet"], exclude: [
             "BILLING_ADMISSION_HANDOFF.md", "BILLING_ADMISSION_SHA256.json",
             "LONG_CAPTURE_HANDOFF.md"

@@ -14,29 +14,24 @@ struct LessMeetOfflineApp: App {
 @main
 struct LessMeetApp: App {
     @StateObject private var model: AppModel
-    @StateObject private var accountSession: AccountSession
-    @StateObject private var cloud: RecordingCloudModel
-    @StateObject private var billing: BillingStore
-    @StateObject private var subscription: SubscriptionModel
-    private let billingConfiguration: BillingConfiguration?
+    @StateObject private var chatGPTSession: ChatGPTSession
+    @State private var chat: LocalChatModel?
     @NSApplicationDelegateAdaptor(AppDelegate.self) private var appDelegate
 
     init() {
         let model = AppModel()
-        let account = AccountSession()
+        let session = ChatGPTSession()
         _model = StateObject(wrappedValue: model)
-        _accountSession = StateObject(wrappedValue: account)
-        _cloud = StateObject(wrappedValue: RecordingCloudModel(app: model, account: account))
-        let configuration = try? BillingConfiguration.load()
-        billingConfiguration = configuration
-        _billing = StateObject(wrappedValue: BillingStore(publicAppleAPIKey: configuration?.publicAppleAPIKey, account: account))
-        _subscription = StateObject(wrappedValue: SubscriptionModel(account: account))
+        _chatGPTSession = StateObject(wrappedValue: session)
+        _chat = State(initialValue: model.store.map { store in
+            LocalChatModel(store: store, sessionID: { session.sessionIdentifier },
+                           accessToken: { try await session.accessToken() })
+        })
     }
 
     var body: some Scene {
         WindowGroup {
-            LibraryView(model: model, accountSession: accountSession, cloud: cloud,
-                        billing: billing, subscription: subscription, billingConfiguration: billingConfiguration)
+            LibraryView(model: model, session: chatGPTSession, chat: chat)
                 .frame(minWidth: 1000, minHeight: 640)
                 .onAppear { appDelegate.model = model }
         }
