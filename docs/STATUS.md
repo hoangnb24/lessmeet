@@ -1,5 +1,170 @@
 # LessMeet delivery
 
+## Local-first pivot — WS2 active (2026-10-11)
+
+Human selected a native macOS, open-source, local-first app. This entry
+supersedes the historical cloud delivery and push instructions below for this
+workstream. Branch `pivot/local-models` starts at `b08b3cd`. No deploy, cloud
+mutation, account-deletion trial, push, release, repository publication or paid
+API call is authorized. Local model downloads and local commits are allowed.
+
+Outcome: download pinned WhisperKit large-v3 and Nemotron-3-Diarization models,
+show progress/cancel/resume/retry, verify integrity, then transcribe and diarize
+recordings offline. Use 300-second transcription windows and absolute timestamps.
+Keep diarization state across the full recording, with at most eight speakers.
+Save local segments `{startMs, endMs, speaker, text}`; unknown speaker stays null.
+WS2 alone writes transcripts. WS1 reads them and owns ChatGPT sign-in/chat.
+
+Current ownership and plan:
+
+- Integration, acceptance and this status entry: agent `45d6fb78`.
+- Read-only model provenance/license/API audit: Peer `ab832042`, CLOSED;
+  accepted as research input only, not dependency/runtime acceptance.
+- Read-only capture/overlap diagnosis: Peer `00f27c8c`, CLOSED and ACCEPTED.
+- Read-contract writer: Peer `97e9fec9`, only new `LocalTranscript.swift`,
+  `LocalTranscriptStore.swift` and `LocalTranscriptStoreTests.swift`. Scope CLOSED;
+  original candidate hashes `c6cc7891` / `4ae5b7c9` / `5d060400` inspected and matched.
+  Eight isolated tests and actual SwiftPM integration tests passed.
+- Fresh read-only candidate inspection: Peer `e15d2275`, CLOSED and ACCEPTED.
+  No concrete blocker; limits are recorded below. No outstanding Peer scope.
+- No live UI owner. No model has been downloaded.
+- WS1 contact: `7030593f`, separate `pivot/chatgpt-signin` worktree.
+- WS1 accepted the read contract and file ownership on 2026-10-11.
+  Existing `Recording.transcript` is
+  `String?`; the segment schema exists in batch JSON validation, not a local field.
+- Accepted route: `LocalTranscription/LocalTranscriptStore.swift` extends
+  `RecordingStore` with `loadLocalTranscript(for id: UUID) throws -> LocalTranscript?`
+  and `saveLocalTranscript(_:for:)` (WS2 only). Path:
+  `root/<recording UUID>/transcript.json`. Missing means nil; malformed data or
+  unsupported version throws. Never fall back to a cloud transcript.
+- `LocalTranscript: Codable, Equatable` has `version: Int = 1` and
+  `segments: [LocalTranscriptSegment]`. Segment fields are exactly
+  `startMs: Int64?`, `endMs: Int64?`, `speaker: String?`, `text: String`.
+  Timestamps are absolute milliseconds, or a paired null. Local inference emits
+  timed segments. `Recording.swift` and `RecordingStore.swift` stay unchanged.
+- WS2 owns new `LocalModels/`, `LocalTranscription/`, `LocalModelSetupView`,
+  `LocalTranscriptView`, and the `AppModel.swift` capture hook. WS1 owns auth/chat
+  and `LibraryView.swift`/`LessMeetApp.swift`. Never edit the other worktree.
+- Agreed view entries: `LocalModelSetupView(manager:)` from a sidebar sheet and
+  `LocalTranscriptView(model:, recordingID:)` in the Transcript tab. Exact shared
+  manager/controller constructors, lifecycle and completion notification remain
+  PENDING. Do not edit shell or capture hook until they are agreed.
+- WS2 adds pinned model dependencies first, then returns a stable `Package.swift`
+  diff and `Package.resolved` effects. WS1 waits for explicit handoff before any
+  package edits. Do not remove dependencies still imported by existing source.
+- Read-contract candidate committed as `b67fc0a1ad7ea575157851d4bb88ed86e0c16248`
+  over `b08b3cd`, ready for WS1 inspection/import. Runtime UI is not accepted.
+- Ready independent work: model audit and overlap-merge diagnosis. Next:
+  agreed read-contract increment, model acquisition, inference, capture wiring,
+  then exact-artifact tests and runtime checks.
+
+UI, offline inference, download recovery and long-file measurements are
+UNVERIFIED. Historical tests below do not verify this pivot.
+
+Controller agreement (interface only; shell/hook implementation still waits):
+
+- `LocalModelManager` is a main-actor observable object with
+  `init(root: URL? = nil)`, async `start()`, `cancel()`, and `retry()`.
+- `LocalTranscriptionModel` is a main-actor observable object with
+  `init(app: AppModel, manager: LocalModelManager)`, `transcribe(recordingID:)`,
+  and `cancel()`. It holds AppModel weakly and never writes Recording metadata.
+  The shell constructs AppModel, one manager, then one controller.
+- The capture callback fires once only after successful stop and durable ready
+  metadata save. No callback follows interrupted/failed stop or failed save.
+- Jobs stay bound to recording IDs. Deduplicate active/pending IDs. Queue until
+  models are ready. Cancellation clears active and pending work. Never auto-retry.
+- Preserve previous sidecars on failure/cancellation and label them as previous
+  output. After atomic save, set `completedRecordingID`, then increment published
+  `revision`. Failure/cancellation changes neither completion field.
+- WS1 rereads on appearance, selection, revision and before sending chat; each
+  request freezes its transcript snapshot. Revision is process-local.
+- Final startup agreement: async `prepare()` inspects local integrity/readiness
+  without downloading. Once per application session, await prepare then call
+  start if required models are missing and state is neither canceled nor failed.
+  Show declared size, progress and cancel. Keep the once-per-session guard in
+  shared manager/controller state, not a transient view. Window recreation or
+  repeated SwiftUI tasks must not restart canceled/failed downloads. Retry is
+  user-triggered; ready models do not download again. This preserves Human's
+  automatic first-launch policy. The button-only proposal is superseded.
+
+Overlap diagnosis accepted against `b08b3cd`: the actual TS merge returns one
+segment for exact timestamps, but two for 1 ms or 120 ms drift with identical text.
+Lead reproduced all three cases with Node's experimental TypeScript transform.
+The existing cloud test expects this behavior; leave backend unchanged. The new
+local merge needs bounded, one-to-one, adjacent-overlap matching. A proposed
+250 ms tolerance is not empirically validated. Do not add the audit's suggested
+extra envelope fields; the agreed sidecar remains `{version, segments}`.
+
+Model audit inputs (not installed or measured):
+
+- WhisperKit release 1.1.1 source revision
+  `1bbc57cb7fe6410248a685b1c5a3c6d56adc2ed4`, product `WhisperKit`.
+- speech-swift revision `cbcdfc6be5e723952d29ab6e32af5e22ad8e70fa`, product
+  `SpeechVAD`. Core ML use still links MLX-related target dependencies.
+- HF `argmaxinc/whisperkit-coreml` revision
+  `0f63a7800b00dd0226abd051b906c246e1907482`, full
+  `openai_whisper-large-v3/`: published inventory 3,090,319,899 bytes.
+  Do not substitute the compressed Turbo recommendation.
+- HF `openai/whisper-large-v3` tokenizer revision
+  `06f233fe06e710322aca913c1bc4249a0d71fce1`.
+- HF `aufklarer/Nemotron-3-Diarization-100M-CoreML-INT8` revision
+  `db823d36c2230d5535a6165c932f8a5369484b7a`: selected published files total
+  107,083,235 bytes. Community conversion, not an NVIDIA-published binary.
+  Source checkpoint: `a435e9867d79e789e90053f9b6d6834053af564a`.
+- WhisperKit is MIT with embedded Apache notices; speech-swift is Apache-2.0,
+  not MIT. Nemotron weights are OpenMDW-1.1; retain LICENSE and NOTICE.
+- Published LFS checksums exist; Git blob IDs are not raw SHA-256. A uniform
+  per-file hash manifest and actual downloaded-byte verification are unfinished.
+- Lead confirmed the pinned Whisper tokenizer loader falls back to network after
+  local parse failure, even with model download disabled. Fail-closed tokenizer
+  loading needs a tested solution before claiming offline operation.
+- Use one Nemotron streaming session for the entire recording, explicit saved-
+  audio geometry, final labels after finish, and null for ambiguous attribution.
+  Runtime retains confirmed probabilities, so long-file memory must be measured.
+- Direct pinned products are the first experiment; no vendoring is justified yet.
+  Upstream test failure and optional real-model coverage remain unclassified.
+- Dependency validation request deferred to integration owner `45d6fb78` until
+  the small read-contract candidate is accepted and handed to WS1. Then resolve
+  and build the pinned products, inspect lockfile effects, prove tokenizer
+  fail-closed behavior, and verify model downloads. No new Human permission is
+  required for those already-authorized local checks.
+
+Read-contract implementation ACCEPTED (2026-10-11):
+
+- Exact candidate: `b67fc0a1ad7ea575157851d4bb88ed86e0c16248`, parent
+  `b08b3cdae5aeb4cbbd5c771a5f887584afaa518c`. Contains only the two new
+  `LocalTranscription` source files and `LocalTranscriptStoreTests.swift`.
+  STATUS is kept in a separate documentation commit so WS1 can import code alone.
+- Integration owner inspected all three files and matched the original hashes.
+  Fresh inspection found no blocker. Only a comment was corrected afterward:
+  the existing two-hour window geometry allows 25 windows, not 24.
+- Final source SHA-256: `LocalTranscript.swift`
+  `c6cc789172781383e32d90d47cf4ad7f26c15840823deb16dded9674f2d4b7ee`;
+  `LocalTranscriptStore.swift`
+  `af6ce160c51bf7ad03b9d5cd1f5ddc8dc90a4fd79bae19322f875a6d0066cdc9`;
+  `LocalTranscriptStoreTests.swift`
+  `5d060400cb4458be0d899282c5825b474bc5059f69078f274e3cd3f8e3b118e4`.
+- Actual `swift test --filter LocalTranscriptStoreTests`: 8/8 PASS.
+  Combined local/legacy store rerun: 11/11 PASS. Existing locked dependencies
+  resolved and compiled; `Package.swift` and `Package.resolved` did not change.
+  Evidence: `.artifacts/verify-lessmeet/read-contract.JUGof8/tests.log`.
+  Final comment-corrected build plus all 11 tests also PASS; exact receipt:
+  `.artifacts/verify-lessmeet/read-contract.JUGof8/final-tests.log`.
+- Verified: exact keys and explicit nulls; paired timestamp validation; malformed
+  and duplicate-key rejection; unsupported-version rejection; missing-file nil;
+  per-recording isolation; store reopen; unchanged recording metadata; prior
+  sidecar preserved after rejected validation/oversize saves; 16 MiB file bound.
+- No injected filesystem replacement failure, concurrent-reader test or power-loss
+  proof. Atomic replacement is the implementation, not a power-loss guarantee.
+  Encoding allocates before checking size; the file limit is not a peak-RAM bound.
+- This is usable storage/read input for WS1, not a completed local inference app.
+  UI, model download, offline inference and long-file performance are UNVERIFIED.
+  No shared shell, capture hook, legacy Recording/RecordingStore or package edits.
+- Handoff sent to WS1 for exact candidate inspection/import. All current Peer
+  assignments are closed. Next ready WS2 increment is pinned dependency validation
+  and fail-closed offline loading; shared shell/hook implementation remains on hold
+  for the read-contract handoff. No product decision is needed for this increment.
+
 ## Commit and push of accepted local work (2026-10-11)
 
 - Human authorized commit and push to origin/main only. No deploy, flag change
