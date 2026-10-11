@@ -2,6 +2,35 @@
 
 ## Pivot integration — current frontier (2026-10-11)
 
+PR delivery is COMPLETE; integrated normal-app e2e is BLOCKED before packaging.
+PRs [#10](https://github.com/hoangnb24/lessmeet/pull/10),
+[#11](https://github.com/hoangnb24/lessmeet/pull/11), and
+[#12](https://github.com/hoangnb24/lessmeet/pull/12) are open against main.
+No PR was merged. Main remains `b08b3cdae5aeb4cbbd5c771a5f887584afaa518c`.
+All Peer scopes are CLOSED. Lead owns the remaining build/runtime frontier.
+No UI scope is active. No integrated app was launched, signed or accepted.
+This session used zero ChatGPT model-list loads and zero sends. No login, raw
+traffic capture, microphone/system-audio prompt or signing inventory scan occurred.
+
+The normal build, its unchanged retry, and a bounded terminal-attached experiment
+all stalled at SwiftBuild compiler discovery before app compilation. The third
+attempt reached the same blocked clang write stack; terminal attachment did not
+resolve it. Lead stopped only verified owned processes, including the stalled
+diagnostic helper, and confirmed their exit. Logs and samples are retained.
+The precise SwiftBuild trigger remains UNKNOWN. The native test build passed.
+No normal integrated app artifact exists, so signing/resource runtime checks,
+in-app readiness, transcription, diarization, chat and save/reopen are UNVERIFIED.
+
+Do not execute a copy of the old full build scratch: its serialized commands
+contain absolute paths into the protected worktree. No portable discovery cache
+was established. No cache copy, cleanup, build-engine substitution, permission
+change, toolchain installation or machine-setting change occurred.
+Return checkpoint: a working normal SwiftBuild path, or Human approval for
+environment repair outside the project-only scope. Lead owns the technical route.
+Any restart, toolchain replacement or broader machine change needs Human direction.
+The existing bounded ChatGPT approval remains unused; do not ask for it again.
+Detailed local handoff: `.artifacts/integration-e2e/RESULT.md`.
+
 Lead ACCEPTS resolved source snapshot
 `80f5d231ad2fc2e95e8ceb3cdf9559d0b8ed9ab8d982f8d2b37f736f1caf1400`.
 All 318 tracked hashes matched. Fresh read-only review found no blocker across
@@ -12,8 +41,8 @@ Human authorizes the two source PRs and a resolved integration PR against main.
 No PR may merge into main. Source PRs #10 and #11 are open at the supplied heads.
 
 The cache/space dependency is RESOLVED. Lead approved a new isolated build tree
-and started the normal arm64 release build in this worktree. Existing caches and
-protected source-worktree edits stay untouched. Full SwiftPM tests remain pending.
+and attempted the normal arm64 release build in this worktree. Existing caches and
+protected source-worktree edits stay untouched. Native SwiftPM tests passed below.
 No new production packaging code is needed; the exact-profile final signing route
 below applies. Lead owns build, signing, status, publication and runtime acceptance.
 No live UI is reserved yet; no ChatGPT request has occurred in this integration.
@@ -26,11 +55,34 @@ The new recording ID is `898065F3-66A5-4597-861C-A101B667B684`, titled
 `LessMeet integration synthetic dialogue`. Its 31.175-second audio SHA256 is
 `37923997ef875247da340654d02fc73f64e092e0254c93bdfc713b0cb87f5d6c`.
 No transcript or chat was provisioned. Existing library entries were preserved.
-Next: verify the normal release bundle, apply approved signing, reserve UI,
+After the build dependency is resolved: verify the normal release bundle, apply approved signing, reserve UI,
 transcribe/diarize the synthetic recording, verify reopen, then one model-list
 load and ONE send to GPT-6.1-Sol using the stored session. Stop on failure.
 No login, raw traffic capture, other model, permission prompt, force push or main
 merge is authorized. Runtime stages remain UNVERIFIED until observed.
+
+Integration merge commit: `ab55a3fcbd3741a23fbe4c23f79d5a9653a32705`, with both
+supplied branch heads as parents. PR #12 is OPEN against main at that commit.
+All three branch pushes and PRs are verified; main remains `b08b3cd`.
+The first normal release build stalled in SwiftBuild compiler discovery. Peer
+diagnosis `7af3c244` is ACCEPTED and CLOSED: three clang probes blocked while
+writing output; the parent showed no output-draining progress. A standalone
+probe passed. The internal trigger remains unknown; this is not a source failure.
+Lead stopped only the verified owned processes and confirmed all five exited.
+One unchanged normal-build retry reproduced the same blocked clang-output stack.
+Lead stopped its five verified owned processes and confirmed exit. No normal
+release build is running. Both logs and samples remain in `.artifacts/integration-e2e/`.
+No cache was deleted. Peer `7af3c244` completed the reopened route diagnosis.
+Findings are ACCEPTED and scope CLOSED: copied-cache isolation is not established;
+the accepted terminal-topology experiment then failed as recorded above.
+Lead ACCEPTS native suite evidence for `ab55a3f`: 407 passed, 4 skipped, 0 failed.
+Peer `70303505` verification scope is CLOSED. The native build passed; all 44
+dependency revisions match pins and all 317 non-status tracked hashes stayed
+unchanged. Synthetic loopback tests used IPv4 localhost; external networking was
+denied. The earlier all-network-denied run had 404 passes, 4 skips and 3 listener
+failures. Both results remain distinct in `.artifacts/integration-swift-tests/`.
+The four skips are opt-in fixture generation, real inference, long capture and
+120-minute chunk coverage. These tests do not establish signed runtime success.
 
 ## Integration resolution — completed assignment (2026-10-11)
 
