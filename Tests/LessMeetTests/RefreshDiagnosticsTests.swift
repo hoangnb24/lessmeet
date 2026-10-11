@@ -2,7 +2,7 @@ import XCTest
 @testable import LessMeet
 
 final class RefreshDiagnosticsTests: XCTestCase {
-    func testOptInRequiresDevAndFutureFiniteDeadline() {
+    func testOptInRequiresDiagnosticModeAndFutureFiniteDeadline() {
         let now = Date()
         let future = now.timeIntervalSince1970 + 60
         for info: [String: Any] in [[:], ["LessMeetPackagingMode": "dev"],
@@ -13,6 +13,17 @@ final class RefreshDiagnosticsTests: XCTestCase {
         }
         XCTAssertNotNil(RefreshDiagnostics.configured(info: ["LessMeetPackagingMode": "dev",
             "LessMeetRefreshDiagnosticsUntil": future], now: now, sink: { _ in }))
+        XCTAssertNotNil(RefreshDiagnostics.configured(info: ["LessMeetPackagingMode": "auth-check",
+            "LessMeetRefreshDiagnosticsUntil": future], now: now, sink: { _ in }))
+        for mode in ["store", "testflight", "sandbox-dev", "offline-check", "unknown"] {
+            XCTAssertNil(RefreshDiagnostics.configured(info: ["LessMeetPackagingMode": mode,
+                "LessMeetRefreshDiagnosticsUntil": future], now: now, sink: { _ in XCTFail() }))
+        }
+        for deadline: Any? in [nil, now.timeIntervalSince1970, Double.infinity, "invalid"] {
+            var info: [String: Any] = ["LessMeetPackagingMode": "auth-check"]
+            info["LessMeetRefreshDiagnosticsUntil"] = deadline
+            XCTAssertNil(RefreshDiagnostics.configured(info: info, now: now, sink: { _ in XCTFail() }))
+        }
     }
 
     func testBudgetExpiryAndAllowlistedFields() {

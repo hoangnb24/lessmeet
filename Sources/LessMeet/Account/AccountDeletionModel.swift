@@ -2,15 +2,34 @@ import Combine
 import Foundation
 
 struct AccountDeletionStatus: Codable, Equatable {
+    enum GoogleStatus: String, Codable, CaseIterable {
+        case pending, revoking, acknowledged, exception, unknown
+        case notApplicable = "not_applicable"
+
+        init(from decoder: Decoder) throws {
+            let value = try decoder.singleValueContainer().decode(String.self)
+            self = Self(rawValue: value) ?? .unknown
+        }
+    }
+
     let userId: String
     let requested: Bool
     let localComplete: Bool
     let providersComplete: Bool
     let requestedAt: Double?
+    let googleStatus: GoogleStatus?
+
+    init(userId: String, requested: Bool, localComplete: Bool, providersComplete: Bool,
+         requestedAt: Double?, googleStatus: GoogleStatus? = nil) {
+        self.userId = userId; self.requested = requested; self.localComplete = localComplete
+        self.providersComplete = providersComplete; self.requestedAt = requestedAt
+        self.googleStatus = googleStatus
+    }
 
     var isValid: Bool {
         !userId.isEmpty && (requested ? requestedAt != nil : (!localComplete && !providersComplete && requestedAt == nil)) &&
-        (!providersComplete || localComplete)
+        (!providersComplete || localComplete) && (requested || googleStatus == nil) &&
+        (!providersComplete || googleStatus == nil || googleStatus == .acknowledged || googleStatus == .notApplicable)
     }
 }
 

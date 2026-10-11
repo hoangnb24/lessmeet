@@ -47,7 +47,8 @@ final class RefreshDiagnostics: @unchecked Sendable {
 
     static func configured(info: [String: Any], now: Date = Date(),
                            sink: @escaping (String) -> Void) -> RefreshDiagnostics? {
-        guard info["LessMeetPackagingMode"] as? String == "dev",
+        guard let mode = info["LessMeetPackagingMode"] as? String,
+              ["dev", "auth-check"].contains(mode),
               let epoch = info["LessMeetRefreshDiagnosticsUntil"] as? Double,
               epoch.isFinite, epoch > now.timeIntervalSince1970 else { return nil }
         // An explicit trial deadline cannot enable more than ten minutes per launch.

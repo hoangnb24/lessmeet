@@ -10,6 +10,9 @@ final class OfflineAccountFixture: ObservableObject {
         case requested = "Deletion pending"
         case failure = "Request fails"
         case waiting = "Wait for response"
+        case googlePending = "Google revocation pending"
+        case googleException = "Google revocation exception"
+        case googleAcknowledged = "Google revocation acknowledged"
         var id: String { rawValue }
     }
 
@@ -23,7 +26,7 @@ final class OfflineAccountFixture: ObservableObject {
     lazy var model = AccountDeletionModel(identity: { [weak self] in self?.identity },
         token: { "offline-fixture-not-a-token" }, send: { [weak self] _, deletion in
             guard let self, !deletion else { throw AccountError("Offline checks cannot delete accounts.") }
-            let status = self.status(requested: self.scenario == .requested)
+            let status = self.status()
             switch self.scenario {
             case .failure: throw AccountError("Synthetic connection failure. No request was sent.")
             case .waiting:
@@ -33,13 +36,22 @@ final class OfflineAccountFixture: ObservableObject {
                     self.hasPendingResponse = true
                     self.onPendingResponse?()
                 }
-            case .ready, .requested: return status
+            case .ready, .requested, .googlePending, .googleException, .googleAcknowledged: return status
             }
         }, diagnostics: nil)
 
-    private func status(requested: Bool) -> AccountDeletionStatus {
-        .init(userId: identity.owner, requested: requested, localComplete: false,
-              providersComplete: false, requestedAt: requested ? 1 : nil)
+    private func status() -> AccountDeletionStatus {
+        let google: AccountDeletionStatus.GoogleStatus?
+        switch scenario {
+        case .googlePending: google = .pending
+        case .googleException: google = .exception
+        case .googleAcknowledged: google = .acknowledged
+        case .ready, .requested, .failure, .waiting: google = nil
+        }
+        let requested = scenario == .requested || google != nil
+        return .init(userId: identity.owner, requested: requested,
+                     localComplete: google == .acknowledged, providersComplete: false,
+                     requestedAt: requested ? 1 : nil, googleStatus: google)
     }
 
     func completePendingResponse() {

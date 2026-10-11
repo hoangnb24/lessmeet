@@ -13,6 +13,7 @@ struct OfflineAccountCheckView: View {
             Picker("Response", selection: $fixture.scenario) {
                 ForEach(OfflineAccountFixture.Scenario.allCases) { Text($0.rawValue).tag($0) }
             }
+            .accessibilityIdentifier("offline-response")
             .disabled(fixture.hasPendingResponse)
             HStack {
                 Button("Complete pending response") { fixture.completePendingResponse() }
@@ -20,6 +21,8 @@ struct OfflineAccountCheckView: View {
                 Button("Switch synthetic account") { fixture.switchAccount() }
             }
             OfflineResultView(model: fixture.model)
+            Button("Preview deletion confirmation (no deletion)") { fixture.model.prepareConfirmation() }
+                .disabled(fixture.model.busy)
             AccountDeletionView(model: fixture.model, sessionID: nil, billingBusy: false,
                                 allowsExternalActions: false)
             Spacer(minLength: 0)
