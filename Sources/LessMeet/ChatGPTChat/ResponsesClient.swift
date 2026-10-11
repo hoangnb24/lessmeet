@@ -219,6 +219,7 @@ struct ResponsesClient: Sendable {
         request.setValue("text/event-stream", forHTTPHeaderField: "Accept")
         return try await consume(request, token: accessToken) { stream in
             var parser = ResponsesSSEParser(maximum: limits.eventBytes)
+            var finalizedOutput = ResponsesFinalizedOutput(maximumBytes: limits.streamBytes)
             var answer = ""
             var answerBytes = 0
             var total = 0
@@ -243,6 +244,7 @@ struct ResponsesClient: Sendable {
                         guard let type = object["type"] as? String else {
                             throw ResponsesClientError(.malformed, diagnosticStage: .eventType)
                         }
+                        finalizedOutput.observe(object)
                         switch type {
                         case "response.output_text.delta":
                             guard let delta = object["delta"] as? String else { throw ResponsesClientError(.malformed, diagnosticStage: .delta) }
@@ -252,7 +254,8 @@ struct ResponsesClient: Sendable {
                             await onDelta(delta)
                             try Task.checkCancellation()
                         case "response.completed":
-                            let finalText = try completedText(object, mimeCategory: mimeCategory)
+                            let finalText = try completedText(object, mimeCategory: mimeCategory,
+                                                              finalizedOutput: finalizedOutput)
                             // Compare bytes, not graphemes: a suffix can extend a combining character.
                             guard finalText.utf8.starts(with: answer.utf8) else { throw ResponsesClientError(.malformed, diagnosticStage: .textPrefix) }
                             let suffix = String(decoding: finalText.utf8.dropFirst(answerBytes), as: UTF8.self)
@@ -284,7 +287,8 @@ struct ResponsesClient: Sendable {
         }
     }
 
-    private func completedText(_ event: [String: Any], mimeCategory: ResponsesClientError.MIMECategory?) throws -> String {
+    private func completedText(_ event: [String: Any], mimeCategory: ResponsesClientError.MIMECategory?,
+                               finalizedOutput: ResponsesFinalizedOutput) throws -> String {
         guard let response = event["response"] as? [String: Any],
               response["object"] as? String == "response",
               let id = response["id"] as? String, !id.isEmpty,
@@ -292,9 +296,12 @@ struct ResponsesClient: Sendable {
               response["error"] == nil || response["error"] is NSNull,
               response["incomplete_details"] == nil || response["incomplete_details"] is NSNull,
               let output = response["output"] as? [[String: Any]] else { throw ResponsesClientError(.malformed, diagnosticStage: .completionStructure) }
+        // A completed stream can supply finalized message items separately.
+        // Never use deltas alone or rescue a malformed/nonempty terminal output.
+        let effectiveOutput = output.isEmpty ? (finalizedOutput.output(for: response) ?? output) : output
         var text = ""
         var byteCount = 0
-        for item in output {
+        for item in effectiveOutput {
             guard let type = item["type"] as? String else { throw ResponsesClientError(.malformed, diagnosticStage: .outputType) }
             // Reasoning is not user-facing answer text. Tools and other output types are unsupported.
             if type == "reasoning" { continue }

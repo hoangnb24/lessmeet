@@ -136,6 +136,80 @@ final class LocalChatModelTests: XCTestCase {
         }
     }
 
+    func testFinalizedItemsWaitForTerminalThenSaveAndReopen() async throws {
+        wire = ChatWire(postMIME: nil)
+        let earlier = try seedHistory()
+        let original = try Data(contentsOf: chatURL)
+        let model = makeModel()
+        await ready(model)
+        let sending = Task { await model.send("Finalized question") }
+        await waitFor { self.wire.postCount == 1 }
+        wire.finalizedPrefix("Final")
+        await waitFor { model.partialAnswer == "Final" }
+        wire.finalizedItem("Final answer")
+        XCTAssertEqual(model.messages, earlier)
+        XCTAssertEqual(try Data(contentsOf: chatURL), original)
+        XCTAssertTrue(model.busy)
+        wire.emptyTerminal()
+        let saved = await sending.value
+        XCTAssertTrue(saved)
+        XCTAssertNil(model.error)
+        XCTAssertEqual(model.messages.map(\.text), ["Earlier question", "Earlier answer", "Finalized question", "Final answer"])
+        let reopened = makeModel()
+        reopened.select(recordingID: recording)
+        XCTAssertEqual(reopened.messages, model.messages)
+        XCTAssertEqual(wire.postCount, 1)
+    }
+
+    func testUnfinishedOrFailedFinalizedStreamPreservesSavedBytes() async throws {
+        let earlier = try seedHistory()
+        let original = try Data(contentsOf: chatURL)
+        for failure in ["eof", "cancel", "no-item", "wrong-response", "response.failed", "response.incomplete", "response.refusal.delta"] {
+            wire = ChatWire(postMIME: nil)
+            let model = makeModel()
+            await ready(model)
+            let sending = Task { await model.send("Must not save") }
+            await waitFor { self.wire.postCount == 1 }
+            wire.finalizedPrefix("Partial")
+            if failure != "no-item" { wire.finalizedItem("Partial answer") }
+            switch failure {
+            case "eof": wire.finish()
+            case "cancel": model.cancel()
+            case "no-item": wire.emptyTerminal()
+            case "wrong-response": wire.emptyTerminal(id: "resp_wrong")
+            default: wire.event(["type": failure, "sequence_number": 4])
+            }
+            let saved = await sending.value
+            XCTAssertFalse(saved, failure)
+            XCTAssertEqual(model.messages, earlier, failure)
+            XCTAssertEqual(try Data(contentsOf: chatURL), original, failure)
+            XCTAssertEqual(wire.postCount, 1)
+        }
+    }
+
+    func testFinalizedAnswerSaveFailurePreservesExistingBytesWithoutRetry() async throws {
+        guard geteuid() != 0 else { throw XCTSkip("Directory permission failure requires non-root") }
+        wire = ChatWire(postMIME: nil)
+        let earlier = try seedHistory()
+        let original = try Data(contentsOf: chatURL)
+        let model = makeModel()
+        await ready(model)
+        let sending = Task { await model.send("Unsaved finalized question") }
+        await waitFor { self.wire.postCount == 1 }
+        wire.finalizedPrefix("Final")
+        wire.finalizedItem("Final answer")
+        let folder = store.directory(for: recording)
+        try FileManager.default.setAttributes([.posixPermissions: 0o500], ofItemAtPath: folder.path)
+        defer { try? FileManager.default.setAttributes([.posixPermissions: 0o700], ofItemAtPath: folder.path) }
+        wire.emptyTerminal()
+        let saved = await sending.value
+        XCTAssertFalse(saved)
+        XCTAssertTrue(model.error?.contains("Could not save") == true)
+        XCTAssertEqual(model.messages, earlier)
+        XCTAssertEqual(try Data(contentsOf: chatURL), original)
+        XCTAssertEqual(wire.postCount, 1)
+    }
+
     func testFailureRefusalIncompleteEOFAndDivergenceNeverSave() async throws {
         let earlier = try seedHistory()
         let original = try Data(contentsOf: chatURL)
@@ -555,6 +629,23 @@ private final class ChatWire: @unchecked Sendable {
         continuation?.yield(.data(Data("data: ".utf8) + data + Data("\n\n".utf8)))
     }
     func delta(_ text: String) { event(["type": "response.output_text.delta", "delta": text]) }
+    func finalizedPrefix(_ text: String) {
+        event(["type": "response.created", "sequence_number": 0, "response": [
+            "id": "resp_fixture", "object": "response", "status": "in_progress", "output": []]])
+        event(["type": "response.output_item.added", "sequence_number": 1, "output_index": 0,
+            "item": ["id": "msg_fixture", "type": "message", "role": "assistant", "status": "in_progress", "content": []]])
+        event(["type": "response.output_text.delta", "sequence_number": 2, "item_id": "msg_fixture",
+            "output_index": 0, "content_index": 0, "delta": text])
+    }
+    func finalizedItem(_ text: String) {
+        event(["type": "response.output_item.done", "sequence_number": 3, "output_index": 0,
+            "item": ["id": "msg_fixture", "type": "message", "role": "assistant", "status": "completed",
+                     "content": [["type": "output_text", "text": text]]]])
+    }
+    func emptyTerminal(id: String = "resp_fixture") {
+        event(["type": "response.completed", "sequence_number": 4, "response": [
+            "id": id, "object": "response", "status": "completed", "output": []]])
+    }
     func complete(_ text: String) {
         event(["type": "response.completed", "response": [
             "id": "resp_fixture", "object": "response", "status": "completed",

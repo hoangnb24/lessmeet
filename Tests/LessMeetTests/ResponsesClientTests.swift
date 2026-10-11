@@ -253,6 +253,135 @@ final class ResponsesClientTests: XCTestCase {
 
     private var completed: String { Self.completion("Hello") }
 
+    private static func finalizedEvents(_ text: String, prefix: String? = nil) -> [[String: Any]] {
+        var response = terminalResponse(text)
+        let item = (response["output"] as! [[String: Any]])[0]
+        response["output"] = []
+        var created = response
+        created["status"] = "in_progress"
+        var added = item
+        added["status"] = "in_progress"
+        added["content"] = []
+        var events: [[String: Any]] = [
+            ["type": "response.created", "response": created],
+            ["type": "response.output_item.added", "output_index": 0, "item": added]
+        ]
+        if let prefix {
+            events.append(["type": "response.output_text.delta", "item_id": "msg_fixture",
+                "output_index": 0, "content_index": 0, "delta": prefix])
+        }
+        events.append(["type": "response.output_item.done", "output_index": 0, "item": item])
+        events.append(["type": "response.completed", "response": response])
+        return events.enumerated().map { offset, value in
+            value.merging(["sequence_number": offset]) { _, new in new }
+        }
+    }
+
+    private static func wire(_ events: [[String: Any]]) -> String { events.map(event).joined() }
+
+    func testFinalizedItemsSupplyEmptyTerminalOutputOnlyAfterCompletion() async throws {
+        for mime in [nil, "text/event-stream"] as [String?] {
+            for prefix in [nil, "Hel"] as [String?] {
+                let sink = ResponsesDeltaSink()
+                let events = Self.finalizedEvents("Hello", prefix: prefix)
+                let answer = try await reply(client(Self.wire(events), mime: mime, chunkSize: 1)) {
+                    await sink.append($0)
+                }
+                XCTAssertEqual(answer, "Hello")
+                let deltas = await sink.values
+                XCTAssertEqual(deltas, prefix == nil ? ["Hello"] : ["Hel", "lo"])
+                await expect(.incomplete) {
+                    _ = try await self.reply(self.client(Self.wire(Array(events.dropLast())), mime: mime))
+                }
+            }
+        }
+    }
+
+    func testFinalizedItemsCannotRescueMalformedOrNonemptyTerminalOutput() async {
+        let original = Self.finalizedEvents("Hello", prefix: "Hel")
+        for output: Any in [NSNull(), "invalid", [["type": "reasoning", "id": "r"]],
+            (Self.terminalResponse(" \n")["output"] as! [[String: Any]])] {
+            var events = original
+            var response = events.last!["response"] as! [String: Any]
+            response["output"] = output
+            events[events.count - 1]["response"] = response
+            await expect(output is [[String: Any]] ? .incomplete : .malformed) {
+                _ = try await self.reply(self.client(Self.wire(events)))
+            }
+        }
+        for key in ["id", "object", "status", "output"] {
+            var events = original
+            var response = events.last!["response"] as! [String: Any]
+            response.removeValue(forKey: key)
+            events[events.count - 1]["response"] = response
+            await expect(.malformed) { _ = try await self.reply(self.client(Self.wire(events))) }
+        }
+    }
+
+    func testFinalizedItemsRejectUnverifiedLifecycleAndPreserveCanonicalPath() async throws {
+        let original = Self.finalizedEvents("Hello", prefix: "Hel")
+        var wrongID = original
+        var response = wrongID.last!["response"] as! [String: Any]
+        response["id"] = "resp_other"
+        wrongID[wrongID.count - 1]["response"] = response
+        var wrongItem = original
+        wrongItem[2]["item_id"] = "msg_other"
+        let withoutCreated = Array(original.dropFirst())
+        let withoutDone = original.filter { $0["type"] as? String != "response.output_item.done" }
+        for events in [wrongID, wrongItem, withoutCreated, withoutDone] {
+            await expect(.incomplete) { _ = try await self.reply(self.client(Self.wire(events), mime: nil)) }
+            var canonical = events
+            canonical[canonical.count - 1]["response"] = Self.terminalResponse("Hello")
+            let answer = try await reply(client(Self.wire(canonical), mime: nil))
+            XCTAssertEqual(answer, "Hello", "New ledger failures must not alter canonical terminal validation")
+        }
+        await expect(.incomplete) {
+            var response = Self.terminalResponse("unused")
+            response["output"] = []
+            _ = try await self.reply(self.client(Self.delta("Hello") + Self.event([
+                "type": "response.completed", "response": response])))
+        }
+    }
+
+    func testFinalizedItemsKeepErrorsLimitsAndCancellation() async {
+        let events = Self.finalizedEvents("Hello", prefix: "Hel")
+        for (type, kind): (String, ResponsesClientError.Kind) in [
+            ("response.incomplete", .incomplete), ("response.failed", .http),
+            ("response.refusal.delta", .refusal)] {
+            var failing = events
+            failing[failing.count - 1] = ["type": type]
+            await expect(kind) { _ = try await self.reply(self.client(Self.wire(failing), mime: nil)) }
+        }
+        var limits = ResponsesLimits()
+        limits.outputBytes = 4
+        await expect(.limit) {
+            _ = try await self.reply(self.client(Self.wire(events), mime: nil, limits: limits))
+        }
+        let client = self.client(Self.wire(events), mime: nil)
+        let task = Task {
+            try await self.reply(client) { delta in
+                if delta == "lo" { withUnsafeCurrentTask { $0?.cancel() } }
+            }
+        }
+        do { _ = try await task.value; XCTFail("Cancellation cannot return success") }
+        catch is CancellationError {} catch { XCTFail("Unexpected error") }
+    }
+
+    func testFinalizedItemsPreserveUnicodeSuffixAndBytePrefix() async throws {
+        let prefix = "e"
+        let final = "e\u{301} 🐢"
+        let text = Self.wire(Self.finalizedEvents(final, prefix: prefix)).replacingOccurrences(of: "\n", with: "\r\n")
+        let sink = ResponsesDeltaSink()
+        let answer = try await reply(client("\u{feff}" + text, mime: nil, chunkSize: 1)) { await sink.append($0) }
+        let deltas = await sink.values
+        XCTAssertEqual(Array(answer.utf8), Array(final.utf8))
+        XCTAssertEqual(Array(deltas.joined().utf8), Array(final.utf8))
+        // A finalized item that conflicts with a streamed prefix is never a success.
+        do { _ = try await reply(client(Self.wire(Self.finalizedEvents("Different", prefix: "Hel"))))
+            XCTFail("Expected a conflict failure")
+        } catch let error as ResponsesClientError { XCTAssertTrue([.incomplete, .malformed].contains(error.kind)) }
+    }
+
     private static func event(_ object: [String: Any]) -> String {
         "data: " + String(decoding: try! JSONSerialization.data(withJSONObject: object, options: [.sortedKeys]), as: UTF8.self) + "\n\n"
     }
@@ -553,6 +682,22 @@ final class ResponsesClientTests: XCTestCase {
         }
         let answer = try await reply(ResponsesClient(session: session))
         XCTAssertEqual(answer, "ok")
+    }
+
+    func testURLSessionFinalizedItemsWithNilMIMEAndEmptyTerminalOutput() async throws {
+        let configuration = URLSessionConfiguration.ephemeral
+        configuration.protocolClasses = [ResponsesFixtureProtocol.self]
+        let session = URLSession(configuration: configuration)
+        defer { session.invalidateAndCancel(); ResponsesFixtureProtocol.handler = nil }
+        ResponsesFixtureProtocol.handler = { fixture in
+            let response = HTTPURLResponse(url: fixture.request.url!, statusCode: 200,
+                httpVersion: nil, headerFields: ["X-Content-Type-Options": "nosniff"])!
+            fixture.client?.urlProtocol(fixture, didReceive: response, cacheStoragePolicy: .notAllowed)
+            fixture.client?.urlProtocol(fixture, didLoad: Data(Self.wire(Self.finalizedEvents("Hello", prefix: "Hel")).utf8))
+            fixture.client?.urlProtocolDidFinishLoading(fixture)
+        }
+        let answer = try await reply(ResponsesClient(session: session))
+        XCTAssertEqual(answer, "Hello")
     }
 
     func testNilMIMEByteSplitsUnicodeAndTerminalSuffix() async throws {
