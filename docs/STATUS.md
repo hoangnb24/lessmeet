@@ -18,6 +18,105 @@ WS2 alone writes transcripts. WS1 reads them and owns ChatGPT sign-in/chat.
 Current ownership and plan:
 
 - Integration, acceptance and this status entry: agent `45d6fb78`.
+- Package validation: Peer `cd68b7de`, CLOSED and ACCEPTED as `6f14832`.
+  Package hashes `6a802451` / `33263aff` matched; all four old pins unchanged,
+  44 total. Inspected diff/probe/handoff; reran SpeechVAD build and all six
+  offline tokenizer probe groups with OS network denial, PASS. Production token
+  semantics, real inference, upstream test failure cause and packaging remain
+  unverified. Evidence: `.artifacts/dependency-validation/HANDOFF.txt`.
+  WS1 imported the exact pair as `b2df5d4`, matched both hashes and inspected the
+  complete diff/handoff. WS1 ACCEPTED package build input after independent
+  LessMeet build PASS (exit 0, 113.53 seconds) with its current source. Its moving
+  auth/chat is not accepted by that check; regression tests run separately.
+  WS1 now owns package edits and packaging scripts in its worktree, preserving
+  inference imports/pins. Its resource/metallib inspection is read-only.
+  WS1 found required `swift-transformers_Hub.bundle`, `swift-crypto_Crypto.bundle`
+  and colocated `mlx.metallib`; it owns script corrections. Its full Swift Build
+  release attempt FAILED at MLX CompileMetalFile and arm64/x86_64 CompileSwift.
+  Environment diagnosis remains open there; native debug success is not release
+  acceptance. No dependency version change is requested.
+  The missing Metal Toolchain blocker is RESOLVED on 2026-10-11. Human reports
+  authorized installation of 17F109 (exit 0). Independent WS2 execution of
+  `xcrun -sdk macosx metal --version` now succeeds with Apple metal 32023.883.
+  This proves compiler availability, not a successful release build. WS1 retains
+  ownership of packaging and the release-build rerun. The previous CompileSwift
+  failure cause remains UNKNOWN until rerun evidence resolves it. WS2 native
+  debug/component checks were already usable; its real inference `invalidTiming`
+  failure is separate and is not resolved by installing Metal.
+- Active artifact catalog: Peer `01531be2`, new `LocalModelManifest.swift`, its
+  test, `docs/LOCAL_MODELS.md` and `Resources/ModelLicenses/` only. CLOSED and
+  ACCEPTED as `c9eec5047d1895481bc99d41501c9cfc993a01b9`; all ten hashes matched,
+  source/doc inspection and independent isolated 6/6 tests PASS. Sent to WS1 for
+  exact import and notice packaging. WS1 ACCEPTED/imported as `254290e`, matched
+  ten hashes and passed 6/6 tests. Its owned packaging step passes syntax and
+  staged copy/hash checks; full signed packaging remains UNVERIFIED.
+  36 model files total 3,200,167,866 bytes;
+  no actual model payload verification yet. Hash manifest:
+  `.artifacts/model-audit/catalog-20261011/SHA256SUMS` (digest `014539ff…b54c`).
+- Local merge/attribution: Peer `32328d4c`, CLOSED and ACCEPTED as internal input.
+  Four-file hashes `c2f045ee`/`3b9b6a1e`/`3a6c4d9b`/`3c521b0c` matched;
+  integration owner read all files and reran standalone 11/11 PASS. Evidence:
+  `.artifacts/verify-lessmeet/local-merge.RdyGB1/results.log`. Package integration
+  and model-quality proof remain pending; 250ms/80% are explicit provisional rules.
+- PCM reader: Peer `2612c301`, CLOSED and ACCEPTED. Exact hashes `8c2db002` /
+  `9fca39e6`; inspected both files and reran isolated 10/10 PASS. The 301-second
+  stereo fixture returns 4,816,002 samples, equal to the one-pass reference.
+  Evidence: `.artifacts/local-pcm-reader/`. Full two-hour decoding, integration
+  and peak memory remain unverified.
+- Offline Whisper adapter: Peer `0a5e14df` owns new `LocalWhisperAdapter.swift`,
+  `LocalWhisperTokenizer.swift` and adapter tests. CLOSED and ACCEPTED as `cb5214d`.
+  Exact hashes `0f340405` / `84412138` / `e6266e3b`; full source/tests inspected,
+  all receipt hashes matched and independent nine tests PASS under OS network
+  denial with the actual pinned tokenizer. Evidence:
+  `.artifacts/verify-lessmeet/local-whisper-adapter/acceptance-tests.log`.
+  Real model loading/inference/timing robustness/cancel-in-flight/memory/UI remain
+  UNVERIFIED. Integration owns real-model findings and any needed corrections.
+- Recording-wide Nemotron adapter: Peer `225a7061` owns new
+  `LocalDiarizationAdapter.swift` and its tests. CLOSED and ACCEPTED as component
+  input: hashes `6a3cefa6` / `89f7a951` matched, full source/tests inspected and
+  independent 12/12 tests PASS under OS network denial. Receipt:
+  `.artifacts/local-diarization-adapter/acceptance-tests.log`. Explicit 340/40
+  session geometry; only final speaker labels consumed. Real Core ML quality,
+  long-file memory/time, max-duration behavior and UI remain UNVERIFIED.
+- Model manager/downloader/setup view: Peer `cc4da88d` owns only `LocalModelManager.swift`,
+  optional `ModelDownloadStore.swift`, `LocalModelSetupView.swift` and manager tests.
+  Accepted catalog `c9eec50` is its input. No real model download or UI ownership
+  delegated; integration owner will test actual payloads after source acceptance.
+  CLOSED and ACCEPTED quartet hashes `52264699` / `c05835dc` / `aaf65679` /
+  `22ded121`: full source/tests inspected, hashes matched, independent SwiftPM
+  13/13 PASS, fresh read-only Peer `b4a7d602` found no concrete blocker (assessment
+  ACCEPTED). Build scratch returned. Receipt:
+  `.artifacts/dependency-validation/manager-diarization-tests.log` (25/25 total).
+  This accepts integration/download trial inputs, not UI/CDN/large-model proof.
+  Integration owns real payload download under `.artifacts/local-inference/models`
+  through `scripts/LocalModelDownloadCheck.swift`, with cancel/resume and offline
+  recheck. Expected catalog bytes: 3,200,167,866; available disk: 53 GiB.
+- Integration owner retains AppModel hook and tests, manager/controller integration,
+  acceptance and docs, `LocalAudioWindows.swift` and tests, plus
+  `scripts/make-local-inference-fixtures.sh`.
+  PCM/merge/windows/capture inputs are committed as `e2f5971`. Manager, adapters
+  and controller are accepted integration inputs. All writer build scopes have
+  returned; `45d6fb78` now owns the local SwiftPM scratch and runtime corrections.
+- Engine assembly is accepted/committed as `410598b`; three pure assembly tests
+  and nine Whisper tests PASS in SwiftPM. Actor work uses two bounded audio passes,
+  300/295-second transcription windows and one full-recording diarization session.
+  Actual-model verification remains separate.
+- Controller/view: Peer `7f832ff3` CLOSED; candidate ACCEPTED as
+  `5b308e6cf2473222546f53a3ebb8d0c61195e84f`, parent
+  `410598b59e900d678f50ef2aecdd7b7a70619c0c`. Exact three-file hashes
+  `c26da6a2` / `ab4a7b70` / `8c78e2da` match. Full source/tests were inspected.
+  Independent combined direct XCTest execution with OS network denial passed
+  92/92, including 13/13 controller tests. Evidence:
+  `.artifacts/dependency-validation/combined-xctest-network-denied.log`.
+  Fresh read-only assessment `58b71849` found no concrete blocker and is ACCEPTED.
+  The prior nested SwiftPM sandbox denial is retained as failed environment
+  evidence, not a product failure. Transcript UI and real inference remain
+  UNVERIFIED. No writer or reviewer retains this scope.
+  Ready import sequence after already imported `6f14832`: `e2f5971`, `f023892`,
+  `9ee218d`, `cb5214d`, `410598b`, `5b308e6`. This supplies the hook, setup,
+  inference dependencies and controller without edits to WS1-owned shell files.
+  WS1 can wire the existing accepted contract now; runtime timing correction is
+  a follow-up and must not block shell integration. No push or merge is authorized.
 - Read-only model provenance/license/API audit: Peer `ab832042`, CLOSED;
   accepted as research input only, not dependency/runtime acceptance.
 - Read-only capture/overlap diagnosis: Peer `00f27c8c`, CLOSED and ACCEPTED.
@@ -26,8 +125,51 @@ Current ownership and plan:
   original candidate hashes `c6cc7891` / `4ae5b7c9` / `5d060400` inspected and matched.
   Eight isolated tests and actual SwiftPM integration tests passed.
 - Fresh read-only candidate inspection: Peer `e15d2275`, CLOSED and ACCEPTED.
-  No concrete blocker; limits are recorded below. No outstanding Peer scope.
-- No live UI owner. No model has been downloaded.
+  No concrete blocker; limits are recorded below.
+- Real download trial: first cancellation PASS after 13,056,232 reported bytes
+  in 8.51 seconds; partials preserved, process exited 0. Peak process RSS was
+  33,865,728 bytes. Receipt `.artifacts/local-inference/download-cancel.log`.
+  A new manager resumed the same private cache.
+  Resume finished PASS: all 3,200,167,866 catalog bytes verified by manager,
+  elapsed 150.31 seconds, max RSS 61,849,600 bytes. Receipt:
+  `.artifacts/local-inference/download-resume.log`. Independent hashes and
+  OS-network-denied readiness/inference checks are the next frontier.
+- Independent `shasum` checks PASS for all 36 downloaded files. OS-network-denied
+  manager startup reaches ready in 1.12 seconds without download. Evidence:
+  `.artifacts/local-inference/independent-hashes.log` and `offline-ready.log`.
+- First real offline dialogue inference FAIL: Whisper model loads and starts
+  transcription, then adapter throws `invalidTiming`. No output saved.
+  Receipt `.artifacts/local-inference/dialogue-run-1.log` (43.05 seconds,
+  max RSS 1,925,922,816 bytes). Exact diagnosis: raw word ` We` has 0.02..0.02
+  seconds while its parent sentence has valid 0.02..1.72 seconds. `convert`
+  rejects the zero-duration word. Evidence: `raw-timings.log` in the same folder.
+  Owner `45d6fb78` will add the regression, handle zero-duration word alignment
+  using valid parent timing without inventing word duration, and rerun the real
+  offline dialogue through diarization and sidecar save/reopen. Reject malformed
+  or reversed times as before. Then check silence and the 650-second fixture.
+  This work keeps the accepted engine/controller API unchanged. The smallest
+  path still needs that real-model pass plus WS1 hook wiring; live capture/UI
+  verification waits for the shared UI reservation and an authorized fixture.
+- Model setup component UI ACCEPTED for `9ee218d` on 2026-10-11.
+  Observed progress/bytes, Cancel, persistent pause after view recreation,
+  Resume, integrity error/Retry, and ready state. Synthetic transport covers
+  transitions; the real 36-file cache reaches ready under OS network denial.
+  Exact fixture executable hash `8f6ed9cb…fd908`; all five manifest hashes and
+  strict code-signature verification passed after the run. Evidence and limits:
+  `.artifacts/verify-lessmeet/local-model-ui/RESULT.md`. Capture 08 is checking
+  despite its filename; capture 10 proves ready. This does not accept full app
+  integration, inference, authentication or packaging.
+  Final fixture exited 0; PID 10870 and exact-path process search were absent
+  at 2026-10-11T06:57:35Z. Earlier fixture sessions exited 0. Private evidence
+  and caches remain; no deletion or account/browser/settings action occurred.
+  UI reservation `45d6fb78` RELEASED. No WS2 UI driver remains active.
+  Subsequent bounded ChatGPT component UI ownership is reserved to WS1
+  `7030593f`. WS2 must not claim or drive UI until its evidence/blocker and
+  explicit release. Only synthetic fixture data and OS network denial are in
+  that check; this environment update adds no UI or account authority.
+  WS1 independently read the installed Computer Use skill and imported bundled
+  `@oai/sky`; its skill/runtime blocker is resolved. Target-app permissions
+  remain UNVERIFIED. Release adds no auth/account or other UI authorization.
 - WS1 contact: `7030593f`, separate `pivot/chatgpt-signin` worktree.
 - WS1 accepted the read contract and file ownership on 2026-10-11.
   Existing `Recording.transcript` is
@@ -46,22 +188,43 @@ Current ownership and plan:
   `LocalTranscriptView`, and the `AppModel.swift` capture hook. WS1 owns auth/chat
   and `LibraryView.swift`/`LessMeetApp.swift`. Never edit the other worktree.
 - Agreed view entries: `LocalModelSetupView(manager:)` from a sidebar sheet and
-  `LocalTranscriptView(model:, recordingID:)` in the Transcript tab. Exact shared
-  manager/controller constructors, lifecycle and completion notification remain
-  PENDING. Do not edit shell or capture hook until they are agreed.
+  `LocalTranscriptView(model:, recordingID:)` in the Transcript tab. The shared
+  manager/controller constructors, lifecycle and completion notification below
+  are now accepted. Implementation still needs its own ready model inputs.
 - WS2 adds pinned model dependencies first, then returns a stable `Package.swift`
   diff and `Package.resolved` effects. WS1 waits for explicit handoff before any
   package edits. Do not remove dependencies still imported by existing source.
+- WS1 exclusively owns `scripts/build-app.sh` and `scripts/configure-app.mjs`.
+  WS2 must not edit them. After accepting/importing the catalog resources, WS1
+  copies `Resources/ModelLicenses/` unchanged to `Contents/Resources/ModelLicenses`
+  before signing, then verifies filenames, content hashes and codesign. Do not
+  silently omit notices. This does not accept dependencies or runtime behavior.
+- WS1 reopened the unnecessary whole-shell wait. Its accepted auth/chat views
+  can migrate LibraryView/LessMeetApp away from instantiated cloud/account/billing
+  now. Until the exact WS2 controller/view is delivered and accepted, its own
+  read-only sidecar display plus manual refresh remains. That display never
+  writes transcripts or runs models. Later inject one shared manager/controller
+  and hook, then replace only this small display. Shared signatures unchanged.
 - Read-contract candidate committed as `b67fc0a1ad7ea575157851d4bb88ed86e0c16248`
-  over `b08b3cd`, ready for WS1 inspection/import. Runtime UI is not accepted.
-- Ready independent work: model audit and overlap-merge diagnosis. Next:
-  agreed read-contract increment, model acquisition, inference, capture wiring,
-  then exact-artifact tests and runtime checks.
+  over `b08b3cd`, accepted and imported by WS1 as `1125de6`. Runtime UI is not accepted.
+- Ready inputs: accepted pinned dependencies, catalog and local overlap matching.
+  Next: model acquisition, inference adapters, capture wiring,
+  then exact-artifact tests and runtime checks. Each new scope gets one writer.
 
 UI, offline inference, download recovery and long-file measurements are
 UNVERIFIED. Historical tests below do not verify this pivot.
 
-Controller agreement (interface only; shell/hook implementation still waits):
+Integration checkpoint: local window assembly, PCM reader, overlap merger,
+speaker attribution, transcript sidecar, catalog and capture-finalization tests
+PASS 42/42 in the real SwiftPM test target. Command uses the isolated dependency
+scratch and public-only resolver switches; receipt is
+`.artifacts/dependency-validation/integration-tests.log` (2026-10-11).
+Capture hook fires only after normal stop and successful metadata save. Window
+tests cover exact 300-second EOF (no overlap-only tail), fractional samples,
+650-second geometry and content continuity. This does not accept moving manager
+or adapter code that happened to compile, or establish actual capture/UI behavior.
+
+Controller agreement (interface accepted; ready inputs required for implementation):
 
 - `LocalModelManager` is a main-actor observable object with
   `init(root: URL? = nil)`, async `start()`, `cancel()`, and `retry()`.
@@ -114,7 +277,8 @@ Model audit inputs (not installed or measured):
 - WhisperKit is MIT with embedded Apache notices; speech-swift is Apache-2.0,
   not MIT. Nemotron weights are OpenMDW-1.1; retain LICENSE and NOTICE.
 - Published LFS checksums exist; Git blob IDs are not raw SHA-256. A uniform
-  per-file hash manifest and actual downloaded-byte verification are unfinished.
+  per-file hash manifest is accepted as `c9eec50`. Actual downloaded-byte
+  verification remains unfinished.
 - Lead confirmed the pinned Whisper tokenizer loader falls back to network after
   local parse failure, even with model download disabled. Fail-closed tokenizer
   loading needs a tested solution before claiming offline operation.
@@ -123,8 +287,8 @@ Model audit inputs (not installed or measured):
   Runtime retains confirmed probabilities, so long-file memory must be measured.
 - Direct pinned products are the first experiment; no vendoring is justified yet.
   Upstream test failure and optional real-model coverage remain unclassified.
-- Dependency validation request deferred to integration owner `45d6fb78` until
-  the small read-contract candidate is accepted and handed to WS1. Then resolve
+- Dependency validation request is now ready: WS1 accepted/imported the small
+  read-contract candidate. Integration owner `45d6fb78` will now resolve
   and build the pinned products, inspect lockfile effects, prove tokenizer
   fail-closed behavior, and verify model downloads. No new Human permission is
   required for those already-authorized local checks.
@@ -160,10 +324,14 @@ Read-contract implementation ACCEPTED (2026-10-11):
 - This is usable storage/read input for WS1, not a completed local inference app.
   UI, model download, offline inference and long-file performance are UNVERIFIED.
   No shared shell, capture hook, legacy Recording/RecordingStore or package edits.
-- Handoff sent to WS1 for exact candidate inspection/import. All current Peer
-  assignments are closed. Next ready WS2 increment is pinned dependency validation
-  and fail-closed offline loading; shared shell/hook implementation remains on hold
-  for the read-contract handoff. No product decision is needed for this increment.
+- WS1 ACCEPTED exact candidate `b67fc0a` after source/hash inspection and imported
+  code only as `1125de6f3f28defdc48e9bda97db19b48801761a`. Its independent
+  `swift test --scratch-path .build-ws1-integration --filter
+  'LocalTranscriptStoreTests|RecordingStoreTests'` built and passed 11/11, exit0.
+  WS1's other writer changes are not accepted by that test. The read dependency
+  is resolved; WS1 may consume the read-only API. WS2 may continue its model,
+  controller and owned AppModel hook as their inputs become ready. Shell remains
+  WS1-owned; package changes remain WS2-first. No product decision is needed.
 
 ## Commit and push of accepted local work (2026-10-11)
 
