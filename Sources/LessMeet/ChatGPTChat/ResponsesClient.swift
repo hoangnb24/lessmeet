@@ -21,14 +21,18 @@ struct ResponsesClientError: Error, LocalizedError, Equatable, Sendable {
         case completionStructure = "completion-structure", outputType = "output-type"
         case messageStructure = "message-structure", contentPartType = "content-part-type"
         case textValue = "text-value", textPrefix = "text-prefix"
+        case emptyStream = "empty-stream", noSSEEvents = "no-sse-events"
+        case missingCompletion = "missing-completion", incompleteEvent = "incomplete-event"
+        case emptyAnswer = "empty-answer"
     }
     // Classify the parsed MIME value. Never retain a raw header or its parameters.
     enum MIMECategory: String, Sendable {
-        case missing, json, html, plain, other
+        case missing, sse, json, html, plain, other
 
         init(parsedMIME: String?) {
             switch parsedMIME?.lowercased() {
             case nil: self = .missing
+            case "text/event-stream": self = .sse
             case "application/json": self = .json
             case "text/html": self = .html
             case "text/plain": self = .plain
@@ -53,7 +57,11 @@ struct ResponsesClientError: Error, LocalizedError, Equatable, Sendable {
         self.requestID = requestID
         self.hasDetail = hasDetail
         self.diagnosticStage = diagnosticStage
-        self.mimeCategory = diagnosticStage == .contentType ? mimeCategory : nil
+        switch diagnosticStage {
+        case .contentType, .emptyStream, .noSSEEvents, .missingCompletion, .incompleteEvent, .emptyAnswer:
+            self.mimeCategory = mimeCategory
+        default: self.mimeCategory = nil
+        }
     }
 
     var errorDescription: String? {
@@ -214,17 +222,21 @@ struct ResponsesClient: Sendable {
             var answer = ""
             var answerBytes = 0
             var total = 0
+            var sawEvent = false
+            var mimeCategory: ResponsesClientError.MIMECategory?
             var requestID: String?
             for try await item in stream {
                 try Task.checkCancellation()
                 switch item {
                 case .response(let response):
                     requestID = response.value(forHTTPHeaderField: "x-request-id")
+                    mimeCategory = .init(parsedMIME: response.mimeType)
                 case .data(let data):
                     guard data.count <= limits.streamBytes - total else { throw ResponsesClientError(.limit) }
                     total += data.count
                     for byte in data {
                         guard let event = try parser.append(byte) else { continue }
+                        sawEvent = true
                         guard let object = try? JSONSerialization.jsonObject(with: event) as? [String: Any] else {
                             throw ResponsesClientError(.malformed, diagnosticStage: .sseJSON)
                         }
@@ -240,7 +252,7 @@ struct ResponsesClient: Sendable {
                             await onDelta(delta)
                             try Task.checkCancellation()
                         case "response.completed":
-                            let finalText = try completedText(object)
+                            let finalText = try completedText(object, mimeCategory: mimeCategory)
                             // Compare bytes, not graphemes: a suffix can extend a combining character.
                             guard finalText.utf8.starts(with: answer.utf8) else { throw ResponsesClientError(.malformed, diagnosticStage: .textPrefix) }
                             let suffix = String(decoding: finalText.utf8.dropFirst(answerBytes), as: UTF8.self)
@@ -259,17 +271,20 @@ struct ResponsesClient: Sendable {
                                                               requestID: requestID, token: accessToken)
                         case "response.incomplete":
                             throw ResponsesClientError(.incomplete, statusCode: 200,
-                                requestID: ResponsesClientError.safeRequestID(requestID, token: accessToken))
+                                requestID: ResponsesClientError.safeRequestID(requestID, token: accessToken),
+                                diagnosticStage: .incompleteEvent, mimeCategory: mimeCategory)
                         default: break
                         }
                     }
                 }
             }
-            throw ResponsesClientError(.incomplete)
+            throw ResponsesClientError(.incomplete,
+                diagnosticStage: total == 0 ? .emptyStream : (sawEvent ? .missingCompletion : .noSSEEvents),
+                mimeCategory: mimeCategory)
         }
     }
 
-    private func completedText(_ event: [String: Any]) throws -> String {
+    private func completedText(_ event: [String: Any], mimeCategory: ResponsesClientError.MIMECategory?) throws -> String {
         guard let response = event["response"] as? [String: Any],
               response["object"] as? String == "response",
               let id = response["id"] as? String, !id.isEmpty,
@@ -297,7 +312,9 @@ struct ResponsesClient: Sendable {
                 text += value
             }
         }
-        guard !text.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty else { throw ResponsesClientError(.incomplete) }
+        guard !text.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty else {
+            throw ResponsesClientError(.incomplete, diagnosticStage: .emptyAnswer, mimeCategory: mimeCategory)
+        }
         return text
     }
 

@@ -183,6 +183,74 @@ final class ResponsesClientTests: XCTestCase {
             XCTAssertFalse(error.localizedDescription.contains("mime:"))
         }
     }
+    func testIncompleteStagesAreFixedAndDoNotExposePayloads() async {
+        let secret = diagnosticSecret
+        var emptyOutput = Self.terminalResponse("")
+        emptyOutput["output"] = []
+        var reasoningOnly = Self.terminalResponse("")
+        reasoningOnly["output"] = [["type": "reasoning", "private": secret]]
+        let cases: [(String, ResponsesClientError.DiagnosticStage)] = [
+            ("", .emptyStream),
+            (": " + secret + "\r\nevent: ignored\r\n\r\n", .noSSEEvents),
+            (secret, .noSSEEvents),
+            ("<html>" + secret + "</html>\n\n", .noSSEEvents),
+            ("data: " + secret, .noSSEEvents),
+            (String(Self.completion("Hello").dropLast(2)), .noSSEEvents),
+            (Self.event(["type": secret]), .missingCompletion),
+            (Self.delta(secret), .missingCompletion),
+            (Self.event(["type": "response.incomplete", "response": ["private": secret]]), .incompleteEvent),
+            (Self.delta(secret) + Self.event(["type": "response.incomplete"]), .incompleteEvent),
+            (Self.completion(""), .emptyAnswer),
+            (Self.completion(" \n\t"), .emptyAnswer),
+            (Self.event(["type": "response.completed", "response": emptyOutput]), .emptyAnswer),
+            (Self.event(["type": "response.completed", "response": reasoningOnly]), .emptyAnswer)
+        ]
+        for mime in [nil, "text/event-stream", "TEXT/EVENT-STREAM; private=" + secret] as [String?] {
+            for (wire, stage) in cases {
+                do {
+                    _ = try await reply(client(wire, headers: ["x-request-id": secret], mime: mime))
+                    XCTFail("Expected incomplete response")
+                } catch let error as ResponsesClientError {
+                    let category: ResponsesClientError.MIMECategory = mime == nil ? .missing : .sse
+                    XCTAssertEqual(error.kind, .incomplete)
+                    XCTAssertEqual(error.diagnosticStage, stage)
+                    XCTAssertEqual(error.mimeCategory, category)
+                    XCTAssertEqual(error.statusCode, stage == .incompleteEvent ? 200 : nil)
+                    XCTAssertNil(error.code)
+                    XCTAssertNil(error.requestID)
+                    XCTAssertFalse(error.hasDetail)
+                    XCTAssertEqual(error.localizedDescription,
+                        "ChatGPT did not complete the answer. Try again when the connection is available."
+                        + (stage == .incompleteEvent ? " (HTTP 200)" : "")
+                        + " (stage: \(stage.rawValue)) (mime: \(category.rawValue))")
+                    XCTAssertFalse(String(reflecting: error).contains(secret))
+                    XCTAssertFalse(error.localizedDescription.contains(secret))
+                } catch { XCTFail("Unexpected error type") }
+            }
+        }
+    }
+
+    func testIncompleteStageCancelsAndStillAcceptsOnlyCompletedAnswers() async throws {
+        for mime in [nil, "text/event-stream"] as [String?] {
+            let cancelled = ResponsesCounter()
+            let client = ResponsesClient(transport: { request in
+                let headers = mime.map { ["Content-Type": $0] } ?? [:]
+                let response = HTTPURLResponse(url: request.url!, statusCode: 200,
+                    httpVersion: nil, headerFields: headers)!
+                return ResponsesStream(events: AsyncThrowingStream { continuation in
+                    continuation.yield(.response(response))
+                    continuation.yield(.data(Data()))
+                    continuation.finish()
+                }, cancel: { cancelled.increment() })
+            })
+            do { _ = try await reply(client); XCTFail("Expected incomplete response") }
+            catch let error as ResponsesClientError { XCTAssertEqual(error.diagnosticStage, .emptyStream) }
+            XCTAssertEqual(cancelled.value, 1)
+            let result = try await reply(self.client(completed, mime: mime))
+            XCTAssertEqual(result, "Hello")
+        }
+    }
+
     private var completed: String { Self.completion("Hello") }
 
     private static func event(_ object: [String: Any]) -> String {
