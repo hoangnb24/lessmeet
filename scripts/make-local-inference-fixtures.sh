@@ -16,9 +16,12 @@ say -v Daniel -r 155 -o "$fixture_dir/second.aiff" \
 ffmpeg -hide_banner -loglevel error -i "$fixture_dir/first.aiff" -i "$fixture_dir/second.aiff" \
   -filter_complex '[0:a]aresample=16000,aformat=channel_layouts=mono,apad=pad_dur=2[a];[1:a]aresample=16000,aformat=channel_layouts=mono,apad=pad_dur=2[b];[a][b]concat=n=2:v=0:a=1[out]' \
   -map '[out]' -c:a pcm_s16le "$fixture_dir/dialogue.wav"
+ffmpeg -nostdin -n -hide_banner -loglevel error -i "$fixture_dir/dialogue.wav" \
+  -c:a aac -b:a 96k "$fixture_dir/dialogue.m4a"
 ffmpeg -hide_banner -loglevel error -stream_loop -1 -i "$fixture_dir/dialogue.wav" \
   -t 650 -ar 16000 -ac 1 -c:a pcm_s16le "$fixture_dir/long-dialogue.wav"
 ffmpeg -hide_banner -loglevel error -f lavfi -i anullsrc=r=16000:cl=mono \
   -t 10 -c:a pcm_s16le "$fixture_dir/silence.wav"
-shasum -a 256 "$fixture_dir/dialogue.wav" "$fixture_dir/long-dialogue.wav" "$fixture_dir/silence.wav"
+shasum -a 256 "$fixture_dir/dialogue.wav" "$fixture_dir/dialogue.m4a" \
+  "$fixture_dir/long-dialogue.wav" "$fixture_dir/silence.wav"
 printf 'Synthetic fixture directory: %s\n' "$fixture_dir"
