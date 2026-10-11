@@ -18,6 +18,20 @@ Keep diarization state across the full recording, with at most eight speakers.
 Save local segments `{startMs, endMs, speaker, text}`; unknown speaker stays null.
 WS2 alone writes transcripts. WS1 reads them and owns ChatGPT sign-in/chat.
 
+Current frontier: all 36 pinned files are downloaded and independently hashed.
+Offline readiness, short WAV inference, M4A finalization/save/reopen and exact
+digital silence have passing real-model evidence. Current code is `ec5cd67`;
+115 local component tests pass under OS network denial with no skips. Captured
+long-boundary replay passes after the anchored merger correction. The fresh
+650-second run and bounded content audit also PASS: 169.37 seconds inference,
+229 segments, two speaker labels plus null, no adjacent repeated words, and
+all four fixture phrase counts match. Main accepts this exact synthetic fixture
+outcome, not general meeting accuracy. No writable Peer remains active. No new
+Human decision is required for WS2. Live capture, broad speech accuracy and
+current integrated release packaging remain separate limits. WS1 `7030593f`
+currently owns the shared UI for its approved signed auth fixture; WS2 must
+not drive UI before cleanup/release. Merger `ec5cd67` import is pending there.
+
 Current ownership and plan:
 
 - Integration, acceptance and this status entry: agent `45d6fb78`.
@@ -53,8 +67,8 @@ Current ownership and plan:
   exact import and notice packaging. WS1 ACCEPTED/imported as `254290e`, matched
   ten hashes and passed 6/6 tests. Its owned packaging step passes syntax and
   staged copy/hash checks; full signed packaging remains UNVERIFIED.
-  36 model files total 3,200,167,866 bytes;
-  no actual model payload verification yet. Hash manifest:
+  36 model files total 3,200,167,866 bytes. The initial catalog acceptance did
+  not verify payloads; later actual download/hash evidence appears below. Manifest:
   `.artifacts/model-audit/catalog-20261011/SHA256SUMS` (digest `014539ff…b54c`).
 - Local merge/attribution: Peer `32328d4c`, CLOSED and ACCEPTED as internal input.
   Four-file hashes `c2f045ee`/`3b9b6a1e`/`3a6c4d9b`/`3c521b0c` matched;
@@ -210,6 +224,38 @@ Current ownership and plan:
   proposed higher-drift matching requires a consecutive confirmed text run.
   It must preserve ambiguous and unmatched text. Main owns the silence adapter
   correction and private runtime harnesses; no concurrent writes to merger files.
+  Writer returned candidate `a490f988` / `cdc50321` and released both files.
+  Its red exact-boundary regression failed, then 28/28 isolated tests passed.
+  Main matched both hashes and read the full source/test diff. Candidate
+  ACCEPTED as a bounded integration input: independent 28/28 tests PASS and
+  full raw-window 2/3 replay PASS with no repeated `We`, `are` or `project`.
+  Original left words and the unmatched right `decision` remain. Receipts:
+  `.artifacts/overlap-correction/anchored-acceptance.log` and
+  `.artifacts/local-inference/replay-boundary.log`.
+  Fresh read-only Peer `84bb7549` found no concrete ambiguity-contract blocker;
+  assessment ACCEPTED and CLOSED. Same-text distinct speech remains a heuristic
+  risk. Writer scope CLOSED. Main owns integration and the fresh 650-second run;
+  component acceptance does not establish runtime overlap quality or UI.
+  Correction committed as `ec5cd67252790674f5152ac134f7bc1553a83521`.
+  Current combined component check PASS115/115, zero skips, with OS network
+  denial and the pinned tokenizer; 20.94 seconds. Build PASS14.39 seconds.
+  Evidence: `.artifacts/dependency-validation/anchored-build-tests.log` and
+  `anchored-combined-network-denied.log`. Fresh 650-second real inference PASS
+  on these exact source bytes: 169.37 seconds inference, 171.58 seconds wall
+  time, max RSS 1,922,285,568 bytes. Saved 229 segments, two speaker labels plus
+  null; JSON round-trip and absolute times within 0..650000 ms PASS.
+  Bounded content audit PASS: expected phrase counts 21/21/21/20, no adjacent
+  duplicate words, inspected boundaries at 295000 and 590000 ms. Two distinct
+  voice-anchor sentences each retain the same respective speaker label across
+  all 21 repetitions. There are 41 unknown-speaker segments. This is not a
+  general diarization score. Main ACCEPTS this fixture result. Prior runtime
+  failure and failed content audit remain retained, not relabeled as passes.
+  Evidence under `.artifacts/local-inference/`: `long-run-3.log`,
+  `long-result-3.json`, `long-audit-3.log`, `long-speaker-audit-3.log`,
+  `long-run-3-SHA256SUMS`. Harness SHA-256
+  `64ae4b9007afc355782f9a2c8faae397bf3408792e1adb9e692b19a918472023`
+  matched before/after. General speech accuracy, ambient noise, Vietnamese,
+  maximum duration, acoustic identity and production UI are outside this proof.
   The ten-second digital-silence run FAILED `invalidTiming` before diarization;
   its raw output is under diagnosis. No silence output was saved. Evidence:
   `.artifacts/local-inference/silence-run-1.log`.
@@ -230,7 +276,7 @@ Current ownership and plan:
   OS network denial, and inspected the empty JSON and runtime receipt.
   Evidence in its worktree:
   `.artifacts/verify-lessmeet/full-package-metal/digital-silence-pinned-xctest.log`.
-  Its packaged app predates this correction. No further silence work requested;
+  Its packaged app at import time predates this correction. No further silence work requested;
   current implementation frontier remains the bounded long-overlap correction.
   This work keeps the accepted engine/controller API unchanged. The smallest
   code path now has real-model save/reopen proof. WS1 owns shell hook wiring;
@@ -267,6 +313,13 @@ Current ownership and plan:
   WS1 independently read the installed Computer Use skill and imported bundled
   `@oai/sky`; its skill/runtime blocker is resolved. Target-app permissions
   remain UNVERIFIED. Release adds no auth/account or other UI authorization.
+  New reservation: WS1 `7030593f` owns only the approved signed fixture
+  `chatgpt-live/signed.JT03pe/ChatGPTLiveCheck.app` in its worktree. WS2 does
+  not drive UI until cleanup/release. Existing Human-approved identity/profile,
+  one browser login and one chat stay within WS1 scope; this does not authorize
+  WS2 auth, other-app or recording actions. WS1 received `ec5cd67` but its
+  inspection/import is deferred to completion of the signing priority. WS1 owns
+  the return checkpoint and exact import disposition; WS2 work remains non-UI.
 - WS1 contact: `7030593f`, separate `pivot/chatgpt-signin` worktree.
 - WS1 accepted the read contract and file ownership on 2026-10-11.
   Existing `Recording.transcript` is

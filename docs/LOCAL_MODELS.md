@@ -158,6 +158,7 @@ used by these checks.
 | Synthetic M4A: finalization callback through real models and sidecar reopen | 51.59 s test | 1,971,585,024 bytes |
 | 650 s synthetic WAV, first attempt: FAILED in window 2 | 119.72 s before failure | 371,834,880 bytes |
 | 650 s synthetic WAV, second attempt: runtime PASS, overlap quality FAIL | 182.65 s inference | 1,897,381,888 bytes |
+| 650 s synthetic WAV after anchored correction: runtime and bounded content audit PASS | 169.37 s inference | 1,922,285,568 bytes |
 | 10 s exact-zero WAV after correction: empty transcript PASS | 28.77 s inference | 1,922,613,248 bytes |
 
 Times are single-run observations, not performance guarantees. They include
@@ -191,9 +192,34 @@ The second 650-second run completed all three windows and saved 229 segments.
 JSON round-trip and time bounds passed. Content inspection failed at the
 590-second boundary: `We We`, repeated `are`, and `project project` remain.
 Raw windows show timing drift above 250 ms and a word crossing the overlap
-edge by 60 ms. A further bounded merger correction is in progress. Runtime
-completion is not overlap-quality acceptance. Failed and passing evidence
+edge by 60 ms. Runtime completion is not overlap-quality acceptance. Failed and passing evidence
 remain separate in `long-run-1.log`, `long-run-2.log`, and `long-result-2.json`.
+
+Correction `ec5cd67` keeps the normal 250 ms endpoint tolerance. It permits
+whole equal-text segments to cross an overlap edge by at most 250 ms. A run
+of at least three accepted consecutive word matches can support adjacent
+matches with at most 750 ms endpoint drift. Those matches still need positive
+time intersection, compatible speakers, equal normalized text and a unique
+counterpart on each side. Rejected normal matches stay rejected. Ambiguous,
+unmatched, out-of-band and crowded boundaries retain their original text.
+These are conservative matching rules, not acoustic-confidence scores.
+
+The exact captured boundary now passes full raw-window conversion and merger
+replay. Independent component checks pass 115/115 with no skips under OS
+network denial. The fresh 650-second real-model run also passed under OS
+network denial on `ec5cd67`. It saved/reopened 229 segments with two speaker
+labels and 41 unknown-speaker segments. All times are ordered and within the
+recording. The four reference phrase counts match 21/21/21/20, and no adjacent
+repeated words remain. Inspection of the 295/590-second boundaries passed.
+Two voice-anchor sentences retain their respective speaker labels over all
+21 repetitions. This is bounded synthetic evidence, not a general diarization
+or speech-accuracy score. Same-text distinct utterances with compatible reported
+timing remain a heuristic risk; unmatched boundaries can still duplicate.
+
+Final evidence: `long-run-3.log`, `long-result-3.json`, `long-audit-3.log`,
+`long-speaker-audit-3.log` and `long-run-3-SHA256SUMS` in the runtime evidence
+directory. The same harness binary and adapter/merger hashes matched before
+and after the run. Earlier failed results remain available separately.
 
 The first ten-second digital-silence run failed with `invalidTiming`. Whisper
 predicted `you` at 29.52–29.62 seconds in padded audio. The adapter now skips
