@@ -41,7 +41,7 @@ actor LocalWhisperAdapter {
         try Task.checkCancellation()
         try Self.validateSamples(samples)
         guard !transcribing else { throw LocalWhisperError.transcriptionInProgress }
-        if samples.isEmpty { return [] }
+        if Self.isDigitalSilence(samples) { return [] }
         transcribing = true
         defer { transcribing = false }
         let options = DecodingOptions(
@@ -65,6 +65,11 @@ actor LocalWhisperAdapter {
         guard samples.count <= 16_000 * 300, samples.allSatisfy(\.isFinite) else {
             throw LocalWhisperError.invalidSamples
         }
+    }
+
+    /// Exact zero PCM contains no speech. Do not apply a threshold to quiet audio.
+    static func isDigitalSilence(_ samples: [Float]) -> Bool {
+        samples.allSatisfy { $0 == 0 }
     }
 
     static func convert(_ input: [TranscriptionSegment], sampleCount: Int) throws

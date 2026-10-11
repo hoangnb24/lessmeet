@@ -246,6 +246,15 @@ final class LocalWhisperAdapterTests: XCTestCase {
         XCTAssertEqual(tiny.segments.first?.endMs, 1)
     }
 
+    func testDigitalSilenceDoesNotClassifyQuietOrInvalidAudioAsSilent() {
+        XCTAssertTrue(LocalWhisperAdapter.isDigitalSilence([]))
+        XCTAssertTrue(LocalWhisperAdapter.isDigitalSilence([0, -0.0, 0]))
+        XCTAssertTrue(LocalWhisperAdapter.isDigitalSilence(Array(repeating: 0, count: 160_000)))
+        for sample: Float in [.leastNonzeroMagnitude, -.leastNonzeroMagnitude, 0.00001, .nan, .infinity] {
+            XCTAssertFalse(LocalWhisperAdapter.isDigitalSilence([0, sample, 0]))
+        }
+    }
+
     func testInputBoundsAndCancellation() async throws {
         try LocalWhisperAdapter.validateSamples([])
         try LocalWhisperAdapter.validateSamples(Array(repeating: 0, count: 4_800_000))
@@ -302,7 +311,7 @@ final class LocalWhisperAdapterTests: XCTestCase {
     static func main() {
         let suite = XCTestSuite(forTestCaseClass: LocalWhisperAdapterTests.self)
         suite.run()
-        guard let run = suite.testRun, run.executionCount == 14, run.hasSucceeded else { exit(1) }
+        guard let run = suite.testRun, run.executionCount == 15, run.hasSucceeded else { exit(1) }
     }
 }
 #endif
