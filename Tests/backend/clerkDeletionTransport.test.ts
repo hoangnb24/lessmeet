@@ -12,7 +12,7 @@ function setup(operation: ClerkOperation = "deleteUser") {
   const transport = vi.fn<ClerkTransportInput["fetch"]>();
   const authorize = vi.fn(async () => true);
   const input: ClerkTransportInput = { enabled: true, binding: { ...binding }, operation,
-    ...(operation.includes("Session") ? { sessionId: "sess_test" } : {}), credential: "synthetic-secret",
+    ...(operation === "getSession" || operation === "revokeSession" ? { sessionId: "sess_test" } : {}), credential: "synthetic-secret",
     fetch: transport, appleDispositionRevision: "apple_v1", authorize };
   return { input, transport, authorize };
 }
@@ -213,4 +213,94 @@ it("hanging destructive response body stays unknown and is cancelled", async () 
   const pending = clerkDeletionTransport(input); await vi.advanceTimersByTimeAsync(20_000);
   expect(await pending).toMatchObject({ state: "unknown", code: "transport_timeout" });
   expect(cancel).toHaveBeenCalled(); expect(transport).toHaveBeenCalledTimes(3);
+});
+
+it.each([undefined, 0, 32, 64, 96, 128, 160, 192, 224])("lists one unfiltered page at offset %s", async offset => {
+  const { input, transport, authorize } = setup("listSessions"); input.offset = offset;
+  delete input.authorize; delete input.appleDispositionRevision;
+  queue(transport, instance, [{ ...session, private_payload: "not returned" }]);
+  expect(await clerkDeletionTransport(input)).toEqual({ state: "observed", code: "sessions_observed", httpStatus: 200,
+    sessions: [{ id: session.id, status: "active" }] });
+  expect(transport.mock.calls.map(c => c[0])).toEqual(["https://api.clerk.com/v1/instance",
+    `https://api.clerk.com/v1/sessions?user_id=user_test&limit=32&offset=${offset ?? 0}`]);
+  for (const [, init] of transport.mock.calls) expect(init).toEqual({ method: "GET", redirect: "error",
+    signal: expect.any(AbortSignal), headers: { Authorization: "Bearer synthetic-secret",
+      "Clerk-API-Version": "2026-05-12", Accept: "application/json" } });
+  expect(authorize).not.toHaveBeenCalled();
+});
+it.each([-32, 1, 31, 33, 225, 256, 32.5, NaN, Infinity, "32", null, true])("rejects invalid list offset %s before network", async offset => {
+  const { input, transport } = setup("listSessions"); input.offset = offset as number;
+  expect(await clerkDeletionTransport(input)).toEqual({ state: "blocked", code: "invalid_offset" });
+  expect(transport).not.toHaveBeenCalled();
+});
+it.each(["verifyInstance", "getUser", "deleteUser", "getSession", "revokeSession"] as const)("%s rejects offset", async operation => {
+  const { input, transport } = setup(operation); input.offset = 0;
+  expect(await clerkDeletionTransport(input)).toEqual({ state: "blocked", code: "invalid_offset" });
+  expect(transport).not.toHaveBeenCalled();
+});
+it.each([0, 1, 31, 32])("pagination length %s is only a continuation hint", async length => {
+  for (const offset of [0, 224]) {
+    const { input, transport } = setup("listSessions"); input.offset = offset;
+    const page = Array.from({ length }, (_, i) => ({ ...session, id: `sess_${i}` }));
+    queue(transport, instance, page);
+    expect(await clerkDeletionTransport(input)).toEqual({ state: "observed", code: "sessions_observed", httpStatus: 200,
+      sessions: page.map(({ id, status }) => ({ id, status })), ...(length === 32 ? { nextOffset: offset + 32 } : {}) });
+    expect(transport).toHaveBeenCalledTimes(2);
+  }
+});
+it.each([null, {}, { data: [session], total_count: 1 }, [null], [[session]], [session, session],
+  Array.from({ length: 33 }, (_, i) => ({ ...session, id: `sess_${i}` })),
+  [{ ...session, status: "invented" }], [{ ...session, status: null }], [{ ...session, status: undefined }],
+])("rejects malformed list %j without partial observations", async page => {
+  const { input, transport } = setup("listSessions"); queue(transport, instance, page);
+  expect(await clerkDeletionTransport(input)).toEqual({ state: "blocked", code: "malformed_response", httpStatus: 200 });
+  expect(transport).toHaveBeenCalledTimes(2);
+});
+it.each([{ object: "user" }, { user_id: "user_other" }, { user_id: undefined }, { id: null },
+  { id: "sess_" }, { id: "sess_bad/path" }, { id: "sess_bad?x=y" }, { id: `sess_${"a".repeat(251)}` },
+])("rejects list identity %j", async patch => {
+  const { input, transport } = setup("listSessions"); queue(transport, instance, [session, { ...session, ...patch }]);
+  expect(await clerkDeletionTransport(input)).toEqual({ state: "blocked", code: "session_identity_mismatch", httpStatus: 200 });
+});
+it.each(["active", "revoked", "ended", "expired", "removed", "abandoned", "replaced", "pending"])("returns validated %s status for exact read and list", async status => {
+  for (const operation of ["getSession", "listSessions"] as const) {
+    const { input, transport } = setup(operation);
+    const target = { ...session, status, private_payload: "not returned" };
+    queue(transport, instance, operation === "getSession" ? target : [target]);
+    expect(await clerkDeletionTransport(input)).toEqual({ state: "observed", httpStatus: 200,
+      ...(operation === "getSession" ? { code: "session_bound", sessionStatus: status } :
+        { code: "sessions_observed", sessions: [{ id: session.id, status }] }) });
+  }
+});
+it("list validates instance and forbids session target before dispatch", async () => {
+  const { input, transport } = setup("listSessions"); input.sessionId = session.id;
+  expect(await clerkDeletionTransport(input)).toMatchObject({ code: "invalid_target" });
+  expect(transport).not.toHaveBeenCalled(); delete input.sessionId;
+  queue(transport, { ...instance, id: "ins_other" });
+  expect(await clerkDeletionTransport(input)).toMatchObject({ code: "instance_mismatch" });
+  expect(transport).toHaveBeenCalledTimes(1);
+});
+it.each([0, 1])("list byte boundary +%s retains shared wire bound", async excess => {
+  const { input, transport } = setup("listSessions"); queue(transport, instance);
+  const target = { ...session, id: `sess_${"a".repeat(250)}` };
+  transport.mockResolvedValueOnce(new Response(JSON.stringify([target]).padEnd(CLERK_TRANSPORT_MAX_BYTES + excess, " ")));
+  expect(await clerkDeletionTransport(input)).toEqual(excess ? { state: "blocked", code: "response_too_large", httpStatus: 200 } :
+    { state: "observed", code: "sessions_observed", httpStatus: 200, sessions: [{ id: target.id, status: target.status }] });
+});
+it.each([404, 429, 503])("list HTTP %s is not absence or empty inventory and never retries", async status => {
+  const { input, transport } = setup("listSessions"); queue(transport, instance);
+  transport.mockResolvedValueOnce(Response.json(missing, { status }));
+  expect(await clerkDeletionTransport(input)).toEqual({ state: status === 404 ? "blocked" : "unknown",
+    code: status === 404 ? "provider_rejected" : "provider_temporary", httpStatus: status });
+  expect(transport).toHaveBeenCalledTimes(2);
+});
+it("list snapshots offset and times out hanging page body without continuation", async () => {
+  vi.useFakeTimers(); const { input, transport } = setup("listSessions"); input.offset = 32;
+  queue(transport, instance); const cancel = vi.fn();
+  transport.mockResolvedValueOnce(new Response(new ReadableStream({ start() {}, cancel })));
+  const pending = clerkDeletionTransport(input); input.offset = 64;
+  await vi.advanceTimersByTimeAsync(CLERK_TRANSPORT_TIMEOUT_MS);
+  expect(await pending).toEqual({ state: "unknown", code: "transport_timeout" });
+  expect(transport.mock.calls[1][0]).toBe("https://api.clerk.com/v1/sessions?user_id=user_test&limit=32&offset=32");
+  expect(transport).toHaveBeenCalledTimes(2); expect(cancel).toHaveBeenCalled();
 });

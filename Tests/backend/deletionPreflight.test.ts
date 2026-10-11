@@ -91,7 +91,7 @@ describe("durable bounded provider preflight", () => {
     expect(observed).toHaveLength(2); expect(observed.every(s => s.state === "observed" && s.inventoryComplete)).toBe(true);
     expect(observed.find(s => s.provider === "clerk")?.sessions).toHaveLength(35);
     expect(d).toMatchObject({ localComplete: true, clerk: false, apple: false, revenuecat: false, gemini: false, residuals: false });
-    expect(await alice.query(internal.deletion.status, {})).toEqual({ userId: subject, requested: true, localComplete: true, providersComplete: false, requestedAt: d.requestedAt });
+    expect(await alice.query(internal.deletion.status, {})).toEqual({ userId: subject, requested: true, localComplete: true, providersComplete: false, requestedAt: d.requestedAt, googleStatus: "pending" });
     expect(await t.run(ctx => ctx.db.query("deletionOutbox").unique())).toMatchObject({ classification: "exceptions", providersComplete: false });
     expect(await t.run(ctx => ctx.db.query("deletionSends").collect())).toEqual([]);
     expect(await t.run(ctx => ctx.db.query("deletionContacts").collect())).toEqual([]);

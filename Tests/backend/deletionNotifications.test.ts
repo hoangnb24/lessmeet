@@ -49,14 +49,40 @@ beforeEach(() => {
 afterEach(() => { vi.clearAllTimers(); vi.useRealTimers(); vi.unstubAllGlobals(); vi.unstubAllEnvs(); });
 
 describe("durable frozen notification", () => {
-  it.each(["DELETION_EMAIL_ENABLED", "DELETION_CONTACT_RETENTION_APPROVED"])("is separately default-off without %s", async key => {
+  it.each(["CLERK_CONTACT_INVENTORY_ENABLED", "DELETION_CONTACT_RETENTION_APPROVED"])("capture is separately default-off without %s", async key => {
     vi.stubEnv(key, undefined); const t = setup();
     await t.withIdentity({ tokenIdentifier: owner, subject, email: "untrusted@example.com" }).mutation(internal.deletion.request, {});
     await flush(t); await t.mutation(internal.deletionNotifications.recover, {}); await flush(t);
     expect(await t.run(ctx => ctx.db.query("deletionContacts").collect())).toEqual([]);
     expect(await t.run(ctx => ctx.db.query("deletionSends").collect())).toEqual([]); expect(fetch).not.toHaveBeenCalled();
   });
-  it("couples actual accepted intake, read-only contact, manual flags, intent and scheduled send", async () => {
+  it("captures a durable immutable contact at intake with sends off, surviving signout", async () => {
+    vi.stubEnv("DELETION_EMAIL_ENABLED", "false");
+    vi.mocked(fetch).mockImplementation(async (url, init) => {
+      if (init?.method !== "GET") throw new Error("Sending forbidden");
+      if (url === "https://api.clerk.com/v1/instance") return Response.json({ object: "instance", id: instance });
+      if (url === `https://api.clerk.com/v1/users/${subject}`) return Response.json({ object: "user", id: subject,
+        primary_email_address_id: "primary", email_addresses: [{ object: "email_address", id: "primary", email_address: "alice@example.com", verification: { status: "verified" } }] });
+      throw new Error("Unexpected route");
+    });
+    const t = setup();
+    await t.withIdentity({ tokenIdentifier: owner, subject, email: "untrusted@example.com" }).mutation(internal.deletion.request, {});
+    await flush(t);
+    const d = (await t.run(ctx => ctx.db.query("deletions").unique()))!;
+    const saved = (await t.run(ctx => ctx.db.query("deletionContacts").unique()))!;
+    expect(saved).toMatchObject({ request: d._id, owner, subject, issuer, instance, code: "verified_primary", email: "alice@example.com" });
+    await expect(t.query(internal.deletion.status, {})).rejects.toThrow("Sign in");
+    await t.action(internal.deletionNotifications.captureContact, { id: d._id, owner });
+    await t.mutation(internal.deletionNotifications.saveContact, { id: d._id, owner, subject, issuer, instance, code: "verified_primary", email: "replacement@example.com" });
+    await t.mutation(internal.deletionNotifications.freeze, { id: d._id, owner });
+    await t.mutation(internal.deletionNotifications.recover, {}); await flush(t);
+    expect(await t.run(ctx => ctx.db.get(saved._id))).toEqual(saved);
+    expect(await t.run(ctx => ctx.db.query("deletionSends").collect())).toEqual([]);
+    expect(await t.query(internal.deletionNotifications.inventory, { id: d._id, owner })).toMatchObject({ availability: "email_disabled", completionEligible: false });
+    expect(JSON.stringify(await t.query(internal.deletionNotifications.inventory, { id: d._id, owner }))).not.toContain(saved.email);
+    expect(fetch).toHaveBeenCalledTimes(2);
+  });
+  it("couples actual intake/contact, independent synthetic Google proof, flags, intent and scheduled send", async () => {
     vi.mocked(fetch).mockImplementation(async (url) => {
       if (url === "https://api.clerk.com/v1/instance") return Response.json({ object: "instance", id: instance });
       if (url === `https://api.clerk.com/v1/users/${subject}`) return Response.json({ object: "user", id: subject,
@@ -69,6 +95,8 @@ describe("durable frozen notification", () => {
     const d = (await t.run(ctx => ctx.db.query("deletions").unique()))!;
     expect(await t.run(ctx => ctx.db.query("deletionSends").collect())).toEqual([]);
     expect(await t.query(internal.deletionNotifications.inventory, { id: d._id, owner })).toMatchObject({ contact: { code: "verified_primary" }, completionEligible: false });
+    // Independent synthetic prerequisite. This suite does not prove Google revoke.
+    await t.run(ctx => ctx.db.patch(d._id, { googleStatus: "acknowledged", googleEvidence: "synthetic-google" }));
     for (const stage of ["clerk", "apple", "revenuecat", "gemini", "residuals"] as const) {
       const current = (await t.run(ctx => ctx.db.get(d._id)))!;
       await t.mutation(internal.deletion.confirm, { id: d._id, owner, stage, complete: true, evidence: "synthetic-case", automationRevision: current.automationRevision });
@@ -78,7 +106,7 @@ describe("durable frozen notification", () => {
     const s = (await t.run(ctx => ctx.db.query("deletionSends").unique()))!;
     expect(s).toMatchObject({ state: "pending", delivery: "pending", providerId, recipient: "alice@example.com", config, completion: complete, attempts: 1 });
     expect(JSON.stringify(s)).not.toContain("untrusted"); expect(JSON.stringify(s)).not.toContain("private_metadata");
-    expect(await alice.query(internal.deletion.status, {})).toEqual({ userId: subject, requested: true, localComplete: true, providersComplete: true, requestedAt: d.requestedAt });
+    expect(await alice.query(internal.deletion.status, {})).toEqual({ userId: subject, requested: true, localComplete: true, providersComplete: true, requestedAt: d.requestedAt, googleStatus: "acknowledged" });
     expect(await t.run(ctx => ctx.db.query("deletionOutbox").unique())).toMatchObject({ state: "intent", delivery: "not_configured" });
     await t.mutation(internal.deletionNotifications.freeze, { id: d._id, owner }); await t.mutation(internal.deletionNotifications.recover, {}); await flush(t);
     expect(vi.mocked(fetch).mock.calls.filter(c => c[0] === "https://api.resend.com/emails")).toHaveLength(1);

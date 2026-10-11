@@ -16,6 +16,8 @@ import type * as batchChatJobs from "../batchChatJobs.js";
 import type * as billing from "../billing.js";
 import type * as billingPolicy from "../billingPolicy.js";
 import type * as crons from "../crons.js";
+import type * as clerkExecution from "../clerkExecution.js";
+import type * as providerExecution from "../providerExecution.js";
 import type * as deletion from "../deletion.js";
 import type * as deletionAdapter from "../deletionAdapter.js";
 import type * as deletionAutomation from "../deletionAutomation.js";
@@ -50,6 +52,8 @@ declare const fullApi: ApiFromModules<{
   billing: typeof billing;
   billingPolicy: typeof billingPolicy;
   crons: typeof crons;
+  clerkExecution: typeof clerkExecution;
+  providerExecution: typeof providerExecution;
   deletion: typeof deletion;
   deletionAdapter: typeof deletionAdapter;
   deletionAutomation: typeof deletionAutomation;

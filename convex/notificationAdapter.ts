@@ -8,6 +8,8 @@ export const SEND_TIMEOUT_MS = 20_000;
 export const SEND_LEASE_MS = 90_000;
 export const notificationsEnabled = () => process.env.DELETION_EMAIL_ENABLED === "true" &&
   process.env.DELETION_CONTACT_RETENTION_APPROVED === "true";
+export const contactCaptureEnabled = () => process.env.CLERK_CONTACT_INVENTORY_ENABLED === "true" &&
+  process.env.DELETION_CONTACT_RETENTION_APPROVED === "true";
 export function sendConfig() {
   const ref = process.env.RESEND_DELETION_CONFIG_REF;
   return ref && /^[A-Za-z0-9_-]{1,100}$/.test(ref) ? ref : undefined;
@@ -25,6 +27,35 @@ export const relayEmail = (email: string) => email.toLowerCase().endsWith("@priv
 export function payloadFor(recipient: string) {
   return JSON.stringify({ from: SENDER, to: [recipient], subject: "LessMeet account deletion update",
     text: "The recorded scope of your LessMeet account deletion is complete. Local recordings on your devices and Apple subscriptions are unchanged. This message does not certify removal beyond that recorded scope." });
+}
+
+// Offline/manual email content only. The trusted operator supplies the saved,
+// bound recipient separately. This helper does not read flags or accept a case.
+export type ManualDeletionUpdate = { requestedAt: number } & (
+  { kind: "received" } |
+  { kind: "exception"; now: number; reason: string; nextUpdateAt: number } |
+  { kind: "completion"; result: { operatorAccepted: true; evidence: string; completedScope: string; retainedLimits: string } }
+);
+export function manualDeletionEmailDraft(input: ManualDeletionUpdate) {
+  const deadlineAt = input.requestedAt + 7 * 24 * 3600_000;
+  const timestamp = (value: number) => Number.isSafeInteger(value) && value >= 0 && value <= 8.64e15;
+  const text = (value: unknown): value is string => typeof value === "string" && value.trim().length > 0;
+  if (!timestamp(input.requestedAt) || !timestamp(deadlineAt)) throw new Error("Valid request receipt timestamp required.");
+  const timing = `We received your LessMeet account deletion request on ${new Date(input.requestedAt).toISOString()}. Normal cases complete within 7 calendar days, by ${new Date(deadlineAt).toISOString()}.`;
+  const limits = "Local recordings on your devices and Apple subscriptions are unchanged. This update does not certify removal of all copies or legal compliance.";
+  let update: string;
+  if (input.kind === "received") update = "We will use email for status and completion updates. If an exception occurs, we will explain the reason and give the next update time.";
+  else if (input.kind === "exception") {
+    if (!text(input.reason) || !timestamp(input.now) || input.now < input.requestedAt ||
+        !timestamp(input.nextUpdateAt) || input.nextUpdateAt <= input.now) throw new Error("Exception reason and future next update required.");
+    update = `Exception: ${input.reason.trim()} Next email update by ${new Date(input.nextUpdateAt).toISOString()}. Deletion remains pending for the unresolved scope.`;
+  } else if (input.kind === "completion") {
+    const r = input.result;
+    if (!r || r.operatorAccepted !== true || !text(r.evidence) || !/^[A-Za-z0-9_-]{1,100}$/.test(r.evidence) ||
+        !text(r.completedScope) || !text(r.retainedLimits)) throw new Error("Explicit operator-accepted scope, evidence and retained limits required.");
+    update = `The accepted scope is complete: ${r.completedScope.trim()} Retained or unresolved scope and limits: ${r.retainedLimits.trim()}`;
+  } else throw new Error("Manual update kind required.");
+  return { subject: "LessMeet account deletion update", text: `${timing}\n\n${update}\n\n${limits}`, deadlineAt };
 }
 async function json(response: Response): Promise<any> {
   const reader = response.body?.getReader();
@@ -52,7 +83,7 @@ async function bounded<T>(operation: (signal: AbortSignal) => Promise<T>): Promi
 }
 export type ContactResult = { code: string; email?: string };
 export async function readContact(input: { owner: string; subject: string; issuer: string; instance: string }): Promise<ContactResult> {
-  if (!notificationsEnabled() || process.env.CLERK_CONTACT_INVENTORY_ENABLED !== "true") return { code: "contact_disabled" };
+  if (!contactCaptureEnabled()) return { code: "contact_disabled" };
   const binding = contactBinding();
   if (!binding || binding.issuer !== input.issuer || binding.instance !== input.instance ||
       input.owner !== `${input.issuer}|${input.subject}` || !/^user_[A-Za-z0-9]+$/.test(input.subject)) return { code: "contact_binding" };

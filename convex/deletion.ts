@@ -7,9 +7,10 @@ import { fail } from "./limits";
 import { settleQuota, type Reservation } from "./billing";
 import { automationEnabled, geminiProjectRef } from "./deletionAdapter";
 import { manualStage, publishIntent } from "./deletionAutomationState";
-import { notificationsEnabled } from "./notificationAdapter";
+import { contactCaptureEnabled } from "./notificationAdapter";
 import { deleteBatchContent, reconcileBatchWork } from "./batches";
 import { deleteChatContent, reconcileChatWork } from "./batchChat";
+import { executionEvidenceResolved } from "./deletionRetention";
 
 async function deleteStoredFile(ctx: MutationCtx, id: Id<"_storage">) {
   if (await ctx.db.system.get("_storage", id)) await ctx.storage.delete(id);
@@ -29,9 +30,11 @@ export const status = internalQuery({ args: {}, handler: async ctx => {
   if (!who) fail(401, "Sign in to LessMeet first.");
   const d = await deletionFor(ctx, who.tokenIdentifier);
   return { userId: who.subject, requested: !!d, localComplete: d?.localComplete ?? false,
-    // Provider verification is manual, never inferred from a timeout or missing row.
-    providersComplete: !!d && d.localComplete && d.clerk && d.revenuecat && d.apple && d.gemini && d.residuals,
-    requestedAt: d?.requestedAt ?? null };
+    // This broad provider/retention status is not the issue #3 acceptance decision.
+    // Keep unresolved flags false; a scoped manual receipt does not complete them.
+    providersComplete: !!d && d.localComplete && d.clerk && d.revenuecat && d.apple && d.gemini && d.residuals && await executionEvidenceResolved(ctx, d._id),
+    requestedAt: d?.requestedAt ?? null,
+    googleStatus: d?.googleStatus ?? null };
 } });
 
 export const request = internalMutation({ args: {}, handler: async ctx => {
@@ -43,9 +46,10 @@ export const request = internalMutation({ args: {}, handler: async ctx => {
   if (process.env.ACCOUNT_DELETION_ENABLED !== "true") fail(503, "Account deletion is not enabled on this deployment. Contact the app owner.");
   const id = await ctx.db.insert("deletions", { owner: who.tokenIdentifier, subject: who.subject,
     requestedAt: Date.now(), updatedAt: Date.now(), localComplete: false,
+    googleRequired: true, googleStatus: "pending",
     clerk: false, revenuecat: false, apple: false, gemini: false, residuals: false });
   await ctx.scheduler.runAfter(0, internal.deletion.cleanup, { id });
-  if (notificationsEnabled()) await ctx.scheduler.runAfter(0, internal.deletionNotifications.captureContact, { id, owner: who.tokenIdentifier });
+  if (contactCaptureEnabled()) await ctx.scheduler.runAfter(0, internal.deletionNotifications.captureContact, { id, owner: who.tokenIdentifier });
 } });
 
 // A durable admission precedes any nontransactional storage/provider side effect.
@@ -146,6 +150,14 @@ export const confirm = internalMutation({ args: { id: v.id("deletions"), owner: 
     if (d.automationRevision !== undefined && d.automationRevision !== automationRevision) fail(409, "Automation revision changed; inspect the exact request again.");
     if (!/^[A-Za-z0-9_-]{1,100}$/.test(evidence)) fail(400, "Use a private case-reference identifier, not personal data.");
     if (complete && !d.localComplete) fail(409, "Resolve local cleanup and outstanding operations first.");
+    if (complete && stage === "clerk") {
+      const execution = await ctx.db.query("deletionClerkExecutions").withIndex("by_request", q => q.eq("request", id)).unique();
+      if (execution && execution.state !== "manual") fail(409, "Use exact Clerk execution reconciliation first.");
+    }
+    if (complete && (stage === "apple" || stage === "revenuecat")) {
+      const execution = await ctx.db.query("deletionProviderExecutions").withIndex("by_request_provider", q => q.eq("request", id).eq("provider", stage)).unique();
+      if (execution && execution.state !== "manual") fail(409, "Use exact provider execution reconciliation first.");
+    }
     await ctx.db.patch(id, { [stage]: complete, [`${stage}Evidence`]: evidence, updatedAt: Date.now() });
     const automatic = await ctx.db.query("deletionStages").withIndex("by_request_key", q => q.eq("request", id).eq("key", stage)).unique();
     if (automatic) await manualStage(ctx, automatic, evidence);

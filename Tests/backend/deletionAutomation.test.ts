@@ -280,6 +280,8 @@ describe("leases, fencing and manual exceptions", () => {
 
   it("all legacy/manual provider evidence is still required for a scope-complete intent, never delivery", async () => {
     const { t } = setup(); const d = await request(t); await flush(t);
+    // This suite tests the old provider conjunction after separate Google proof.
+    await t.run(ctx => ctx.db.patch(d._id, { googleStatus: "acknowledged", googleEvidence: "synthetic-google" }));
     for (const stage of ["clerk", "apple", "revenuecat", "gemini", "residuals"] as const) {
       await t.mutation(internal.deletion.confirm, { id: d._id, owner, stage, complete: true, evidence: `synthetic-${stage}`,
         automationRevision: (await current(t, d._id)).automationRevision });

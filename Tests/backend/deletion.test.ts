@@ -337,6 +337,9 @@ describe("authenticated deletion, bounded cleanup and durable provider work", ()
     await t.mutation(internal.deletion.retry, { id: d._id, owner });
     await expect(t.mutation(internal.deletion.confirm, { id: d._id, owner: "issuer|bob", stage: "apple", complete: true, evidence: "case" })).rejects.toThrow();
     await t.mutation(internal.deletion.confirm, { id: d._id, owner, stage: "apple", complete: true, evidence: "synthetic-apple-proof" });
+    expect(await alice.query(internal.deletion.status, {})).toMatchObject({ providersComplete: false, googleStatus: "pending" });
+    // Synthetic independent Google proof; the flags above cannot create it.
+    await t.run(ctx => ctx.db.patch(d._id, { googleStatus: "acknowledged", googleEvidence: "synthetic-google" }));
     expect(await alice.query(internal.deletion.status, {})).toMatchObject({ providersComplete: true });
     expect(await deletion(t)).toMatchObject({ clerkEvidence: "synthetic-clerk", appleEvidence: "synthetic-apple-proof",
       revenuecatEvidence: "synthetic-revenuecat", geminiEvidence: "synthetic-gemini", residualsEvidence: "synthetic-residuals" });

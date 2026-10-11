@@ -160,6 +160,8 @@ export const expire = internalMutation({ args: { id: v.id("deletionStages"), fen
 // Backup to per-claim watchdogs and persisted wakeups, bounded by state/due indexes.
 export const recover = internalMutation({ args: {}, handler: async ctx => {
   if (!automationEnabled()) return;
+  await ctx.scheduler.runAfter(0, internal.clerkExecution.recover, {});
+  await ctx.scheduler.runAfter(0, internal.providerExecution.recover, {});
   for (const state of ["queued", "retry", "running"] as const) {
     const rows = await ctx.db.query("deletionStages").withIndex("by_state_due", q => q.eq("state", state).lte("nextAttemptAt", Date.now())).take(16);
     for (const s of rows) {

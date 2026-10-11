@@ -1,5 +1,5 @@
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
-import { CLERK_API_VERSION, readContact, sendNotification, payloadFor, SENDER, SEND_LEASE_MS, SEND_TIMEOUT_MS, WINDOW_MS } from "../../convex/notificationAdapter";
+import { CLERK_API_VERSION, readContact, sendNotification, payloadFor, manualDeletionEmailDraft, SENDER, SEND_LEASE_MS, SEND_TIMEOUT_MS, WINDOW_MS } from "../../convex/notificationAdapter";
 
 const issuer = "https://synthetic.clerk.accounts.dev", instance = "ins_synthetic", subject = "user_alice";
 const contact = { issuer, instance, subject, owner: `${issuer}|${subject}` };
@@ -31,7 +31,14 @@ describe("pinned exact-subject contact REST", () => {
     for (const [, options] of vi.mocked(fetch).mock.calls) expect(options).toMatchObject({ method: "GET", redirect: "error",
       headers: { Authorization: "Bearer synthetic-clerk", "Clerk-API-Version": CLERK_API_VERSION } });
   });
-  it.each(["DELETION_EMAIL_ENABLED", "DELETION_CONTACT_RETENTION_APPROVED", "CLERK_CONTACT_INVENTORY_ENABLED", "CLERK_CONTACT_SECRET_KEY", "CLERK_CONTACT_ISSUER", "CLERK_CONTACT_INSTANCE_ID"])("fails closed without %s", async key => {
+  it("captures read-only while sending is disabled", async () => {
+    vi.stubEnv("DELETION_EMAIL_ENABLED", "false"); contactHTTP();
+    expect(await readContact(contact)).toEqual({ code: "verified_primary", email: "alice@example.com" });
+    expect(await sendNotification(input())).toEqual({ state: "exception", code: "email_disabled" });
+    expect(fetch).toHaveBeenCalledTimes(2);
+    expect(vi.mocked(fetch).mock.calls.every(([, init]) => init?.method === "GET")).toBe(true);
+  });
+  it.each(["DELETION_CONTACT_RETENTION_APPROVED", "CLERK_CONTACT_INVENTORY_ENABLED", "CLERK_CONTACT_SECRET_KEY", "CLERK_CONTACT_ISSUER", "CLERK_CONTACT_INSTANCE_ID"])("fails closed without %s", async key => {
     vi.stubEnv(key, undefined); expect((await readContact(contact)).email).toBeUndefined(); expect(fetch).not.toHaveBeenCalled();
   });
   it.each([{ owner: `https://other.example|${subject}` }, { subject: "user_bob" }, { issuer: "https://other.example" }, { instance: "ins_other" }, { subject: "../users", owner: `${issuer}|../users` }])("blocks owner/subject/issuer/instance/path mismatch %j", async change => {
@@ -72,6 +79,47 @@ describe("pinned exact-subject contact REST", () => {
     vi.mocked(fetch).mockImplementation(() => new Promise(() => {}));
     const pending = readContact(contact); await vi.advanceTimersByTimeAsync(SEND_TIMEOUT_MS);
     expect(await pending).toEqual({ code: "contact_lookup_failed" });
+  });
+});
+
+describe("offline manual email drafts", () => {
+  const requestedAt = Date.parse("2026-10-02T23:59:59.123Z"); // Friday, no weekend exclusion.
+  it("uses exactly seven calendar days from receipt milliseconds and never sends", () => {
+    const draft = manualDeletionEmailDraft({ kind: "received", requestedAt });
+    expect(draft.deadlineAt).toBe(requestedAt + 604800000);
+    expect(draft.text).toContain("2026-10-09T23:59:59.123Z");
+    expect(draft.text).toContain("7 calendar days");
+    expect(draft.text).toContain("email for status and completion");
+    expect(draft.text).toContain("does not certify removal of all copies or legal compliance");
+    expect(draft.text).toContain("Local recordings"); expect(draft.text).toContain("Apple subscriptions");
+    expect(fetch).not.toHaveBeenCalled();
+  });
+  it.each([NaN, Infinity, -1, 1.5, 8.64e15])("rejects invalid or overflowing receipt %s", requestedAt => {
+    expect(() => manualDeletionEmailDraft({ kind: "received", requestedAt })).toThrow();
+  });
+  it("requires a reason and future next email update for an exception", () => {
+    const now = requestedAt + 8 * WINDOW_MS, nextUpdateAt = now + WINDOW_MS;
+    const input = { kind: "exception" as const, requestedAt, now, nextUpdateAt, reason: "Contact verification needs operator review." };
+    const draft = manualDeletionEmailDraft(input);
+    expect(draft.text).toContain(input.reason); expect(draft.text).toContain(new Date(nextUpdateAt).toISOString());
+    expect(draft.text).toContain("Deletion remains pending");
+    for (const change of [{ reason: " " }, { nextUpdateAt: now }, { nextUpdateAt: now - 1 }, { nextUpdateAt: NaN }, { now: requestedAt - 1 }]) {
+      expect(() => manualDeletionEmailDraft({ ...input, ...change })).toThrow("reason and future");
+    }
+    expect(fetch).not.toHaveBeenCalled();
+  });
+  it("requires explicitly accepted scoped evidence, not time or broad provider flags", () => {
+    const result = { operatorAccepted: true as const, evidence: "synthetic-case", completedScope: "Account, sessions and owned cloud content.",
+      retainedLimits: "General provider logs/backups remain under review. The incomplete deletion guard remains retained." };
+    const draft = manualDeletionEmailDraft({ kind: "completion", requestedAt, result });
+    expect(draft.text).toContain(result.completedScope); expect(draft.text).toContain(result.retainedLimits);
+    expect(draft.text).not.toContain(result.evidence); // Private operator evidence is not email content.
+    for (const change of [{ operatorAccepted: false }, { evidence: "" }, { completedScope: "" }, { retainedLimits: " " }]) {
+      expect(() => manualDeletionEmailDraft({ kind: "completion", requestedAt, result: { ...result, ...change } } as never)).toThrow("operator-accepted");
+    }
+    vi.setSystemTime(requestedAt + 100 * WINDOW_MS);
+    expect(() => manualDeletionEmailDraft({ kind: "completion", requestedAt, providersComplete: false } as never)).toThrow("operator-accepted");
+    expect(fetch).not.toHaveBeenCalled();
   });
 });
 

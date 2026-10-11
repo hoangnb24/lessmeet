@@ -3,12 +3,39 @@ import { v } from "convex/values";
 import { provider, phase, externalAccount, session } from "./preflightContract";
 import { batchTables } from "./batchSchema";
 import { batchChatTables } from "./batchChatSchema";
+import { appleDisposition, executionPhase, executionSession } from "./clerkExecutionContract";
+import { appleIdentity, executionProvider } from "./providerExecutionContract";
 
 export const message = v.object({ role: v.union(v.literal("user"), v.literal("assistant")), text: v.string() });
 const reservation = v.object({ bucket: v.id("quotaBuckets"), seconds: v.number(), questions: v.number() });
 export default defineSchema({
   ...batchTables,
   ...batchChatTables,
+  deletionProviderExecutions: defineTable({ request: v.id("deletions"), owner: v.string(), subject: v.string(), requestedAt: v.number(),
+    provider: executionProvider, stage: v.id("deletionStages"), stageFence: v.number(), config: v.string(),
+    safetyEvidence: v.string(), apple: v.optional(appleIdentity),
+    clerkStage: v.optional(v.id("deletionStages")), clerkFence: v.optional(v.number()),
+    phase: v.union(v.literal("execute"), v.literal("observe")),
+    state: v.union(v.literal("queued"), v.literal("running"), v.literal("retry"), v.literal("blocked"), v.literal("exhausted"), v.literal("observed"), v.literal("manual")),
+    fence: v.number(), attempts: v.number(), claims: v.number(), due: v.number(), leaseUntil: v.optional(v.number()),
+    mutationIntent: v.boolean(), acknowledged: v.boolean(), absenceObserved: v.boolean(),
+    code: v.string(), evidence: v.optional(v.string()), createdAt: v.number(), updatedAt: v.number(),
+  }).index("by_request_provider", ["request", "provider"]).index("by_provider_state_due", ["provider", "state", "due"]),
+  deletionClerkExecutions: defineTable({ request: v.id("deletions"), owner: v.string(), subject: v.string(), requestedAt: v.number(),
+    stage: v.id("deletionStages"), stageFence: v.number(), config: v.string(),
+    appleStage: v.id("deletionStages"), appleFence: v.number(), appleEvidence: v.string(), appleDisposition,
+    phase: executionPhase, state: v.union(v.literal("queued"), v.literal("running"), v.literal("retry"),
+      v.literal("blocked"), v.literal("exhausted"), v.literal("observed"), v.literal("manual")),
+    sessions: v.array(executionSession), offset: v.number(), sessionIndex: v.number(), inventoryComplete: v.boolean(),
+    mutationUncertain: v.boolean(), userDeleteAcknowledged: v.boolean(), userAbsenceObserved: v.boolean(),
+    googleConfig: v.optional(v.string()),
+    googleAccounts: v.optional(v.array(v.object({ externalAccountId: v.string(), providerUserId: v.string(), acknowledged: v.boolean(), evidence: v.optional(v.string()) }))),
+    googleIndex: v.optional(v.number()), googleComplete: v.optional(v.boolean()),
+    googleEvidence: v.optional(v.string()), googleNotApplicable: v.optional(v.boolean()),
+    googleOperatorEvidence: v.optional(v.string()),
+    fence: v.number(), attempts: v.number(), claims: v.number(), due: v.number(), leaseUntil: v.optional(v.number()),
+    code: v.string(), evidence: v.optional(v.string()), createdAt: v.number(), updatedAt: v.number(),
+  }).index("by_request", ["request"]).index("by_state_due", ["state", "due"]),
   deletionPreflights: defineTable({ request: v.id("deletions"), owner: v.string(), subject: v.string(),
     requestedAt: v.number(), provider, config: v.string(), phase, cursor: v.string(),
     state: v.union(v.literal("queued"), v.literal("running"), v.literal("retry"), v.literal("observed"), v.literal("blocked"), v.literal("exhausted")),
@@ -37,6 +64,11 @@ export default defineSchema({
   }).index("by_request", ["request"]).index("by_state_due", ["state", "due"]),
   deletions: defineTable({ owner: v.string(), subject: v.string(), requestedAt: v.number(),
     localComplete: v.boolean(),
+    googleRequired: v.optional(v.boolean()),
+    googleStatus: v.optional(v.union(v.literal("pending"), v.literal("revoking"), v.literal("acknowledged"),
+      v.literal("exception"), v.literal("not_applicable"), v.literal("unknown"))),
+    // Retain bounded proof until this ledger is purged, including child-batch cleanup.
+    googleEvidence: v.optional(v.string()),
     clerk: v.boolean(), revenuecat: v.boolean(), apple: v.boolean(), gemini: v.boolean(), residuals: v.boolean(),
     clerkEvidence: v.optional(v.string()), revenuecatEvidence: v.optional(v.string()),
     appleEvidence: v.optional(v.string()), geminiEvidence: v.optional(v.string()), residualsEvidence: v.optional(v.string()),

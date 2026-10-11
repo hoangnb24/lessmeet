@@ -4,7 +4,7 @@ import { internal } from "./_generated/api";
 import type { Doc, Id } from "./_generated/dataModel";
 import { classification, exactRequest } from "./deletionAutomationState";
 import { MAX_ATTEMPTS, retryDelay } from "./deletionAdapter";
-import { contactBinding, notificationsEnabled, payloadFor, readContact, relayEmail, sendConfig,
+import { contactBinding, contactCaptureEnabled, notificationsEnabled, payloadFor, readContact, relayEmail, sendConfig,
   sendNotification, SEND_LEASE_MS, validEmail, validProviderId, WINDOW_MS } from "./notificationAdapter";
 
 const requestArgs = { id: v.id("deletions"), owner: v.string() };
@@ -26,9 +26,9 @@ async function ready(ctx: QueryCtx | MutationCtx, d: Doc<"deletions">) {
       await ctx.db.query("deletionWork").withIndex("by_owner", q => q.eq("owner", d.owner)).first()) return null;
   return intent;
 }
-function boundContact(c: Doc<"deletionContacts">, d: Doc<"deletions">) {
+export function boundContact(c: Doc<"deletionContacts">, d: Doc<"deletions">) {
   const binding = contactBinding();
-  return binding && c.owner === d.owner && c.subject === d.subject && c.issuer === binding.issuer &&
+  return binding && c.request === d._id && c.owner === d.owner && c.subject === d.subject && c.issuer === binding.issuer &&
     c.instance === binding.instance && c.owner === `${c.issuer}|${c.subject}` &&
     c.code === "verified_primary" && validEmail(c.email) && !relayEmail(c.email);
 }
@@ -49,7 +49,7 @@ export const contactTarget = internalQuery({ args: requestArgs, handler: async (
   return { subject: d.subject, existing: !!(await contactFor(ctx, id))?.email };
 } });
 export const captureContact = internalAction({ args: requestArgs, handler: async (ctx, args): Promise<void> => {
-  if (!notificationsEnabled()) return;
+  if (!contactCaptureEnabled()) return;
   const target = await ctx.runQuery(internal.deletionNotifications.contactTarget, args);
   if (target.existing) return;
   const binding = contactBinding();
@@ -59,7 +59,7 @@ export const captureContact = internalAction({ args: requestArgs, handler: async
 } });
 export const saveContact = internalMutation({ args: { ...requestArgs, subject: v.string(), issuer: v.string(), instance: v.string(),
   code: v.string(), email: v.optional(v.string()) }, handler: async (ctx, args) => {
-  if (!notificationsEnabled()) return;
+  if (!contactCaptureEnabled()) return;
   const d = await exactRequest(ctx, args.id, args.owner), binding = contactBinding();
   if (d.subject !== args.subject) return;
   const existing = await contactFor(ctx, d._id);
@@ -77,7 +77,7 @@ export const saveContact = internalMutation({ args: { ...requestArgs, subject: v
   const value = { request: d._id, owner: d.owner, subject: d.subject, issuer: args.issuer, instance: args.instance,
     email, code, capturedAt: Date.now() };
   if (existing) await ctx.db.patch(existing._id, value); else await ctx.db.insert("deletionContacts", value);
-  await ctx.scheduler.runAfter(0, internal.deletionNotifications.freeze, { id: d._id, owner: d.owner });
+  if (notificationsEnabled()) await ctx.scheduler.runAfter(0, internal.deletionNotifications.freeze, { id: d._id, owner: d.owner });
 } });
 
 export const freeze = internalMutation({ args: requestArgs, handler: async (ctx, { id, owner }) => {
