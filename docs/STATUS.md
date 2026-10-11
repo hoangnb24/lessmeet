@@ -29,8 +29,8 @@ all four fixture phrase counts match. Main accepts this exact synthetic fixture
 outcome, not general meeting accuracy. No writable Peer remains active. No new
 Human decision is required for WS2. Live capture, broad speech accuracy and
 current integrated release packaging remain separate limits. WS1 `7030593f`
-currently owns the shared UI for its approved signed auth fixture; WS2 must
-not drive UI before cleanup/release. Merger `ec5cd67` import is pending there.
+has RELEASED the shared UI. No further live calls are authorized. Merger
+`ec5cd67` import is under local verification there; disposition remains pending.
 
 Current ownership and plan:
 
@@ -313,13 +313,17 @@ Current ownership and plan:
   WS1 independently read the installed Computer Use skill and imported bundled
   `@oai/sky`; its skill/runtime blocker is resolved. Target-app permissions
   remain UNVERIFIED. Release adds no auth/account or other UI authorization.
-  New reservation: WS1 `7030593f` owns only the approved signed fixture
-  `chatgpt-live/signed.JT03pe/ChatGPTLiveCheck.app` in its worktree. WS2 does
-  not drive UI until cleanup/release. Existing Human-approved identity/profile,
-  one browser login and one chat stay within WS1 scope; this does not authorize
-  WS2 auth, other-app or recording actions. WS1 received `ec5cd67` but its
-  inspection/import is deferred to completion of the signing priority. WS1 owns
-  the return checkpoint and exact import disposition; WS2 work remains non-UI.
+  Subsequent signed auth fixture reservation is RELEASED. WS1 reports original
+  PID 89979 and corrected fixture PID 7708 quit through Sky, both launch sessions
+  exited 0, and exact process checks found neither process. Its reported results:
+  one Human login, model list and stored-session reopen PASS; the single live
+  chat FAILED with a generic malformed-response error. No retry occurred.
+  These are WS1 observations, not independent WS2 UI verification. No more live
+  calls are authorized. UI release grants no new auth, recording or model work.
+  WS1 has inspected exact merger `ec5cd67` source/tests and resumed its import
+  verification. WS1 owns local tests and the return checkpoint for the exact
+  import disposition. WS2 runtime evidence is delivered; no further work is
+  requested here pending a concrete integration finding.
 - WS1 contact: `7030593f`, separate `pivot/chatgpt-signin` worktree.
 - WS1 accepted the read contract and file ownership on 2026-10-11.
   Existing `Recording.transcript` is
