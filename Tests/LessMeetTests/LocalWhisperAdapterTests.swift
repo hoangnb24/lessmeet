@@ -150,6 +150,39 @@ final class LocalWhisperAdapterTests: XCTestCase {
         XCTAssertEqual(result.segments.map(\.endMs), [1000, 2000])
     }
 
+    func testZeroDurationWordUsesValidParentWithoutDroppingText() throws {
+        let text = " We are testing a local meeting recorder."
+        let parent = TranscriptionSegment(start: 0.02, end: 1.72, text: text)
+        let aligned = TranscriptionSegment(start: 0.02, end: 1.72, text: text, words: [
+            WordTiming(word: " We", tokens: [], start: 0.02, end: 0.02, probability: 1),
+            WordTiming(word: " are testing a local meeting recorder.", tokens: [],
+                       start: 0.02, end: 1.72, probability: 1)
+        ])
+        let result = try LocalWhisperAdapter.convert([aligned], sampleCount: 32_000)
+        let expected = try LocalWhisperAdapter.convert([parent], sampleCount: 32_000)
+        XCTAssertEqual(result.segments, expected.segments)
+        XCTAssertEqual(result.segmentFallbackCount, 1)
+        XCTAssertEqual(result.segments.map(\.text), [text])
+    }
+
+    func testZeroDurationFallbackDoesNotHideOtherInvalidTimes() {
+        let zero = WordTiming(word: " We", tokens: [], start: 0.125, end: 0.125, probability: 1)
+        for (start, end): (Float, Float) in [(.nan, 1), (0, .infinity), (1, 0), (2, 3), (-2, -1)] {
+            XCTAssertThrowsError(try LocalWhisperAdapter.convert([
+                TranscriptionSegment(start: 0, end: 1, text: "invalid words", words: [zero,
+                    WordTiming(word: " bad", tokens: [], start: start, end: end, probability: 1)
+                ])
+            ], sampleCount: 16_000))
+        }
+        for parent in [
+            TranscriptionSegment(start: 0.25, end: 1, text: "word outside parent", words: [zero]),
+            TranscriptionSegment(start: 0, end: 0, text: "invalid parent", words: [zero]),
+            TranscriptionSegment(start: 0, end: 1, text: "", words: [zero])
+        ] {
+            XCTAssertThrowsError(try LocalWhisperAdapter.convert([parent], sampleCount: 16_000))
+        }
+    }
+
     func testInvalidTimingIsNotSilentlyDiscardedOrReplaced() throws {
         for (start, end): (Float, Float) in [(.nan, 1), (0, .infinity), (1, 0), (1, 1), (2, 3), (-2, -1)] {
             XCTAssertThrowsError(try LocalWhisperAdapter.convert([

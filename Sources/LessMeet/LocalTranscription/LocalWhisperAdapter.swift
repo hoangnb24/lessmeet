@@ -53,7 +53,7 @@ actor LocalWhisperAdapter {
         try Task.checkCancellation()
         let converted = try Self.convert(results.flatMap(\.segments), sampleCount: samples.count)
         if converted.segmentFallbackCount > 0 {
-            Self.logger.warning("Word alignment absent; used timed segments: \(converted.segmentFallbackCount)")
+            Self.logger.warning("Word alignment absent or zero-duration; used timed segments: \(converted.segmentFallbackCount)")
         }
         return converted.segments
     }
@@ -70,18 +70,42 @@ actor LocalWhisperAdapter {
         let durationMs = Int64(sampleCount / 16)
         var segments: [LocalTranscriptSegment] = []
         var fallbackCount = 0
-        func append(_ text: String, _ start: Float, _ end: Float) throws {
+        func bounds(_ start: Float, _ end: Float) throws -> (Int64, Int64) {
             guard start.isFinite, end.isFinite, start < end else { throw LocalWhisperError.invalidTiming }
             let clampedStart = min(max(Double(start) * 1000, 0), Double(durationMs))
             let clampedEnd = min(max(Double(end) * 1000, 0), Double(durationMs))
             let startMs = Int64(clampedStart.rounded(.down))
             let endMs = Int64(clampedEnd.rounded(.up))
             guard startMs < endMs else { throw LocalWhisperError.invalidTiming }
+            return (startMs, endMs)
+        }
+        func append(_ text: String, _ start: Float, _ end: Float) throws {
+            let (startMs, endMs) = try bounds(start, end)
             segments.append(LocalTranscriptSegment(startMs: startMs, endMs: endMs, speaker: nil, text: text))
         }
         for segment in input {
             if let words = segment.words, !words.isEmpty {
-                for word in words { try append(word.word, word.start, word.end) }
+                var needsParentTiming = false
+                for word in words {
+                    if word.start.isFinite, word.end.isFinite, word.start == word.end {
+                        // Alignment can assign no duration to a recognized word. Use the
+                        // original sentence timing; do not drop text or invent a word span.
+                        guard word.start >= 0, Double(word.start) * 1000 < Double(durationMs),
+                              word.start >= segment.start, word.end <= segment.end,
+                              !segment.text.isEmpty else { throw LocalWhisperError.invalidTiming }
+                        _ = try bounds(segment.start, segment.end)
+                        needsParentTiming = true
+                    } else {
+                        // Check every word even if another word needs the parent fallback.
+                        _ = try bounds(word.start, word.end)
+                    }
+                }
+                if needsParentTiming {
+                    try append(segment.text, segment.start, segment.end)
+                    fallbackCount += 1
+                } else {
+                    for word in words { try append(word.word, word.start, word.end) }
+                }
             } else if !segment.text.isEmpty {
                 try append(segment.text, segment.start, segment.end)
                 fallbackCount += 1
