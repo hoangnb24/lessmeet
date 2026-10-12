@@ -1,8 +1,22 @@
-name: Main build diagnostic
+name: LessMeet build diagnostic
 
 # Manual only. This workflow must first be present on the default branch.
 on:
   workflow_dispatch:
+    inputs:
+      source_ref:
+        description: 'Source commit SHA or branch (use an exact SHA before merging)'
+        required: true
+        default: main
+        type: string
+      package_mode:
+        description: 'Use local for the local-first integration; dev for the old main baseline'
+        required: true
+        default: dev
+        type: choice
+        options:
+          - dev
+          - local
 
 permissions:
   contents: read
@@ -18,14 +32,15 @@ jobs:
     env:
       DEVELOPER_DIR: /Applications/Xcode_26.6.app/Contents/Developer
       LESSMEET_SIGNING_IDENTITY: '-'
+      PACKAGE_MODE: ${{ inputs.package_mode }}
     defaults:
       run:
         shell: bash
     steps:
-      - name: Check out main without stored credentials
+      - name: Check out selected source without stored credentials
         uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4.2.2
         with:
-          ref: main
+          ref: ${{ inputs.source_ref }}
           persist-credentials: false
 
       - name: Record source and toolchain
@@ -33,6 +48,7 @@ jobs:
         run: |
           mkdir -p ci-evidence
           exec > >(tee ci-evidence/environment.log) 2>&1
+          [[ "$PACKAGE_MODE" == dev || "$PACKAGE_MODE" == local ]]
           git rev-parse HEAD
           shasum -a 256 Package.resolved scripts/build-app.sh
           uname -m
@@ -45,30 +61,40 @@ jobs:
           xcrun --sdk macosx --show-sdk-version
           node --version
           node --input-type=module -e 'import { parseEnv } from "node:util"; parseEnv("");'
-          # Main does not need Metal packaging. Record absence without blocking it.
+          # The local package needs Metal. The old main baseline does not.
           if ! xcrun -sdk macosx metal --version; then
             printf 'Metal compiler unavailable; no installation attempted.\n'
+            test "$PACKAGE_MODE" = dev
           fi
 
-      - name: Build main baseline without restored cache
+      - name: Build selected source without restored cache
         id: compile
         timeout-minutes: 20
         run: |
           set -o pipefail
-          swift build -c release --build-system swiftbuild --arch arm64 \
-            --disable-keychain --disable-netrc --scratch-path "$PWD/.build" \
-            2>&1 | tee ci-evidence/build.log
+          if [[ "$PACKAGE_MODE" == local ]]; then
+            bash scripts/build-app.sh local 2>&1 | tee ci-evidence/build.log
+          else
+            swift build -c release --build-system swiftbuild --arch arm64 \
+              --disable-keychain --disable-netrc --scratch-path "$PWD/.build" \
+              2>&1 | tee ci-evidence/build.log
+          fi
 
-      - name: Package main with ad-hoc signing
+      - name: Verify and archive ad-hoc package
         id: package
         timeout-minutes: 10
         run: |
           set -o pipefail
-          bash scripts/build-app.sh dev 2>&1 | tee ci-evidence/package.log
-          codesign --verify --strict --verbose=2 dist/LessMeet.app \
+          if [[ "$PACKAGE_MODE" == local ]]; then
+            app_path=dist/local/LessMeet.app
+          else
+            bash scripts/build-app.sh dev 2>&1 | tee ci-evidence/package.log
+            app_path=dist/LessMeet.app
+          fi
+          codesign --verify --strict --verbose=2 "$app_path" \
             2>&1 | tee ci-evidence/signature.log
           # Zip before upload to preserve executable permissions and symlinks.
-          ditto -c -k --sequesterRsrc --keepParent dist/LessMeet.app ci-evidence/LessMeet-main.zip
+          ditto -c -k --sequesterRsrc --keepParent "$app_path" ci-evidence/LessMeet.zip
 
       - name: Record stage outcomes and unchanged pins
         if: always()
