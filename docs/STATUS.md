@@ -1,6 +1,47 @@
 # LessMeet delivery
 
-## Pivot integration — current frontier (2026-10-11)
+## Integration merged after hosted build — current handoff (2026-10-12)
+
+Human approved a GitHub build of the resolved integration and merge if it passed.
+This decision supersedes earlier review-only/no-main-merge instructions below.
+Those entries retain historical evidence; they are not the current merge gate.
+Lead accepted product `2e61bed708886a48c35d6ac10ed1147a26fd8ef6` after the hosted
+local package build passed. PR12 merged as `864cec81267eaf1daac129e117b56902f3ca5022`.
+GitHub also marks included PR10 and PR11 MERGED. No branch was deleted or force-pushed.
+The merge tree is `6cfc85d8fe0a106b4db345a8860c0fef6c195c66`, exactly the inspected
+candidate plus the diagnostic workflow. No feature source changed during CI.
+
+Evidence: https://github.com/hoangnb24/lessmeet/actions/runs/38204286474 (SUCCESS, 7m11s).
+Workflow commit `cf1ddce4b423f3d1090c8362139e1f7d71d57bbe` dispatched exact source
+`2e61bed708886a48c35d6ac10ed1147a26fd8ef6` with `package_mode=local`.
+The recorded checkout, dependency lockfile and packaging script hashes match.
+Release arm64 SwiftBuild, 33 Metal sources, resource/license packaging, strict
+ad-hoc signature, unchanged pins and artifact upload all passed on Xcode 26.6,
+Swift 6.3.3, SDK 26.5 and macOS 26.6.2 arm64. The existing 407-pass/4-skip native
+suite and 69-pass packaging fixtures remain prior evidence, not rerun CI tests.
+Read-only Peer `5811adbc` inspected the exact workflow and source route; findings
+were ACCEPTED and the scope closed before dispatch. No Peer or UI owner is active.
+
+Artifact: `main-build-diagnostic-38204286474-1` contains logs and `LessMeet.zip`.
+ZIP SHA-256: `258d0b8951f3286751e13fa3821bd6fb78d3936fe0cf1c5586a4adf79dc3dd44`.
+Local evidence is retained in the integration worktree under
+`.artifacts/integration-e2e/github-integration-38204286474/`.
+ZIP integrity, extracted strict signature, arm64 executable, local packaging mode,
+unchanged model licenses and MLX library symlink/bytes passed local inspection.
+No app was launched. GitHub artifact retention is seven days; local evidence remains.
+
+The build-gated merge task is COMPLETE. Main now contains both pivot branches.
+The ad-hoc diagnostic app is available for a separately authorized runtime check.
+Integrated UI, profile-signed launch, real model inference, chat and save/reopen
+remain UNVERIFIED. No model download, live service call, deployment or distribution
+was performed. Runtime/release work remains separate; build success is not its proof.
+The local SwiftBuild stall remains unexplained. A main baseline also passed on
+GitHub in run 38203649241; neither hosted success repairs the local environment.
+Nonblocking warnings: legacy action Node 20 targets ran under Node 24, and
+`kSecUseAuthenticationUIFail` is deprecated. Revisit in scoped maintenance, not as
+a reason to rerun this accepted build. Other local worktree changes remain preserved.
+
+## Pivot integration — historical frontier (2026-10-11)
 
 PR delivery is COMPLETE; integrated normal-app e2e is BLOCKED before packaging.
 PRs [#10](https://github.com/hoangnb24/lessmeet/pull/10),
