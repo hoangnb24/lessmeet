@@ -5,6 +5,217 @@ ownership and release gates remain in [STATUS.md](STATUS.md). Update this docume
 after each configuration change, including environment, verification date/result,
 secret location and rollback limits. Never commit keys, tokens or private keys.
 
+## GitHub merged-main releases — 2026-10-12 candidate
+
+Scope decision: GitHub Release with a build file and changelog only. TestFlight,
+App Store submission and public App Store release are excluded. Apple credentials
+are not a dependency. Do not configure or call App Store Connect for this path.
+Any future authorized App Store Connect task must use `asc`, not browser,
+`altool` or fastlane. The first public Store version and manual release policy
+below are unchanged.
+
+Implementation: `.github/workflows/main-release.yml`, `scripts/github-release.py`
+and `scripts/build-github-release.py`. The existing manual diagnostic workflow
+remains separate. This candidate has not been pushed, merged or run on GitHub.
+Local verification does not establish a hosted Actions pass or exact-app E2E.
+
+### Trigger, identity and ordering
+
+The workflow handles `pull_request_target: closed` on `main`. Both event state
+and the merge flag must match. A PR closed without merge does not build or publish.
+Checkout first fetches trusted main history with its unsafe-PR override disabled.
+The job checks merge-SHA ancestry, then detaches at `pull_request.merge_commit_sha`
+before executing repository scripts. It never executes the PR head or a synthetic
+pre-merge ref. Main branch protection and review of workflow/script
+changes are the trust boundary: merged code may run in the publishing job.
+
+Each tag is `main-build-<sequence>-<full merge SHA>`. The sequence is the count of
+first-parent commits through that SHA, with full Git history fetched. It orders
+builds by main history, not runner completion time. Main must not be force-pushed
+or rewritten. Different merges have different concurrency groups and immutable
+artifact names. Same-SHA retries share one group. A retry can replace another
+pending retry of that SHA, but cannot cancel another merge's run.
+
+This tag namespace is not a semantic product version. It does not bump
+`CFBundleShortVersionString`, `CFBundleVersion`, or Apple upload numbers. For
+example, base `96412826c688a9042ca278bdaf2088a21712048d` has first-parent count 43.
+Its identity would be `main-build-43-96412826c688a9042ca278bdaf2088a21712048d`.
+No tag for that example was created. Releases are prereleases and never set
+GitHub's `latest` marker, so an older build finishing late cannot replace it.
+
+### Artifact and checks
+
+Build uses the existing `local` packaging mode on `macos-26` Apple Silicon,
+Xcode 26.6 build 17F113, and the unchanged product dependency pins. Missing Metal
+or a mismatched Xcode causes failure; the job does not install another toolchain.
+Checkout 7.0.1, upload-artifact 7.0.2 and download-artifact 8.0.1 use full commit
+pins and Node 24 on hosted runners. Downloaded artifact digest mismatch is fatal.
+Workflow validation uses
+actionlint 1.7.12 with pinned archive SHA256 values, extracted into job-local
+scratch. Python uses only the standard library. Ruby's standard YAML parser
+supports the offline workflow-policy tests. Node must support `node:util.parseEnv`.
+
+Offline release/packaging tests and workflow validation run before build. The
+package gate checks arm64, local bundle identity, absent service configuration,
+ad-hoc signature, strict/deep signature validation, resources and model notices.
+Only successful builds are sealed and passed to the publishing job. The build
+job has `contents: read`; only the publishing job has `contents: write`.
+`GITHUB_TOKEN` is ephemeral, exposed as `GH_TOKEN` only to the final publish step.
+The provenance step separately receives `GH_READ_TOKEN` from the build job's
+read-only token. It can fetch missing original PR objects from the fixed base
+repository URL. It never checks out or executes the PR head and never persists
+the credential. All compilation steps exclude this token from their environment.
+Checkout does not persist credentials. Build subprocesses use an environment
+allowlist and cannot inherit publishing or Apple secrets.
+
+Exactly four files are release assets: the app ZIP, `release.json`, `changelog.md`
+and `SHA256SUMS`. The ZIP name includes tag, architecture and `adhoc`. Changelog
+links point to the merged PR, captured original PR commits and integration tip.
+The manifest binds the ZIP hash
+to the source SHA and release identity. Logs, screenshots, credentials and private
+E2E evidence are not release assets. GitHub adds its own source archives.
+The ZIP excludes filesystem extended attributes, ACLs and resource-fork sidecars.
+Bundle resource files, executable permissions and the Metal lookup symlink remain.
+
+The app is **macOS arm64, ad-hoc signed, not notarized, diagnostic-only**. It is
+not a Developer ID distribution or App Store package. Gatekeeper may block it.
+No runtime launch is part of this pipeline. Exact-app E2E, real auth, inference,
+capture and playback remain UNVERIFIED. Model weights are not included. Local
+app startup can use local data/auth and download models; the ZIP is not the
+isolated synthetic E2E fixture. Do not infer permission to launch it from build
+or signature success.
+
+Developer ID distribution would need a separate signing/notarization decision,
+a Developer ID Application certificate with its private key, secure CI key import,
+and notarization-service authentication. None is provisioned or required here.
+That is a separate path from TestFlight/App Store upload. Never send secrets in chat.
+
+### Changelog coverage and immutable provenance
+
+Schema 2 stores the PR title from the closed+merged event, its `head.sha` and
+`commits` count, every original commit SHA and subject, the original comparison
+base, and the separate integration SHA. It does not read the current PR title or
+body from an API. PR bodies, labels, author details and raw logs are not copied.
+Titles and subjects are intentional release content; do not put secrets in them.
+
+The heading is **Original PR commits**, not rewritten commits on main. For a
+two-parent integration commit, the second parent must equal the captured head;
+the first parent is the exclusion boundary. For a one-parent integration, the
+integration SHA itself is the exclusion boundary. The helper lists all commits
+reachable from the original head but not from that boundary. It does not walk
+backwards by a commit count or assume event `base.sha` is the premerge tip.
+
+The complete set must match the event count. A unique Git merge-base anchors the
+original comparison link; its range must contain the same commit set. A stable
+topological sort uses SHA order to break ties. Empty commits remain in the list.
+For example, an original PR with feature commit A, empty commit E and fix H can
+rebase into only A′ and H′. The changelog lists A, E and H with their subjects.
+H′ is labeled the integration tip, not the full PR diff.
+
+This policy covers original PR provenance for merge, squash and rebase. A linear
+graph alone cannot identify squash versus rebase, so the helper does not guess.
+It does not reconstruct the rebased-main range, attest individual rewritten
+commits, or describe merge conflict resolutions beyond the original PR content.
+The final integration commit link remains available for inspecting the built tree.
+
+If original objects are missing, `plan --fetch-pr-head` fetches
+`refs/pull/<number>/head` as Git data. The fixed HTTPS repository comes from the
+validated repository identifier, not a webhook URL. Redirects are disabled.
+The fetched tip must equal the captured head. No branch ref or checkout changes;
+only downloaded objects and `FETCH_HEAD` are written. Default local planning does
+not fetch. GitHub availability or a moved/deleted ref can prevent fresh planning.
+
+Missing history, shallow or grafted graphs, multiple merge-bases, unsupported
+parent topology, count mismatch or exceeded limits stop before build/publish.
+Indirect merges or already-integrated heads can trigger these refusals. The helper
+does not silently omit commits. Limits are 2048 original commits, 1000 characters
+per title/subject and a 1 MiB canonical provenance snapshot. No truncation occurs.
+
+Text is normalized to one Unicode line. Control and bidi formatting characters
+are removed as whitespace. Variable-length inline-code delimiters contain HTML,
+Markdown, links and embedded backticks as text; `@` displays as `＠` to disable
+mentions. Only validated identifiers form link targets. No user text enters shell
+interpolation. These rules change presentation, not the referenced commit objects.
+
+The sealed manifest and changelog preserve this canonical snapshot. Publish and
+failed-job recovery read those bytes without consulting current PR metadata or
+Git refs. An edited title in a different snapshot cannot replace an existing
+release. Use the original artifact for partial recovery. Schema 1 candidates are
+rejected by the corrected helper; none was published in this work. Do not migrate
+an existing release by overwriting it.
+
+Primary evidence: [merge modes and empty commits](https://docs.github.com/en/repositories/configuring-branches-and-merges-in-your-repository/configuring-pull-request-merges/about-merge-methods-on-github),
+[PR object schema](https://github.com/octokit/webhooks/blob/main/payload-schemas/api.github.com/common/pull-request.schema.json),
+[PR head fetch](https://docs.github.com/en/pull-requests/how-tos/review-pull-requests/checking-out-pull-requests-locally),
+and [GFM code spans](https://github.github.com/gfm/#code-spans).
+The checked official closed webhook fixture is unmerged; it is not evidence that
+`base.sha` has a particular timing on merged events. Merge-mode tests use explicit
+synthetic Git graphs, not a claim of hosted webhook verification.
+
+### Rerun and recovery
+
+The publisher validates the allowlist and checksums before network writes. It
+creates or checks the exact-SHA tag, creates a draft prerelease, uploads assets,
+then publishes only when all expected assets match. It never retargets a tag,
+deletes an asset or uses overwrite/clobber. A fully published matching release
+is verified and left unchanged, even if a later local rebuild has different ZIP
+timestamps. Incomplete drafts are not reported as published releases.
+
+1. If build or tests fail, fix the cause before rerunning; no publish job runs.
+2. If publish fails, use **Re-run failed jobs** on that workflow run. The build
+   output artifact ID selects the original sealed bytes. Assets are retained for
+   30 days, subject to repository retention limits.
+3. If a draft already contains different bytes, stop. Do not overwrite it with a
+   rebuild. Recover the original successful build artifact and investigate the
+   mismatch. Expired or missing artifacts need a new explicit recovery decision.
+4. If a tag points to another SHA or a published asset fails its checksum, stop.
+   Do not move the tag or silently replace the release.
+
+Concurrent merges can finish out of order. They cannot share a tag or artifact.
+There is no global single-pending workflow group that could discard a merge.
+GitHub cancellation, runner/toolchain outages, token policy, rulesets and rate
+limits can still block a run. A failure is not permission to bypass those controls.
+
+GitHub has a specific token limit: if an older target commit differs from the
+current default branch under `.github/workflows/`, release create/update can
+require `Workflows: write`. `GITHUB_TOKEN` cannot have that permission. This can
+affect a delayed concurrent build or retry after another PR changes workflows.
+The job fails closed on 403/404; it does not retarget the release or use a stronger
+token. Unconditional publication of those older commits is not established.
+That case needs a separate credential-authority decision: a repository-scoped
+GitHub App installation token or fine-grained token with `Contents: write` and
+`Workflows: write`, supplied through a secret store, never chat. The current
+workflow neither provisions nor consumes such a token. See the
+[release API token condition](https://docs.github.com/en/rest/releases/releases#create-a-release).
+
+### Activation and rollback boundary
+
+1. Review and merge the candidate through the normal approved PR process.
+2. Confirm Actions policy permits the pinned actions and the macOS runner. Keep
+   branch protection and review for pipeline changes. Ensure repository rules
+   permit the workflow token to create `main-build-*` tags and releases.
+3. Set repository variable `LESSMEET_GITHUB_RELEASE_ENABLED=true` only when
+   publishing is authorized. Without it, eligible merges build and retain an
+   Actions artifact, but the publish job is skipped. The normal path uses no
+   long-lived PAT or Apple secret. The older-workflow token limit above remains.
+4. Verify a subsequently merged PR's hosted run, exact tag target, release manifest
+   and asset checksums. Then rerun failed jobs or a completed run to verify the
+   hosted recovery/no-duplicate behavior. No such live run occurred locally.
+
+To stop future publication, remove the variable or set it to `false`. Disable the
+workflow as well if builds must stop. Variable changes do not recall a published
+release or guarantee that an already-running publish job stops. Review that job
+before taking further action. Deleting releases/tags needs separate authority.
+
+Primary references checked for this candidate: [merged PR trigger and security
+semantics](https://docs.github.com/en/actions/reference/workflows-and-actions/events-that-trigger-workflows#pull_request_target),
+[concurrency](https://docs.github.com/en/actions/how-tos/write-workflows/choose-when-workflows-run/control-workflow-concurrency),
+[release API](https://docs.github.com/en/rest/releases/releases),
+[release assets API](https://docs.github.com/en/rest/releases/assets), and the
+[macOS runner image](https://github.com/actions/runner-images/blob/main/images/macos/macos-26-arm64-Readme.md).
+Verification evidence and final acceptance are recorded in STATUS, not here as
+a second work tracker.
+
 Oct4 local email candidate: normal scoped deletion within7 calendar days of receipt,
 email updates/results, and explicit exception status/reason/next-update time are
 approved. This is not permission to send or enable automatic sends. Candidate
