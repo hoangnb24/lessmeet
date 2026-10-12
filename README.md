@@ -1,47 +1,77 @@
 # LessMeet
 
-Release-preparation checkpoint (2026-09-24): the core product flow and core sandbox
-billing have Human-reported acceptance. The accepted backend, including deletion
-orchestration and retention workers, is deployed to development, not production.
-A synthetic deletion rehearsal verified orchestration, not provider erasure.
-Deletion intake, automation, inventory and email activation remain off; destructive
-Clerk/Apple/RevenueCat adapters are not implemented. Main deletion-ledger retention
-(90 days after full completion) and preflight retention (30 days after the latest
-accepted transition) are approved. Legal/listing drafts remain unpublished; Store
-packaging tooling has offline acceptance, not a verified uploadable release.
-See [current acceptance and remaining
-gates](docs/STATUS.md), [configuration inventory and secret locations](docs/CONFIGURATION.md)
-and [deletion contract](docs/BACKEND.md#account-deletion--development-deployed-activation-off).
-Older development/runtime notes below do not supersede this checkpoint.
+Local pivot checkpoint (2026-10-11): LessMeet is moving to a native, open-source
+macOS app. The current app shell records locally and uses **Continue with ChatGPT**
+for transcript chat. It no longer instantiates the legacy Clerk, Convex or billing
+controllers. Legacy source and backend services remain unchanged.
 
-A native Swift macOS app for local microphone + system-audio recordings, with
-Gemini transcription and transcript chat through an owner-isolated Convex backend.
+ChatGPT auth, streaming and local history have offline component tests. The
+synthetic account/chat UI subset passed, including saved history after reopening.
+Live sign-in/chat and the full app UI are not yet accepted. The shell now shares
+the local-model manager and transcription queue. See
+[current ownership, evidence and limits](docs/STATUS.md) and the pinned
+[local-model contract](docs/LOCAL_MODELS.md). No release or publication is implied.
 
 ## Run locally
 
-Requires macOS 15+, Swift 6.3 with the Swift Build engine, and Node 22+.
+Requires Apple Silicon, macOS 15+, Swift 6.3 with the Swift Build engine, Node 22+, and the
+Xcode Metal Toolchain for packaged builds. The build stops if Metal is unavailable.
 
 ```sh
-swift test
-bash scripts/build-app.sh
-open dist/LessMeet.app
+swift test --disable-keychain --disable-netrc
+xcrun -sdk macosx metal --version
+bash scripts/build-app.sh local
+open dist/local/LessMeet.app
 ```
 
 Open `Package.swift` in Xcode to browse/debug. For recording permission checks, use
 the packaged `.app`, not `swift run`: the bundle contains the usage descriptions
-and hardened-runtime audio-input entitlement. Development builds are ad-hoc signed;
-set `LESSMEET_SIGNING_IDENTITY` to your own identity for stable signed builds.
-An isolated signed `sandbox-dev` app was accepted for internal testing. Store
-distribution signing and installer tooling exist but real Store packaging/upload
-remain unverified. Sign In with Apple was enabled on the App ID on Sep 24;
-provisioning profiles must be regenerated before future signing. See
-[packaging inputs](Tests/packaging/STORE_INPUTS.md).
+and hardened-runtime audio-input entitlement. Local builds are ad-hoc signed by
+default. Set `LESSMEET_SIGNING_IDENTITY` to a stable signing identity for real
+Keychain/auth checks. The `local` mode uses `com.lessmeet.app.local`, reads no
+`.env.local` or cloud service settings, and includes no legacy OAuth URL callback.
+ChatGPT uses a temporary loopback listener on `127.0.0.1`.
+
+## Local model setup
+
+The first app launch checks pinned model files and automatically downloads missing
+files. The payload is 3,200,167,866 bytes. Allow extra space for partial files and
+Core ML caches. Open **Local models** to see progress, cancel, resume or retry.
+Failed or cancelled setup does not retry automatically during that app session.
+The model cache is `~/Library/Application Support/LessMeet/Models/`.
+
+After **Stop & Save** finishes successfully, LessMeet queues local transcription.
+If models are not ready, the job waits for setup. Open **Transcript** to see the
+job and saved output. **Transcribe on this Mac** also processes an existing ready
+recording. **Cancel all transcription** cancels the active job and pending jobs.
+Cancellation or failure preserves a previous saved transcript.
+
+## Chat with a local transcript
+
+1. Open **ChatGPT account** in the sidebar.
+2. Choose **Continue with ChatGPT** and finish in your browser.
+3. If plan permission was declined, choose **Enable ChatGPT plan usage**.
+4. Open a recording with a valid local `transcript.json` and choose **Chat**.
+5. Choose **Load models**, then select an available model.
+6. Enter a question and choose **Send**, or press **⌘Return**.
+
+Each send includes the full local transcript and the recording's saved chat
+history. These go to OpenAI using the selected ChatGPT plan. Audio stays local.
+**Manage usage** opens ChatGPT usage settings. No question runs automatically.
+Incomplete, canceled or failed answers are not saved. Completed pairs are saved
+atomically in `chat.json` and reload when the recording is reopened.
+
+Chat history belongs to the local recording, not an account. Switching accounts
+keeps that history; a later send transmits it with the new account. Local files
+are not encrypted by LessMeet. Credentials stay in the device-only Keychain.
+If local sign-out cleanup fails, retry before quitting. The error disables access
+in that process but does not guarantee that credentials are gone after restart.
 
 ## Recording
 
-Click **Start Recording** and grant Microphone and Screen & System Audio Recording
+Click **New recording** and grant Microphone and Screen & System Audio Recording
 access. If macOS asks for a relaunch, reopen the app and start a new recording.
-Click **Stop Recording**, wait for saving, then play or reveal the recording files.
+Click **Stop & Save**, wait for saving, then play or reveal the recording files.
 Use headphones to avoid the microphone picking up your speaker output.
 
 System audio means the whole system, excluding LessMeet playback—not a selected
@@ -49,7 +79,9 @@ meeting app. No video track is saved. Obtain participants' consent before record
 
 Recordings live at `~/Library/Application Support/LessMeet/Recordings/<UUID>/`:
 
-- `recording.json`: title, date, duration, status, transcript and chat.
+- `recording.json`: title, date, duration and status; legacy fields are preserved.
+- `transcript.json`: versioned local segments with timestamps and optional speakers.
+- `chat.json`: versioned completed user/assistant pairs for this recording.
 - `microphone.caf`, `system.caf`: separate source audio when received.
 - `capture-timeline.json`: source offsets for the common timeline.
 - `combined.m4a`: derived audio for playback/transcription.
@@ -63,7 +95,10 @@ MiB, all above the 18 MiB upload limit. Long local recording does not currently 
 long-meeting transcription support. See the [reproducible opt-in test and limits](Tests/LessMeetTests/LONG_CAPTURE_HANDOFF.md);
 these measurements do not establish real-device sound quality or drift.
 
-## Account and cloud
+## Legacy account and cloud implementation
+
+The following cloud notes describe retained services and prior checks, not the
+current local app path. Do not use them as permission to mutate those services.
 
 The owner approved development cloud access and indefinite recording retention;
 sandbox billing enforcement was subsequently enabled on the same development

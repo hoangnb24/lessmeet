@@ -2,13 +2,14 @@ import SwiftUI
 
 struct LibraryView: View {
     @ObservedObject var model: AppModel
-    @ObservedObject var accountSession: AccountSession
-    @ObservedObject var cloud: RecordingCloudModel
-    var billing: BillingStore? = nil
-    var subscription: SubscriptionModel? = nil
-    var billingConfiguration: BillingConfiguration? = nil
+    @ObservedObject var session: ChatGPTSession
+    var chat: LocalChatModel?
+    @ObservedObject var modelManager: LocalModelManager
+    @ObservedObject var transcription: LocalTranscriptionModel
     @State private var search = ""
     @State private var showingLibrary = true
+    @State private var showingAccount = false
+    @State private var showingModels = false
     @FocusState private var searchFocused: Bool
 
     private var filteredRecordings: [Recording] {
@@ -39,28 +40,41 @@ struct LibraryView: View {
                 if showingLibrary || model.selected == nil {
                     library
                 } else if let recording = model.selected {
-                    RecordingDetailView(model: model, accountSession: accountSession, cloud: cloud, recording: recording)
+                    RecordingDetailView(model: model, session: session, chat: chat,
+                                        transcription: transcription, recording: recording)
                         .id(recording.id)
                 }
             }
             .background(Color(nsColor: .textBackgroundColor))
         }
         .tint(.blue)
-        .onChange(of: model.selection, initial: true) { _, _ in model.loadPlayback() }
-        .onChange(of: model.selection) { _, _ in cloud.contextChanged() }
-        .onChange(of: accountSession.sessionIdentifier) { _, _ in cloud.contextChanged() }
-        .onChange(of: accountSession.cloudAccessLocked) { _, locked in
-            if locked { cloud.contextChanged(); subscription?.contextChanged() }
+        .onChange(of: model.selection, initial: true) { _, id in
+            model.loadPlayback()
+            chat?.select(recordingID: id)
         }
-        .onChange(of: cloud.busy) { _, busy in
-            if !busy { Task { await subscription?.refresh() } }
+        .onChange(of: session.sessionIdentifier) { _, _ in chat?.accountChanged() }
+        .onChange(of: session.canUseChatGPTPlan) { _, enabled in
+            if !enabled { chat?.accountChanged() }
         }
         .onChange(of: model.phase) { _, phase in
-            if phase != .idle { cloud.contextChanged() }
+            if phase != .idle { chat?.cancel() }
             if phase == .starting { showingLibrary = false; search = "" }
         }
         .onChange(of: search) { _, value in if !value.isEmpty { showingLibrary = true } }
-        .onDisappear { cloud.contextChanged() }
+        .onDisappear { chat?.cancel() }
+        .sheet(isPresented: $showingModels) {
+            VStack(alignment: .trailing, spacing: 0) {
+                Button("Done") { showingModels = false }.padding([.top, .trailing], 16)
+                LocalModelSetupView(manager: modelManager)
+            }
+        }
+        .sheet(isPresented: $showingAccount) {
+            VStack(alignment: .trailing, spacing: 0) {
+                Button("Done") { showingAccount = false }.padding([.top, .trailing], 16)
+                ChatGPTAccountView(session: session, beforeAccountChange: { chat?.cancel() })
+            }
+            .frame(width: 540)
+        }
         .alert("LessMeet", isPresented: Binding(get: { model.error != nil }, set: { if !$0 { model.error = nil } })) {
             Button("OK", role: .cancel) { model.error = nil }
             Button("Open Recording Permissions") { model.openPermissions() }
@@ -130,15 +144,37 @@ struct LibraryView: View {
                 }.padding(.horizontal, 8)
             }
             Spacer(minLength: 12)
+            VStack(alignment: .leading, spacing: 6) {
+                Button { showingModels = true } label: {
+                    Label("Local models", systemImage: "internaldrive")
+                }.buttonStyle(.plain)
+                Text(modelManager.state == .ready ? "Ready for transcription" : "Model setup: \(modelManager.state.rawValue)")
+                    .font(.caption).foregroundStyle(.secondary)
+                if modelManager.state == .downloading || modelManager.state == .checking {
+                    ProgressView(value: modelManager.progress)
+                    Text("\(ByteCountFormatter.string(fromByteCount: modelManager.completedBytes, countStyle: .decimal)) / \(ByteCountFormatter.string(fromByteCount: modelManager.totalBytes, countStyle: .decimal))")
+                        .font(.caption2).foregroundStyle(.secondary)
+                    Button("Cancel model setup") { modelManager.cancel() }.font(.caption)
+                }
+            }.padding(.horizontal, 18).padding(.bottom, 14)
             Label("Saved on this Mac", systemImage: "internaldrive")
                 .font(.caption).foregroundStyle(.secondary).padding(.horizontal, 18).padding(.bottom, 14)
             Divider().opacity(0.5)
-            if let billing, let subscription {
-                SubscriptionAccountView(account: accountSession, billing: billing,
-                                        subscription: subscription, configuration: billingConfiguration)
-            } else {
-                AccountPanel(session: accountSession)
+            VStack(alignment: .leading, spacing: 8) {
+                Button { showingAccount = true } label: {
+                    Label("ChatGPT account", systemImage: "person.crop.circle")
+                        .frame(maxWidth: .infinity, alignment: .leading)
+                }
+                .buttonStyle(.plain)
+                Text(session.canUseChatGPTPlan ? "Using ChatGPT plan" : "Sign in to chat")
+                    .font(.caption).foregroundStyle(.secondary)
+                if session.error != nil {
+                    Text("Account needs attention").font(.caption).foregroundStyle(.orange)
+                }
+                Link("Manage usage", destination: URL(string: "https://chatgpt.com/settings/usage")!)
+                    .font(.caption)
             }
+            .padding(18)
         }
         .background(Color(nsColor: .windowBackgroundColor))
     }
@@ -199,7 +235,7 @@ struct LibraryView: View {
                         Text(group.title).font(.system(size: 12, weight: .semibold))
                             .foregroundStyle(.secondary).padding(.top, 26).padding(.bottom, 8)
                         ForEach(group.recordings) { recording in
-                            LibraryRecordingRow(recording: recording, remote: cloud.cached(recording), batch: cloud.batch(recording)) { open(recording) }
+                            LibraryRecordingRow(recording: recording) { open(recording) }
                         }
                     }
                 }
@@ -242,29 +278,13 @@ struct LibraryView: View {
 
 private struct LibraryRecordingRow: View {
     let recording: Recording
-    let remote: CloudRecording?
-    let batch: LocalBatch?
     let action: () -> Void
     @State private var hovered = false
 
     private var status: String {
         if recording.status == .recording { return "Recording" }
         if recording.status == .interrupted { return "Interrupted" }
-        if let batch {
-            switch batch.status?.state {
-            case "complete": return "Batch completed"
-            case "partial": return "Partial transcript"
-            case "attention", "failed": return "Batch needs attention"
-            case "queued", "processing": return "Transcribing batch"
-            default: return "Batch prepared"
-            }
-        }
-        switch remote?.status {
-        case "ready": return "Transcript ready"
-        case "queued", "processing": return "Transcribing"
-        case "failed": return "Needs attention"
-        default: return "Audio only"
-        }
+        return "Saved locally"
     }
 
     var body: some View {
@@ -297,29 +317,17 @@ private struct LibraryRecordingRow: View {
 
 private struct RecordingDetailView: View {
     @ObservedObject var model: AppModel
-    @ObservedObject var accountSession: AccountSession
-    @ObservedObject var cloud: RecordingCloudModel
+    @ObservedObject var session: ChatGPTSession
+    let chat: LocalChatModel?
+    @ObservedObject var transcription: LocalTranscriptionModel
     let recording: Recording
-    @State private var composer = RecordingChatDraft()
     @State private var title = ""
-    @State private var confirmUpload = false
     @State private var selectedTab = DetailTab.transcript
-    @State private var showingLegacyChat = false
     @FocusState private var titleFocused: Bool
 
     private enum DetailTab: String, CaseIterable {
         case transcript = "Transcript"
         case chat = "Chat"
-    }
-
-    private var remote: CloudRecording? { cloud.cached(recording) }
-    private var canUseCloud: Bool {
-        accountSession.sessionIdentifier != nil && !accountSession.cloudAccessLocked && model.phase == .idle && !cloud.busy && cloud.configurationIssue == nil
-    }
-    private var transcriptReady: Bool { remote?.status == "ready" && remote?.transcript != nil }
-    private var pending: Bool { remote?.status == "queued" || remote?.status == "processing" }
-    private var canSend: Bool {
-        canUseCloud && transcriptReady && composer.canSubmit
     }
 
     var body: some View {
@@ -330,39 +338,27 @@ private struct RecordingDetailView: View {
                 }
                 .pickerStyle(.segmented).labelsHidden().frame(width: 200)
                 Spacer()
-                if selectedTab == .chat {
-                    Label("This recording only", systemImage: "doc.text")
-                        .font(.caption).foregroundStyle(.secondary)
-                }
+                Label("This recording only", systemImage: "doc.text")
+                    .font(.caption).foregroundStyle(.secondary)
             }.padding(.horizontal, 28).padding(.vertical, 12)
             Divider().opacity(0.5)
-            if selectedTab == .transcript {
+            ZStack {
                 document
-            } else if let batch = cloud.batch(recording), !showingLegacyChat || !transcriptReady {
-                VStack(spacing: 0) {
-                    if transcriptReady { Button("Open separate legacy transcript chat") { showingLegacyChat = true }.padding(10) }
-                    BatchChatView(batch: batch, cloud: cloud, enabled: canUseCloud).id(batch.clientBatchId)
+                    .opacity(selectedTab == .transcript ? 1 : 0)
+                    .allowsHitTesting(selectedTab == .transcript)
+                    .accessibilityHidden(selectedTab != .transcript)
+                if let chat {
+                    LocalChatView(model: chat, recordingID: recording.id,
+                                  canUsePlan: session.canUseChatGPTPlan && !session.busy
+                                    && model.phase == .idle && selectedTab == .chat)
+                        .opacity(selectedTab == .chat ? 1 : 0)
+                        .allowsHitTesting(selectedTab == .chat)
+                        .accessibilityHidden(selectedTab != .chat)
+                        .disabled(selectedTab != .chat)
+                } else if selectedTab == .chat {
+                    Text("Chat is unavailable because the local recording library could not be opened.")
+                        .foregroundStyle(.secondary).padding(32)
                 }
-            } else if transcriptReady {
-                VStack(spacing: 0) {
-                    if cloud.batch(recording) != nil {
-                        HStack {
-                            Text("Legacy transcript chat only — separate from batch chat.").font(.caption).foregroundStyle(.orange)
-                            Button("Back to batch chat") { showingLegacyChat = false }
-                        }.padding(10)
-                    }
-                    RecordingChatView(recording: recording, remote: remote, cloud: cloud,
-                                  draft: $composer.text, pendingQuestion: composer.pending,
-                                  canUseCloud: canUseCloud, canSend: canSend,
-                                  send: sendQuestion)
-                }
-            } else {
-                VStack(alignment: .leading, spacing: 16) {
-                    Text("Start with a transcript").font(.title2.weight(.semibold))
-                    Text("Chat answers questions using this recording’s transcript. Create it first, then come back here.")
-                        .foregroundStyle(.secondary)
-                    Button("Go to transcript") { selectedTab = .transcript }.buttonStyle(.borderedProminent)
-                }.padding(44).frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .topLeading)
             }
             Divider().opacity(0.5)
             PlaybackBar(player: model.playback).disabled(model.phase != .idle)
@@ -371,22 +367,10 @@ private struct RecordingDetailView: View {
         .onAppear { title = recording.title }
         .onDisappear { saveTitle() }
         .onChange(of: titleFocused) { _, focused in if !focused { saveTitle() } }
-        .onChange(of: accountSession.sessionIdentifier) { _, _ in
-            composer = RecordingChatDraft(); confirmUpload = false; selectedTab = .transcript; showingLegacyChat = false
-        }
-        .onChange(of: cloud.busy) { _, busy in
-            if !busy { composer.finishSubmission(failed: cloud.error != nil) }
-        }
-        .confirmationDialog("Create a transcript?", isPresented: $confirmUpload, titleVisibility: .visible) {
-            Button("Upload and Create Transcript") { cloud.transcribe() }
-            Button("Cancel", role: .cancel) { }
-        } message: {
-            Text("Prepare local chunks of at most 5 minutes with 5-second overlap, then upload them to Convex and Google Gemini. Maximum recording: 120 minutes; each chunk must fit 18 MiB. Local originals are kept. Cloud content is retained until deletion. The internal batch service may be disabled. Saved batches recover by Refresh; no unknown generation is automatically retried. Batch chat requires complete results and bounded context; it may be disabled separately.")
-        }
     }
 
     private var document: some View {
-        ScrollView {
+        VStack(spacing: 0) {
             VStack(alignment: .leading, spacing: 0) {
                 Image(systemName: "doc.text").font(.system(size: 34, weight: .ultraLight))
                     .foregroundStyle(.secondary).padding(.bottom, 22)
@@ -401,77 +385,17 @@ private struct RecordingDetailView: View {
                     Spacer()
                     Menu {
                         Button("Show Files", systemImage: "folder") { model.revealSelected() }
-                        if remote != nil { Button("Refresh transcript", systemImage: "arrow.clockwise") { cloud.refresh() }.disabled(!canUseCloud) }
                     } label: { Image(systemName: "ellipsis") }
                         .menuStyle(.borderlessButton).fixedSize().help("Recording options")
                 }.font(.system(size: 12)).foregroundStyle(.secondary).padding(.bottom, 30)
-                HStack {
-                    Label("Transcript", systemImage: "text.alignleft").font(.system(size: 13, weight: .medium))
-                    Spacer()
-                }.padding(.bottom, 12)
-                Divider().padding(.bottom, 24)
                 if let failure = recording.failure { notice(failure) }
-                if let issue = cloud.configurationIssue ?? cloud.error ?? remote?.error { notice(issue) }
-                if cloud.busy {
-                    HStack(spacing: 10) {
-                        ProgressView().controlSize(.small)
-                        Text(cloud.activity ?? "Working…").font(.callout)
-                        Spacer()
-                        Button("Stop Waiting") { cloud.cancel() }.buttonStyle(.borderless)
-                    }.padding(.bottom, 20)
-                }
-                if let batch = cloud.batch(recording) {
-                    BatchTranscriptView(batch: batch, cloud: cloud, enabled: canUseCloud)
-                } else if let transcript = remote?.transcript {
-                    MarkdownView(text: transcript).font(.system(size: 14))
-                } else {
-                    transcriptPlaceholder
-                }
             }
             .frame(maxWidth: 740, alignment: .leading)
-            .padding(.horizontal, 44).padding(.top, 44).padding(.bottom, 48)
+            .padding(.horizontal, 44).padding(.top, 28)
             .frame(maxWidth: .infinity)
+            LocalTranscriptView(model: transcription, recordingID: recording.id)
+                .padding(.horizontal, 28)
         }
-    }
-
-    private var transcriptPlaceholder: some View {
-        VStack(alignment: .leading, spacing: 12) {
-            Text(placeholderTitle).font(.system(size: 20, weight: .semibold))
-            Text(placeholderDescription).font(.system(size: 14)).foregroundStyle(.secondary).lineSpacing(4)
-                .fixedSize(horizontal: false, vertical: true)
-            if model.phase == .idle && recording.status != .recording && !cloud.busy {
-                if !accountSession.isSignedIn {
-                    Button("Sign in to create a transcript") { Task { await accountSession.signIn() } }
-                        .buttonStyle(.borderedProminent).disabled(accountSession.busy || accountSession.configurationIssue != nil)
-                } else if pending {
-                    Button("Check for transcript", systemImage: "arrow.clockwise") { cloud.refresh() }
-                        .buttonStyle(.bordered).disabled(!canUseCloud)
-                } else {
-                    Button(remote?.status == "failed" ? "Try again" : "Create Transcript", systemImage: "text.badge.plus") { confirmUpload = true }
-                        .buttonStyle(.borderedProminent).disabled(!canUseCloud)
-                }
-                Text("Audio stays on your Mac until you choose to upload it.")
-                    .font(.system(size: 11)).foregroundStyle(.secondary).padding(.top, 4)
-            }
-        }.padding(.vertical, 24)
-    }
-
-    private var placeholderTitle: String {
-        if recording.status == .recording { return "A little less to remember." }
-        if pending || cloud.busy { return "Your transcript is on its way." }
-        if remote?.status == "failed" { return "The transcript couldn’t be created." }
-        return "Turn this conversation into something useful."
-    }
-
-    private var placeholderDescription: String {
-        if recording.status == .recording { return "Capturing microphone and system audio. Stop and save when you’re done." }
-        if pending || cloud.busy { return "You can come back later and check for the finished transcript." }
-        return "Create a transcript to revisit the details, find decisions, and ask questions about this recording."
-    }
-
-    private func sendQuestion() {
-        guard canSend, let question = composer.beginSubmission() else { return }
-        cloud.send(question)
     }
 
     private func saveTitle() {

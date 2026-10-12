@@ -1,6 +1,4 @@
 import XCTest
-import AppKit
-import SwiftUI
 @testable import LessMeet
 
 private final class WorkflowProtocol: URLProtocol {
@@ -68,17 +66,6 @@ final class RecordingCloudModelTests: XCTestCase {
         let reopened = try XCTUnwrap(store.load().first)
         XCTAssertEqual(reopened.cloud?["alice"]?.messages.map(\.text), ["What was decided?", "The decision."])
         XCTAssertEqual(reopened.cloud?["alice"]?.recordingId, "remote")
-        if let output = ProcessInfo.processInfo.environment["LESSMEET_UI_SNAPSHOT"] {
-            let accountPanel = AccountSession(configuration: try AppConfiguration(clerkPublishableKey: nil, convexSiteURL: nil))
-            let view = NSHostingView(rootView: LibraryView(model: app, accountSession: accountPanel, cloud: cloud)
-                .environment(\.colorScheme, .light).background(Color.white))
-            view.appearance = NSAppearance(named: .aqua)
-            view.frame = NSRect(x: 0, y: 0, width: 1180, height: 860)
-            view.layoutSubtreeIfNeeded()
-            let bitmap = try XCTUnwrap(view.bitmapImageRepForCachingDisplay(in: view.bounds))
-            view.cacheDisplay(in: view.bounds, to: bitmap)
-            try XCTUnwrap(bitmap.representation(using: .png, properties: [:])).write(to: URL(fileURLWithPath: output))
-        }
         account = CloudIdentity(owner: "bob", session: "session-b")
         cloud.contextChanged()
         XCTAssertNil(cloud.cached(reopened))

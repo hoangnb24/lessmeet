@@ -13,6 +13,7 @@ import sys
 import tempfile
 import unittest
 from unittest.mock import patch
+from local_packaging_fixtures import install
 
 ROOT = Path(__file__).resolve().parents[2]
 sys.dont_write_bytecode = True
@@ -289,22 +290,7 @@ class BuildFlowTests(unittest.TestCase):
             shutil.copy(ROOT / "Resources" / name, self.folder / "Resources" / name)
         (self.folder / "dist/LessMeet.app/sentinel").write_text("existing dev app")
         (self.folder / "recordings/sentinel").write_text("existing recordings")
-        (self.folder / "binary/LessMeet").write_text("synthetic binary")
-        for name in ["Clerk_ClerkKit.bundle", "RevenueCat_RevenueCat.bundle"]:
-            (self.folder / "binary" / name).mkdir()
-            (self.folder / "binary" / name / "resource").write_text("SDK resource")
-        self.stub("swift", '#!/bin/bash\nprintf "swift\\n" >> invoked\nif [[ "$*" == *--show-bin-path* ]]; then printf "%s/binary\\n" "$PWD"; fi\n')
-        self.stub("codesign", '''#!/bin/bash
-printf 'codesign %s\n' "$*" >> invoked
-[[ "$*" != *--deep* ]] || exit 19
-app="${@: -1}"
-[[ -f "$app/Contents/Resources/Clerk_ClerkKit.bundle/resource" ]] || exit 20
-[[ -f "$app/Contents/Resources/RevenueCat_RevenueCat.bundle/resource" ]] || exit 21
-if [[ "$app" == */sandbox-dev/* || "$app" == */store/* ]]; then
-  [[ -f "$app/Contents/embedded.provisionprofile" ]] || exit 22
-fi
-''')
-        self.env = {**environment(), "PATH": str(self.folder / "fake-bin") + ":" + os.environ["PATH"]}
+        self.env = install(self.folder, "fake-bin")
 
     def stub(self, name, body):
         path = self.folder / "fake-bin" / name
@@ -346,7 +332,8 @@ fi
             result = self.build(mode, values=PUBLIC)
             self.assertEqual(result.returncode, 0, result.stderr)
             self.assertTrue((self.folder / "dist" / mode / "LessMeet.app/Contents/embedded.provisionprofile").exists())
-            self.assertEqual(self.build(mode, values=PUBLIC).returncode, 0)
+            repeated = self.build(mode, values=PUBLIC)
+            self.assertEqual(repeated.returncode, 0, repeated.stdout + repeated.stderr)
             self.assertEqual(len(list((self.folder / "dist" / mode).glob("build.*/Previous-LessMeet.app"))), 1)
         self.assertIn(".app only", result.stdout)
         self.assertEqual((self.folder / "dist/LessMeet.app/sentinel").read_text(), "existing dev app")
@@ -373,9 +360,29 @@ fi
         self.assertEqual(result.returncode, 0, result.stderr)
         self.assertIn("--sign Synthetic Dev Identity", (self.folder / "invoked").read_text())
 
+    def test_all_modes_use_explicit_isolated_public_resolution(self):
+        self.fake_signing_boundary()
+        for mode in ("dev", "local", "offline-check", "auth-check", "sandbox-dev", "store", "testflight"):
+            with self.subTest(mode=mode):
+                values = {**(STORE_PUBLIC if mode == "store" else PUBLIC),
+                          "LESSMEET_SIGNING_IDENTITY": "Synthetic Identity"}
+                result = self.build(mode, values=values)
+                self.assertEqual(result.returncode, 0, result.stderr)
+                calls = [json.loads(line) for line in (self.folder / "calls.jsonl").read_text().splitlines()]
+                builds = [call for call in calls if call[0] == "swift"][-2:]
+                self.assertEqual(len(builds), 2)
+                output = self.folder / "dist" if mode == "dev" else self.folder / "dist" / mode
+                for call in builds:
+                    self.assertIn("--disable-keychain", call)
+                    self.assertIn("--disable-netrc", call)
+                    self.assertEqual(call[call.index("--scratch-path") + 1], str((output / "swift-build").resolve()))
+                    self.assertEqual(call[call.index("--build-system") + 1], "swiftbuild")
+                    self.assertEqual(call[call.index("--arch") + 1], "arm64")
+                    self.assertEqual(call[call.index("-c") + 1], "release")
+
     def test_preflight_never_builds_signs_or_creates_artifacts(self):
         self.fake_signing_boundary()
-        for mode in ["dev", "sandbox-dev", "store"]:
+        for mode in ["dev", "local", "sandbox-dev", "store"]:
             result = self.build(mode, "--preflight", values=PUBLIC)
             self.assertEqual(result.returncode, 0, result.stderr)
         self.assertFalse((self.folder / "invoked").exists())

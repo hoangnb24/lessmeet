@@ -1,12 +1,12 @@
 """Offline packaging tests. Swift and signing calls use inert test doubles."""
 import json
-import os
 from pathlib import Path
 import plistlib
 import shutil
 import subprocess
 import tempfile
 import unittest
+from local_packaging_fixtures import BUNDLES, NOTICES, METALLIB, install, inventory
 
 
 ROOT = Path(__file__).resolve().parents[2]
@@ -27,24 +27,8 @@ class AgentChecks(unittest.TestCase):
             shutil.copyfile(ROOT / "scripts" / name, self.root / "scripts" / name)
         for name in ("Info.plist", "LessMeet.entitlements"):
             shutil.copyfile(ROOT / "Resources" / name, self.root / "Resources" / name)
-        for name in ("Clerk_ClerkKit.bundle", "RevenueCat_RevenueCat.bundle"):
-            (self.root / "binary" / name).mkdir()
-        (self.root / "binary/LessMeet").write_text("not an executable")
         self.log = self.root / "calls.jsonl"
-        stub = '''#!/usr/bin/env python3
-import json, os, sys
-from pathlib import Path
-with open(os.environ["TEST_LOG"], "a") as log:
-    log.write(json.dumps([Path(sys.argv[0]).name, *sys.argv[1:]]) + "\\n")
-if Path(sys.argv[0]).name == "swift" and "--show-bin-path" in sys.argv:
-    print(os.environ["TEST_BINARY"])
-'''
-        for tool in ("swift", "codesign"):
-            path = self.root / "bin" / tool
-            path.write_text(stub)
-            path.chmod(0o755)
-        self.env = {"PATH": str(self.root / "bin") + os.pathsep + os.environ["PATH"],
-                    "TEST_LOG": str(self.log), "TEST_BINARY": str(self.root / "binary")}
+        self.env = install(self.root, "bin")
 
     def run_build(self, mode, values=None, preflight=False):
         args = ["bash", "scripts/build-app.sh", mode]
@@ -143,15 +127,14 @@ if Path(sys.argv[0]).name == "swift" and "--show-bin-path" in sys.argv:
         self.assertNotEqual(result.returncode, 0)
 
     def test_preflight_does_not_build_or_sign(self):
-        for mode, values in (("offline-check", {}), ("auth-check", {**PUBLIC, "LESSMEET_SIGNING_IDENTITY": "Synthetic"})):
+        for mode, values in (("local", {}), ("offline-check", {}), ("auth-check", {**PUBLIC, "LESSMEET_SIGNING_IDENTITY": "Synthetic"})):
             result = self.run_build(mode, values, True)
             self.assertEqual(result.returncode, 0, result.stderr)
             self.assertEqual(self.calls(), [])
             self.assertFalse((self.root / "dist").exists())
 
     def test_auth_sign_failure_has_no_fallback_or_published_replacement(self):
-        sign = self.root / "bin/codesign"
-        sign.write_text(sign.read_text() + "sys.exit(45)\n")
+        self.env["TEST_SIGN_EXIT"] = "45"
         app = self.root / "dist/auth-check/LessMeet.app"
         app.mkdir(parents=True)
         (app / "previous").write_text("keep existing artifact")
@@ -178,6 +161,131 @@ if Path(sys.argv[0]).name == "swift" and "--show-bin-path" in sys.argv:
         self.assertEqual(result.returncode, 0, result.stderr)
         self.assertIn("ad-hoc signing with auth configuration", result.stderr)
         self.assertTrue((self.root / "dist/LessMeet.app").exists())
+
+    def test_local_strips_stale_services_and_callback_ignores_invalid_inputs(self):
+        (self.root / ".env.local").mkdir()  # Reading this as a file must fail.
+        path = self.root / "Resources/Info.plist"
+        info = plistlib.loads(path.read_bytes())
+        info.update({key: "stale" for key in PROPERTIES})
+        info["CFBundleURLTypes"] = [{"CFBundleURLSchemes": ["stale-callback"]}]
+        info["LessMeetPackagingMode"] = "store"
+        path.write_bytes(plistlib.dumps(info))
+        result = self.run_build("local", {key: "invalid-secret-not-to-copy" for key in
+                                (*PUBLIC, "REVENUECAT_PUBLIC_APPLE_KEY", "LESSMEET_PRIVACY_URL", "LESSMEET_TERMS_URL")})
+        self.assertEqual(result.returncode, 0, result.stderr)
+        app = self.root / "dist/local/LessMeet.app"
+        info = plistlib.loads((app / "Contents/Info.plist").read_bytes())
+        self.assertEqual(info["CFBundleIdentifier"], "com.lessmeet.app.local")
+        self.assertEqual(info["LessMeetPackagingMode"], "local")
+        self.assertFalse(set(PROPERTIES + ("CFBundleURLTypes",)) & info.keys())
+        self.assertNotIn("invalid-secret", str(info) + result.stdout + result.stderr)
+        self.assertEqual((app / "Contents/MacOS/mlx.metallib").read_bytes(), METALLIB)
+        self.assertEqual((app / "Contents/Resources/mlx.metallib").read_bytes(), METALLIB)
+        self.assertTrue((app / "Contents/MacOS/mlx.metallib").is_symlink())
+        log = (self.root / "invoked").read_text().splitlines()
+        shader = next(line for line in log if line.startswith("shader "))
+        staged = Path(shader.removeprefix("shader "))
+        self.assertEqual(staged.name, "mlx-build")
+        self.assertTrue(staged.parent.name.startswith("build."))
+        self.assertEqual(staged.parent.parent, app.parent)
+        self.assertLess(log.index(shader), next(i for i, line in enumerate(log) if line.startswith("codesign ")))
+        self.assertEqual(set(inventory(app / "Contents/Resources/ModelLicenses")), set(NOTICES))
+        self.assertEqual(inventory(app / "Contents/Resources/ModelLicenses"), inventory(ROOT / "Resources/ModelLicenses"))
+        for bundle in BUNDLES:
+            self.assertEqual(inventory(app / "Contents/Resources" / bundle), inventory(self.root / "binary" / bundle))
+        for call in self.calls():
+            if call[0] == "swift":
+                self.assertIn("--disable-keychain", call)
+                self.assertIn("--disable-netrc", call)
+                self.assertEqual(call[call.index("--scratch-path") + 1], str(self.root / "dist/local/swift-build"))
+                self.assertNotIn("-DLESSMEET_OFFLINE_CHECK", call)
+
+    def test_missing_metal_stops_before_build_sign_or_replacement(self):
+        app = self.root / "dist/local/LessMeet.app"
+        app.mkdir(parents=True)
+        (app / "previous").write_text("keep")
+        result = self.run_build("local", {"TEST_METAL_EXIT": "46"})
+        self.assertEqual(result.returncode, 46, result.stderr)
+        self.assertEqual(self.calls(), [["xcrun", "-sdk", "macosx", "metal", "--version"]])
+        self.assertEqual(inventory(app), {"previous": b"keep"})
+        self.assertEqual(list(app.parent.glob("build.*")), [])
+
+    def assert_stops_before_sign(self, values=None):
+        app = self.root / "dist/local/LessMeet.app"
+        app.mkdir(parents=True, exist_ok=True)
+        (app / "previous").write_text("keep")
+        previous_count = len(self.calls())
+        result = self.run_build("local", values)
+        self.assertNotEqual(result.returncode, 0, result.stdout + result.stderr)
+        current = self.calls()[previous_count:]
+        self.assertEqual(sum(call[0] == "swift" for call in current), 2, result.stderr)
+        self.assertNotIn("Traceback", result.stderr)
+        self.assertFalse(any(call[0] == "codesign" for call in self.calls()))
+        self.assertEqual(inventory(app), {"previous": b"keep"})
+
+    def test_each_missing_bundle_stops_signing(self):
+        for name in BUNDLES:
+            with self.subTest(bundle=name):
+                source = self.root / "binary" / name
+                moved = source.with_suffix(".hidden")
+                source.rename(moved)
+                try:
+                    self.assert_stops_before_sign()
+                finally:
+                    moved.rename(source)
+
+    def test_each_missing_notice_stops_signing(self):
+        for name in NOTICES:
+            with self.subTest(notice=name):
+                source = self.root / "Resources/ModelLicenses" / name
+                original = source.read_bytes()
+                source.unlink()
+                try:
+                    self.assert_stops_before_sign()
+                finally:
+                    source.write_bytes(original)
+
+    def test_each_mismatched_pin_stops_signing(self):
+        path = self.root / "Package.resolved"
+        original = path.read_text()
+        for dependency in ("speech-swift", "mlx-swift"):
+            with self.subTest(dependency=dependency):
+                data = json.loads(original)
+                next(pin for pin in data["pins"] if pin["identity"] == dependency)["state"]["revision"] = "0" * 40
+                path.write_text(json.dumps(data))
+                self.assert_stops_before_sign()
+        path.write_text(original)
+
+    def test_each_dirty_checkout_stops_signing(self):
+        for dependency in ("speech-swift", "mlx-swift"):
+            for tracked in (True, False):
+                with self.subTest(dependency=dependency, tracked=tracked):
+                    path = self.root / "fixture-checkouts" / dependency / ("source" if tracked else "untracked")
+                    path.write_text("dirty\n")
+                    self.assert_stops_before_sign()
+                    if tracked:
+                        path.write_text("synthetic source\n")
+                    else:
+                        path.unlink()
+                    # Each attempt gets fresh checkout bytes, without stale untracked files.
+                    shutil.rmtree(self.root / "dist/local/swift-build/checkouts")
+
+    def test_shader_failure_stops_signing(self):
+        self.assert_stops_before_sign({"TEST_SHADER_FAIL": "1"})
+
+    def test_empty_shader_output_stops_signing(self):
+        self.assert_stops_before_sign({"TEST_SHADER_EMPTY": "1"})
+
+    def test_local_sign_failure_retains_previous_app(self):
+        app = self.root / "dist/local/LessMeet.app"
+        app.mkdir(parents=True)
+        (app / "previous").write_text("keep")
+        result = self.run_build("local", {"TEST_SIGN_EXIT": "45"})
+        self.assertEqual(result.returncode, 45, result.stderr)
+        self.assertEqual(inventory(app), {"previous": b"keep"})
+        signing = [call for call in self.calls() if call[0] == "codesign"]
+        self.assertEqual(len(signing), 1)
+        self.assertIn("--sign", signing[0])
 
 
 if __name__ == "__main__":

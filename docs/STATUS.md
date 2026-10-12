@@ -1,5 +1,1323 @@
 # LessMeet delivery
 
+## Pivot integration — current frontier (2026-10-11)
+
+PR delivery is COMPLETE; integrated normal-app e2e is BLOCKED before packaging.
+PRs [#10](https://github.com/hoangnb24/lessmeet/pull/10),
+[#11](https://github.com/hoangnb24/lessmeet/pull/11), and
+[#12](https://github.com/hoangnb24/lessmeet/pull/12) are open against main.
+No PR was merged. Main remains `b08b3cdae5aeb4cbbd5c771a5f887584afaa518c`.
+All Peer scopes are CLOSED. Lead owns the remaining build/runtime frontier.
+No UI scope is active. No integrated app was launched, signed or accepted.
+This session used zero ChatGPT model-list loads and zero sends. No login, raw
+traffic capture, microphone/system-audio prompt or signing inventory scan occurred.
+
+The normal build, its unchanged retry, and a bounded terminal-attached experiment
+all stalled at SwiftBuild compiler discovery before app compilation. The third
+attempt reached the same blocked clang write stack; terminal attachment did not
+resolve it. Lead stopped only verified owned processes, including the stalled
+diagnostic helper, and confirmed their exit. Logs and samples are retained.
+The precise SwiftBuild trigger remains UNKNOWN. The native test build passed.
+No normal integrated app artifact exists, so signing/resource runtime checks,
+in-app readiness, transcription, diarization, chat and save/reopen are UNVERIFIED.
+
+Do not execute a copy of the old full build scratch: its serialized commands
+contain absolute paths into the protected worktree. No portable discovery cache
+was established. No cache copy, cleanup, build-engine substitution, permission
+change, toolchain installation or machine-setting change occurred.
+Return checkpoint: a working normal SwiftBuild path, or Human approval for
+environment repair outside the project-only scope. Lead owns the technical route.
+Any restart, toolchain replacement or broader machine change needs Human direction.
+The existing bounded ChatGPT approval remains unused; do not ask for it again.
+Detailed local handoff: `.artifacts/integration-e2e/RESULT.md`.
+
+Lead ACCEPTS resolved source snapshot
+`80f5d231ad2fc2e95e8ceb3cdf9559d0b8ed9ab8d982f8d2b37f736f1caf1400`.
+All 318 tracked hashes matched. Fresh read-only review found no blocker across
+the 33 interbranch paths. Both branch behaviors and the transcript contract are
+preserved. Writer `7af3c244` and review `70303505` scopes are CLOSED.
+Acceptance permits the integration commit, push and PR; it is not runtime proof.
+Human authorizes the two source PRs and a resolved integration PR against main.
+No PR may merge into main. Source PRs #10 and #11 are open at the supplied heads.
+
+The cache/space dependency is RESOLVED. Lead approved a new isolated build tree
+and attempted the normal arm64 release build in this worktree. Existing caches and
+protected source-worktree edits stay untouched. Native SwiftPM tests passed below.
+No new production packaging code is needed; the exact-profile final signing route
+below applies. Lead owns build, signing, status, publication and runtime acceptance.
+No live UI is reserved yet; no ChatGPT request has occurred in this integration.
+
+Lead ACCEPTS the new synthetic runtime inputs. Peer `74999fe6` scope is CLOSED.
+Independent destination hashing passed 36/36 models, 3,200,167,866 bytes.
+Receipt: `/Users/tubakhuym/projects/lessmeet/.artifacts/integration-e2e-preflight/VERIFIED.json`,
+SHA256 `2a3ffce14803ac842b12a7019d61fc67db8472934fde5ed355fc839aaa851681`.
+The new recording ID is `898065F3-66A5-4597-861C-A101B667B684`, titled
+`LessMeet integration synthetic dialogue`. Its 31.175-second audio SHA256 is
+`37923997ef875247da340654d02fc73f64e092e0254c93bdfc713b0cb87f5d6c`.
+No transcript or chat was provisioned. Existing library entries were preserved.
+After the build dependency is resolved: verify the normal release bundle, apply approved signing, reserve UI,
+transcribe/diarize the synthetic recording, verify reopen, then one model-list
+load and ONE send to GPT-6.1-Sol using the stored session. Stop on failure.
+No login, raw traffic capture, other model, permission prompt, force push or main
+merge is authorized. Runtime stages remain UNVERIFIED until observed.
+
+Integration merge commit: `ab55a3fcbd3741a23fbe4c23f79d5a9653a32705`, with both
+supplied branch heads as parents. PR #12 is OPEN against main at that commit.
+All three branch pushes and PRs are verified; main remains `b08b3cd`.
+The first normal release build stalled in SwiftBuild compiler discovery. Peer
+diagnosis `7af3c244` is ACCEPTED and CLOSED: three clang probes blocked while
+writing output; the parent showed no output-draining progress. A standalone
+probe passed. The internal trigger remains unknown; this is not a source failure.
+Lead stopped only the verified owned processes and confirmed all five exited.
+One unchanged normal-build retry reproduced the same blocked clang-output stack.
+Lead stopped its five verified owned processes and confirmed exit. No normal
+release build is running. Both logs and samples remain in `.artifacts/integration-e2e/`.
+No cache was deleted. Peer `7af3c244` completed the reopened route diagnosis.
+Findings are ACCEPTED and scope CLOSED: copied-cache isolation is not established;
+the accepted terminal-topology experiment then failed as recorded above.
+Lead ACCEPTS native suite evidence for `ab55a3f`: 407 passed, 4 skipped, 0 failed.
+Peer `70303505` verification scope is CLOSED. The native build passed; all 44
+dependency revisions match pins and all 317 non-status tracked hashes stayed
+unchanged. Synthetic loopback tests used IPv4 localhost; external networking was
+denied. The earlier all-network-denied run had 404 passes, 4 skips and 3 listener
+failures. Both results remain distinct in `.artifacts/integration-swift-tests/`.
+The four skips are opt-in fixture generation, real inference, long capture and
+120-minute chunk coverage. These tests do not establish signed runtime success.
+
+## Integration resolution — completed assignment (2026-10-11)
+
+This assignment owns merge resolution and minimal integration repairs in
+`/Users/tubakhuym/.paseo/worktrees/0v2r0tqq/integration-local-first-pivot` only.
+No other writer is active. UI ownership remains released.
+Base: `b08b3cdae5aeb4cbbd5c771a5f887584afaa518c`.
+Inputs: chat `b8ec7f448e2e1ba002272d45a09f98c2c88d67de` and local models
+`03e0e4730b615e261a42ef686231fa0ce66c3acc`, pending no-commit merge.
+Preserve local-model writer/store, chat shell, segment fields and arm64 support.
+
+1. Inspect interbranch differences and resolve the three conflicts.
+2. Run offline tests and packaging checks. Retain commands and receipts.
+3. Freeze a deterministic snapshot for independent review before runtime proof.
+
+No commit, push, PR, main merge, credential access, signing scan, live app,
+login, ChatGPT call, capture or permission prompt is permitted in this assignment.
+Offline checks do not establish end-to-end acceptance. Checkpoint at 25 minutes.
+The branch histories below preserve earlier evidence and authority in context;
+they do not grant actions beyond this assignment. No protected uncommitted
+README/STATUS edits from another worktree are inputs.
+
+### Accepted packaging and end-to-end route
+
+Read-only route findings for `b8ec7f4` / `03e0e47` are ACCEPTED.
+Read-only e2e route peer `74999fe6` is CLOSED.
+The supplied source PR status is OPEN against main, not merged:
+https://github.com/hoangnb24/lessmeet/pull/10 at
+`b8ec7f448e2e1ba002272d45a09f98c2c88d67de`, and
+https://github.com/hoangnb24/lessmeet/pull/11 at
+`03e0e4730b615e261a42ef686231fa0ce66c3acc`.
+This status was supplied with the accepted route; this writer did not query GitHub.
+
+After candidate acceptance, the packaging execution owner will use the existing
+full-app local build route and resources unchanged. No production packaging
+change is needed for this test. A narrow final signing stage must restore
+`com.lessmeet.app`, embed only
+`/Users/tubakhuym/projects/lessmeet/keys/Lessmeet_Sandbox_Dev_20260923 (1).provisionprofile`,
+and sign directly with approved fingerprint
+`24E5A98A599DCBBA0FF05C1B9B1554A2DB101C3C`
+(`Apple Development: Long Le (335C7MY4H4)`). Preserve the normal audio-input
+entitlement plus app/team identifier only during final signing.
+Do not run `scripts/packaging-signing.py` unchanged: line 135 enumerates
+identities, which is forbidden for this route. This writer does not read the
+profile, scan signing identities, sign an app or execute this route.
+
+Human authorization for the later runtime owner covers non-overwriting synthetic
+fixture/cache setup and stored-session e2e with one model list and ONE
+`GPT-6.1-Sol` send. Stop on failure. No live UI owner is reserved yet.
+Independent candidate review precedes runtime proof. The original writer brief
+and its no-live-actions limits remain in force. Offline tests are not e2e acceptance.
+
+The read-only route scope is closed. Peer `74999fe6` now owns separate runtime
+fixture/cache preparation and
+`/Users/tubakhuym/projects/lessmeet/.artifacts/integration-e2e-preflight` only.
+It has no integration-worktree write scope. Supplied normal-library preflight:
+three ready recordings, one interrupted, zero recording, and no Models root.
+Its new scope prepares a new UUID synthetic dialogue and copies verified model
+files without overwrites. No UI owner or live call is authorized by this entry.
+These are supplied observations, not checks performed by this writer.
+
+### Integration checkpoint and offline evidence
+
+All three conflicts are resolved. `Package.swift` retains the chat logo resource
+and both model dependencies. `docs/LOCAL_MODELS.md` takes the newer local-model
+evidence history. STATUS retains both histories beneath the current assignment.
+No production repair was needed. All tracked bytes match chat `b8ec7f4` except
+`docs/LOCAL_MODELS.md` and `docs/STATUS.md`. Every local-model branch change matches
+its accepted head except the combined STATUS and the logo resource in the manifest.
+The merger correction `ec5cd67` is already present via `8e8e135`; no duplicate import.
+
+Offline environment: macOS 26.4 (25E246), arm64, Apple Swift 6.3.3.
+Packaging tests PASS: 69 tests, zero failures, 38.910 seconds. These use inert
+build/signing tools, not actual packaging. Standalone overlap/attribution tests
+PASS under OS network denial: 28 tests, zero failures, no skips, 0.087 seconds.
+The initial standalone launch failed because its XCTest runtime search path was
+incomplete. The corrected harness passed; both receipts are retained.
+Shell/config syntax checks PASS. The initial diff check found a remaining base
+conflict marker; it was removed and subsequent working/index checks PASS.
+
+Exact commands, environments, logs, comparison of all 33 interbranch paths,
+all changed paths from the original base, and deterministic per-file hashes are
+under `.artifacts/integration/`. Reproduce the checks with `verify.py` and
+`standalone.py`; regenerate the tracked-file snapshot with `snapshot.py` there.
+The snapshot excludes ignored test artifacts; no commit or push was made.
+
+Full SwiftPM tests and a real arm64 release build are UNVERIFIED in this new
+worktree. It has no dependency checkout/build cache. With approximately 14 GiB
+reported free and a separate 3.2 GB runtime model copy pending, this writer did
+not materialize a second dependency tree. No existing cache or scratch was removed.
+Measured new scratch: `.artifacts/integration` 133 MB, including `module-cache`
+132 MB; its `tmp` directory is empty. `df -h` reports 14 GiB available (97% used).
+The original dependency request asked for an accepted cache/reuse plan or space
+for a new isolated build tree. It is resolved by the current-frontier decision.
+The missing full build is not a compiler failure and not e2e acceptance.
+The packaging execution owner retains the accepted signing route after review.
+
+Code-based runtime route: the normal app creates the default `RecordingStore`
+and `LocalModelManager`; it exposes no fixture-root launch option. Use only the
+separately authorized non-overwriting synthetic recording/model placement.
+After independent candidate acceptance and final signing, the runtime owner can
+select that synthetic ready recording and choose **Transcribe on this Mac**.
+Check saved `transcript.json`, visible timestamps/speakers, and reopen persistence
+before the authorized single model list and single send. Preserve failed evidence
+and stop on failure. Capture, UI, actual model inference and stored-session chat
+remain UNVERIFIED for this integration snapshot.
+
+The writer releases integration write ownership with the deterministic handoff.
+Independent review and technical acceptance remain pending.
+
+### Retained chat branch history
+
+## Local pivot — WS1/WS2 contract (2026-10-11)
+
+### Current frontier
+
+Local shell/bridge checkpoint: `f7bff13` on `pivot/chatgpt-signin`, parent `1a9e7f0`.
+The packaged artifact below contains the same production source bytes. No push.
+
+2026-10-11 integration update: imported the six WS2 implementation commits plus
+zero-duration-word correction `bbcc8a8`, without the WS2 status-only commit.
+Local chain is `03d007d`, `83e8941`, `bf98b71`, `b5e7f77`, `a54f03b`, `718e625`,
+`1a9e7f0`. All 26 source/test/helper paths match the supplied candidate; controller
+and transcript-view hashes match the handoff. No import conflict occurred.
+Imported code inputs through `bbcc8a8` ACCEPTED after inspection and independent
+full Swift suite PASS: 345 tests, 5 skipped, zero failures (46.925 seconds).
+Log: `full-package-metal/integrated-tests.log`. This includes the adapter correction;
+it is not a local real-inference rerun. Lead owns shell wiring. The shell now shares
+one manager/controller, binds finalization before capture, starts setup once,
+shows setup progress/cancel, and renders LocalTranscriptView instead of the
+temporary sidecar display. Fresh read-only inspection and full Swift tests passed
+against the frozen shell candidate. No full-shell runtime acceptance yet.
+
+Packaging now targets arm64. Real signing-copy evidence established that shader
+bytes in Resources with a relative MacOS symlink pass strict signing. The actual
+script uses that layout; full integrated package build passed. First updated
+regression run: 68 passed, one stale test expected no Resources metallib. That
+assertion now checks the new byte-identical resource and symlink. The new 69-test
+run PASSED (47.270 seconds), `packaging-symlink-tests-2.log`. Keep failed evidence.
+
+WS2 reports 31.174-second generated dialogue passes real Whisper/Nemotron and
+JSON roundtrip after `bbcc8a8`. The subsequent controller/save/reopen receipt is
+recorded below. Long-audio and transcript-UI acceptance remain pending.
+Shared UI remains RELEASED.
+
+Integrated packaging PASS: `scripts/build-app.sh local` completed with explicit
+ad-hoc signing. Final path `dist/local/LessMeet.app`; executable SHA256
+`9f920690a58a2f5160fe01d6b59cdd82a77df4da3a8c5d409960aeb4f95924f5`,
+Info.plist `66933d4d39449faec0783fa42876027d7e9e102efef63a38aab8f99901e69182`,
+shader `85ef32aaf5ca52f7b670168087f6b204213570e2a8342c8d0f091c5f39c52718`.
+Both script strict verification and separate `--strict=symlinks` PASS. This
+artifact has not been launched. Log `package-integrated-symlink.log`.
+Independent Metal check loaded the exact packaged MacOS symlink and found 15,005
+functions (`shader-load.log`). This proves Metal can read the library. It does
+not prove MLX execution from the app or transcription quality.
+Fresh read-only assessment `1a6a4f02` ACCEPTED and scope CLOSED: frozen shell
+App `8cefc7e1…`, Library `1075df18…` has no concrete source integration blocker.
+Lead accepts code candidate; runtime is still separate.
+
+Peer `24b4d07e` candidate `LocalPivotIntegrationTests.swift` SHA256
+`edbb5dd4e95561cc6c755067525ae0b874e72052a887f37d8ff20335bd987b89`
+ACCEPTED after complete inspection and independent 3-test PASS (0.139s), log
+`full-package-metal/pivot-bridge-tests.log`. Scope CLOSED. It verifies the injected
+capture-to-transcript-to-chat bridge using actual sidecars, full speaker/timing
+JSON, explicit send, history reopen and stale-selection isolation. No real capture,
+auth, inference or UI is established by these tests.
+Peer `e97c583d` owns only `.artifacts/verify-lessmeet/full-shell-ui/` to build
+a synthetic full-shell fixture without launch. Lead owns all production writes
+and will reserve UI only after inspecting the artifact. No driver is active.
+
+WS2 real finalization receipt inspected: one offline synthetic-capture callback
+through controller/real models/atomic save/new-store reopen passed (51.585s,
+10 segments, maxRSS1,971,585,024 bytes). Long650s FAILED invalidTiming in window2;
+mixed sentence/word overlap duplication is another confirmed WS2-owned issue.
+Both remain failed/pending; neither is relabelled by short-run acceptance.
+
+WS1 owns auth/chat, shell/package/scripts and integration. Active Peer scopes are
+listed above; earlier auth/chat and packaging implementation scopes are closed.
+WS2 owns the remaining timing/overlap corrections and real-inference evidence.
+Metal Toolchain prerequisite is resolved: Human installed 17F109 and WS1 verified
+`Apple metal version 32023.883`, target `air64-apple-darwin25.4.0`. Computer Use
+instructions and runtime are available and worked for the bounded component UI.
+No release, installation, system-setting change or full-app launch follows from
+building the bundle.
+
+### Earlier packaging and capability evidence
+
+Full local retry FAILED (exit 1). Metal now runs; the concrete Swift errors are
+SpeechVAD Float16 references for x86_64 in the default universal Swift Build.
+Pinned speech-swift README requires Apple Silicon. Secondary CompileSwift arm64
+and CompileC arm64 summary failures had no diagnostic cause. A read-only
+release-build experiment used `--arch arm64` in the same scratch directory;
+log `full-package-metal/arm64-build.log` records that path independently.
+Package pins and dependency sources are unchanged. Do not infer Intel support.
+The arm64-only release experiment PASSED in 56.46 seconds. Secondary arm64
+summary errors did not recur; their cause in the universal attempt is still not
+proven. Script now fixes `--arch arm64` for the pinned Apple-Silicon dependency;
+69 packaging regressions PASS (36.032s), including the architecture assertion.
+Full corrected package retry compiled app and 33 Metal sources, then FAILED at
+outer signing: Contents/MacOS/mlx.metallib is treated as unsigned nested code.
+Read-only Peer `0314c9ac` diagnosed that exact staged artifact; scope is closed.
+The corrected integrated package result above supersedes this failure, which
+remains retained. No app launch occurred during these builds.
+
+Computer Use capability correction (2026-10-11): the earlier missing-skill claim
+was a discovery gap. The installed marketplace at
+`~/.codex/.tmp/bundled-marketplaces/openai-bundled/.agents/plugins/marketplace.json`
+points to `plugins/computer-use`; its complete `skills/computer-use/SKILL.md`
+was read independently. Direct `await import('@oai/sky')` in WS1 Node REPL passed;
+`get_app_state` and `click` are functions. No UI API was called during discovery. Working-directory
+`createRequire().resolve()` returned MODULE_NOT_FOUND but does not test the
+bundled import route. This corrects historical capability claims below, not UI
+acceptance. Subsequent released UI reservations and observed component results
+are recorded below. Human performs real browser sign-in.
+
+Local source checkpoint: `8b3281b` on `pivot/chatgpt-signin`, parent `b2df5d4`.
+This commit contains accepted auth/chat, the native shell, official logo resource
+and coupled offline tests. Packaging followed as `be48843`, then the imported
+WS2 chain listed above. No push or merge is authorized. Scratch `.build-*` directories remain
+untracked and are not delivery inputs. Preserve them for local test evidence.
+
+**Shared UI reservation (current): RELEASED.** No driver remains. WS1 completed
+the bounded ChatGPT component subset below; exact fixture quit and PID/path checks
+were clean. Any later full-shell check needs a new single-owner reservation.
+
+**Previous WS1 reservation:** agent `7030593f-4910-4e8c-9cf2-235c38d8d9f0`
+owned the bounded ChatGPT component check, under the original WS1 UI scope.
+WS2 explicitly released its reservation after cleanup at 06:57:35 UTC. Its
+RESULT.md was inspected; the accepted model-setup result does not accept ChatGPT
+or full-shell behavior. WS1 exact app-path process inspection found no fixture
+or LessMeet instance before that check.
+Target: a private synthetic ChatGPTScreenCheck.app under
+`.artifacts/verify-lessmeet/chatgpt-ui/`, built from accepted production views and
+controllers with injected memory credentials, fake browser/listener/network, and
+an isolated disk library. OS network denial and isolated defaults are required.
+No real sign-in, account, credentials, user recordings or usage links may be used.
+Peer `7cf68b96` owned only fixture preparation until its artifact handoff;
+it did not launch or drive UI. Lead performed inspection, launch, UI and acceptance.
+Fixture handoff ACCEPTED as runtime input; Peer scope CLOSED. Exact app:
+`chatgpt-ui/build.zSOvdr/ChatGPTScreenCheck.app`, executable
+`1e495cb9e63742c07d6194fab0bc7001efb33470bd782e5134ef660e9a2d7d29`.
+Complete fixture/support/build/sandbox source inspected, all input/artifact hashes
+matched, strict signature PASS. Lead proceeds only with sandboxed synthetic UI.
+First launch FAILED before UI: the fixture suite equaled its bundle identifier,
+so UserDefaults returned nil. PID33971 exited1 and is absent. Lead changed only
+the fixture suite suffix to `.preferences`; retained failed artifact/evidence.
+Fresh build.RgZOQW was signed and launched as PID36434 under offline.sb. Executable
+`a480293c7a85d6d8cbed807f8dcefafdd1eefc11a6bf2028ee7150280a3b426f`.
+Observed: signed-out logo/button, no-consent account, disabled chat/model
+controls and plan welcome. Cleanup and release are recorded below.
+Final subset ACCEPTED: explicit model load/select, completed synthetic Send,
+composer clearing, actual local chat.json and visible history after process
+reopen while signed out. PID36434 and reopened PID39043 quit via Sky, each exited0;
+exact PID/path searches found no process. UI RELEASED. Evidence and limits:
+`.artifacts/verify-lessmeet/chatgpt-ui/RESULT.md`, captures01–17 and actions.jsonl.
+Cancel/quota/keyboard UI were not exercised; real auth/chat/fullshell remain unverified.
+
+Packaging diagnosis `0314c9ac` ACCEPTED, scope CLOSED. Lead inspected pinned loader
+and installed codesign manual, then tested a copy at
+`dist/local/signature-probe.YvCxys/LessMeet.app`. Shader bytes in Resources plus
+relative MacOS/mlx.metallib symlink preserve lookup and pass strict signing and
+strict=symlinks verification. Original failed stage is retained. Script updated
+to this layout; corrected full package passed. Actual packaged MLX load is unverified.
+
+Original component acceptance scenarios: signed-out rendering and disabled chat; restored synthetic
+plan welcome and acknowledgement; explicit model load/select; completed synthetic
+reply saved to chat.json and visible after reopen; provisional answer and Cancel
+without persistence; quota error with retained draft; no-consent state. Use only
+production controls for each behavior assertion. Fixture scenario controls supply
+inputs, not pass results. Usage links and real authorization stay untouched.
+Fixture compile dependency resolved: `RecordingStore` requires `AccountError`,
+which shares a file with Clerk-dependent legacy code. Lead inspected the five-line
+LocalizedError wrapper and permits exact declaration extraction into fixture-only
+compile support, with source/hash attribution. No substituted behavior, production
+edit or Clerk initialization is permitted. All tested production files stay intact.
+The same narrow extraction is approved for `CloudClientError` at CloudClient.swift
+269–273 after inspection. This avoids compiling unrelated cloud-account code;
+it does not substitute transport or grant cloud access.
+
+**Previous shared UI reservation (RELEASED):** agent
+`45d6fb78-db0a-4baf-844c-e8a091178bc9` owned the single live UI scope for the bounded
+WS2 model-setup component check. Before reservation, both workstream status sources
+showed no current owner, WS1 had no UI driver, and process inspection found no
+LessMeet app or local-model-ui fixture. Historical ownership entries below do not
+claim the current desktop.
+Target: an explicit ad-hoc-signed synthetic SwiftUI app under WS2
+`.artifacts/verify-lessmeet/local-model-ui/`, built from its accepted manager
+`9ee218d` and LocalModelSetupView. Allowed: progress, cancel, resume and ready-state
+checks through Node REPL/sky with URLProtocol synthetic transport; optional
+read-only readiness check of the accepted model cache. No auth/account, user
+recordings, cloud, system settings, tool installation or production replacement.
+The driver must record the exact bundle/PID/hash and required skill availability
+before launch. Return event: evidence handoff or blocker, fixture cleanup, and
+explicit UI ownership release, received at 06:57:35 UTC.
+WS1 shell/build work continues independently; this reservation is not UI acceptance.
+
+Human chose an open-source, local macOS app. ChatGPT sign-in and transcript
+chat replace the app's cloud chat path. WS2 owns local WhisperKit large-v3
+transcription and Nemotron-3-Diarization. These decisions supersede conflicting
+historical architecture, release and next-action instructions below.
+No cloud mutation, deployment, account-deletion trial, push, publication or
+release is authorized. Local commits are allowed. One Human-assisted ChatGPT
+sign-in and one real chat turn are allowed after advance notice; other checks
+use offline fixtures. Never log or commit credentials or real email addresses.
+
+Branches start at `b08b3cdae5aeb4cbbd5c771a5f887584afaa518c`:
+WS1 `pivot/chatgpt-signin`; WS2 `pivot/local-models`. Each edits only its own
+worktree. WS1 accepts the following interface and ownership agreement, sent
+directly to WS2. This is not acceptance of an implementation or runtime behavior.
+
+### Transcript read contract
+
+- Keep `Recording.swift` and legacy `Recording.transcript: String?` unchanged.
+  Do not add a competing transcript field.
+- WS2 adds `LocalTranscription/LocalTranscriptStore.swift`, an extension of
+  `RecordingStore`: `loadLocalTranscript(for id: UUID) throws -> LocalTranscript?`
+  and `saveLocalTranscript(_:for:)`. Only WS2 uses the write API.
+- `LocalTranscript: Codable, Equatable` has `version: Int = 1` and
+  `segments: [LocalTranscriptSegment]`. Segment fields stay exactly
+  `startMs: Int64?`, `endMs: Int64?`, `speaker: String?`, `text: String`.
+  Timestamps are absolute milliseconds. Paired null timestamps remain supported;
+  local inference emits timed segments.
+- Sidecar path: `root/<recording UUID>/transcript.json`. A missing file returns
+  nil. Invalid data or an unsupported version throws. No stale cloud fallback.
+- WS1 reads through the existing store and `recording.id`; it never writes
+  transcripts. This avoids competing writes to recording metadata.
+
+### Write ownership and integration order
+
+- WS2 owns new `LocalModels/`, `LocalTranscription/`, `LocalModelSetupView`,
+  `LocalTranscriptView`, and the capture-completion hook in `AppModel.swift`.
+  `RecordingStore.swift` remains unchanged unless both sides agree otherwise.
+- WS1 owns auth/chat and app shell files `LibraryView.swift` and
+  `LessMeetApp.swift`. Three independent new-file scopes are dispatched below.
+- Agreed shell slots: a sidebar **Local models** button opens the setup sheet
+  through `LocalModelSetupView(manager:)`; the selected recording's Transcript
+  tab embeds `LocalTranscriptView(model:, recordingID:)`.
+- Controller/hook input is imported through `1a9e7f0`. The app shell supplies one
+  shared set of instances, also used by the capture hook. The transcript view
+  reloads after completion; chat reads the saved sidecar before submission.
+- WS2's pinned package handoff is accepted and imported as `b2df5d4`. WS1 now
+  owns manifest integration and added the official sign-in logo resource. Keep
+  dependencies while source imports them. No parallel manifest writes.
+
+Read-contract input is accepted as `1125de6`; catalog/notices as `254290e`.
+Next input owner: WS2, for the long-timing and mixed-granularity overlap corrections.
+Shared signatures below are settled; implementation through `bbcc8a8` is accepted.
+The independent ChatGPT shell is implemented and code-accepted. UI and live
+ChatGPT flows remain UNVERIFIED. See the current UI reservation above.
+
+### Controller/shell agreement — accepted, implementation input pending
+
+WS2 confirmed the read contract and recorded it on its branch. Peer `97e9fec9`
+owns only its three new read-contract source/test files. WS2 will inspect, test
+and commit that input before delivery. No package edit has begun.
+
+WS1 accepts this controller shape as an interface, not an implementation:
+
+- `@MainActor LocalModelManager: ObservableObject`, `init(root: URL? = nil)`,
+  async `start()`, `cancel()`, `retry()`.
+- `@MainActor LocalTranscriptionModel: ObservableObject`,
+  `init(app: AppModel, manager: LocalModelManager)`,
+  `transcribe(recordingID: UUID)`, `cancel()`. Published read-only state includes
+  `revision: Int`, `completedRecordingID: UUID?`, activity and error.
+- `LocalModelSetupView(manager: LocalModelManager)` and
+  `LocalTranscriptView(model: LocalTranscriptionModel, recordingID: UUID)`.
+- The shell creates AppModel, then one manager, then one transcription model.
+  Views and the capture hook share those instances. The controller holds a weak
+  AppModel reference and never rewrites Recording metadata.
+
+Both workstreams accept these lifecycle rules before shared writes:
+
+1. Add async `prepare()` for passive local readiness inspection on app appearance.
+   Human already authorized automatic first-launch model downloads in WS2.
+   Shell awaits `prepare()`, then calls `start()` once per app session when
+   required models are missing and state is neither canceled nor failed.
+   Show download size, progress and cancel. Keep the once-per-session guard in
+   shared manager/controller state, not a transient view flag. Repeated appearance
+   or window recreation must not restart downloads. Ready models do not download
+   again. `start()` also serves the setup button; `retry()` is user-triggered.
+   Canceled/error state never auto-retries within that session. This supersedes
+   WS1's earlier explicit-button-only proposal; no new Human approval is needed.
+2. `AppModel.onRecordingFinalized: ((UUID) -> Void)?` fires once after successful
+   audio stop and successful ready-metadata save. It does not fire for interrupted
+   capture or failed saves. Current `persist(_:)` catches save errors; hook work
+   must observe save success. Wire the hook before recording can start.
+3. Deduplicate pending/active recording IDs. Wait for model readiness without
+   changing the target when UI selection changes. Cancellation also clears pending
+   jobs. Preserve a previous sidecar on failure and label it as previous output.
+   Do not add automatic retry loops.
+4. After atomic save, set `completedRecordingID`, then increment `revision`.
+   Neither changes for failed/canceled work. WS1 rereads on appearance, selection,
+   revision and before sending chat; each request freezes its transcript snapshot.
+   Restart reads durable storage; revision is process-local only.
+
+The original review-only checkpoint is complete. WS2 confirmed rules 2–4 and
+the automatic-download rule 1 is accepted. No lifecycle question remains open.
+The read contract is imported. Only WS2 controller/setup/hook injection remains
+pending; independent ChatGPT shell work is complete. Runtime evidence is pending.
+
+### WS1 independent implementation — dispatched (2026-10-11)
+
+Read-contract delivery blocks real-transcript integration only. It does not
+block OAuth, Responses transport or chat persistence. The earlier whole-WS1
+wait was a dependency-framing error. Continue these independent scopes now.
+
+All three Codex Peers use `codex-peer/gpt-6-astra` with explicit `auto` mode,
+base `b08b3cd`, in this worktree. Initial creation without an explicit mode was
+rejected without creating agents; the corrected calls succeeded. No Peer may
+commit, edit manifests/shared files, operate UI or call live authenticated APIs.
+Each returns complete paths, SHA256, offline tests and limits for inspection.
+
+| Owner | Exclusive new-file scope | Ready input |
+| --- | --- | --- |
+| `217bb360-f5bc-4f35-ae81-96e48ae149ec` | `ChatGPTAuth/*.swift`, `ChatGPTAuth*Tests.swift` | Official SIWC OAuth contract and native macOS frameworks |
+| `be35ff77-6ee6-4960-b307-63e8e891bcf5` | `ChatGPTChat/ResponsesClient.swift`, Responses-prefixed helpers, `ResponsesClientTests.swift` | Official Responses contract and existing `ChatMessage` |
+| `220641a5-12a4-48b3-ab61-380a4a14ee5e` | `ChatGPTChat/ConversationStore.swift`, `ConversationStoreTests.swift` | Existing `RecordingStore` and `ChatMessage` |
+
+Source scopes are relative to `Sources/LessMeet/`; test scopes are relative to
+`Tests/LessMeetTests/`. Each uses a separate `.build-<scope>` scratch path.
+Lead retains docs, integration, verification and acceptance. No moving writer
+scope overlaps another. No candidate is accepted yet.
+
+Frozen WS1 boundaries:
+
+- `ChatGPTSession` is a main-actor observable session. It exposes saved profile
+  identities, active ID, busy/error, sessionIdentifier and plan permission.
+  `signIn(profileID:requestPlanConsent:)`, `cancelSignIn()`, `signOut()` and
+  async throwing `accessToken()` own OAuth, Keychain and token lifecycle.
+  Tokens never appear in observable profile state. Storage/network are injected
+  for offline tests; no actual credential access is delegated.
+- `ResponsesClient.models(accessToken:)` returns ordered visible model choices.
+  `reply(accessToken:model:transcript:history:question:onDelta:)` accepts plain
+  transcript text and existing `[ChatMessage]`, awaits incremental text callbacks
+  and returns the full answer only after `response.completed`. It never owns
+  credentials, storage or automatic retries. No sidecar dependency.
+- `ConversationStore(recordingStore:)` loads/saves `LocalConversation`
+  (`version`, `recordingID`, `messages`) at `<recording UUID>/chat.json`.
+  It persists complete user/assistant pairs atomically, preserves corrupt files
+  with a visible error, and never touches recording/transcript metadata.
+
+Next ready integration: inspect each returned candidate independently, then wire
+sign-in, model selection and one synthetic in-memory transcript request with
+local save/reopen. Real WS2 transcript reading follows accepted artifact import.
+Live sign-in/chat remains subject to advance notice and Human browser action.
+UI/live results remain UNVERIFIED. No shared shell/hook/package edits yet.
+
+Auth dependency disposition: ACCEPT `217bb360`'s AppKit request for the
+`NSWorkspace.shared.open` browser adapter only. AppKit is a native framework
+already used in this app; no package change is needed. It avoids authorization
+URL/ID-token hints in subprocess arguments. Offline tests inject a no-op browser.
+The returned no-code handoff establishes the dependency, not a usable candidate.
+The same Peer reclaims its original exclusive auth source/test scope and resumes
+implementation. No real sign-in, UI operation or credential access is delegated.
+
+### Read-contract candidate ACCEPTED and imported (2026-10-11)
+
+ACCEPT WS2 `b67fc0a1ad7ea575157851d4bb88ed86e0c16248`, parent `b08b3cd`.
+All three artifacts were read and supplied SHA256 matched before/after import:
+
+- `LocalTranscript.swift`: `c6cc789172781383e32d90d47cf4ad7f26c15840823deb16dded9674f2d4b7ee`.
+- `LocalTranscriptStore.swift`: `af6ce160c51bf7ad03b9d5cd1f5ddc8dc90a4fd79bae19322f875a6d0066cdc9`.
+- `LocalTranscriptStoreTests.swift`: `5d060400cb4458be0d899282c5825b474bc5059f69078f274e3cd3f8e3b118e4`.
+
+Imported code only as `1125de6f3f28defdc48e9bda97db19b48801761a` on WS1.
+No WS2 status commit or shared-source/package edit was imported. Existing WS1
+writer changes and this status document were preserved.
+WS1 rerun: `swift test --scratch-path .build-ws1-integration --filter
+'LocalTranscriptStoreTests|RecordingStoreTests'` built successfully and passed
+11 tests (8 transcript + 3 recording), zero failures, exit 0. This does not
+accept the concurrently developing ConversationStore candidate.
+
+Reason: exact agreed schema/read API, explicit nulls, duplicate/version rejection,
+missing-vs-invalid distinction, no metadata mutation and no cloud fallback meet
+the bounded contract. The read-contract dependency is resolved. WS1 can now read
+through the existing store and recording ID; WS2 remains the sole transcript writer.
+Acceptance/import disposition sent to WS2. Its already-authorized model/controller
+and owned hook work can continue when their own inputs are ready. WS1 retains
+shell ownership. Package changes remain sequential, WS2 additions first.
+
+Limits retained: filesystem replacement-failure injection, concurrent readers,
+power-loss durability and peak encoding RAM are not verified. UI, model downloads
+and inference remain UNVERIFIED. No live sign-in/chat or cloud action occurred.
+
+### ConversationStore candidate — ACCEPTED
+
+Writer `220641a5` returned its two-file candidate and write ownership. Scope CLOSED.
+Lead read both files and matched source SHA256
+`7d0a47d3a3775ae3bdb5883da5b51f77c0214053657547347c16d4e3fed511d9`
+and test SHA256
+`bcae3f2243cba7fc5579ddb71384a60765252859190b022f9656cb19411285ad`.
+Writer reports 16 tests PASS. Lead rerun also passed 16 tests, zero failures/skips,
+exit 0, using `swift test --scratch-path .build-ws1-integration --filter ConversationStoreTests`.
+Read-only Peer `7f6376ae-95a8-4de8-935b-0714da1f951b` returned no blocking
+filesystem/API findings against those exact hashes. Lead ACCEPTS the candidate:
+complete-pair save/reopen, corrupt-file preservation, unsafe-entry rejection,
+atomic replacement and metadata/transcript isolation meet the assigned scope.
+The exact two hashes define the inspection snapshot; no further writes are active
+in this scope. Disposition sent to writer. Auth/Responses remain independently ready.
+Power-loss, ACL inheritance, hostile concurrent filesystem changes and UI remain
+unverified. Partial-write, fsync and rename failures were not injected; root-path
+ancestors remain trusted. Caller must supply an existing recording ID and save
+only completed responses; role order is not proof of successful inference.
+Concurrent saves are last-writer-wins. Dispositions sent to writer and inspector;
+both scopes CLOSED. Lead can integrate this accepted API without waiting for WS2.
+
+WS2 ownership update: read-contract dependency resolved there too. Separate WS2
+writers own pinned Package.swift/Package.resolved validation (`cd68b7de`), model
+manifest/licenses (`01531be2`) and pure merge/attribution (`32328d4c`). WS2 retains
+AppModel hook/integration. WS1 retains LibraryView/LessMeetApp. No package edit or
+unaccepted controller implementation is consumed by WS1. Exact package and
+controller handoffs remain separate inputs; neither blocks independent auth/chat.
+
+### ResponsesClient candidate — REJECTED, bounded correction active
+
+Writer `be35ff77` returned source
+`9894bcb0892c79d9f5f9d894c1ae6c25c646449ebbf81db202f27fbb00251d27`
+and tests `b3351bb5297f08aef2e6bbb6394f998160691aef5e85dc6d6154a2ec4f5d43f9`.
+Lead matched hashes and read both files. Writer scope CLOSED; disposition sent.
+Lead rerun `swift test --scratch-path .build-ws1-integration --filter ResponsesClientTests`
+PASS: 16 tests, zero failures/skips, exit 0. Read-only inspector
+`1222a138-a7ec-4801-b90d-c7313da37775` returned a completion-contract blocker.
+Lead ACCEPTS the finding and REJECTS the above candidate: final-only output or
+refusal becomes empty success; partial deltas become partial success even when
+the completed output contains more text; a bare completed event also succeeds.
+Passing fixtures currently bless this behavior and do not establish correctness.
+
+Writer `be35ff77` reclaims only its same two source/test files. Correction: validate
+terminal response/status/output, reconcile final text with provisional deltas,
+recover terminal-only text or fail explicitly, reject divergent text, and surface
+refusal as a safe explicit error. No blank/partial successful result. Preserve
+bounds/cancellation and add realistic terminal/refusal regression fixtures.
+Read-only scope CLOSED; dispositions sent to both Peers. Lead owns reinspection
+and acceptance of the corrected hashes. Dependent integration waits for that
+specific correction; auth/store work does not. UI/live OAuth/network/model output
+remain UNVERIFIED. No tools/multimodal scope is added.
+
+### Packaging ownership — model notices
+
+WS1 exclusively owns `scripts/build-app.sh` and `scripts/configure-app.mjs`
+if auth packaging needs changes. WS2 does not edit these scripts. On consuming
+the exact accepted WS2 catalog plus `Resources/ModelLicenses/` candidate, WS1
+copies the notice directory unchanged to `Contents/Resources/ModelLicenses`
+before signing. Verification must compare packaged notice inventory/hashes and
+check the final signature. A model-bearing package must not silently omit notices.
+WS2 supplies exact resource candidate and notice inventory; implementation of
+that copy waits for accepted bytes. This ownership agreement does not accept
+model dependencies or imply package, runtime, UI or release readiness.
+Script ownership/disposition sent directly to WS2. No script edit was made here.
+
+Catalog ACCEPTED/imported: WS2 `c9eec5047d1895481bc99d41501c9cfc993a01b9`
+became WS1 `254290ebecbbb79204c208127dea56113f7a4f16`. Inspected manifest,
+tests, provenance docs and notice inventory; all ten supplied hashes matched.
+`LocalModelManifestTests` rerun in `.build-ws1-integration`: 6/6 PASS.
+Initial shell hash-loop attempt failed from a shell variable naming collision;
+the direct ten-file hash check then succeeded. No data was altered by that failure.
+Lead added the owned build-app.sh notice check/copy/diff before codesign.
+`bash -n`, `git diff --check` and executing the exact copy block into a fresh
+temporary bundle skeleton PASS; all seven copied notice hashes match originals.
+Full signed packaging has not run for this change. No package/controller edits
+were imported. Model payload/runtime, total dependency license coverage and UI
+remain UNVERIFIED. Disposition sent to WS2.
+
+Corrected Responses candidate ACCEPTED: source
+`d717bb623364b5b6cb201e9662abdb03ce05ce1af0245eb3433ebac51d74d990`, tests
+`76107f7e88ef845c2be34ecf82fbdb309ba6077e76756e2193a96fad1a7bf718`.
+Lead inspected terminal validation and all added regression tests, matched hashes,
+and reran 25/25 PASS. Final-only/suffix output is reconciled; divergent, bare,
+empty, malformed and refusal output fails explicitly. The original blocker is
+resolved. Writer scope CLOSED, disposition sent. Deltas remain provisional until
+successful return; tools/multimodal and live/UI remain unverified or unsupported.
+
+Auth candidate: seven-file snapshot recorded by
+`.build-chatgpt-auth/auth-sha256.txt`, digest
+`db24639e99900e6fa75a3a045e8915433d7607ff0550d0248377062dfe4bb93c`.
+Lead matched hashes/read all source and reran 32/32 auth tests PASS.
+Lead ACCEPTS read-only `7db11578`'s three blockers and REJECTS that candidate:
+ordinary sign-in requests identity-only scopes; switching/logout can discard a
+successfully rotated refresh token before save; a failed local logout save loses
+the target, preventing later retry. Existing passing fixtures bless parts of this
+behavior. Writer `217bb360` reclaims only original auth source/tests to correct
+full ordinary scopes vs explicit consent, drain/persist dispatched refresh without
+stale active publication, and retain pending logout target until cleanup succeeds.
+Regression tests are required. Read-only scope CLOSED, dispositions sent. No real
+Keychain/browser/OAuth/refresh was exercised. Auth acceptance waits for new hashes.
+
+Chat lifecycle implementation now has accepted inputs: ResponsesClient,
+ConversationStore and imported sidecar reader. Peer
+`ac488062-71c9-4812-9f53-7e7370644ba5` exclusively owns new
+`ChatGPTChat/LocalChatModel.swift` and `LocalChatModelTests.swift`. It uses injected
+session-ID/token closures rather than unaccepted auth source, and real accepted
+transport/storage with offline fixtures. Required behavior: frozen transcript and
+history per send, provisional deltas, successful complete-pair atomic persistence,
+and cancellation/stale-account/selection protection. No shell/package/WS2 edits.
+
+### Dependency import and current frontier
+
+Imported exact WS2 package candidate `6f14832a6349e597a6f607616e798f1e402c4044`
+as WS1 `b2df5d4`. Both supplied SHA256 values match before and after import:
+Package.swift `6a8024516448500de23f4f3d7e30dcee3f3ac1d56b8022d44431df5f3f92d07c`;
+Package.resolved `33263aff5301de85e6069f002616ae635d1f394a49259081439875952ce26608`.
+Inspected complete two-file diff and dependency handoff. Four old pins remain
+unchanged; 40 were added. WS1 now owns package edits and preserves both inference
+imports/pins. Local integration build with public resolution switches
+`--disable-keychain --disable-netrc` PASS, exit 0 (113.53s). Lead ACCEPTS the exact
+package candidate as build/link input: selected inference products resolve and
+link with WS1 sources. This does not accept moving auth/chat files compiled in
+the same build. Regression rerun PASS: 55 tests across ConversationStore,
+ResponsesClient, LocalTranscriptStore and LocalModelManifest, zero failures.
+Upstream test execution failed for an unknown reason. A 403 blocked public logs.
+That failure is not classified as harmless. No real model or UI is accepted here.
+
+Read-only Peer `3bfd64e2-8361-4a62-9e4c-2ff80404bcbc` inspects pinned resource and
+metallib lookup requirements. It owns no files or live UI. Lead retains package,
+scripts and shell writes. Auth correction and chat lifecycle writers continue in
+their separate scopes above. No controller artifact has been delivered yet.
+The installed skill catalog and local skill search do not expose `computer-use`.
+Its absence blocks required Computer Use verification; UI remains UNVERIFIED.
+Do not substitute another automation stack or change system permissions.
+
+Lead prepared an independent `ChatGPTSignInButton` action-closure component.
+The unchanged original black logo comes from the official OpenAI SIWC asset URL
+`https://developers.openai.com/assets/siwc/sign-in-buttons/chatgpt-logo-black.svg`.
+`NSImage` decoded it as 21x21. Package resources now copy that SVG; the packaging
+script copies `LessMeet_LessMeet.bundle` and disables public resolver credential
+lookups. Inference dependency pins remain unchanged. This is not auth integration
+or visual acceptance. Current post-resource build is pending. Official UI/UX
+instructions require first-use plan confirmation, usage indicator and Manage
+usage link; these remain integration work after auth/chat candidate acceptance.
+
+LocalChatModel candidate ACCEPTED: source
+`0c010e490efbbd04fe88f39c59c0688576489a8eb9cd4064ae377f0fc7012106`, tests
+`c6578baa8045d707822eff7cfcd304d87e1ae1828f94f371b01f4bb1af1c3721`.
+Lead read both complete files, matched hashes and reran 19/19 tests PASS against
+current dependencies. Snapshot isolation, stale-context rejection and successful
+complete-pair persistence meet the bounded controller contract. Writer scope
+CLOSED. Lead can build its view with accepted inputs, independently of auth.
+History belongs to the recording and remains visible across accounts; only explicit
+send transmits it. UI, real network and power-loss behavior remain unverified.
+Post-resource app build also PASS, exit 0 (9.71s).
+
+Packaging findings ACCEPTED from read-only `3bfd64e2`; scope CLOSED. Lead inspected
+pinned resource declarations, Metal loader and complete upstream shader builder.
+Added Hub/Crypto resource copies, explicit build scratch path, clean pinned-checkout
+checks and staged metallib build/copy before signing. `mlx.metallib` goes beside
+the executable, not directly in Contents/Resources. Full release/accessor/runtime
+checks remain pending; this technical correction needs no new Human permission.
+
+Corrected auth candidate ACCEPTED: seven-file manifest
+`.build-chatgpt-auth/auth-correction-sha256.txt`, digest
+`460af8ca534c1394673db77516a44d32da0c23ffebc8166ff412ab312f6f5302`.
+All hashes matched. Lead inspected corrected scope generation, complete session
+implementation and regressions, then reran 37/37 auth tests PASS. The three
+rejected behaviors are corrected: plan scopes on ordinary authorization;
+dispatched refresh maintenance persists before stale callers are rejected;
+failed logout cleanup retains its exact retry target. Writer scope CLOSED.
+Auth and chat can now integrate. No real Keychain/OAuth/JWKS/revocation occurred.
+Residual limit: failed logout cleanup blocks access only in the current process.
+Its visible error warns that credentials may remain after restart. Durable
+restart lockout is not implemented. Do not label a failed cleanup as sign-out
+success. Storage failure after server rotation can require reauthentication.
+
+Peer `5b7d17ee-d4c2-4332-b0a6-7941cb522d60` owns only new
+`ChatGPTChat/ChatGPTAccountView.swift` and `ChatGPTChat/LocalChatView.swift`.
+Inputs are accepted auth/controller, existing editor/Markdown and official
+sign-in button. It owns no UI runtime. Parent shell owns recording/account
+context changes. View actions never auto-submit inference; saved local history
+is visible without sign-in. Lead retains shell/package/scripts and acceptance.
+
+Full offline-check packaging FAILED before bundling/signing. Swift Build reports
+CompileMetalFile failures on generated MLX kernels and CompileSwift failures for
+arm64/x86_64. `xcrun -sdk macosx metal --version` independently fails with
+`cannot execute tool 'metal' due to missing Metal Toolchain`. The Swift compile
+diagnostics are not yet classified; missing Metal is not claimed as their cause.
+No prior bundle was replaced or launched. No offline-check process was present.
+Added a fail-fast compiler check; no toolchain download or installation attempted.
+Owner of environment setup: Human. Return event: Metal Toolchain becomes available.
+Continue independent auth/chat integration and native component tests meanwhile.
+
+Lead added explicit `local` packaging mode. It ignores cloud config sources,
+removes stale service keys/URL callbacks and uses `com.lessmeet.app.local`.
+Legacy build modes remain explicit and unchanged in intent. Syntax/config checks
+PASS; full build remains blocked above. Release-generated Hub and LessMeet
+resource accessors were inspected: both search Bundle.main.resourceURL first,
+which supports Contents/Resources placement. Runtime lookup remains unverified.
+Packaging test Peer owns `Tests/packaging/test_agent_checks.py`, `test_packaging.py`
+and an optional local fixture helper only. Production script hashes frozen during
+that assignment: build `6ce6bcaba5fc37431f23f2fd31c7363496a8252fb0080434300fe61d7b40753d`;
+configure `6f0dba4918f86f84a6b3951accc0c4878c4314a16c3b506d4b4ff2d7294886cc`.
+Tests must use inert tools and cannot establish real signing/Metal/UI success.
+Packaging test scope `f661f081-57b9-4263-8cce-054932507a14` is CLOSED. Its first candidate
+was inspected but REJECTED for a fixture HOME/home override prohibited by execution
+instructions. The corrected candidate is ACCEPTED after source inspection and
+Lead rerun: 69 tests PASS in 35.670s. Exact SHA256 values:
+`local_packaging_fixtures.py` `a0e8ea8a97d694b769426f229673340b7506ecbbddbb8897fe8110b088a2d03d`;
+`test_agent_checks.py` `b6af0c432bdb777ab7393271fa23ce46a475651a28d59fd1fc33d963652eafc9`;
+`test_packaging.py` `f472485e628fd45f7bbf657e430fac930b6822f9aca83b22bde66eaf1a7dd0d1`.
+The prohibited override is removed; Git isolation and assertions remain.
+Production scripts stayed at the hashes above. Acceptance covers only synthetic
+orchestration. Actual Metal output, signing and UI remain UNVERIFIED.
+
+Account/chat view candidate ACCEPTED as code input, not UI outcome:
+ChatGPTAccountView `76c0dcb5e971a03a689c10103dd467998ea8e73d0714196807fdf3c88834625c`;
+LocalChatView `a5af4c81f8ba3c90b5e2c7882bd56f1740465c93932b5425cad1600a0c11a32b`.
+Lead read both files and matched hashes. Current native test build compiled both.
+No appearance-time request, explicit model/send controls, guarded draft clearing,
+safe errors and failed-logout retry meet the assigned code contract. Scope CLOSED.
+Computer Use unavailable; no claim of layout or user-flow success.
+
+Lead added three integration tests using real auth/controller/transport/store APIs
+and injected synthetic credentials/network. All three PASS. First test attempt
+failed because its terminal fixture omitted the required message ID; corrected
+fixture then passed without production relaxation. Real trust/sign-in and UI
+are not tested by restored-session fixtures.
+
+Ready shell increment: replace instantiated legacy cloud/account/billing path with
+accepted ChatGPT session/chat, and read accepted local sidecars in the owned shell.
+This does not require the still-undelivered inference controller. Reopen the
+earlier whole-shell wait: only WS2 controller/setup/hook injection waits for its
+exact candidate. Shared controller signatures/invariants remain unchanged.
+Lead will use a minimal sidecar display in LibraryView until LocalTranscriptView
+is accepted; it writes no transcript and does not implement model operations.
+Automatic local-model setup/hook wiring remains a deferred WS2 delivery dependency.
+
+Shell code increment ACCEPTED: LessMeetApp
+`545a73b6982203eff30b2e78b66a360ad9fed84e9b66922fee61fbb55b7625b4`, LibraryView
+`93284a61495d9286b28c9a6e060ba51c8236dd2b5b5638bd517c161eb08fdd46`.
+Read-only `0d66c211` matched all inputs and found no bounded wiring blocker;
+inspection accepted, scope CLOSED. Native build PASS (11.05s). Full Swift suite
+PASS: 265 tests, 3 skipped, zero failures. The first full compile caught the old
+optional cloud-shell screenshot helper calling the retired initializer; removed
+that unused snapshot branch and AppKit/SwiftUI imports, preserving every cloud
+business assertion. No tests drove live UI. README now describes current local
+build/chat use and clearly separates historical cloud documentation.
+This accepts code integration, not runtime usability, live OAuth or inference.
+
+### Retained local-model branch history
+## Local-first pivot — WS2 active (2026-10-11)
+
+Human selected a native macOS, open-source, local-first app. This entry
+supersedes the historical cloud delivery and push instructions below for this
+workstream. Branch `pivot/local-models` starts at `b08b3cd`. No deploy, cloud
+mutation, account-deletion trial, push, release, repository publication or paid
+API call is authorized. Local model downloads and local commits are allowed.
+Human selected Apple Silicon-only support on 2026-10-11. arm64 is the supported
+architecture; Intel Macs are not supported. Arm64-only packaging is accepted
+product policy, not an unresolved exception. WS1 retains packaging ownership.
+
+Outcome: download pinned WhisperKit large-v3 and Nemotron-3-Diarization models,
+show progress/cancel/resume/retry, verify integrity, then transcribe and diarize
+recordings offline. Use 300-second transcription windows and absolute timestamps.
+Keep diarization state across the full recording, with at most eight speakers.
+Save local segments `{startMs, endMs, speaker, text}`; unknown speaker stays null.
+WS2 alone writes transcripts. WS1 reads them and owns ChatGPT sign-in/chat.
+
+Current frontier: all 36 pinned files are downloaded and independently hashed.
+Offline readiness, short WAV inference, M4A finalization/save/reopen and exact
+digital silence have passing real-model evidence. Current code is `ec5cd67`;
+115 local component tests pass under OS network denial with no skips. Captured
+long-boundary replay passes after the anchored merger correction. The fresh
+650-second run and bounded content audit also PASS: 169.37 seconds inference,
+229 segments, two speaker labels plus null, no adjacent repeated words, and
+all four fixture phrase counts match. Main accepts this exact synthetic fixture
+outcome, not general meeting accuracy. No writable Peer remains active. No new
+Human decision is required for WS2. Live capture, broad speech accuracy and
+current integrated release packaging remain separate limits. WS1 `7030593f`
+has RELEASED the shared UI. No further live calls are authorized. WS1 ACCEPTED
+merger `ec5cd67` as `8e8e135`; the integration input is ready and its dependency
+is CLOSED. No further WS2 work is requested.
+
+Current ownership and plan:
+
+- Integration, acceptance and this status entry: agent `45d6fb78`.
+- Package validation: Peer `cd68b7de`, CLOSED and ACCEPTED as `6f14832`.
+  Package hashes `6a802451` / `33263aff` matched; all four old pins unchanged,
+  44 total. Inspected diff/probe/handoff; reran SpeechVAD build and all six
+  offline tokenizer probe groups with OS network denial, PASS. Production token
+  semantics, real inference, upstream test failure cause and packaging remain
+  unverified. Evidence: `.artifacts/dependency-validation/HANDOFF.txt`.
+  WS1 imported the exact pair as `b2df5d4`, matched both hashes and inspected the
+  complete diff/handoff. WS1 ACCEPTED package build input after independent
+  LessMeet build PASS (exit 0, 113.53 seconds) with its current source. Its moving
+  auth/chat is not accepted by that check; regression tests run separately.
+  WS1 now owns package edits and packaging scripts in its worktree, preserving
+  inference imports/pins. Its resource/metallib inspection is read-only.
+  WS1 found required `swift-transformers_Hub.bundle`, `swift-crypto_Crypto.bundle`
+  and colocated `mlx.metallib`; it owns script corrections. Its full Swift Build
+  release attempt FAILED at MLX CompileMetalFile and arm64/x86_64 CompileSwift.
+  Environment diagnosis remains open there; native debug success is not release
+  acceptance. No dependency version change is requested.
+  The missing Metal Toolchain blocker is RESOLVED on 2026-10-11. Human reports
+  authorized installation of 17F109 (exit 0). Independent WS2 execution of
+  `xcrun -sdk macosx metal --version` now succeeds with Apple metal 32023.883.
+  This proves compiler availability, not a successful release build. WS1 retains
+  ownership of packaging and the release-build rerun. The previous CompileSwift
+  failure cause remains UNKNOWN until rerun evidence resolves it. WS2 native
+  debug/component checks were already usable; its real inference `invalidTiming`
+  failure is separate and is not resolved by installing Metal.
+- Active artifact catalog: Peer `01531be2`, new `LocalModelManifest.swift`, its
+  test, `docs/LOCAL_MODELS.md` and `Resources/ModelLicenses/` only. CLOSED and
+  ACCEPTED as `c9eec5047d1895481bc99d41501c9cfc993a01b9`; all ten hashes matched,
+  source/doc inspection and independent isolated 6/6 tests PASS. Sent to WS1 for
+  exact import and notice packaging. WS1 ACCEPTED/imported as `254290e`, matched
+  ten hashes and passed 6/6 tests. Its owned packaging step passes syntax and
+  staged copy/hash checks; full signed packaging remains UNVERIFIED.
+  36 model files total 3,200,167,866 bytes. The initial catalog acceptance did
+  not verify payloads; later actual download/hash evidence appears below. Manifest:
+  `.artifacts/model-audit/catalog-20261011/SHA256SUMS` (digest `014539ff…b54c`).
+- Local merge/attribution: Peer `32328d4c`, CLOSED and ACCEPTED as internal input.
+  Four-file hashes `c2f045ee`/`3b9b6a1e`/`3a6c4d9b`/`3c521b0c` matched;
+  integration owner read all files and reran standalone 11/11 PASS. Evidence:
+  `.artifacts/verify-lessmeet/local-merge.RdyGB1/results.log`. Package integration
+  and model-quality proof remain pending; 250ms/80% are explicit provisional rules.
+- PCM reader: Peer `2612c301`, CLOSED and ACCEPTED. Exact hashes `8c2db002` /
+  `9fca39e6`; inspected both files and reran isolated 10/10 PASS. The 301-second
+  stereo fixture returns 4,816,002 samples, equal to the one-pass reference.
+  Evidence: `.artifacts/local-pcm-reader/`. Full two-hour decoding, integration
+  and peak memory remain unverified.
+- Offline Whisper adapter: Peer `0a5e14df` owns new `LocalWhisperAdapter.swift`,
+  `LocalWhisperTokenizer.swift` and adapter tests. CLOSED and ACCEPTED as `cb5214d`.
+  Exact hashes `0f340405` / `84412138` / `e6266e3b`; full source/tests inspected,
+  all receipt hashes matched and independent nine tests PASS under OS network
+  denial with the actual pinned tokenizer. Evidence:
+  `.artifacts/verify-lessmeet/local-whisper-adapter/acceptance-tests.log`.
+  Real model loading/inference/timing robustness/cancel-in-flight/memory/UI remain
+  UNVERIFIED. Integration owns real-model findings and any needed corrections.
+- Recording-wide Nemotron adapter: Peer `225a7061` owns new
+  `LocalDiarizationAdapter.swift` and its tests. CLOSED and ACCEPTED as component
+  input: hashes `6a3cefa6` / `89f7a951` matched, full source/tests inspected and
+  independent 12/12 tests PASS under OS network denial. Receipt:
+  `.artifacts/local-diarization-adapter/acceptance-tests.log`. Explicit 340/40
+  session geometry; only final speaker labels consumed. Real Core ML quality,
+  long-file memory/time, max-duration behavior and UI remain UNVERIFIED.
+- Model manager/downloader/setup view: Peer `cc4da88d` owns only `LocalModelManager.swift`,
+  optional `ModelDownloadStore.swift`, `LocalModelSetupView.swift` and manager tests.
+  Accepted catalog `c9eec50` is its input. No real model download or UI ownership
+  delegated; integration owner will test actual payloads after source acceptance.
+  CLOSED and ACCEPTED quartet hashes `52264699` / `c05835dc` / `aaf65679` /
+  `22ded121`: full source/tests inspected, hashes matched, independent SwiftPM
+  13/13 PASS, fresh read-only Peer `b4a7d602` found no concrete blocker (assessment
+  ACCEPTED). Build scratch returned. Receipt:
+  `.artifacts/dependency-validation/manager-diarization-tests.log` (25/25 total).
+  This accepts integration/download trial inputs, not UI/CDN/large-model proof.
+  Integration owns real payload download under `.artifacts/local-inference/models`
+  through `scripts/LocalModelDownloadCheck.swift`, with cancel/resume and offline
+  recheck. Expected catalog bytes: 3,200,167,866; available disk: 53 GiB.
+- Integration owner retains AppModel hook and tests, manager/controller integration,
+  acceptance and docs, `LocalAudioWindows.swift` and tests, plus
+  `scripts/make-local-inference-fixtures.sh`.
+  PCM/merge/windows/capture inputs are committed as `e2f5971`. Manager, adapters
+  and controller are accepted integration inputs. All writer build scopes have
+  returned; `45d6fb78` now owns the local SwiftPM scratch and runtime corrections.
+- Engine assembly is accepted/committed as `410598b`; three pure assembly tests
+  and nine Whisper tests PASS in SwiftPM. Actor work uses two bounded audio passes,
+  300/295-second transcription windows and one full-recording diarization session.
+  Actual-model verification remains separate.
+- Controller/view: Peer `7f832ff3` CLOSED; candidate ACCEPTED as
+  `5b308e6cf2473222546f53a3ebb8d0c61195e84f`, parent
+  `410598b59e900d678f50ef2aecdd7b7a70619c0c`. Exact three-file hashes
+  `c26da6a2` / `ab4a7b70` / `8c78e2da` match. Full source/tests were inspected.
+  Independent combined direct XCTest execution with OS network denial passed
+  92/92, including 13/13 controller tests. Evidence:
+  `.artifacts/dependency-validation/combined-xctest-network-denied.log`.
+  Fresh read-only assessment `58b71849` found no concrete blocker and is ACCEPTED.
+  The prior nested SwiftPM sandbox denial is retained as failed environment
+  evidence, not a product failure. Transcript UI and real inference remain
+  UNVERIFIED. No writer or reviewer retains this scope.
+  Ready import sequence after already imported `6f14832`: `e2f5971`, `f023892`,
+  `9ee218d`, `cb5214d`, `410598b`, `5b308e6`. This supplies the hook, setup,
+  inference dependencies and controller without edits to WS1-owned shell files.
+  WS1 can wire the existing accepted contract now; runtime timing correction is
+  a follow-up and must not block shell integration. No push or merge is authorized.
+- Read-only model provenance/license/API audit: Peer `ab832042`, CLOSED;
+  accepted as research input only, not dependency/runtime acceptance.
+- Read-only capture/overlap diagnosis: Peer `00f27c8c`, CLOSED and ACCEPTED.
+- Read-contract writer: Peer `97e9fec9`, only new `LocalTranscript.swift`,
+  `LocalTranscriptStore.swift` and `LocalTranscriptStoreTests.swift`. Scope CLOSED;
+  original candidate hashes `c6cc7891` / `4ae5b7c9` / `5d060400` inspected and matched.
+  Eight isolated tests and actual SwiftPM integration tests passed.
+- Fresh read-only candidate inspection: Peer `e15d2275`, CLOSED and ACCEPTED.
+  No concrete blocker; limits are recorded below.
+- Real download trial: first cancellation PASS after 13,056,232 reported bytes
+  in 8.51 seconds; partials preserved, process exited 0. Peak process RSS was
+  33,865,728 bytes. Receipt `.artifacts/local-inference/download-cancel.log`.
+  A new manager resumed the same private cache.
+  Resume finished PASS: all 3,200,167,866 catalog bytes verified by manager,
+  elapsed 150.31 seconds, max RSS 61,849,600 bytes. Receipt:
+  `.artifacts/local-inference/download-resume.log`. Independent hashes and
+  OS-network-denied readiness/inference checks are the next frontier.
+- Independent `shasum` checks PASS for all 36 downloaded files. OS-network-denied
+  manager startup reaches ready in 1.12 seconds without download. Evidence:
+  `.artifacts/local-inference/independent-hashes.log` and `offline-ready.log`.
+- First real offline dialogue inference FAIL: Whisper model loads and starts
+  transcription, then adapter throws `invalidTiming`. No output saved.
+  Receipt `.artifacts/local-inference/dialogue-run-1.log` (43.05 seconds,
+  max RSS 1,925,922,816 bytes). Exact diagnosis: raw word ` We` has 0.02..0.02
+  seconds while its parent sentence has valid 0.02..1.72 seconds. `convert`
+  rejects the zero-duration word. Evidence: `raw-timings.log` in the same folder.
+  Owner `45d6fb78` corrected this as `bbcc8a8b56866fcc5cbae8d0c882cb685006e8c4`.
+  Regression reproduced `invalidTiming` before the fix. The fix uses valid
+  parent sentence timing for a finite zero-duration word inside parent/audio,
+  without inventing word duration. Other malformed or reversed times still fail.
+  Independent focused OS-network-denied tests PASS 27/27, including both new
+  regression cases. Evidence: `.artifacts/dependency-validation/zero-duration-red.log`
+  and `zero-duration-offline.log`. Correction ACCEPTED and handed to WS1.
+  Real 31.174-second offline synthetic dialogue now PASS: 10 segments, two
+  speaker labels, one unknown-speaker segment; 47.06 seconds inference and
+  max RSS 1,924,136,960 bytes. Output JSON round-trip passed. Receipts:
+  `.artifacts/local-inference/dialogue-run-2.log` and `dialogue-result-2.json`.
+  Full finalization-hook/controller/real-engine/store save/reopen PASS with
+  generated M4A in a private library under OS network denial: 10 segments,
+  one callback, ready metadata preserved byte-for-byte, sidecar reopened through
+  a new RecordingStore. Receipt `.artifacts/local-inference/finalization-run-1.log`:
+  one actual-model test PASS, 51.59 seconds, max RSS 1,971,585,024 bytes.
+  This injects synthetic capture at the existing boundary; it does not prove
+  microphone/system-audio capture, UI or full shell wiring. The first 650-second
+  real-model check FAILED `invalidTiming` in window 2 after 119.72 seconds;
+  no output was saved. Evidence: `.artifacts/local-inference/long-run-1.log`.
+  Raw long-window diagnosis: the final sentence spans 296.78..308.68 seconds
+  although the input ends at 300 seconds. Its last three words start at or
+  beyond the real audio end. WhisperKit pads its decoder input to 30 seconds.
+  The adapter now excludes only bounded, parent-contained tail predictions from
+  a sentence crossing that real end, reports their count, and retains all
+  in-window words. Malformed or unexplained out-of-window intervals still fail.
+  Red regression reproduced two failures; corrected standalone tests PASS14/14
+  with OS network denial. Replaying the entire captured window passed:
+  20 input sentences, 761 retained word segments, three excluded tail words.
+  Evidence: `raw-long-window-2.log`, `padded-tail-red.log`, `padded-tail-green.log`
+  and `replay-timings.log` under `.artifacts/local-inference/`.
+  Tail correction is committed as `c0f60560f931798474a87b0791cc4988826da3ae`.
+  Fresh read-only Peer `3581ee13` found a concrete mixed-granularity overlap
+  defect on `bbcc8a8`: one fallback sentence versus its two word segments cannot
+  match the one-to-one merger, so both survive. Finding ACCEPTED; review CLOSED.
+  Decision: add the reproducer and match only unambiguous contiguous equal-text
+  sequences with compatible outer timing. Preserve ambiguous/unmatched text.
+  Integration owner `45d6fb78` owns the timing diagnosis and long/silence reruns.
+  Peer `eb431e35` owned only `LocalSegmentMerger.swift` and its tests for the
+  mixed-granularity correction, against accepted `bbcc8a8`. Short-file and
+  controller acceptance stand; long-overlap quality is not accepted.
+  Its first candidate `d8081267` / `aafefaeb` was REOPENED: actual adapter rounding
+  creates 1 ms internal overlaps, which the first sequence matcher rejects.
+  Requested bounded 1 ms rounding tolerance with monotonic endpoints, continued
+  preservation for larger overlaps, and bounded sequence enumeration. Revised
+  hashes `643ef0cc` / `fb36fbf5` ACCEPTED after full inspection, hash match and
+  independent 19/19 standalone tests PASS in `.artifacts/overlap-correction/acceptance.log`.
+  Committed as `9a5eb1035795769b416b33282816393a21ab956f`; writer scope CLOSED.
+  It matches both directions, bounds each overlap side to 64 contained entries,
+  and preserves ambiguous, crossing or crowded boundaries. That preservation
+  can retain duplicates; it is not blanket duplicate-free acceptance.
+  Combined SwiftPM tests PASS105/105 (23.45 seconds). Second real 650-second
+  run completes all three windows and JSON round-trip: 229 segments, two speaker
+  labels, 182.65 seconds inference, max RSS 1,897,381,888 bytes. Receipt:
+  `.artifacts/local-inference/long-run-2.log` and `long-result-2.json`.
+  Runtime/save is PASS, but content inspection REJECTS blanket overlap quality:
+  near 590 seconds output contains `We We`, repeated `are`, and `project project`.
+  Owner `45d6fb78` is comparing raw windows 2/3 before a further correction.
+  Raw comparison identifies >250 ms drift on `We`/`are` and a `project` word
+  ending 60 ms beyond the overlap edge. Peer `eb431e35` again owns only merger
+  and merger tests for an evidence-bounded correction. Keep normal tolerance;
+  proposed higher-drift matching requires a consecutive confirmed text run.
+  It must preserve ambiguous and unmatched text. Main owns the silence adapter
+  correction and private runtime harnesses; no concurrent writes to merger files.
+  Writer returned candidate `a490f988` / `cdc50321` and released both files.
+  Its red exact-boundary regression failed, then 28/28 isolated tests passed.
+  Main matched both hashes and read the full source/test diff. Candidate
+  ACCEPTED as a bounded integration input: independent 28/28 tests PASS and
+  full raw-window 2/3 replay PASS with no repeated `We`, `are` or `project`.
+  Original left words and the unmatched right `decision` remain. Receipts:
+  `.artifacts/overlap-correction/anchored-acceptance.log` and
+  `.artifacts/local-inference/replay-boundary.log`.
+  Fresh read-only Peer `84bb7549` found no concrete ambiguity-contract blocker;
+  assessment ACCEPTED and CLOSED. Same-text distinct speech remains a heuristic
+  risk. Writer scope CLOSED. Main owns integration and the fresh 650-second run;
+  component acceptance does not establish runtime overlap quality or UI.
+  Correction committed as `ec5cd67252790674f5152ac134f7bc1553a83521`.
+  Current combined component check PASS115/115, zero skips, with OS network
+  denial and the pinned tokenizer; 20.94 seconds. Build PASS14.39 seconds.
+  Evidence: `.artifacts/dependency-validation/anchored-build-tests.log` and
+  `anchored-combined-network-denied.log`. Fresh 650-second real inference PASS
+  on these exact source bytes: 169.37 seconds inference, 171.58 seconds wall
+  time, max RSS 1,922,285,568 bytes. Saved 229 segments, two speaker labels plus
+  null; JSON round-trip and absolute times within 0..650000 ms PASS.
+  Bounded content audit PASS: expected phrase counts 21/21/21/20, no adjacent
+  duplicate words, inspected boundaries at 295000 and 590000 ms. Two distinct
+  voice-anchor sentences each retain the same respective speaker label across
+  all 21 repetitions. There are 41 unknown-speaker segments. This is not a
+  general diarization score. Main ACCEPTS this fixture result. Prior runtime
+  failure and failed content audit remain retained, not relabeled as passes.
+  Evidence under `.artifacts/local-inference/`: `long-run-3.log`,
+  `long-result-3.json`, `long-audit-3.log`, `long-speaker-audit-3.log`,
+  `long-run-3-SHA256SUMS`. Harness SHA-256
+  `64ae4b9007afc355782f9a2c8faae397bf3408792e1adb9e692b19a918472023`
+  matched before/after. General speech accuracy, ambient noise, Vietnamese,
+  maximum duration, acoustic identity and production UI are outside this proof.
+  The ten-second digital-silence run FAILED `invalidTiming` before diarization;
+  its raw output is under diagnosis. No silence output was saved. Evidence:
+  `.artifacts/local-inference/silence-run-1.log`.
+  Raw silence output is `you` at 29.52..29.62 seconds for ten seconds of zero
+  PCM. Main added an exact-zero PCM fast path, not a quiet-audio threshold.
+  Correction `384fde3547ae7d59c7036e01060198a6557c3954` ACCEPTED for this case:
+  15/15 focused tests PASS with pinned tokenizer and OS network denial.
+  Full ten-second silence pipeline PASS with real model loading, Whisper
+  decoding skipped, Nemotron execution, and empty JSON save/reopen. Elapsed
+  inference 28.77 seconds; max RSS 1,922,613,248 bytes. Evidence:
+  `.artifacts/local-inference/digital-silence-tests-with-tokenizer.log`,
+  `silence-run-2.log` and `silence-result-2.json`. Harness used the unchanged
+  accepted merger from `9a5eb10`, not concurrently edited merger bytes.
+  Ambient-noise hallucination and quiet-speech accuracy remain unverified.
+  WS1 ACCEPTED/imported exact `384fde3` as
+  `63042543ad2d02f08be1df79816cd776fd019ad1`; both file hashes matched.
+  It independently passed all 15 adapter tests with the pinned tokenizer and
+  OS network denial, and inspected the empty JSON and runtime receipt.
+  Evidence in its worktree:
+  `.artifacts/verify-lessmeet/full-package-metal/digital-silence-pinned-xctest.log`.
+  Its packaged app at import time predates this correction. No further silence work requested;
+  current implementation frontier remains the bounded long-overlap correction.
+  This work keeps the accepted engine/controller API unchanged. The smallest
+  code path now has real-model save/reopen proof. WS1 owns shell hook wiring;
+  live capture/UI verification still needs the exact integrated artifact and
+  an authorized fixture. No new Human decision blocks the code path.
+- Model setup component UI ACCEPTED for `9ee218d` on 2026-10-11.
+  Observed progress/bytes, Cancel, persistent pause after view recreation,
+  Resume, integrity error/Retry, and ready state. Synthetic transport covers
+  transitions; the real 36-file cache reaches ready under OS network denial.
+  Exact fixture executable hash `8f6ed9cb…fd908`; all five manifest hashes and
+  strict code-signature verification passed after the run. Evidence and limits:
+  `.artifacts/verify-lessmeet/local-model-ui/RESULT.md`. Capture 08 is checking
+  despite its filename; capture 10 proves ready. This does not accept full app
+  integration, inference, authentication or packaging.
+  Final fixture exited 0; PID 10870 and exact-path process search were absent
+  at 2026-10-11T06:57:35Z. Earlier fixture sessions exited 0. Private evidence
+  and caches remain; no deletion or account/browser/settings action occurred.
+  UI reservation `45d6fb78` RELEASED. No WS2 UI driver remains active.
+  WS1 `7030593f` subsequently completed its bounded synthetic ChatGPT component
+  subset and explicitly released UI. It reports fixture PIDs 36434/39043 exited
+  0 and absent from exact process searches. Its RESULT.md under its own
+  `.artifacts/verify-lessmeet/chatgpt-ui/` owns that evidence and limits.
+  WS1 `7030593f` completed and RELEASED its bounded full-shell fixture check.
+  Exact target in its worktree: `.artifacts/verify-lessmeet/full-shell-ui/build.thopoyf4/FullShellFixture.app`,
+  executable SHA-256 `c8e94cce6755333e2db984afd354f385568a5fd002e65682b6d60823896a296c`.
+  Only injected synthetic capture/models/auth/Responses/library are in scope;
+  the sandbox denies network, normal recordings and Keychain. WS1 reports
+  observed production transcript progress/save/refresh, sidecar-to-chat request,
+  keyboard Send, stream tab/cancel, quota/draft retention and process reopen.
+  Its `.artifacts/verify-lessmeet/full-shell-ui/RESULT.md` and captures 01–41
+  own the evidence. PIDs 64291/69153 exited 0 and exact process searches were
+  absent. Real models and live auth were not used. No current UI owner here;
+  timing/overlap work continues without UI. No new auth or permission authority.
+  WS1 independently read the installed Computer Use skill and imported bundled
+  `@oai/sky`; its skill/runtime blocker is resolved. Target-app permissions
+  remain UNVERIFIED. Release adds no auth/account or other UI authorization.
+  Subsequent signed auth fixture reservation is RELEASED. WS1 reports original
+  PID 89979 and corrected fixture PID 7708 quit through Sky, both launch sessions
+  exited 0, and exact process checks found neither process. Its reported results:
+  one Human login, model list and stored-session reopen PASS; the single live
+  chat FAILED with a generic malformed-response error. No retry occurred.
+  These are WS1 observations, not independent WS2 UI verification. No more live
+  calls are authorized. UI release grants no new auth, recording or model work.
+  WS1 ACCEPTED exact merger `ec5cd67252790674f5152ac134f7bc1553a83521`, imported
+  as `8e8e135` on `pivot/chatgpt-signin`. Both supplied file hashes matched;
+  it inspected the complete production/test diff and independently passed
+  28/28 standalone tests with OS network denial in 0.089 seconds. Receipt in
+  its worktree: `.artifacts/verify-lessmeet/anchored-merge/tests.log`.
+  It verified harness/adapter/merger hashes, read runtime/audit receipts and
+  independently parsed the saved JSON: 229 segments, 41 unknown speakers,
+  ordered valid times within 0..650000 ms and phrase counts 21/21/21/20.
+  WS1 ACCEPTED the exact 650-second synthetic outcome: 169.374 seconds engine,
+  171.58 seconds wall time, max RSS 1,922,285,568 bytes. General quality,
+  Vietnamese, noise, two-hour input and UI remain outside this acceptance.
+  Prior failures remain retained. Merger integration input is ready; dependency
+  and handoff scope CLOSED. No further WS2 work is requested. No API, schema
+  or package contract changed, and no UI owner remains active.
+- WS1 contact: `7030593f`, separate `pivot/chatgpt-signin` worktree.
+- WS1 accepted the read contract and file ownership on 2026-10-11.
+  Existing `Recording.transcript` is
+  `String?`; the segment schema exists in batch JSON validation, not a local field.
+- Accepted route: `LocalTranscription/LocalTranscriptStore.swift` extends
+  `RecordingStore` with `loadLocalTranscript(for id: UUID) throws -> LocalTranscript?`
+  and `saveLocalTranscript(_:for:)` (WS2 only). Path:
+  `root/<recording UUID>/transcript.json`. Missing means nil; malformed data or
+  unsupported version throws. Never fall back to a cloud transcript.
+- `LocalTranscript: Codable, Equatable` has `version: Int = 1` and
+  `segments: [LocalTranscriptSegment]`. Segment fields are exactly
+  `startMs: Int64?`, `endMs: Int64?`, `speaker: String?`, `text: String`.
+  Timestamps are absolute milliseconds, or a paired null. Local inference emits
+  timed segments. `Recording.swift` and `RecordingStore.swift` stay unchanged.
+- WS2 owns new `LocalModels/`, `LocalTranscription/`, `LocalModelSetupView`,
+  `LocalTranscriptView`, and the `AppModel.swift` capture hook. WS1 owns auth/chat
+  and `LibraryView.swift`/`LessMeetApp.swift`. Never edit the other worktree.
+- Agreed view entries: `LocalModelSetupView(manager:)` from a sidebar sheet and
+  `LocalTranscriptView(model:, recordingID:)` in the Transcript tab. The shared
+  manager/controller constructors, lifecycle and completion notification below
+  are now accepted. Implementation still needs its own ready model inputs.
+- WS2 adds pinned model dependencies first, then returns a stable `Package.swift`
+  diff and `Package.resolved` effects. WS1 waits for explicit handoff before any
+  package edits. Do not remove dependencies still imported by existing source.
+- WS1 exclusively owns `scripts/build-app.sh` and `scripts/configure-app.mjs`.
+  WS2 must not edit them. After accepting/importing the catalog resources, WS1
+  copies `Resources/ModelLicenses/` unchanged to `Contents/Resources/ModelLicenses`
+  before signing, then verifies filenames, content hashes and codesign. Do not
+  silently omit notices. This does not accept dependencies or runtime behavior.
+- WS1 reopened the unnecessary whole-shell wait. Its accepted auth/chat views
+  can migrate LibraryView/LessMeetApp away from instantiated cloud/account/billing
+  now. Until the exact WS2 controller/view is delivered and accepted, its own
+  read-only sidecar display plus manual refresh remains. That display never
+  writes transcripts or runs models. Later inject one shared manager/controller
+  and hook, then replace only this small display. Shared signatures unchanged.
+- Read-contract candidate committed as `b67fc0a1ad7ea575157851d4bb88ed86e0c16248`
+  over `b08b3cd`, accepted and imported by WS1 as `1125de6`. Runtime UI is not accepted.
+- Ready inputs: accepted pinned dependencies, catalog and local overlap matching.
+  Next: model acquisition, inference adapters, capture wiring,
+  then exact-artifact tests and runtime checks. Each new scope gets one writer.
+
+UI, offline inference, download recovery and long-file measurements are
+UNVERIFIED. Historical tests below do not verify this pivot.
+
+Integration checkpoint: local window assembly, PCM reader, overlap merger,
+speaker attribution, transcript sidecar, catalog and capture-finalization tests
+PASS 42/42 in the real SwiftPM test target. Command uses the isolated dependency
+scratch and public-only resolver switches; receipt is
+`.artifacts/dependency-validation/integration-tests.log` (2026-10-11).
+Capture hook fires only after normal stop and successful metadata save. Window
+tests cover exact 300-second EOF (no overlap-only tail), fractional samples,
+650-second geometry and content continuity. This does not accept moving manager
+or adapter code that happened to compile, or establish actual capture/UI behavior.
+
+Controller agreement (interface accepted; ready inputs required for implementation):
+
+- `LocalModelManager` is a main-actor observable object with
+  `init(root: URL? = nil)`, async `start()`, `cancel()`, and `retry()`.
+- `LocalTranscriptionModel` is a main-actor observable object with
+  `init(app: AppModel, manager: LocalModelManager)`, `transcribe(recordingID:)`,
+  and `cancel()`. It holds AppModel weakly and never writes Recording metadata.
+  The shell constructs AppModel, one manager, then one controller.
+- The capture callback fires once only after successful stop and durable ready
+  metadata save. No callback follows interrupted/failed stop or failed save.
+- Jobs stay bound to recording IDs. Deduplicate active/pending IDs. Queue until
+  models are ready. Cancellation clears active and pending work. Never auto-retry.
+- Preserve previous sidecars on failure/cancellation and label them as previous
+  output. After atomic save, set `completedRecordingID`, then increment published
+  `revision`. Failure/cancellation changes neither completion field.
+- WS1 rereads on appearance, selection, revision and before sending chat; each
+  request freezes its transcript snapshot. Revision is process-local.
+- Final startup agreement: async `prepare()` inspects local integrity/readiness
+  without downloading. Once per application session, await prepare then call
+  start if required models are missing and state is neither canceled nor failed.
+  Show declared size, progress and cancel. Keep the once-per-session guard in
+  shared manager/controller state, not a transient view. Window recreation or
+  repeated SwiftUI tasks must not restart canceled/failed downloads. Retry is
+  user-triggered; ready models do not download again. This preserves Human's
+  automatic first-launch policy. The button-only proposal is superseded.
+
+Overlap diagnosis accepted against `b08b3cd`: the actual TS merge returns one
+segment for exact timestamps, but two for 1 ms or 120 ms drift with identical text.
+Lead reproduced all three cases with Node's experimental TypeScript transform.
+The existing cloud test expects this behavior; leave backend unchanged. The new
+local merge needs bounded, one-to-one, adjacent-overlap matching. A proposed
+250 ms tolerance is not empirically validated. Do not add the audit's suggested
+extra envelope fields; the agreed sidecar remains `{version, segments}`.
+
+Model audit inputs (not installed or measured):
+
+- WhisperKit release 1.1.1 source revision
+  `1bbc57cb7fe6410248a685b1c5a3c6d56adc2ed4`, product `WhisperKit`.
+- speech-swift revision `cbcdfc6be5e723952d29ab6e32af5e22ad8e70fa`, product
+  `SpeechVAD`. Core ML use still links MLX-related target dependencies.
+- HF `argmaxinc/whisperkit-coreml` revision
+  `0f63a7800b00dd0226abd051b906c246e1907482`, full
+  `openai_whisper-large-v3/`: published inventory 3,090,319,899 bytes.
+  Do not substitute the compressed Turbo recommendation.
+- HF `openai/whisper-large-v3` tokenizer revision
+  `06f233fe06e710322aca913c1bc4249a0d71fce1`.
+- HF `aufklarer/Nemotron-3-Diarization-100M-CoreML-INT8` revision
+  `db823d36c2230d5535a6165c932f8a5369484b7a`: selected published files total
+  107,083,235 bytes. Community conversion, not an NVIDIA-published binary.
+  Source checkpoint: `a435e9867d79e789e90053f9b6d6834053af564a`.
+- WhisperKit is MIT with embedded Apache notices; speech-swift is Apache-2.0,
+  not MIT. Nemotron weights are OpenMDW-1.1; retain LICENSE and NOTICE.
+- Published LFS checksums exist; Git blob IDs are not raw SHA-256. A uniform
+  per-file hash manifest is accepted as `c9eec50`. Actual downloaded-byte
+  verification remains unfinished.
+- Lead confirmed the pinned Whisper tokenizer loader falls back to network after
+  local parse failure, even with model download disabled. Fail-closed tokenizer
+  loading needs a tested solution before claiming offline operation.
+- Use one Nemotron streaming session for the entire recording, explicit saved-
+  audio geometry, final labels after finish, and null for ambiguous attribution.
+  Runtime retains confirmed probabilities, so long-file memory must be measured.
+- Direct pinned products are the first experiment; no vendoring is justified yet.
+  Upstream test failure and optional real-model coverage remain unclassified.
+- Dependency validation request is now ready: WS1 accepted/imported the small
+  read-contract candidate. Integration owner `45d6fb78` will now resolve
+  and build the pinned products, inspect lockfile effects, prove tokenizer
+  fail-closed behavior, and verify model downloads. No new Human permission is
+  required for those already-authorized local checks.
+
+Read-contract implementation ACCEPTED (2026-10-11):
+
+- Exact candidate: `b67fc0a1ad7ea575157851d4bb88ed86e0c16248`, parent
+  `b08b3cdae5aeb4cbbd5c771a5f887584afaa518c`. Contains only the two new
+  `LocalTranscription` source files and `LocalTranscriptStoreTests.swift`.
+  STATUS is kept in a separate documentation commit so WS1 can import code alone.
+- Integration owner inspected all three files and matched the original hashes.
+  Fresh inspection found no blocker. Only a comment was corrected afterward:
+  the existing two-hour window geometry allows 25 windows, not 24.
+- Final source SHA-256: `LocalTranscript.swift`
+  `c6cc789172781383e32d90d47cf4ad7f26c15840823deb16dded9674f2d4b7ee`;
+  `LocalTranscriptStore.swift`
+  `af6ce160c51bf7ad03b9d5cd1f5ddc8dc90a4fd79bae19322f875a6d0066cdc9`;
+  `LocalTranscriptStoreTests.swift`
+  `5d060400cb4458be0d899282c5825b474bc5059f69078f274e3cd3f8e3b118e4`.
+- Actual `swift test --filter LocalTranscriptStoreTests`: 8/8 PASS.
+  Combined local/legacy store rerun: 11/11 PASS. Existing locked dependencies
+  resolved and compiled; `Package.swift` and `Package.resolved` did not change.
+  Evidence: `.artifacts/verify-lessmeet/read-contract.JUGof8/tests.log`.
+  Final comment-corrected build plus all 11 tests also PASS; exact receipt:
+  `.artifacts/verify-lessmeet/read-contract.JUGof8/final-tests.log`.
+- Verified: exact keys and explicit nulls; paired timestamp validation; malformed
+  and duplicate-key rejection; unsupported-version rejection; missing-file nil;
+  per-recording isolation; store reopen; unchanged recording metadata; prior
+  sidecar preserved after rejected validation/oversize saves; 16 MiB file bound.
+- No injected filesystem replacement failure, concurrent-reader test or power-loss
+  proof. Atomic replacement is the implementation, not a power-loss guarantee.
+  Encoding allocates before checking size; the file limit is not a peak-RAM bound.
+- This is usable storage/read input for WS1, not a completed local inference app.
+  UI, model download, offline inference and long-file performance are UNVERIFIED.
+  No shared shell, capture hook, legacy Recording/RecordingStore or package edits.
+- WS1 ACCEPTED exact candidate `b67fc0a` after source/hash inspection and imported
+  code only as `1125de6f3f28defdc48e9bda97db19b48801761a`. Its independent
+  `swift test --scratch-path .build-ws1-integration --filter
+  'LocalTranscriptStoreTests|RecordingStoreTests'` built and passed 11/11, exit0.
+  WS1's other writer changes are not accepted by that test. The read dependency
+  is resolved; WS1 may consume the read-only API. WS2 may continue its model,
+  controller and owned AppModel hook as their inputs become ready. Shell remains
+  WS1-owned; package changes remain WS2-first. No product decision is needed.
+
 ## Commit and push of accepted local work (2026-10-11)
 
 - Human authorized commit and push to origin/main only. No deploy, flag change
