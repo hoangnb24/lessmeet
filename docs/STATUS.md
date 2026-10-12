@@ -1,5 +1,557 @@
 # LessMeet delivery
 
+## Release activation — current authority and frontier (2026-10-12)
+
+Human authorizes commit, push to `check/main-build-20261012`, PR creation,
+merge after required checks pass, `LESSMEET_GITHUB_RELEASE_ENABLED=true`, and
+verification of a real pipeline-created release in `hoangnb24/lessmeet`.
+This supersedes the release task's historical no-push/no-merge/no-activation
+restrictions below. No direct main push, admin merge or protection bypass.
+Lead solely owns integration, STATUS and GitHub activation. Three previous Peer
+scopes are CLOSED and idle. UI owner NONE. Preserve private evidence and history.
+
+Input: accepted nine-file snapshot in
+`.artifacts/release-automation/changelog-reopen/verification-e_otpmoj/checks.json`;
+STATUS is the tenth handoff file. Product, pins, app version and signing policy
+remain unchanged. No Apple upload, new credentials or expanded permissions.
+Frontier: verify identity and local gates; inspect GitHub policy; commit exact
+files; push and open PR; run hosted diagnostic on the exact PR commit before
+merge. Enable publishing before the first eligible merge. If bootstrap does not
+receive the install merge event, use a small pipeline activation PR with checks.
+Never manufacture a manual release as trigger evidence. Hosted release remains
+UNVERIFIED until exact SHA, build, tag, four assets and checksums are observed.
+Record final results locally without repeated status-only release commits.
+
+Precommit identity: all nine accepted hashes match. Fresh 91 release tests,
+actionlint, diff-check and unchanged-product/pins checks PASS. The accepted
+69 packaging tests and independent review remain valid for unchanged inputs.
+Evidence: `.artifacts/release-automation/activation/precommit.json` (private).
+Read-only GitHub checks: remote main remains `96412826c688a9042ca278bdaf2088a21712048d`;
+Actions enabled, all actions allowed, default token permission read. Main reports
+`protected=false`. Protection/rules APIs return HTTP 403: `Upgrade to GitHub Pro
+or make this repository public to enable this feature.` No policy was changed.
+Use existing `main-build-diagnostic.yml` with `package_mode=local`, workflow ref
+feature branch and exact `source_ref` PR head; this binds the check to that head.
+Require its success and any required PR checks before normal merge. Use one
+40-minute diagnostic and one 40-minute release build initially; no blind retries.
+The merged-event bootstrap remains an observation to make, not an assumed pass.
+
+## Historical offline acceptance — activation authority superseded above
+
+## Automation sau merge main — corrected candidate ACCEPT offline (2026-10-12)
+
+Final handoff disposition: ACCEPT corrected nine-file snapshot in
+`changelog-reopen/verification-e_otpmoj/checks.json`. All nine hashes match.
+Provenance/changelog code and the rebase example were inspected; 91 release
+tests and `git diff --check` passed again. Implementation scope is closed.
+Keep candidate and evidence. Human owns the next push/PR/merge and activation
+decision. No hosted run or release has occurred; signing/runtime limits remain.
+No push, merge, tag, live release or activation is authorized. Hosted fetch,
+rendering, CI and recovery remain UNVERIFIED. The artifact remains an arm64,
+ad-hoc-signed prerelease without notarization. Preserve the accepted candidate
+and evidence. Wait for Human's activation decision; only this STATUS disposition
+is updated.
+
+Bounded REOPEN changelog đã được sửa và ACCEPT offline. Changelog có event title,
+subjects và toàn bộ original PR commits theo graph/count policy; integration SHA
+được ghi riêng. Không suy ra rewritten-main range từ commit cuối. Giữ nguyên
+các giới hạn hosted activation, credentials, signing và E2E phía dưới.
+Next: Human review corrected candidate theo quy trình PR; activation cần quyền
+riêng như CONFIGURATION. Không còn scope implementation/review đang mở.
+Không live CI/API writes/push/tag/release; version/signing/credentials không đổi.
+Các dispatch và kết quả FAIL sau đây là lịch sử của bounded correction.
+`196feea7` chỉ nghiên cứu primary semantics trong `changelog-reopen/research/`,
+không sửa code; không có writer Peer khác. Route đang đánh giá: snapshot event
+title + original PR head/commits; không đoán range rebased main từ SHA cuối.
+ACCEPT research `changelog-reopen/research/recommendation.json`: primary docs
+xác nhận SHA rebase đổi, empty commit có thể bị bỏ; không có bảo đảm event base
+là premerge. Route được chọn: original PR graph range + exact event count,
+không nhận là mapping rewritten-main. Research scope đóng; Lead sửa toàn bộ
+helper/tests/docs và wiring workflow nhỏ `--fetch-pr-head` với read-only job token.
+Không mở rộng token permission hoặc credentials. Snapshot schema2 có title,
+subjects, original head/base/boundary/count và integration SHA riêng; sealed bytes
+là nguồn cho publish/rerun. Thiếu history/count/topology proof phải fail closed.
+Candidate correction được freeze cho read-only audit `196feea7`, chỉ ghi
+`changelog-reopen/review/`: helper `75f8e7b9`, workflow `943fd029`, new fixtures
+`f10e5136`, helper tests `b7f80c11`, boundary tests `3d31d438`/`72d5635c`,
+CONFIGURATION `ea7a5b78`; wrapper/validator không đổi. 90 tests PASS trước test
+escaping cuối; final suites đang chạy. Chưa ACCEPT corrected candidate.
+Final run đầu giữ FAIL tại `changelog-reopen/verification-8rapunoi/`: test escaping
+đổi object nhưng chưa ghi plan fixture trước seal. Đã sửa đúng fixture; helper
+không đổi. Hash helper tests mới `fd770865`; reviewer nhận snapshot mới, final
+suites được chạy lại. Không chuyển FAIL này thành kết quả PASS cũ.
+Final rerun PASS tại `changelog-reopen/verification-e_otpmoj/checks.json`:
+91 release tests, 69 packaging tests, actionlint/diff-check/unchanged-product.
+Schema2 plan → build dry-run → seal accepted real ZIP → publish dry-run PASS.
+Provenance graph của integration này được tạo trong clone synthetic riêng; SHA
+source/app giữ base đã ACCEPT, PR999999 không phải event thật. Không fetch GitHub,
+compile/launch/publish hoặc sửa ref của project. Chín candidate hash không đổi.
+Example rebase: `changelog-reopen/tests/graph-z3wilwy5/changelog.md` ghi đủ ba
+subjects kể cả empty commit, separate integration tip.
+
+### Acceptance correction changelog
+
+ACCEPT exact chín hash trong
+`.artifacts/release-automation/changelog-reopen/verification-e_otpmoj/checks.json`,
+khớp `changelog-reopen/review/findings.json`. Helper SHA256:
+`75f8e7b91b758cf7d13db61f2df6a03584cc4e243d621e1b614c93be4f943787`.
+Chín file gồm workflow, helper, wrapper, validator, bốn test files và CONFIGURATION;
+STATUS là handoff cập nhật sau snapshot. Hash các file đã kiểm tra lại, không đổi.
+
+Lý do: đã đọc exact code và generated notes; 91 release tests, 69 packaging tests,
+actionlint và schema2/real-archive integration đều PASS. Review độc lập có 96
+checks PASS (cùng 91 tests + năm probes riêng), gồm DAG nhiều nhánh, SHA tie-break,
+rebase empty commit, inert text, sealed rerun và subprocess-level fetch mock.
+ACCEPT report review; evidence/test failure cũ giữ riêng, không tính thành PASS.
+Peer review scope đóng; Lead giữ STATUS, UI owner NONE.
+
+Claim được ACCEPT: title từ merged-event snapshot, subjects từ immutable Git
+objects và complete original PR graph range với exact event count. Merge,
+squash, rebase fixtures nhiều commit đều có đủ nội dung. Không claim mapping
+rewritten-main commits hoặc mô tả conflict resolution. Missing/ambiguous/count
+mismatch dừng trước build/publish, không xuất danh sách bị cắt. Publish/recovery
+không đọc lại title/ref hiện tại; đổi snapshot không được overwrite release.
+
+Downstream dùng corrected code/tests/docs cùng example để review PR. Không có
+live GitHub fetch/token-auth, rendered GitHub UI, hosted CI/release/recovery hoặc
+product E2E mới. Các mục đó vẫn UNVERIFIED. Không thay product/pins, version,
+signing/prerelease policy hoặc token permissions; chỉ thêm read-only token vào
+plan step để tải Git objects nếu cần. Không paid API hoặc release-note AI.
+Giới hạn token `Workflows: write` cho target cũ vẫn giữ nguyên; không tự cấp thêm.
+
+Input: repo `/Users/tubakhuym/projects/lessmeet`; chỉ ghi trong worktree
+`/Users/tubakhuym/.paseo/worktrees/0v2r0tqq/lessmeet-main-build-20261012`, base
+`96412826c688a9042ca278bdaf2088a21712048d`. Giữ nguyên lịch sử E2E bên dưới.
+Scope mới cho phép pipeline/scripts/tests/docs; không sửa app hoặc dependency pins.
+Lead sở hữu workflow, build/package integration, contract và STATUS. UI owner NONE.
+Mọi E2E scope đã đóng. Chưa push/merge, tạo live tag/release/CI run hoặc Apple upload.
+
+Channel đã chốt: chỉ GitHub Release kèm build và changelog sau PR merge main.
+Không gồm TestFlight upload, App Store submission hoặc public App Store release.
+Lý do: quyết định phạm vi mới loại Apple distribution khỏi lượt này. Không còn
+câu hỏi channel hoặc dependency ASC credentials. Không setup/gọi ASC thêm.
+Store first version/manual release giữ nguyên. asc chỉ bắt buộc cho task ASC
+được phép trong tương lai; local help đã thấy version 5.14.0, không đọc credentials.
+
+Contract kỹ thuật: chỉ PR closed+merged vào main, checkout immutable merge SHA.
+Tag `main-build-<first-parent-count>-<full-SHA>` không đổi app/Apple version.
+Mỗi SHA có concurrency group riêng; không cancel merge khác, không dùng latest.
+Build job read-only; publish job contents:write chỉ chạy sau checks/build/package.
+Chỉ phát hành GitHub prerelease arm64 ad-hoc, không notarized/Store-ready.
+Changelog liên kết PR và commit; release chỉ chứa app zip, manifest, checksum,
+changelog allowlist, không logs/screenshots/private E2E. Draft trước, publish sau
+khi đủ assets; không retarget tag hoặc overwrite asset. Rerun đã hoàn tất no-op
+sau kiểm tra binding/checksum; partial recovery phải dùng đúng bytes đã seal.
+
+Acceptance và dispatch dưới đây là lịch sử trước bounded REOPEN changelog.
+Chưa push/merge/live release. Corrected acceptance ở đầu mục thay snapshot cũ
+cho changelog; không cấp quyền activation mới.
+Developer ID signing/notarization chưa được chọn, không phải gate cho artifact
+ad-hoc có nhãn đúng. Không đồng nhất notarization với ASC/TestFlight upload.
+`017c9e18` sở hữu `scripts/github-release.py`, `Tests/release/test_github_release.py`
+và evidence `release-automation/helper/`. Scope audit asc/readiness `5f436d26`
+dừng theo quyết định GitHub-only; giữ evidence đã có, không gọi/setup ASC thêm.
+ACCEPT scope-close `apple-readiness/checks.json`: local help/version và source
+reads, không Apple management/auth/upload; không trace CLI background traffic.
+Không coi audit này là credential readiness. Scope đóng, không còn dependency.
+REOPEN host resolved: JSON REST dùng `api.github.com`; upload chỉ fixed
+`uploads.github.com/repos/.../releases/<id>/assets`, không forward token qua redirect.
+Remote asset readback được theo đúng một redirect HTTPS tới fixed
+`release-assets.githubusercontent.com` hoặc `objects.githubusercontent.com`,
+không Authorization/cookie, không userinfo/port khác443/redirect tiếp. URL ký
+không được log. Dependency kỹ thuật này đã giải quyết; chỉ code/mock, không live API.
+Workflow dùng `pull_request_target: closed` với merged+main gate để hỗ trợ merged
+fork PR; chỉ checkout merge SHA đã merge, tuyệt đối không PR head/ref chưa merge.
+Candidate workflow/build/docs đã freeze cho independent read-only audit `196feea7`
+tại `release-automation/review/`; helper vẫn do `017c9e18` viết riêng, chưa là input
+review. Checkout7 lấy main tin cậy rồi kiểm tra ancestry và detach exact SHA;
+không bật unsafe-PR override. Upload7/download8 pin SHA, digest mismatch là lỗi.
+Local PASS tạm thời: actionlint1.7.12, 20 workflow/build tests, 69 packaging tests;
+verify-app trên artifact đã ACCEPT khớp arm64/ad-hoc/hash. Chưa hosted run/build mới.
+ACCEPT bounded audit `review/findings.json` cho sáu hash được ghi trong evidence:
+20 candidate tests và tám independent mocks PASS; chưa gồm helper/hosted recovery.
+R1 cleanup được nhận: Lead sửa wrapper để giữ `RUNNER_TRACKING_ID`, tạo process
+group riêng và dừng đúng group khi timeout. Không dùng kill theo tên process.
+Candidate sáu file được mở lại cho sửa nhỏ này; review scope tạm đóng tới full
+integration snapshot. Không mở thêm product/runtime scope.
+Helper candidate `6781ae99` và tests `26fef9de` đã đọc, hash khớp, 48 tests PASS.
+REJECT candidate này tại integration: local main cũ làm plan từ chối dù origin/main
+khớp exact SHA. Evidence `integration/sealed-flow.9l1o0jc9/checks.json` giữ FAIL.
+`017c9e18` nhận lại hai file helper/tests: ưu tiên origin/main, fallback local main,
+thiếu cả hai phải fail; thêm regression tests. Không sửa bất kỳ Git ref nào.
+Primary GitHub docs xác nhận giới hạn token cho target cũ khác workflow trên main:
+create/update có thể cần `Workflows: write`, không cấp được cho `GITHUB_TOKEN`.
+Normal path tiếp tục; không nâng quyền/đổi target để né. Không hứa publish mọi
+target cũ trong trường hợp này. CONFIGURATION ghi 403/404 fail-closed và credential
+decision cần Human nếu trường hợp đó xảy ra lúc activation/recovery; chưa cần
+Apple credentials và chưa tự thêm PAT/App token.
+ACCEPT corrected helper `1a4034c3`/tests `17be5162`: origin/main priority và bốn
+regressions khớp contract; actual plan PASS. Scope writer đóng. Full integration
+phát hiện ZIP `--sequesterRsrc` có `__MACOSX`, bị allowlist từ chối đúng; FAIL giữ tại
+`integration/sealed-flow.78kmpa98/`. Lead sửa archive flags để loại filesystem
+metadata, giữ strict ZIP gate. Phải verify signature/resources/hash sau unpack.
+Roundtrip-v2 PASS trên archive không metadata: strict signature, arm64, resources,
+symlink và executable hash `60351a3d...` giữ nguyên. Full synthetic-event flow PASS
+tại `integration/sealed-flow.9ty5m5lh/checks.json`; PR999999 là fixture, không phải
+live PR. Không compile hoặc launch mới. Freeze tám file theo hash cho `196feea7`
+full read-only review helper/workflow/build/docs; chỉ ghi evidence `review/`.
+Final local verification 10:19:48–10:20:26Z PASS tại
+`integration/verification.c7gnxd87/checks.json`: actionlint, 74 release tests,
+69 packaging tests, diff-check và unchanged-product/pins/manual-workflow.
+Tám candidate hash không đổi trong verification. Hosted Actions/release và
+exact-app runtime giữ UNVERIFIED.
+
+### Disposition trước REOPEN và downstream lịch sử
+
+ACCEPT exact tám file/hash trong
+`.artifacts/release-automation/integration/verification.c7gnxd87/checks.json`,
+đối chiếu `.artifacts/release-automation/review/full-review.json`:
+workflow `8df67fa7`, helper `1a4034c3`, build wrapper `7b1ef28f`, validator `767c1a5d`,
+helper tests `17be5162`, build tests `060eca9c`, workflow tests `bf15cd30`,
+CONFIGURATION `1a7a115f`. Full SHA256 nằm trong hai evidence JSON; base không đổi.
+STATUS là file handoff thứ chín, được cập nhật sau snapshot code/docs trên.
+
+Lý do: Lead đã đọc candidate, chạy 74 release tests + 69 packaging tests,
+actionlint và full synthetic-event/real-archive dry-run. Independent review chạy
+81 checks gồm cùng 74 tests và bảy probes riêng; không có finding cần reopen.
+Đã kiểm tra binding SHA/tag, failure-before-publish, rerun/recovery, allowlist,
+redirect không mang token, archive roundtrip và lỗi an toàn. ACCEPT full review;
+tất cả Peer scopes đóng, UI owner NONE. Không còn implementation dependency mở.
+
+Downstream có thể review candidate rồi đưa vào main theo quyền riêng. Sau khi
+cho phép publish, set `LESSMEET_GITHUB_RELEASE_ENABLED=true`; nếu chưa set, workflow
+chỉ build/lưu Actions artifact. CONFIGURATION chứa policy, activation, recovery và
+rollback. Chưa dùng credential thật, live CI/API/tag/release, push/merge hoặc ASC.
+Không cần Apple signing/ASC setup cho path diagnostic này.
+
+Giới hạn giữ nguyên: artifact arm64/ad-hoc, chưa notarized; version1.0.0/build1
+không đổi. Hosted runner/publication/failed-job recovery chưa chạy. Timeout cleanup
+chỉ xác minh code/mocks, chưa thử process tree thật. Exact-app runtime/E2E không
+được nâng thành PASS. Hai integration FAIL cũ giữ riêng; candidate sửa đã PASS.
+GitHub có thể yêu cầu token `Workflows: write` cho target cũ khác workflows trên
+main; current token không có quyền đó. Human sở hữu quyết định credential bổ sung
+khi activation/recovery gặp trường hợp này; không tự tạo token mạnh hơn. Vì vậy
+không ACCEPT lời hứa publish vô điều kiện cho mọi target cũ dưới policy đó.
+
+## E2E local cô lập — hoàn tất có giới hạn (2026-10-12)
+
+Disposition sau handoff: ACCEPT báo cáo fixture có giới hạn, không ACCEPT
+exact-app E2E. Đã đối chiếu assessment cô lập và storage results; hash binary
+chính và deep/strict signature kiểm tra lại PASS. Các launch failure của harness
+vẫn là FAIL riêng. Scope fixture đóng; giữ evidence và artifact. Exact-app vẫn
+chưa xác minh. Nếu cần tạo user/VM hoặc dùng dữ liệu/live effects, Human quyết
+định môi trường và quyền trước khi mở lượt tiếp theo. Không giao sửa sản phẩm.
+
+Disposition áp dụng cho SHA `96412826c688a9042ca278bdaf2088a21712048d`, storage
+harness `befe464f8da9beb4d4a13eed92b5252c54b3b1904107ebc5536fc3926257a563` và
+synthetic shell `1eaa17c1dc5ef6269ff1ecd0e40135e33b806c9156c2336805bf59e1e2e99fdc`,
+chỉ trong các kịch bản fixture ghi dưới đây. Binary chính đã đối chiếu có SHA256
+`60351a3d61c4019a031704024b04fedf049aa7469ea55356482cc1e37341f4fd`.
+Không launch, sửa hoặc cleanup thêm trong lượt đã đóng. Quyền ghi STATUS chỉ
+được trả lại để ghi disposition này. Auth/inference/capture/playback thật vẫn
+UNVERIFIED. Ba launch failure giữ là harness FAIL, không quy thành product bug.
+Frontier exact-app chờ quyết định môi trường/quyền từ Human; acceptance này
+không cấp quyền tạo user/VM, dùng dữ liệu thật hoặc tạo live effects.
+
+ACCEPT storage harness và synthetic shell runtime v4; không ACCEPT exact-app E2E.
+UI owner: NONE. Mọi scope Peer đã đóng. Process fixture 5791 và 12221 đã thoát.
+Lead tiếp quản sau lỗi dịch vụ model capacity của Peer, hoàn tất reopen và cleanup.
+Không có bug sản phẩm được xác nhận trong các kịch bản này. Không sửa product code.
+
+| Luồng thực sự chạy | Kết quả | Evidence dưới `.artifacts/e2e-20261012/` |
+| --- | --- | --- |
+| Storage: save, fresh-process reopen, từ chối dữ liệu hỏng | PASS | `storage/results.json`, `lead/storage-acceptance.json` |
+| Fixture: launch, tìm kiếm có/không kết quả, mở transcript | PASS | `shell/runtime-v4/01`–`06` screenshot/AX, `actions.jsonl` |
+| Fixture model: missing, mock download lỗi, retry thành ready | PASS | `08-model-download-failed`, `12-models-ready`; ba payload một byte |
+| Transcribe bằng engine tổng hợp rồi lưu | PASS | `14-transcription`, before/after transcript mtime; không chứng minh inference |
+| Chat mock: complete, streaming cancel, HTTP 503 | PASS | `23`, `27`, `28`, `32` screenshot/AX; completed history giữ nguyên |
+| Đổi tên, quit, process mới reopen title/transcript/chat | PASS | `34`–`38` screenshot/AX, `lead-actions.jsonl`, `lead/final-verification.json` |
+| Launch harness lần 1–3 | FAIL | `shell/runtime*/RESULT.md`; lỗi policy harness, không phải product bug |
+| Exact `dist/local/LessMeet.app` runtime | UNVERIFIED | `isolation/ASSESSMENT.md`: chưa có startup isolation phù hợp |
+| Live auth/API, inference/model thật, capture và playback | UNVERIFIED | Không dùng tài khoản/model/audio thật; không có quyền capture/live calls |
+
+Runtime v4: PID5791 bắt đầu 06:30:44Z; Computer Use từ 06:31:05Z tới rename
+06:39:23Z. Lead quan sát lại, quit và mở cùng root bằng PID12221 lúc 06:40:17Z.
+Lead thấy title, hai segment transcript và chat hoàn chỉnh trên UI process mới.
+Quit cuối bằng Computer Use; session trả exit0. Kiểm tra cuối 06:41:46Z: không
+còn SyntheticShell, không staging prefix tồn dư. Data và evidence được giữ lại.
+`lsof` không thấy network socket ở các thời điểm kiểm tra; không phải packet trace.
+
+ACCEPT exact candidate executable
+`1eaa17c1dc5ef6269ff1ecd0e40135e33b806c9156c2336805bf59e1e2e99fdc` chỉ cho các
+claim fixture trên. Lead đọc AX/actions, xem screenshot model/chat/reopen và so
+hash file. `chat.json` giữ hash qua complete/cancel/error/rename/reopen. Transcript
+được ghi lại sau click, cùng nội dung tổng hợp; progress thoáng qua chưa xác minh.
+Kiểm tra cuối PASS: 74 source/script/pin file không đổi, binary chính đúng hash,
+deep/strict signature và `git diff --check` đều PASS.
+
+Lỗi tái hiện của harness: launcher cũ chặn Launch Services; v2/v3 chặn Foundation
+staging. Chạy launcher tương ứng trên root riêng tái hiện exit1 như log đã giữ.
+Probe xác nhận `{6}` bị hiểu literal; v4 dùng sáu class tường minh và launch được.
+Audio sentinel cố ý không hợp lệ gây `OSStatus error 1954115647`; không coi là bug
+playback. Không thử import qua UI, account panel, chất lượng nhận dạng, crash/power
+loss hoặc durability preferences. Synthetic transcript được seed trực tiếp.
+
+Downstream có thể dùng fixture, scenario inputs và evidence này cho regression
+cô lập. Muốn xác minh exact-app/live paths cần môi trường cô lập được chứng minh
+và quyền cụ thể từ Human nếu có external effects. Sửa product chờ yêu cầu riêng.
+
+### Lịch sử dispatch và disposition
+
+Yêu cầu mới cho phép runtime với dữ liệu tổng hợp. Giới hạn không-launch của
+lượt build dưới đây chỉ còn là lịch sử, không phải gate của lượt E2E này.
+Input ACCEPT: SHA `96412826c688a9042ca278bdaf2088a21712048d`,
+`dist/local/LessMeet.app`, executable SHA256
+`60351a3d61c4019a031704024b04fedf049aa7469ea55356482cc1e37341f4fd`.
+Đã kiểm tra lại HEAD, hash và deep/strict signature: PASS.
+Lead sở hữu STATUS và disposition. Evidence mới nằm tại `.artifacts/e2e-20261012/`.
+UI owner cuối lượt: NONE. `5f436d26` đã trả scope sau lỗi capacity; Lead đã
+hoàn tất phần còn lại trong `shell/runtime-v4/` và đóng scope.
+Scope probe không UI đã đóng và ACCEPT; không có Peer khác điều khiển UI.
+App có sẵn PID 22742 ở worktree khác phải giữ nguyên.
+Room hiện chỉ có phiên Lead; không có scope Peer đang chạy tại thời điểm mở lượt.
+
+Dispatch mới: `017c9e18` sở hữu `.artifacts/e2e-20261012/isolation/`, audit
+read-only đối với sản phẩm, không launch/UI. `5f436d26` sở hữu
+`.artifacts/e2e-20261012/shell/`, chuẩn bị fixture full-shell, scratch và dữ liệu
+tổng hợp riêng. Không được launch cho tới khi nhận disposition artifact.
+Hai scope không sửa source/script/pins hay STATUS. Dùng provider Peer hiện có.
+Khi chuẩn bị chưa cấp UI; reservation runtime hiện tại được ghi ở đầu mục.
+
+ACCEPT audit `017c9e18`, candidate
+`.artifacts/e2e-20261012/isolation/ASSESSMENT.md` (05:48:36–05:49:25Z).
+Lý do: source xác nhận ba đường startup không cô lập, khớp kiểm tra Lead.
+REOPEN_REQUEST được giải quyết: không launch exact app; runtime của artifact
+đó là UNVERIFIED, không cần biến nó thành điều kiện cho các fixture độc lập.
+Tiếp tục fixture full-shell đã được phép. Scope audit đóng, quyền ghi trả lại.
+Chưa có kết luận bug runtime; đây là blocker cô lập trong phạm vi hiện tại.
+
+Scope mới độc lập cho `017c9e18`: `.artifacts/e2e-20261012/storage/`.
+Chạy harness không UI từ storage source không đổi, với dữ liệu tổng hợp riêng:
+lưu transcript/chat, thoát process, mở lại process khác, từ chối sidecar hỏng
+và giữ dữ liệu cũ. Đây là E2E storage/harness, không phải app UI hay inference.
+Không dùng scratch hoặc dữ liệu của shell; scope storage không có quyền UI.
+
+ACCEPT storage candidate của `017c9e18`: executable
+`befe464f8da9beb4d4a13eed92b5252c54b3b1904107ebc5536fc3926257a563`, manifest
+`e9a98b0dbb41ec31433fb13932dfd2337f3da3104ca34deb4cceeae81e8e2074`.
+Lead đọc harness và negative logs; 119 manifest hash và 11 input hash khớp.
+Chín file sản phẩm được compile nguyên văn; chỉ trích nguyên văn hai error type
+để tránh kéo implementation account/cloud vào harness. Lead chạy lại readback
+PID83920 lúc 05:57:31Z: PASS, không đổi evidence/data bytes.
+Lượt gốc 05:55:25.387830–05:55:25.957995Z dùng các PID81419–81422:
+save, fresh-process reopen, negative cases, fresh-process reopen sau negative.
+PASS: metadata/transcript tiếng Việt/timing/speaker/chat giữ nguyên; invalid
+transcript, incomplete chat pairs, malformed/unsupported chat sidecar bị từ chối,
+giữ dữ liệu cũ. Tất cả child process thoát 0. Không có UI/inference claim.
+Evidence: `storage/handoff.json`, `storage/results.json` và
+`lead/storage-acceptance.json` dưới `.artifacts/e2e-20261012/`.
+Scope storage đóng, evidence giữ nguyên, quyền ghi trả lại. Chưa có lỗi sản phẩm
+tái hiện trong các kịch bản storage này; durability khi crash/power loss chưa thử.
+
+Fixture candidate từ `5f436d26`: `shell/build.s7KePh/SyntheticShell.app`,
+executable `1eaa17c1dc5ef6269ff1ecd0e40135e33b806c9156c2336805bf59e1e2e99fdc`.
+Build 11.228s và strict signature PASS; chưa launch. Lead đã đọc main/support,
+launcher, sandbox và build mapping; kiểm tra input/bundle hash cùng signature.
+Fixture giữ 30 source file nguyên văn, bốn declaration được trích nguyên văn;
+thay capture/Keychain/auth callback/inference bằng fixture boundary. Không dùng
+product entry point. Data/model roots riêng, tiny model payload tổng cộng 3 byte,
+mock Responses transport, private defaults, OS network denial.
+Probe riêng dưới cùng sandbox bị từ chối tạo/bind socket: EPERM. Đây không phải
+bằng chứng runtime app. `017c9e18` được giao review read-only exact candidate,
+chỉ ghi `.artifacts/e2e-20261012/review/`, không launch/UI.
+Ứng viên lỗi build thiếu ChatGPTSession và bản có fixture warning được giữ riêng;
+không tính chúng là lỗi sản phẩm. Bước chuẩn bị này chưa cấp quyền UI.
+Đã làm rõ quyền đọc đúng installed Computer Use SKILL.md là ngoại lệ hẹp cho
+instruction bắt buộc, không cho phép đọc state `.codex`. Peer báo từng traverse
+thư mục skills khi discovery nhưng không đọc nội dung hoặc sửa state; đã dừng.
+
+ACCEPT review `017c9e18`, `review/shell-safety.json` SHA256
+`77b12e80bd69f6027221de6225380b9b79f448fab53eb4685d849c6990b97c69`.
+ACCEPT fixture `build.s7KePh` / executable `1eaa17c…e99fdc` làm input cho
+thử nghiệm runtime cô lập: source/hash/signature và injection boundary khớp,
+không có blocker an toàn. Review scope đóng; không có UI PASS ở bước này.
+Reservation attempt 1: `5f436d26` là owner DUY NHẤT cho SyntheticShell.app nói trên.
+Cho phép sandboxed launcher đã review, run root mới `shell/run.accepted-s7KePh`,
+và evidence `shell/runtime/`. Không sửa candidate/launcher/profile. Kiểm tra
+PID/path trước UI state; không để Computer Use tự launch ngoài sandbox.
+Chỉ chạy kịch bản synthetic trong HANDOFF, không browser/usage/files/permissions.
+Nếu sandbox/framework thất bại, giữ evidence và báo blocker, không bỏ sandbox.
+Lead không điều khiển UI trong scope này. Khi xong phải quit đúng fixture,
+xác minh process đã thoát và trả quyền UI.
+
+ACCEPT evidence runtime attempt 1 `shell/runtime/RESULT.md`; REJECT profile
+`offline.sb` về khả năng launch: 06:02:33–06:02:34Z, PID87140 exit 1.
+Log ghi sandbox từ chối `com.apple.coreservices.launchservicesd`; AppKit không
+đăng ký app được. Không có UI call, screenshot, AX hoặc model/chat request.
+Giữ FAIL của lần launch này riêng; các feature UI là UNVERIFIED, không phải bug
+sản phẩm. Cleanup PASS, PID không còn; UI owner đã trả quyền.
+REOPEN_REQUEST đang được xử lý trong quyền test-harness hiện tại: Lead chuẩn bị
+profile v2 chỉ bỏ một deny Launch Services để AppKit đăng ký app. Network,
+personal-data reads, Keychain/securityd, TCC, appleevents và write-scope denial
+giữ nguyên. Không thay quyền hệ thống. `017c9e18` review deterministic diff tại
+`review/launch-policy-v2.json`; chưa cho phép launch v2 trước disposition.
+
+ACCEPT review v2 `4273cd61e42b899688c47aa2da2142a5e397496897daf0eebb02104cd42c3bab`.
+ACCEPT `offline-v2.sb` SHA256 `1747b8072744df4594c6f8277da5e55f6e42b6e031ad51358491e7c645052130`
+và `launch-v2.sh` SHA256 `f70f934c73ecc1915713210d0d56f811572256b83232d9dc2eedfcd1f05a432c`.
+Lý do: bỏ đúng deny gây lỗi AppKit; source injection và guards khác giữ nguyên.
+Launch Services không bị giới hạn kỹ thuật ở registration-only, nên các nút
+browser/Show Files/permissions vẫn tuyệt đối ngoài scope. Không phải đổi quyền
+hệ thống. Probe network v2 tiếp tục bị EPERM. Review scope đóng.
+`5f436d26` tiếp tục UI ngay với cùng fixture binary, root mới
+`shell/run.v2-accepted-s7KePh`, evidence `shell/runtime-v2/`; một owner duy nhất.
+Giữ attempt 1 nguyên vẹn. Không tự nới thêm profile nếu có blocker mới.
+
+ACCEPT evidence attempt 2 `shell/runtime-v2/RESULT.md`; PID90663 exit 1 lúc
+06:09:54Z. AppKit registration PASS, nhưng Foundation `.atomic` tạo staging
+`TemporaryItems/NSIRD_SyntheticShell_d4DFKZ` ngoài TMPDIR riêng và bị sandbox
+chặn. REJECT policy hiện tại về staging compatibility, không quy thành bug
+sản phẩm. Không có UI call hoặc synthetic file; cleanup PASS, UI đã trả quyền.
+Đang review route staging mới sở hữu riêng, không cho phép rộng toàn `/tmp`
+hay toàn TemporaryItems. Các profile/evidence cũ giữ nguyên.
+
+ACCEPT staging review `c7f62ee40ae01c24d64c4b32ac24e993f9844afb2ad4f7b0d3864ee6fdfbd8d7`.
+Lead kiểm tra byte cụ thể: `offline-v3.sb`
+`0c47484f236bfbd35919e4aa04984020b892503b32b6331af6f20dbe31cb3fbc`
+chỉ thêm đúng regex đã review; `launch-v3.sh`
+`7b6af41dc5ac8cde9b4f8e196f26cb9b8dfd0332c088de9f358c65a12ee97d1c`
+pin binary cũ, kiểm tra physical parent, không có prefix/process trùng và run
+không symlink. Syntax/profile parse PASS; network probe vẫn bị EPERM.
+ACCEPT hai file harness v3 cho attempt tiếp theo. Đây là scope tạm mới cho
+Foundation, không thay product hay quyền hệ thống; không cho phép rộng parent.
+Chỉ namespace mới `/private/var/folders/07/p5pz8vnd0cx_1hll7nsmrm9c0000gn/T/TemporaryItems/NSIRD_SyntheticShell_[A-Za-z0-9]{6}`
+và descendants được ghi. Preflight metadata-only không thấy prefix hay process
+trùng; không đọc nội dung thư mục khác. Prefix không phải ranh giới chống race
+đối kháng; yêu cầu một owner và không overlap vẫn giữ nguyên.
+`5f436d26` sở hữu UI, root `shell/run.v3-accepted-s7KePh`, evidence
+`shell/runtime-v3/` và namespace staging mới nói trên. Phải kiểm tra lại trước
+mỗi launch; nếu có mục cũ thì dừng, không cleanup. Review scope đóng.
+
+ACCEPT evidence attempt 3 `shell/runtime-v3/RESULT.md`: PID96600 exit1 lúc
+06:18:51–06:18:52Z, atomic staging vẫn bị deny tại `NSIRD_SyntheticShell_nkcrYI`.
+REJECT v3 về runtime matching, dù profile parse PASS. Không UI call; cleanup PASS,
+không có staging tồn dư. Tạm ngừng launch app để probe rule không UI trước;
+không lặp cùng cấu hình và không bỏ sandbox. Scope runtime đã trả quyền.
+
+ACCEPT `sandbox-probe/candidate.sb` SHA256
+`12c3f38a55a44dd66ea91afaf42a947bca4f3aa9827a5a2ca643a42852dc5370`.
+Probe 06:27:28–06:27:29Z chứng minh `{6}` khớp literal braces; thay bằng sáu
+class tường minh cho phép đúng staging và vẫn chặn các tên ngoài phạm vi.
+Lead kiểm tra profile, source probe và `mkdir-results.json`. Probe `sandbox_check`
+ban đầu không qua control, không được dùng làm proof. Thư mục probe rỗng mới
+`NSIRD_SyntheticShell_0kIomt` đã được Lead xoá bằng `rmdir`; không mất nội dung.
+ACCEPT `shell/launch-v4.sh` SHA256
+`f1790792aa7135a7fc4ca83d7904c56f4f9a62fdc7838673fbf0bdbdebe72d9c`:
+giữ preflight v3, pin binary và profile mới; syntax PASS. App compatibility chưa biết.
+`5f436d26` tiếp tục ngay runtime với root `shell/run.v4-accepted-s7KePh`, evidence
+`shell/runtime-v4/`. Chỉ scope này và staging mới đúng prefix; không đổi candidate.
+Giới hạn readiness 30 giây; UI tối đa 15 phút. Nếu blocker mới, giữ log và dừng.
+
+Trước launch phải chứng minh cách cô lập data, Keychain và model download.
+Quan sát source: app chính tạo ChatGPTSession đọc Keychain trong init và gọi
+LocalModelManager.startup để tự tải model thiếu. Không được coi đổi thư mục
+làm việc hay biến HOME là bằng chứng cô lập. Chưa launch artifact chính.
+Ưu tiên fixture/harness dùng dependency injection có sẵn, không sửa product.
+Mỗi Peer có thư mục evidence riêng; chỉ một owner UI tại một thời điểm.
+Test fixture/rebuilt artifact phải ghi rõ, không coi là live auth/inference PASS.
+Không truy cập dữ liệu/credentials thật, ghi âm, login, gọi API thật, tải model
+lớn, sửa product source/script/pins, đổi quyền hệ thống, cleanup lịch sử,
+commit/push/deploy hay chạm dự án khác. Unit tests chỉ là bằng chứng bổ trợ.
+
+## Kiểm tra build main trên local — PASS (2026-10-12)
+
+Phạm vi: chỉ build/chẩn đoán trong worktree
+`/Users/tubakhuym/.paseo/worktrees/0v2r0tqq/lessmeet-main-build-20261012`.
+Branch: `check/main-build-20261012`.
+HEAD/base: `96412826c688a9042ca278bdaf2088a21712048d`.
+Đã xác minh HEAD, branch và trạng thái sạch trước khi chạy. Đây là SHA main
+được xác minh qua `git ls-remote origin refs/heads/main` trước khi giao kiểm tra;
+lượt build không truy vấn lại remote và không chạy CI.
+Quyền ghi chỉ gồm build output, evidence và STATUS trong worktree này.
+Không có Peer hay UI scope được mở. Các quyền runtime/merge trong lịch sử bên
+dưới không áp dụng cho lượt kiểm tra này.
+
+Kết quả: ACCEPT artifact build local của đúng SHA trên. Preflight, package và
+strict signature đều PASS. Chấp nhận này chỉ xác nhận build/package, không cho
+phép launch, phân phối, sửa source, thay đổi hệ thống hay triển khai.
+
+Đối chiếu sau handoff: HEAD và build.log khớp; chạy lại
+`codesign --verify --deep --strict dist/local/LessMeet.app` PASS và xác nhận
+executable arm64. ACCEPT kết quả build/chẩn đoán; scope hoàn tất.
+Giữ artifact và logs. Chưa giao tác vụ runtime hoặc sửa code.
+
+Lệnh chính, với `LESSMEET_SIGNING_IDENTITY=-`:
+
+1. `xcrun -sdk macosx metal --version` — PASS.
+2. `bash scripts/build-app.sh local --preflight` — PASS, exit 0.
+3. `bash scripts/build-app.sh local` — PASS, exit 0, 260.1 giây.
+4. `codesign --verify --strict --verbose=4 dist/local/LessMeet.app` — PASS.
+5. `python3 .artifacts/main-build-20261012/verify-artifact.py` — PASS.
+
+Toolchain: macOS 26.4 (25E246), arm64; Xcode 26.6 (17F113) tại
+`/Applications/Xcode.app/Contents/Developer`; Apple Swift 6.3.3
+(`swiftlang-6.3.3.1.3`); Apple clang 21.0.0 (`clang-2100.1.1.101`);
+macOS SDK 26.5; Metal 32023.883; Node v22.22.3; Python 3.9.6.
+Ổ đĩa còn khoảng 42 GiB trước build. Không có build Swift/Xcode đang chạy trước
+khi bắt đầu. App LessMeet có sẵn ở worktree khác được giữ nguyên, không thao tác.
+
+Chỉ chạy một lần. Runner giới hạn 900 giây toàn build và 180 giây không có log
+mới. Không chạm giới hạn, không lấy stack sample và không cần gửi signal.
+Git credential helper bị tắt cho subprocess; không cho Git hỏi credentials.
+Script dùng `--disable-keychain --disable-netrc`, SwiftBuild release arm64 và
+scratch mới `dist/local/swift-build`. Dependency resolution dùng cache có sẵn;
+đây không phải thử nghiệm tải mọi dependency từ đầu. Cả 44 checkout revision
+khớp pins. `Package.resolved` giữ nguyên SHA-256 trước/sau. Không nâng cấp pins.
+
+Artifact: `dist/local/LessMeet.app`.
+Executable SHA-256:
+`60351a3d61c4019a031704024b04fedf049aa7469ea55356482cc1e37341f4fd`.
+Bundle là Mach-O arm64, `com.lessmeet.app.local`, `Signature=adhoc`, có runtime
+flag, không có team/profile. Năm resource bundle có mặt. 33 nguồn Metal đã
+biên dịch; `mlx.metallib` có dữ liệu và symlink trỏ đúng `Contents/Resources`.
+Bảy file giấy phép/thông báo model khớp source. Info.plist không có cấu hình
+cloud hay OAuth callback cũ. Manifest evidence ghi hash 39 file trong bundle.
+
+Vấn đề cụ thể: năm warning, không có compiler error. Một warning tại
+`Sources/LessMeet/ChatGPTAuth/ChatGPTSecureStorage.swift:13`:
+`kSecUseAuthenticationUIFail` đã deprecated trên macOS 11.0. Compiler đề xuất
+`kSecUseAuthenticationContext` với `LAContext.interactionNotAllowed`.
+Warning không chặn compile, link hay ký. Không sửa trong phạm vi này.
+Bốn warning còn lại nằm trong dependency `mlx-swift`, tại
+`steel/utils/integral_constant.h:108` và `steel/attn/kernels/steel_attention.h`
+dòng 356, 426, 436: `constexpr if is a C++17 extension [-Wc++17-extensions]`.
+Không sửa vendor hay thay flags; build vẫn hoàn thành.
+
+Stall compiler discovery/clang pipe cũ KHÔNG tái hiện. Build vượt discovery,
+hoàn thành compile Swift/C++, Metal và packaging. Chưa xác minh được nguyên nhân
+của stall cũ. Khác biệt về process/cache/trạng thái máy chỉ là giả thuyết; thành
+công lần này không chứng minh cleanup hay thay đổi nào đã sửa nguyên nhân.
+
+Evidence giữ tại `.artifacts/main-build-20261012/`:
+
+- `runner.log`, `results.json`: lệnh, PID, thời gian, exit code và giới hạn.
+- `initial-processes.txt`, `initial-status.log`: trạng thái trước build.
+- `os.log`, `arch.log`, `xcode-select.log`, `xcode.log`, `swift.log`, `clang.log`,
+  `sdk.log`, `metal.log`, `node.log`, `python.log`, `disk.log`: toolchain.
+- `preflight.log`, `build.log`: output gốc; preflight thành công không in output.
+- `signature-verify.log`, `signature-details.log`, `artifact-file.log`,
+  `artifact-plist.log`, `artifact-hashes.log`: bundle và signature.
+- `pins.json`, `artifact-verification.json`, `artifact-verification.log`:
+  pins, tài nguyên, hash và kiểm tra source không đổi.
+- `final-processes.log`, `final-worktree.log`: trạng thái sau handoff.
+
+Handoff: build/chẩn đoán đã hoàn tất. Chỉ STATUS là tracked file thay đổi;
+source/script/pins giữ nguyên. Giữ lại artifact và log, không cleanup cache.
+Không ghi vào checkout gốc/worktree khác, không chạm `.codex` hoặc dự án khác.
+Không commit/push/deploy, không dùng signing profile, không tải model, không gọi
+API trả phí, không mở app và không truy cập dữ liệu ghi âm.
+Unit tests và UI/runtime đều CHƯA KIỂM THỬ trong lượt này. Build PASS không chứng
+minh UI, inference, auth, recording hay save/reopen.
+Đề xuất: giữ artifact làm đầu vào cho một yêu cầu runtime riêng nếu Human muốn.
+Việc đó cần quyết định riêng vì app có thể tải model khi mở. Chỉ xử lý warning
+Keychain trong một yêu cầu sửa source riêng. Không cần sửa để hoàn tất build này.
+
 ## Integration merged after hosted build — current handoff (2026-10-12)
 
 Human approved a GitHub build of the resolved integration and merge if it passed.
