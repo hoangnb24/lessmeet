@@ -1,5 +1,11 @@
 # Transcript chat
 
+Historical cloud workflow only. The single-recording cloud chat view and draft
+helper are retired. These controls are absent from the current local app.
+BatchChatView remains for retained component fixtures, not normal startup.
+Use README's ChatGPT/local-transcript procedure for the current app. The steps
+below apply only to an approved historical artifact that actually has these controls.
+
 Users ask questions about a transcript and prepare summaries or action-item prompts.
 
 ## Sub-features

@@ -2,26 +2,6 @@ import XCTest
 @testable import LessMeet
 
 final class ConfigurationTests: XCTestCase {
-    func testOnlyExactInternalPackagingModesEnableInternalTesting() throws {
-        for mode in [nil, "dev", "store", "sandbox", "", "TestFlight", "testflight ", " testflight", "testflight-internal"] {
-            XCTAssertFalse(try BillingConfiguration(publicAppleAPIKey: nil, packagingMode: mode).isInternalTesting)
-        }
-        XCTAssertTrue(try BillingConfiguration(publicAppleAPIKey: nil, packagingMode: "sandbox-dev").isInternalTesting)
-        XCTAssertTrue(try BillingConfiguration(publicAppleAPIKey: nil, packagingMode: "testflight").isInternalTesting)
-        XCTAssertThrowsError(try BillingConfiguration(publicAppleAPIKey: nil, privacyURL: "file:///tmp/privacy", packagingMode: "sandbox-dev"))
-    }
-    func testOptionalBillingConfigurationRejectsSecretsAndUnsafeLegalURLs() throws {
-        XCTAssertNil(try BillingConfiguration(publicAppleAPIKey: nil).publicAppleAPIKey)
-        XCTAssertEqual(try BillingConfiguration(publicAppleAPIKey: " appl_publicFixture123 ").publicAppleAPIKey, "appl_publicFixture123")
-        for key in ["sk_secret", "test_sandbox", "goog_key", "appl_", "appl_key\nsecret"] {
-            XCTAssertThrowsError(try BillingConfiguration(publicAppleAPIKey: key))
-        }
-        for url in ["http://example.com/privacy", "https://user:secret@example.com/privacy", "file:///tmp/privacy"] {
-            XCTAssertThrowsError(try BillingConfiguration(publicAppleAPIKey: nil, privacyURL: url))
-        }
-        XCTAssertEqual(try BillingConfiguration(publicAppleAPIKey: nil, privacyURL: "https://example.com/privacy").privacyURL?.path, "/privacy")
-    }
-
     func testPublicConfigurationAndLocalOnlyMode() throws {
         let local = try AppConfiguration(clerkPublishableKey: nil, convexSiteURL: nil)
         XCTAssertNil(local.clerkPublishableKey)

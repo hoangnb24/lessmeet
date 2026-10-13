@@ -1,7 +1,7 @@
 # LessMeet verification map
 
 Read this index before driving the app. This map lists required entry points for
-feature-level claims. XCUITest covers five offline account-status flows.
+feature-level claims. XCUITest covers retained offline account-status flows.
 Other paths require their stated inputs and authority; report them UNVERIFIED
 when absent. A fixture pass cannot substitute for a live-path pass.
 
@@ -27,13 +27,20 @@ settles past them. A final screenshot cannot prove a spinner was displayed.
 
 ## Features
 
+The recording map applies to the current app. For current local transcription,
+model setup and ChatGPT chat, use the procedures in the repository README and
+inspect `Sources/LessMeet/Presentation/{LocalModelSetupView,LocalTranscriptView}.swift`
+and `Sources/LessMeet/ChatGPTChat/{ChatGPTAccountView,LocalChatView}.swift`.
+These source anchors are not runtime acceptance evidence.
+The account, cloud transcript and cloud chat maps below are legacy only. They
+must not direct checks of the current local app. The billing map is retired.
+
 | Map | Scope | Source anchors (relative to repository root) |
 | --- | --- | --- |
-| [Account status](account-status.md) | Offline refresh, stale responses, confirmation; live account entry | `Sources/LessMeet/Account/{AccountPanel,OfflineAccountCheckView,OfflineAccountFixture,AccountDeletionModel}.swift` |
+| [Account status](account-status.md) | Legacy offline refresh, stale responses and confirmation | `Sources/LessMeet/Account/{AccountPanel,OfflineAccountCheckView,OfflineAccountFixture,AccountDeletionModel}.swift` |
 | [Recording library](recording-library.md) | Capture, search, title, playback, saved files | `Sources/LessMeet/Presentation/LibraryView.swift`, `Sources/LessMeet/Recordings/RecordingStore.swift` |
-| [Transcripts](transcripts.md) | Upload consent, saved refresh, batch recovery | `Sources/LessMeet/Presentation/{LibraryView,BatchTranscriptView,RecordingCloudModel}.swift` |
-| [Transcript chat](transcript-chat.md) | Composer, keyboard send, notes prompts, source, batch chat | `Sources/LessMeet/Presentation/{RecordingChatView,ChatTextEditor,BatchChatView}.swift` |
-| [Plan and usage](plan-usage.md) | Allowance, refresh, purchase and restore | `Sources/LessMeet/Presentation/SubscriptionView.swift`, `Sources/LessMeet/Billing/BillingStore.swift` |
+| [Transcripts](transcripts.md) | Legacy upload consent, saved refresh, batch recovery | `Sources/LessMeet/Presentation/{BatchTranscriptView,RecordingCloudModel}.swift` |
+| [Transcript chat](transcript-chat.md) | Historical cloud chat; retained batch fixtures | `Sources/LessMeet/Presentation/{ChatTextEditor,BatchChatView}.swift` |
 
 ## Proof and skip reporting
 

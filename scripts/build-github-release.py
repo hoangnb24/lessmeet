@@ -16,7 +16,7 @@ import sys
 
 ROOT = Path(__file__).resolve().parent.parent
 RESOURCE_BUNDLES = (
-    "Clerk_ClerkKit.bundle", "RevenueCat_RevenueCat.bundle", "LessMeet_LessMeet.bundle",
+    "Clerk_ClerkKit.bundle", "LessMeet_LessMeet.bundle",
     "swift-transformers_Hub.bundle", "swift-crypto_Crypto.bundle",
 )
 PUBLIC_PROPERTIES = (

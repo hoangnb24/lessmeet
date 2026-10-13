@@ -41,7 +41,8 @@ struct LibraryView: View {
                     library
                 } else if let recording = model.selected {
                     RecordingDetailView(model: model, session: session, chat: chat,
-                                        transcription: transcription, recording: recording)
+                                        transcription: transcription, recording: recording,
+                                        openAccount: { showingAccount = true })
                         .id(recording.id)
                 }
             }
@@ -69,11 +70,7 @@ struct LibraryView: View {
             }
         }
         .sheet(isPresented: $showingAccount) {
-            VStack(alignment: .trailing, spacing: 0) {
-                Button("Done") { showingAccount = false }.padding([.top, .trailing], 16)
-                ChatGPTAccountView(session: session, beforeAccountChange: { chat?.cancel() })
-            }
-            .frame(width: 540)
+            ChatGPTAccountSheet(session: session, beforeAccountChange: { chat?.cancel() })
         }
         .alert("LessMeet", isPresented: Binding(get: { model.error != nil }, set: { if !$0 { model.error = nil } })) {
             Button("OK", role: .cancel) { model.error = nil }
@@ -321,6 +318,7 @@ private struct RecordingDetailView: View {
     let chat: LocalChatModel?
     @ObservedObject var transcription: LocalTranscriptionModel
     let recording: Recording
+    let openAccount: () -> Void
     @State private var title = ""
     @State private var selectedTab = DetailTab.transcript
     @FocusState private var titleFocused: Bool
@@ -350,7 +348,10 @@ private struct RecordingDetailView: View {
                 if let chat {
                     LocalChatView(model: chat, recordingID: recording.id,
                                   canUsePlan: session.canUseChatGPTPlan && !session.busy
-                                    && model.phase == .idle && selectedTab == .chat)
+                                    && model.phase == .idle && selectedTab == .chat,
+                                  openAccount: openAccount,
+                                  openTranscript: { selectedTab = .transcript },
+                                  isRecording: model.phase != .idle)
                         .opacity(selectedTab == .chat ? 1 : 0)
                         .allowsHitTesting(selectedTab == .chat)
                         .accessibilityHidden(selectedTab != .chat)

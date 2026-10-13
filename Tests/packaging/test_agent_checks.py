@@ -69,6 +69,20 @@ class AgentChecks(unittest.TestCase):
         sign = next(call for call in self.calls() if "--sign" in call)
         self.assertEqual(sign[sign.index("--sign") + 1], "-")
 
+    def test_local_and_offline_ignore_stale_revenuecat_bundle(self):
+        stale = self.root / "binary/RevenueCat_RevenueCat.bundle"
+        stale.mkdir()
+        (stale / "old-resource").write_bytes(b"retired SDK cache")
+        for mode in ("local", "offline-check"):
+            with self.subTest(mode=mode):
+                result = self.run_build(mode)
+                self.assertEqual(result.returncode, 0, result.stderr)
+                resources = self.root / "dist" / mode / "LessMeet.app/Contents/Resources"
+                self.assertFalse((resources / "RevenueCat_RevenueCat.bundle").exists())
+                for bundle in BUNDLES:
+                    self.assertTrue((resources / bundle).is_dir())
+        self.assertTrue((stale / "old-resource").is_file())
+
     def test_auth_identity_fails_before_any_build_or_config(self):
         (self.root / ".env.local").mkdir()
         for value in (None, "", "-", " \t", " - "):
@@ -86,6 +100,27 @@ class AgentChecks(unittest.TestCase):
         self.assertEqual(result.returncode, 0, result.stderr)
         sign = next(call for call in self.calls() if "--sign" in call)
         self.assertEqual(sign[sign.index("--sign") + 1], "-")
+
+    def test_chat_ui_check_is_isolated_and_ignores_service_and_signing_inputs(self):
+        (self.root / ".env.local").mkdir()
+        path = self.root / "Resources/Info.plist"
+        info = plistlib.loads(path.read_bytes())
+        info.update({key: "stale" for key in PROPERTIES})
+        path.write_bytes(plistlib.dumps(info))
+        result = self.run_build("chat-ui-check", {
+            **{key: "invalid" for key in PUBLIC},
+            "LESSMEET_SIGNING_IDENTITY": "Do not unlock this key"})
+        self.assertEqual(result.returncode, 0, result.stderr)
+        info = plistlib.loads((self.root / "dist/chat-ui-check/LessMeet.app/Contents/Info.plist").read_bytes())
+        self.assertEqual(info["CFBundleIdentifier"], "com.lessmeet.app.chat-ui-check")
+        self.assertEqual(info["LessMeetPackagingMode"], "chat-ui-check")
+        self.assertFalse(set(PROPERTIES + ("CFBundleURLTypes",)) & info.keys())
+        for call in self.calls():
+            if call[0] == "swift":
+                self.assertIn("-DLESSMEET_CHAT_UI_CHECK", call)
+                self.assertNotIn("-DLESSMEET_OFFLINE_CHECK", call)
+            if "--sign" in call:
+                self.assertEqual(call[call.index("--sign") + 1], "-")
 
     def test_auth_uses_only_explicit_public_values_and_preserves_identity(self):
         (self.root / ".env.local").mkdir()

@@ -7,7 +7,7 @@ import subprocess
 import sys
 
 ROOT = Path(__file__).resolve().parents[2]
-BUNDLES = ("Clerk_ClerkKit.bundle", "RevenueCat_RevenueCat.bundle",
+BUNDLES = ("Clerk_ClerkKit.bundle",
            "LessMeet_LessMeet.bundle", "swift-transformers_Hub.bundle",
            "swift-crypto_Crypto.bundle")
 NOTICES = ("Nemotron-LICENSE.txt", "Nemotron-NOTICE.txt", "OpenAI-Whisper-LICENSE.txt",
@@ -61,7 +61,7 @@ printf 'synthetic metallib\\0fixture\\n' > "$BUILD_DIR/release/mlx.metallib"
         revision = subprocess.check_output(["git", "-C", str(repo), "rev-parse", "HEAD"], env=env, text=True).strip()
         pins.append({"identity": name, "state": {"revision": revision}})
     (root / "Package.resolved").write_text(json.dumps({"version": 3, "pins": pins}))
-    tool = f"#!{sys.executable}\n" + '''import json, os, shutil, sys
+    tool = f"#!{sys.executable}\nBUNDLES = {BUNDLES!r}\n" + '''import json, os, shutil, sys
 from pathlib import Path
 root = Path(os.environ["TEST_ROOT"])
 name = Path(sys.argv[0]).name
@@ -87,7 +87,8 @@ if name == "codesign":
     app = Path(args[-1])
     def inventory(path):
         return {str(p.relative_to(path)): p.read_bytes() for p in path.rglob("*") if p.is_file()}
-    for source in (root / "binary").glob("*.bundle"):
+    for bundle in BUNDLES:
+        source = root / "binary" / bundle
         assert inventory(source) == inventory(app / "Contents/Resources" / source.name)
     assert inventory(root / "Resources/ModelLicenses") == inventory(app / "Contents/Resources/ModelLicenses")
     assert (app / "Contents/MacOS/mlx.metallib").read_bytes() == b"synthetic metallib\\x00fixture\\n"

@@ -1,30 +1,22 @@
-import AppKit
 import SwiftUI
 
-/// Uses the original asset from developers.openai.com/assets/siwc/sign-in-buttons/.
+/// Uses the original bundled ChatGPT logo through the shared presentation mark.
 struct ChatGPTSignInButton: View {
     let action: () -> Void
-
-    private static let logo: NSImage? = {
-        guard let url = Bundle.module.url(forResource: "ChatGPTLogo", withExtension: "svg"),
-              let image = NSImage(contentsOf: url) else { return nil }
-        return image
-    }()
+    @Environment(\.isEnabled) private var isEnabled
 
     var body: some View {
         Button(action: action) {
-            HStack(spacing: 9) {
-                if let logo = Self.logo {
-                    Image(nsImage: logo).resizable().frame(width: 21, height: 21)
-                        .accessibilityHidden(true)
-                }
+            HStack(spacing: 10) {
+                ChatGPTMark(size: 21)
                 Text("Continue with ChatGPT").font(.system(size: 13, weight: .medium))
             }
-            .foregroundStyle(.black)
-            .padding(.horizontal, 14).frame(minHeight: 40)
-            .background(.white, in: RoundedRectangle(cornerRadius: 8))
-            .overlay(RoundedRectangle(cornerRadius: 8).strokeBorder(.gray.opacity(0.4)))
+            .foregroundStyle(ChatGPTStyle.ink)
+            .frame(maxWidth: .infinity, minHeight: 44)
+            .background(ChatGPTStyle.surface, in: RoundedRectangle(cornerRadius: 8))
+            .overlay(RoundedRectangle(cornerRadius: 8).strokeBorder(ChatGPTStyle.separator))
             .contentShape(RoundedRectangle(cornerRadius: 8))
+            .opacity(isEnabled ? 1 : 0.5)
         }
         .buttonStyle(.plain)
         .accessibilityLabel("Continue with ChatGPT")

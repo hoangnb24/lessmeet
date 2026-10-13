@@ -3,7 +3,8 @@
 Local pivot checkpoint (2026-10-11): LessMeet is moving to a native, open-source
 macOS app. The current app shell records locally and uses **Continue with ChatGPT**
 for transcript chat. It no longer instantiates the legacy Clerk, Convex or billing
-controllers. Legacy source and backend services remain unchanged.
+controllers. The native RevenueCat SDK and subscription screen have been removed.
+Legacy backend services and saved cloud metadata remain intact.
 
 ChatGPT auth, streaming and local history have offline component tests. The
 synthetic account/chat UI subset passed, including saved history after reopening.
@@ -90,15 +91,19 @@ Original audio is retained if combining fails. A recording interrupted by app
 termination is marked interrupted when the library is reopened. Automatic repair,
 device switching, pause/resume and cloud sync are outside the first version.
 
-Synthetic 30/60/120-minute exports completed locally but measured 29.56/59.11/118.22
-MiB, all above the 18 MiB upload limit. Long local recording does not currently imply
-long-meeting transcription support. See the [reproducible opt-in test and limits](Tests/LessMeetTests/LONG_CAPTURE_HANDOFF.md);
-these measurements do not establish real-device sound quality or drift.
+Synthetic 30/60/120-minute exports measured 29.56/59.11/118.22 MiB. The historical
+18 MiB cloud-upload limit does not apply to local transcription. These export
+checks do not establish long-meeting transcription, real-device sound quality or
+drift. See the [opt-in test and limits](Tests/LessMeetTests/LONG_CAPTURE_HANDOFF.md)
+and the [local-model contract](docs/LOCAL_MODELS.md).
 
 ## Legacy account and cloud implementation
 
-The following cloud notes describe retained services and prior checks, not the
-current local app path. Do not use them as permission to mutate those services.
+The following notes describe the pre-pivot app and retained services. The current
+app has no Clerk account, cloud-upload or Plan & usage controls. Use the local
+instructions above. Do not use historical instructions as permission to mutate
+services. Current service observations and obligations are in
+[CONFIGURATION.md](docs/CONFIGURATION.md) and the [HTTP contract](docs/BACKEND.md).
 
 The owner approved development cloud access and indefinite recording retention;
 sandbox billing enforcement was subsequently enabled on the same development
@@ -106,29 +111,21 @@ backend. The earlier unlimited-access checkpoint is not the current billing poli
 `GEMINI_BILLABLE_ENABLED` defaults off if missing and does not replace owner checks
 or billing admission. Recorded configuration is not a fresh live switch readback.
 
-This is a multi-user product. Gemini keys will **not** be saved in Keychain or
-bundled in Swift. The product owner funds one shared key in Convex env.
-Clerk hosted login is wired into the sidebar; Google and Apple are enabled for the
-development instance. Clerk may persist login sessions in Keychain; this never
-stores the Gemini key. Human reported a successful login/transcript/chat round;
-both providers and production credentials are not independently verified by it.
-Transcript/chat backend is deployed to development and connected to the Swift UI.
-See [the HTTP contract](docs/BACKEND.md).
+The retained backend uses a shared Gemini key in Convex env. Never bundle this
+key in Swift or store it as an app credential. Historical Clerk sessions can
+remain in Keychain. Native cleanup does not delete them or change provider data.
 Audio uploads are limited to 18 MiB. Uploaded audio/transcripts remain in Convex
 indefinitely unless an approved deletion workflow removes them. Guarded in-app
 deletion initiation is implemented and its backend is deployed to dev, but intake
 is off and provider deletion is not live-verified. Core development sandbox billing
 was Human-tested; see status for remaining lifecycle/release checks.
 
-**Plan & usage** in the sidebar shows server-verified allowances and offers
-purchase/restore when configured. RevenueCat identifies the signed-in Clerk user;
-it never authorizes cloud work by itself. Free includes one-time 120 minutes and
-20 questions; Pro includes 1,200 minutes and 200 questions each month, also on
-annual billing. Pricing targets are USD 9.99/month or 99.99/year; actual purchase
-prices come from StoreKit. See [rollout prerequisites](docs/BACKEND.md#subscription-integration-development-sandbox-production-pending).
-Purchases stay disabled without legal links, store configuration and active server
-enforcement. Internal `sandbox-dev` permits explicitly acknowledged unpublished
-legal links; Store mode does not. Local recording remains available without billing.
+The current app cannot purchase or restore RevenueCat subscriptions. SDK removal
+does not cancel subscriptions or delete customers. Backend billing, provider
+deletion and historical operator contracts remain. See
+[billing obligations](docs/BACKEND.md#subscription-integration-development-sandbox-production-pending).
+Store/TestFlight tooling retains its approval gates; those gates do not establish
+that the current app supports the old billing product.
 
 Before building, set public `CLERK_PUBLISHABLE_KEY` and `CONVEX_SITE_URL` in ignored
 `.env.local`. The packaging script copies only allowlisted public values into Info.plist.
@@ -138,7 +135,7 @@ Native API enabled, `com.lessmeet.app://callback` registered, and session claim
 Production Google/Apple provider credentials and distribution signing are separate
 setup; development shared OAuth credentials do not establish production readiness.
 
-### Using transcript and chat
+### Historical cloud transcript and chat
 
 Sign in from the sidebar, select a saved recording and choose **Create Transcript**.
 Confirm the upload/retention notice. The app uploads only `combined.m4a`, saves the
@@ -158,10 +155,11 @@ If the connection is lost before an upload ID is saved, the app cannot recover t
 remote recording automatically. Uploading again may incur another charge. There
 are no automatic mutation retries. Failed/oversize files never replace local audio.
 
-### Convex development setup
+### Historical Convex development setup
 
 Project: [hoang-bang/lessmeet](https://dashboard.convex.dev/t/hoang-bang/lessmeet).
-Dev deployment: `zany-octopus-315` (US East); no production deployment yet.
+Historical dev deployment: `zany-octopus-315` (US East). This setup snippet is
+not a current deployment inventory. See CONFIGURATION.md before operator work.
 
 ```sh
 npm ci
@@ -197,8 +195,10 @@ the current release binary's complete runtime matrix or production readiness.
 `swift test` exercises persistence/reopen and synthetic sample buffers through the
 real CAF/M4A writer/exporter. These do not prove live capture, acoustic quality,
 long-session synchronization, TCC behavior, or macOS 15 runtime compatibility.
-The native suite includes billing identity/cancellation fixtures, HTTP contract,
-cloud lifecycle, persistence and local rendering checks. Exact current acceptance
+The native suite includes local transcription/chat, HTTP contract, retained cloud
+lifecycle, persistence and local rendering checks. Billing-only tests and the
+`LESSMEET_SUBSCRIPTION_SNAPSHOT` fixture were retired with the native SDK.
+Exact current acceptance
 results are in STATUS.md. No real OAuth or paid Gemini call was used for these tests.
 
 Before considering the recorder verified, record a short known conversation with
@@ -210,7 +210,8 @@ Current decisions, ownership and acceptance: [docs/STATUS.md](docs/STATUS.md).
 
 ### Agent native UI checks
 
-Use Xcode and the repeatable offline UI suite to validate agent changes:
+Use the current packaged local app for current-app UI acceptance. The repeatable
+Xcode suite below covers the retained legacy account-deletion fixture only:
 
 ```sh
 bash scripts/test-ui.sh
@@ -256,7 +257,11 @@ The fixture shares the real deletion view/model. Delete and subscription links
 are disabled or absent. These checks do not verify OAuth, Keychain permissions,
 HTTP transport, billing, recording or production deletion.
 
-#### Real account connection
+#### Historical Clerk account connection
+
+This procedure applies only to a pre-pivot artifact with **Connect Account**.
+The current app uses **ChatGPT account**. `auth-check` packaging does not restore
+the removed Clerk controls and is not the ChatGPT verification route.
 
 Normal app startup stays local. Opening Account does not access Clerk. Click
 **Connect Account** to restore the saved session, then sign in if needed.
