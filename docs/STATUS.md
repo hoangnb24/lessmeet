@@ -57,9 +57,31 @@ Preflight readback passes without writes. A successful helper return is not fina
 acceptance: download all four release assets and compare original hashes. The
 existing already-published path checks remote consistency, not local archive equality.
 
-Current frontier: commit/push the scoped correction, recover the original release,
-then land the fix through the authorized PR workflow and verify terminal outcomes.
-No remote write has occurred during this repair yet. Native runtime limits remain.
+Correction committed and pushed as `bf7808b4df3c325e71031e6f5b81021ce7f232b7`
+on `fix/pr14-release-binding`, PR [15](https://github.com/hoangnb24/lessmeet/pull/15).
+
+ACCEPT original-artifact recovery. The single guarded attempt published release
+411365469 at 2026-10-13 09:13:58 UTC. It uploaded only the four pinned files and
+changed draft to false. No new tag/release, rebuild, overwrite or deletion occurred.
+[Release](https://github.com/hoangnb24/lessmeet/releases/tag/main-build-45-4cb16f2b262af891b10c7ddf498b42d811d65c66)
+is a prerelease with all four assets. Its tag still points to the original merge SHA.
+All four files downloaded from that release match the original artifact byte-for-byte.
+The downloaded checksum file and the existing dry-run validator also pass.
+
+Original and downloaded SHA256 values:
+
+- ZIP: `473cac276faad55406fb330e8a991cae240cf923a3526b107ca62ac6b3018034`.
+- `release.json`: `e4ad7b659fd5549ec622e6fea4dc605ec3e7b77230459137847b1cd1e339af12`.
+- `changelog.md`: `bfd014d5dd38710f7b93245ea86219527d9a8e9016f1a40016793db513e943ee`.
+- `SHA256SUMS`: `2a62e19a4d78f8d273ea920efb94f9b8dcd501b3122b90c9a89522df558c78a3`.
+
+Evidence: `.artifacts/signin-chat/recovery-execute.log`, `recovery-readback.json`
+and `recovered-download/`. Recovery proves publication and original bytes. It does
+not reconstruct the missing response from the initial failed hosted attempt.
+Current frontier: land the accepted correction, watch its automatic workflow,
+and verify one failed-job rerun of PR14 against the restored release. That rerun
+uses the original immutable build artifact and old helper's already-published path.
+Native runtime limits remain unchanged.
 
 ## Merge complete; automatic publish FAILED (2026-10-13)
 
