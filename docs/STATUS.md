@@ -1,5 +1,273 @@
 # LessMeet delivery
 
+## Post-pivot cleanup — ACCEPTED; hosted build next (2026-10-13)
+
+Human authorizes survey and local implementation of proven obsolete code,
+dependencies, configuration and instructions, explicitly including RevenueCat.
+Preserve current features, recordings, credentials and old-data readability.
+Updated final-step authority (2026-10-13): after completion and acceptance, commit
+and push the cleanup, then verify the existing GitHub build for that exact SHA
+through completion. Preserve current workflows. Report any automatic prerelease
+trigger. This is conditional authority, not a waiver of runtime limitations.
+No merge, live backend/account/data deletion, production change, paid API call,
+manual release or other publication is authorized. Historical activation authority
+below does not authorize this task's release.
+
+Current frontier: commit/push the accepted cleanup and follow its hosted build.
+Lead owns all writes. No active Peer write scope or UI owner exists. Both app
+processes started for verification exited. Commit/push has not started.
+Local workflow inspection shows no push trigger: main-release.yml runs on a
+merged PR closed against main; main-build-diagnostic.yml is workflow_dispatch.
+Pushing this cleanup branch alone does not trigger that prerelease workflow.
+An exact-SHA hosted build needs the existing manual diagnostic workflow if no
+other remote workflow supplies it. Do not create/merge a PR to manufacture a build.
+
+### New runtime inputs (2026-10-13)
+
+The bundled-marketplace Computer Use package now supplies a readable SKILL.md.
+Its instructions were read and @oai/sky drove the exact local bundle. This resolves
+the missing-skill blocker below. Live UI ownership is released after teardown.
+Human permits local speech inputs only from the explainer output directory
+`/Users/tubakhuym/projects/prototypes/explainer-video/outputs/tldraw-offline-agent-api/`.
+Preserve originals. Put converted samples and runtime proof under ignored
+`.artifacts/cleanup/runtime/`. No uploads, paid calls or explainer edits.
+Runtime proof is in `.artifacts/cleanup/runtime/RESULT.md` and adjacent logs,
+screenshots, accessibility text and hashes. On 2026-10-13 03:26–03:31 UTC:
+
+- PASS network-denied real-model finalization: 30-second narration copy produced
+  15 segments; metadata stayed unchanged and transcript save/reopen matched.
+- PASS normal UI library, sidebar, search/clear and model-ready display.
+- PASS normal local transcription of the existing synthetic integration recording:
+  10 segments, two named speakers and one unknown fragment; saved transcript
+  remained visible after full app quit/relaunch. Audio and recording.json hashes
+  stayed unchanged. Only its new local transcript sidecar was added.
+- PASS playback transport: play, advancing position and pause. Listening quality
+  remains UNVERIFIED.
+- PASS signed-out Account and Chat UI: no storage error, Send/Load models disabled.
+  Live OAuth/chat and microphone/system capture remain UNVERIFIED. No login,
+  message, upload, new capture or production action occurred.
+
+The executable remains SHA256
+`7f150840f82c7a2993c8c1389f7f030c6178352618d9f81694867c5c2406b274`.
+codesign strict verification passed. Original processes 27662 and 30703 exited.
+The former silent-input inference FAIL remains separate. These results establish
+cleanup regression evidence, not authenticated-product or distribution readiness.
+Peer 38419476 independently verified the exact candidate and runtime evidence.
+Report ACCEPTED: no concrete blocker; scope CLOSED with no write ownership.
+All survey, source inspection and runtime-evidence responses have explicit
+ACCEPT dispositions. No unresolved response remains.
+
+### Final cleanup acceptance
+
+ACCEPT candidate patch
+`5edc287bb95c3fdeda8fa76009e40449e247b6c915e899bbd30e16f48f9c9101`
+over `fded246dcf76d3cef1d7d04f84ec14536d77a55f` for the requested cleanup.
+Reason: obsolete native code and its SDK/resources are unreachable and removed;
+active capture, local models, ChatGPT, persistence and workflows stay unchanged.
+Old-data round trips, 386 native tests (six skips, zero failures), 73 packaging
+tests, 91 release tests and both local/offline packages pass. New runtime proof
+establishes normal-app transcription, saved transcript reopen, library navigation,
+model readiness and signed-out behavior. This is not code-only acceptance.
+Keep untested OAuth/live chat, new microphone/system capture and acoustic quality
+explicitly UNVERIFIED. These are unchanged paths, not silently added release gates.
+The earlier silent-fixture failure remains recorded separately.
+
+The conditional final-step authority is now applicable to this bounded outcome.
+Permitted next action: commit only cleanup/helper/status changes, push only
+`cleanup/post-pivot-20261013`, run the existing diagnostic for its exact resulting
+SHA with package_mode=local, and wait for terminal outcome. No merge, PR creation,
+manual release, workflow change or production mutation. Branch push does not
+trigger the merged-main prerelease workflow. Hosted success is not yet established.
+
+### Resumed result and commit/push hold
+
+ACCEPT the verification-helper correction locally. Current candidate, including
+the new untracked fixture test and excluding STATUS, is
+`.artifacts/cleanup/resume/candidate.patch`, SHA256
+`5edc287bb95c3fdeda8fa76009e40449e247b6c915e899bbd30e16f48f9c9101`.
+It extends the accepted 5a95d604 cleanup only in the fixture generator, its tests
+and neutral inference-test logging. Product code and the packaged executable are
+unchanged. The generator checks both source AIFF files before adding silence or
+encoding M4A. Empty/silent inputs now fail instead of producing a misleading
+success. The inference test no longer prints PASS after failed assertions.
+
+Fresh evidence in `.artifacts/cleanup/resume/`: build PASS; `swift-test.log`
+reports 386 tests, 6 skips and zero failures; `packaging.log` reports 73 tests PASS.
+Three new mock tests cover missing levels, silent/invalid second input and valid
+input routing. `fixture-guard-real.log` rejects the actual empty first voice;
+its process exit code was 1. This is successful fail-closed behavior, not speech
+inference acceptance. A bounded Fred-voice probe also returned a 4,096-byte AIFF
+with no duration. The old integration synthetic-fixture directory is unavailable.
+No further speech-generation retries or inference runs are queued.
+
+Independent read-only review of exact 5edc287b found no actionable finding;
+report ACCEPTED and scope closed. Earlier survey and both native-candidate review
+dispositions remain ACCEPTED. No Peer action is unresolved. Lead owns the handoff;
+UI owner NONE. Main checkout still has only its pre-existing dirty STATUS and .codex.
+
+The earlier runtime hold was valid when Computer Use instructions and speech
+input were unavailable. Both missing inputs are now resolved with observed proof
+above. Do not carry the old missing-input requests forward. Final acceptance must
+use the cleanup scope and actual evidence. It must not label untested live auth,
+capture or acoustic quality PASS. Those source paths and workflows are unchanged
+from fded246; a new full-product certification is not an added cleanup requirement.
+
+Remote readback on 2026-10-13: main remains
+`fded246dcf76d3cef1d7d04f84ec14536d77a55f`; cleanup/post-pivot-20261013 does not exist
+remotely (ref API HTTP 404). Only the existing diagnostic and merged-main prerelease
+workflows are registered and active. No new commit, push, workflow dispatch or
+build run occurred. There is no remote cleanup SHA or candidate build URL yet.
+After acceptance, push only the scoped cleanup branch, use the existing diagnostic
+with exact source_ref and package_mode=local, and follow that run to completion.
+Confirm checked-out SHA from its evidence; workflow headSha alone can differ from
+source_ref. No merge or manual release is authorized. Branch push alone does not
+trigger the merged-PR prerelease workflow.
+
+Behavior baseline: tag
+`main-build-44-fded246dcf76d3cef1d7d04f84ec14536d77a55f`, exact commit
+`fded246dcf76d3cef1d7d04f84ec14536d77a55f`, verified against GitHub release and
+remote main. Release ZIP SHA-256:
+`dda3b23cfa8d891e6cf5b1f88bf72e7b04245c9c44dbf96b2327fce2760ff5e4`.
+Work only in `lessmeet-post-pivot-cleanup.TxoYsu`, branch
+`cleanup/post-pivot-20261013`. The old main checkout at b08b3cd, dirty STATUS,
+operator-owned .codex, remaining worktrees and all private data stay untouched.
+
+Plan: (1) map active callers and persisted compatibility; (2) pin baseline tests
+and release identity; (3) remove proven dead native/package/config paths in bounded
+units; (4) reconcile obsolete guidance without deleting live-service contracts;
+(5) compare regression evidence and independently inspect the final snapshot.
+Lead owns code, package, status and acceptance. Native and documentation surveys
+of fded246 are ACCEPTED as static evidence. Both read-only scopes are closed.
+No writable Peer or UI owner exists.
+Reopen a deletion if a caller, saved schema or unresolved product decision needs it.
+Current data boundary: Recording Codable includes cloud/batches; preserve those
+fields until round-trip compatibility is demonstrated. Do not touch actual libraries.
+
+Selected first unit: remove RevenueCat's native SDK, billing driver/store,
+BillingConfiguration, unreachable SubscriptionView/SubscriptionAccountView and
+their dedicated tests. This explicitly retires LESSMEET_SUBSCRIPTION_SNAPSHOT.
+Remove the SDK bundle requirement from builders, validators and fixtures together.
+Keep Clerk, offline deletion, cloud/batch types, SubscriptionModel, all backend
+code, service settings and Store/TestFlight approval contracts. Those have retained
+callers or unresolved distribution obligations. Negative local configuration checks
+must still reject stale RevenueCat keys. Historical handoffs remain historical.
+Cloud/schema retirement is deferred until its compatibility proof and service
+obligations are resolved; Lead owns that technical checkpoint. Product retirement
+of distribution paths requires Human direction, not this dependency deletion.
+
+Baseline evidence: native build-tests PASS with Swift 6.3.3 and Xcode 26.6;
+411 native tests PASS, with 6 opt-in skips; 69 packaging tests PASS. Native tests
+run with outbound network blocked except loopback and optional paid/model test
+variables absent. First sandbox
+invocation failed before tests because its address syntax was invalid; the corrected
+localhost policy is a separate run. Logs: .artifacts/cleanup/baseline/.
+
+Candidate implementation is frozen for independent read-only inspection. Exact
+diff excludes this status file: .artifacts/cleanup/candidate/review.patch,
+SHA256 51f790ff5793a4684865b4bedcaf51f1c43d63d9a0d8fc99f0312725bcfdeba1.
+The lockfile removes only purchases-ios-spm; other pins are unchanged. No persisted
+model, recording path, Keychain identifier, active controller or app entry changed.
+First candidate: native build and 387 tests PASS with the same 6 skips; 69 packaging
+and 91 release tests PASS. Real local SwiftBuild/package and release app validator
+PASS. Executable SHA256 8759c00993266a50a79f28345de6f3ad7c30e7d9e34874959475a698a1240ef0.
+Bundle remains arm64, com.lessmeet.app.local, version 1.0.0/build 1, ad-hoc,
+not notarized. No app was launched. Offline fixture packaging is running.
+
+Two added literal old-metadata tests cover rename/reopen and interrupted recovery
+with cloud/batch fields and source audio preserved. One new packaging test covers
+stale RevenueCat resources not being copied from cache. Final reruns are pending.
+Preserve failed attempts separately: initial new Swift fixture had an unterminated
+raw string; initial stale-resource test exposed a mock signer that wrongly required
+every cached bundle. Both fixture defects are corrected. The intervening skip-build
+run used the earlier test binary and is not evidence for the added tests.
+Skill instructions now separate current local checks from legacy cloud/deletion
+fixtures; the retired billing map is removed. Skill format validation PASS.
+
+ACCEPT RevenueCat unit 51f790ff5793a4684865b4bedcaf51f1c43d63d9a0d8fc99f0312725bcfdeba1
+for local technical integration. Final 389 native tests with 6 skips, 70 packaging
+tests and 91 release tests PASS. Both normal/local and offline-check real packages
+PASS. Independent read-only review found no actionable regression; report ACCEPTED
+and scope closed. UI, real inference/auth and acoustic quality remain UNVERIFIED.
+
+Next ready unit: remove RecordingChatView, RecordingChatDraft and its three isolated
+tests. Repo-wide references show no runtime caller; LocalChatView owns current chat.
+Remove AccountSession.revokeBillingAdmission and its two invocations because the
+deleted BillingStore was its only assignment. Keep account deletion locks and
+all persisted cloud/batch data. Update the legacy map's removed-source anchor.
+Lead alone owns this small follow-up. Rebuild and rerun before final acceptance.
+
+### Final disposition and usable output
+
+ACCEPT the final local cleanup candidate for technical integration. Exact diff
+against fded246, excluding this status file, is
+`.artifacts/cleanup/candidate/review-final.patch`, SHA256
+`5a95d6045bb8058064501836872b0575afb5373c9795f7ed188d61ccd495c17e`.
+Branch `cleanup/post-pivot-20261013` remains uncommitted. No push, PR, merge,
+deployment, service change or release occurred. Removed tracked files can be
+recovered from the baseline commit. No worktree or user data was deleted.
+
+Reason: exact code/diff inspected; both independent read-only reports ACCEPTED;
+all remaining native tests and real package checks pass. All Peer scopes are
+closed. Lead retains the handoff; UI owner NONE. No further source edits are open.
+The packaged app is available at `dist/local/LessMeet.app` in this worktree.
+Its executable SHA256 is
+`7f150840f82c7a2993c8c1389f7f030c6178352618d9f81694867c5c2406b274`.
+The artifact is arm64, ad-hoc signed, not notarized, version 1.0.0/build 1.
+Do not infer runtime or distribution acceptance from this technical disposition.
+
+Final evidence under `.artifacts/cleanup/candidate/`:
+
+- `swift-build-final-unit.log` and `swift-test-final-unit.log`: build PASS;
+  386 tests, 6 opt-in skips, zero failures. `test-delta.json` proves the change
+  from 411 baseline tests is exactly 27 retired tests and 2 new metadata tests.
+  No active regression suite was removed.
+- `packaging-fixed.log`: 70 tests PASS. `release.log`: 91 tests PASS. Their inputs
+  are unchanged by the final chat/callback deletion. No hosted CI was run.
+- `local-package-final-unit.log` and `offline-package-final-unit.log`: real
+  SwiftBuild, shader build, bundle assembly and signing PASS for both entry variants.
+  The local release validator also PASS. `artifact-identity.json` records both
+  binaries, plists, shader hashes and bundle contents without RevenueCat.
+- `source-invariants.json`: only the intended native paths changed. Other package
+  pins, saved schemas, active ChatGPT/transcription paths, app entry, entitlements,
+  backend code and configuration/approval gates remain unchanged.
+- `real-tokenizer.log`: all 15 adapter tests PASS with the cached pinned tokenizer,
+  including the two tests skipped in the general suite. Network access was denied.
+- Skill validation and `git diff --check` PASS. No remaining executable reference
+  to the removed billing/chat declarations was found. Historical hash manifests
+  and service safety documentation remain as evidence, not candidate proof.
+
+Additional inference attempt is FAIL, not a pass: `real-inference.log` reports
+zero segments and a failed nonempty-transcript assertion. The existing fixture
+script returned success but generated only four seconds of silence. `ffprobe`
+reported 4.000 seconds/1,336 bytes; volume was -91 dB. One fixture-generation retry
+produced the same SHA256, so no second inference was run. The test's printed PASS
+line is not authoritative; its XCTest failure is retained. This input failure
+does not establish a cleanup regression or speech-recognition success.
+Only synthetic files and a private copy of the existing model cache were used.
+The original model cache, recordings and credentials were not modified.
+
+Remaining runtime acceptance is UNVERIFIED. The required installed Computer Use
+skill is unavailable; no app UI was launched or driven. Real sign-in/chat, capture,
+playback quality and the full save/reopen UI remain untested. Model inference on
+nonempty speech also needs a valid synthetic speech fixture. Lead can resume when
+the Computer Use skill and an authorized app-check session are available, and a
+verified synthetic speech file is supplied or generated. Human owns any required
+tool availability/permission and live-data or network scope. No new authority is
+needed for the completed local cleanup.
+
+Retained obligations: Clerk/shared account and cloud controllers still have
+fixture/compatibility callers; backend provider deletion and billing remain live
+service obligations until separately resolved. Store/TestFlight and other legacy
+packaging modes retain approval gates. Human must decide any service or distribution
+retirement. Lead must first map remaining callers and preserve old-data roundtrips
+before another native removal unit. Do not treat this handoff as permission to
+cancel subscriptions, delete customers or decommission a backend.
+
+Verification limits: recheck local SwiftBuild and Computer Use availability before
+claiming recovery from earlier failures. Missing runtime access stays UNVERIFIED,
+not equivalent to tests/build passing. The release app is ad-hoc signed; previous
+ChatGPT storage/signing failure is a baseline limit, not permission for an auth fix.
+
 ## Release activation — current authority and frontier (2026-10-12)
 
 Human authorizes commit, push to `check/main-build-20261012`, PR creation,

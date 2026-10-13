@@ -75,7 +75,7 @@ final class LocalRealInferenceTests: XCTestCase {
         let reopened = try RecordingStore(root: root)
         XCTAssertEqual(try reopened.loadLocalTranscript(for: id), transcript)
         XCTAssertEqual(try reopened.load().first?.status, .ready)
-        print("PASS real finalization-to-sidecar elapsedSeconds=\(Date().timeIntervalSince(started)) segments=\(transcript.segments.count) path=\(store.directory(for: id).appendingPathComponent("transcript.json").path)")
+        print("Real finalization-to-sidecar result elapsedSeconds=\(Date().timeIntervalSince(started)) segments=\(transcript.segments.count) path=\(store.directory(for: id).appendingPathComponent("transcript.json").path)")
     }
 
     private struct CheckFailure: Error {
