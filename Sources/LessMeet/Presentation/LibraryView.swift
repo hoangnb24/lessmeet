@@ -46,6 +46,7 @@ struct LibraryView: View {
                         .id(recording.id)
                 }
             }
+            .frame(minHeight: 0, maxHeight: .infinity)
             .background(Color(nsColor: .textBackgroundColor))
         }
         .tint(.blue)

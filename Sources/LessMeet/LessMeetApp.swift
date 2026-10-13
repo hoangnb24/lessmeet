@@ -1,6 +1,18 @@
 import SwiftUI
 
-#if LESSMEET_CHAT_UI_CHECK
+#if LESSMEET_LIBRARY_UI_CHECK
+@main
+struct LessMeetLibraryUICheckApp: App {
+    var body: some Scene {
+        WindowGroup("LessMeet Library UI Check — Offline") {
+            LibraryUICheckView()
+                .frame(minWidth: 1000, minHeight: 640)
+        }
+        .defaultSize(width: 1180, height: 760)
+        .commands { CommandGroup(replacing: .newItem) {} }
+    }
+}
+#elseif LESSMEET_CHAT_UI_CHECK
 @main
 struct LessMeetChatUICheckApp: App {
     var body: some Scene {

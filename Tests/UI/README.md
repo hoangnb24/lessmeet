@@ -1,5 +1,67 @@
 # LessMeet Xcode verification
 
+## Full-Library navigation regression
+
+`LessMeetLibraryUI` is a separate target with no app-build dependency. It leaves
+the legacy `LessMeetOfflineUI` target and packaging flow unchanged. The dedicated
+script tests an existing bundle; it never rebuilds or overwrites that bundle.
+
+1. Obtain sole UI ownership and stop Computer Use before running this suite.
+2. Supply a canonical absolute path to an approved `library-ui-check` bundle.
+3. Run the retained baseline first:
+   `bash scripts/test-library-ui.sh --app "$PWD/dist/library-ui-baseline/LessMeet.app"`.
+4. Run the fixed candidate separately:
+   `bash scripts/test-library-ui.sh --app "$PWD/dist/library-ui-check/LessMeet.app"`.
+5. Inspect each printed evidence directory before accepting the result.
+
+The script requires bundle ID `com.lessmeet.app.library-ui-check`, packaging mode
+`library-ui-check`, a valid signature and no service configuration. It rejects
+existing fixture processes, including another bundle path. The test repeats the
+running-app check before each launch and verifies the executable hash. It uses
+`XCUIApplication(url:)`, never bundle-ID launch or a production bundle fallback.
+Do not replace the selected bundle during a run. The test terminates only its
+recorded process with matching PID, launch date and bundle path. Interrupted runs
+can leave a process alive; inspect the retained identity before manual cleanup.
+
+Each meeting starts in a fresh fixture process. The test opens a real Library
+row, checks Transcript, opens Chat, types a synthetic draft, switches to Transcript
+and back, and checks that the exact draft remains. It switches to the other
+meeting through Recent, checks its title and transcript, returns through sidebar
+Library, filters for `short transcript`, then clears the search through Library.
+No message is sent. It uses only the two fixed `Synthetic planning` titles.
+
+Search, Recent, tabs and every clicked control must have nonempty frames fully
+inside the window, be enabled and pass hit testing. This detects the original
+off-window layout even when the accessibility tree still contains the controls.
+The baseline must fail at the post-open geometry check; an unrelated setup/query
+failure does not establish regression sensitivity. The fixed candidate must pass
+both tests. Runtime results remain UNVERIFIED until these serial runs occur.
+On 2026-10-13, the target built successfully, but the baseline runner failed before
+test execution: `Timed out while enabling automation mode.` This is not a detected
+layout failure. Rerun baseline and candidate when UI automation is available;
+do not count the initialization failure as red/green evidence.
+
+Evidence is retained under `.artifacts/verify-lessmeet/library-xcode.XXXXXX/`:
+`identity.json`, build/test commands and logs, isolated `DerivedData`, exit code,
+`Tests.xcresult`, summary and cleanup status. The result bundle includes screenshots,
+accessibility trees, frame measurements and launched PID/start identity. A failure
+before Xcode testing has no `.xcresult`; its nonzero exit still remains recorded.
+The script shares the existing UI-run lock but does not use shared DerivedData.
+
+Build-only verification does not launch an app:
+
+```sh
+xcodebuild build-for-testing -project Tests/UI/LessMeetUITests.xcodeproj \
+  -scheme LessMeetLibraryUI -destination platform=macOS \
+  -disableAutomaticPackageResolution -derivedDataPath /absolute/private/DerivedData
+```
+
+Run through the script, not Command-U: the script supplies the exact app path and
+hash in the generated test plan. Resize, visual polish, real data, persistence
+across launches, auth and live networking remain outside this regression. Resize
+requires the separately owned Computer Use check. Do not change automation
+permissions or install tools to bypass a blocked run.
+
 Use unit/component tests for model behavior and view controls. Use the XCUITest
 suite for repeatable flows in the running offline app. Use Computer Use for the
 project's required visual acceptance and exploratory checks. Keep their results

@@ -3,8 +3,8 @@ set -euo pipefail
 cd "$(dirname "$0")/.."
 mode="${1:-dev}"
 action="${2:-build}"
-if [[ $# -gt 2 || ! "$mode" =~ ^(dev|local|offline-check|chat-ui-check|auth-check|sandbox-dev|store|testflight)$ || ! "$action" =~ ^(build|--preflight)$ ]]; then
-  printf 'Usage: bash scripts/build-app.sh [dev|local|offline-check|chat-ui-check|auth-check|sandbox-dev|store|testflight] [--preflight]\n' >&2
+if [[ $# -gt 2 || ! "$mode" =~ ^(dev|local|offline-check|chat-ui-check|library-ui-check|auth-check|sandbox-dev|store|testflight)$ || ! "$action" =~ ^(build|--preflight)$ ]]; then
+  printf 'Usage: bash scripts/build-app.sh [dev|local|offline-check|chat-ui-check|library-ui-check|auth-check|sandbox-dev|store|testflight] [--preflight]\n' >&2
   exit 1
 fi
 output_dir="$PWD/dist"
@@ -13,7 +13,7 @@ if [[ "$mode" =~ ^(sandbox-dev|store|testflight)$ ]]; then
   profile_mode=true
 fi
 signing_identity="${LESSMEET_SIGNING_IDENTITY:--}"
-if [[ "$mode" == offline-check || "$mode" == chat-ui-check ]]; then
+if [[ "$mode" == offline-check || "$mode" == chat-ui-check || "$mode" == library-ui-check ]]; then
   # Offline checks must not unlock a signing key inherited from the shell.
   signing_identity="-"
 fi
@@ -57,6 +57,8 @@ if [[ "$mode" == offline-check ]]; then
   build_args+=(-Xswiftc -DLESSMEET_OFFLINE_CHECK)
 elif [[ "$mode" == chat-ui-check ]]; then
   build_args+=(-Xswiftc -DLESSMEET_CHAT_UI_CHECK)
+elif [[ "$mode" == library-ui-check ]]; then
+  build_args+=(-Xswiftc -DLESSMEET_LIBRARY_UI_CHECK)
 fi
 swift build "${build_args[@]}"
 binary_dir="$(swift build "${build_args[@]}" --show-bin-path)"
