@@ -32,6 +32,9 @@ def install(root, bin_name):
         (bundle / "resource").write_bytes((name + "\n").encode())
         (bundle / "nested/payload").write_bytes(b"resource\x00bytes\n")
     shutil.copytree(ROOT / "Resources/ModelLicenses", root / "Resources/ModelLicenses")
+    icon = root / "Resources/Artwork/lessmeet-v2/LessMeet.icns"
+    icon.parent.mkdir(parents=True, exist_ok=True)
+    shutil.copyfile(ROOT / "Resources/Artwork/lessmeet-v2/LessMeet.icns", icon)
     env = {"PATH": os.environ["PATH"], "GIT_CONFIG_NOSYSTEM": "1",
            "GIT_CONFIG_GLOBAL": os.devnull, "GIT_TERMINAL_PROMPT": "0",
            "GIT_AUTHOR_NAME": "Fixture", "GIT_AUTHOR_EMAIL": "fixture@example.invalid",

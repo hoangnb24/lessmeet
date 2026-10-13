@@ -1,0 +1,34 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1024" height="1024" viewBox="0 0 1024 1024">
+  <defs>
+    <linearGradient id="tile" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0" stop-color="#4a6346"/>
+      <stop offset="1" stop-color="#28362a"/>
+    </linearGradient>
+    <linearGradient id="sheen" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0" stop-color="#ffffff" stop-opacity="0.16"/>
+      <stop offset="0.5" stop-color="#ffffff" stop-opacity="0"/>
+    </linearGradient>
+    <linearGradient id="bar" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0" stop-color="#fbfbf5"/>
+      <stop offset="1" stop-color="#e9ecda"/>
+    </linearGradient>
+    <filter id="shadow" x="-20%" y="-20%" width="140%" height="150%">
+      <feDropShadow dx="0" dy="14" stdDeviation="16" flood-color="#1a2419" flood-opacity="0.35"/>
+    </filter>
+    <filter id="barShadow" x="-50%" y="-20%" width="200%" height="140%">
+      <feDropShadow dx="0" dy="6" stdDeviation="8" flood-color="#141c13" flood-opacity="0.35"/>
+    </filter>
+  </defs>
+  <g filter="url(#shadow)">
+    <rect x="100" y="100" width="824" height="824" rx="185" fill="url(#tile)"/>
+  </g>
+  <rect x="100" y="100" width="824" height="824" rx="185" fill="url(#sheen)"/>
+  <rect x="101.5" y="101.5" width="821" height="821" rx="183.5" fill="none" stroke="#ffffff" stroke-opacity="0.12" stroke-width="3"/>
+  <!-- LessMeet brand mark: four slanted waveform bars (website .brand-mark, 17deg). -->
+  <g filter="url(#barShadow)" transform="translate(512 512)">
+    <rect x="-215" y="-120" width="70" height="240" rx="35" fill="url(#bar)" transform="rotate(17 -180 0)"/>
+    <rect x="-95"  y="-215" width="70" height="430" rx="35" fill="url(#bar)" transform="rotate(17 -60 0)"/>
+    <rect x="25"   y="-165" width="70" height="330" rx="35" fill="#d4e3a5" transform="rotate(17 60 0)"/>
+    <rect x="145"  y="-85"  width="70" height="170" rx="35" fill="url(#bar)" transform="rotate(17 180 0)"/>
+  </g>
+</svg>

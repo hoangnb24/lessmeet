@@ -24,6 +24,7 @@ struct LibraryUICheckView: View {
             do {
                 let fixture = try LibraryUICheckContext()
                 context = fixture
+                DemoWindowRecorder.shared.startIfRequested()
                 await fixture.manager.prepare()
             } catch { failed = true }
         }
@@ -51,6 +52,9 @@ final class LibraryUICheckContext {
         defaults = UserDefaults(suiteName: "com.lessmeet.library-ui-check." + UUID().uuidString)!
         store = try RecordingStore(root: root.appendingPathComponent("Recordings", isDirectory: true))
         let date = Date(timeIntervalSince1970: 1_760_000_000)
+        if DemoCapture.isActive {
+            _ = try DemoCapture.seed(store: store)
+        } else {
         try store.save(Recording(id: Self.longID, title: "Synthetic planning — long transcript",
                                  createdAt: date, duration: 2400, status: .ready))
         try store.save(Recording(id: Self.shortID, title: "Synthetic planning — short transcript",
@@ -65,12 +69,13 @@ final class LibraryUICheckContext {
         try store.saveLocalTranscript(LocalTranscript(segments: [
             LocalTranscriptSegment(startMs: 0, endMs: 30_000, speaker: "Maya", text: Self.shortText)
         ]), for: Self.shortID)
-        model = AppModel(store: store, capture: LibraryUICheckCapture())
+        }
+        model = AppModel(store: store, capture: DemoCapture.isActive ? DemoCaptureRecorder() : LibraryUICheckCapture())
         // An empty catalog fails validation before filesystem or network work, including Retry.
         manager = LocalModelManager(root: root.appendingPathComponent("Models", isDirectory: true),
                                     catalog: [], configuration: .ephemeral)
         transcription = LocalTranscriptionModel(app: model, manager: manager, engine: LibraryUICheckEngine())
-        let profile = ChatGPTProfile(id: "library-fixture", displayName: "Synthetic account", clientID: "fixture-client")
+        let profile = ChatGPTProfile(id: "library-fixture", displayName: DemoCapture.isActive ? "Demo account" : "Synthetic account", clientID: "fixture-client")
         var record = ChatGPTAuthRecord()
         record.registrations = [ChatGPTRegistration(clientID: profile.clientID, subject: "fixture-subject", profile: profile,
             tokens: ChatGPTTokenSet(access: "synthetic-access-only", refresh: nil, identity: "synthetic-identity-only",
@@ -144,7 +149,12 @@ private enum LibraryUICheckWire {
             if catalog {
                 pair.continuation.yield(.data(Data(#"{"models":[{"slug":"fixture-chat","display_name":"Synthetic Chat Model","visibility":"list"}]}"#.utf8)))
             } else {
-                let answer = "Synthetic answer: Alex will review the next draft on Friday."
+                let answer = DemoCapture.isActive ? DemoCapture.answer
+                    : "Synthetic answer: Alex will review the next draft on Friday."
+                if DemoCapture.isActive {
+                    streamDemo(answer, url: url, continuation: pair.continuation)
+                    return ResponsesStream(events: pair.stream, cancel: { pair.continuation.finish(throwing: CancellationError()) })
+                }
                 let events: [[String: Any]] = [
                     ["type": "response.output_text.delta", "delta": answer],
                     ["type": "response.completed", "response": ["id": "resp_fixture", "object": "response",
@@ -161,5 +171,28 @@ private enum LibraryUICheckWire {
             pair.continuation.finish()
         } catch { pair.continuation.finish(throwing: error) }
         return ResponsesStream(events: pair.stream, cancel: { pair.continuation.finish(throwing: CancellationError()) })
+    }
+
+    private static func streamDemo(_ answer: String, url: URL,
+                                   continuation: AsyncThrowingStream<ResponsesTransportEvent, Error>.Continuation) {
+        func line(_ event: [String: Any]) -> Data {
+            var bytes = Data("data: ".utf8)
+            bytes.append((try? JSONSerialization.data(withJSONObject: event, options: [.sortedKeys])) ?? Data())
+            bytes.append(Data("\n\n".utf8))
+            return bytes
+        }
+        let words = answer.split(separator: " ", omittingEmptySubsequences: false)
+        Task {
+            try? await Task.sleep(for: .milliseconds(900))
+            for (index, word) in words.enumerated() {
+                let delta = (index == 0 ? "" : " ") + word
+                continuation.yield(.data(line(["type": "response.output_text.delta", "delta": delta])))
+                try? await Task.sleep(for: .milliseconds(45))
+            }
+            continuation.yield(.data(line(["type": "response.completed", "response": ["id": "resp_demo", "object": "response",
+                "status": "completed", "output": [["id": "msg_demo", "type": "message", "role": "assistant",
+                    "status": "completed", "content": [["type": "output_text", "text": answer]]]]]])))
+            continuation.finish()
+        }
     }
 }

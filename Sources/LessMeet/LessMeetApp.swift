@@ -4,7 +4,7 @@ import SwiftUI
 @main
 struct LessMeetLibraryUICheckApp: App {
     var body: some Scene {
-        WindowGroup("LessMeet Library UI Check — Offline") {
+        WindowGroup(DemoCapture.isActive ? "LessMeet" : "LessMeet Library UI Check — Offline") {
             LibraryUICheckView()
                 .frame(minWidth: 1000, minHeight: 640)
         }

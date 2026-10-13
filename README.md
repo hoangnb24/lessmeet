@@ -1,5 +1,9 @@
 # LessMeet
 
+[![LessMeet: 30-second promo](design/promo-video/out/poster-ad.png)](design/promo-video/out/LessMeet-ad-30s-1080p60.mp4)
+
+*Be in the conversation. Keep the details.* ([watch the 30 s video](design/promo-video/out/LessMeet-ad-30s-1080p60.mp4))
+
 Local pivot checkpoint (2026-10-11): LessMeet is moving to a native, open-source
 macOS app. The current app shell records locally and uses **Continue with ChatGPT**
 for transcript chat. It no longer instantiates the legacy Clerk, Convex or billing
