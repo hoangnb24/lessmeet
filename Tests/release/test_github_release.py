@@ -300,6 +300,65 @@ class LocalTests(unittest.TestCase):
         self.assertEqual(self.publish(api)["status"], "already-published")
         self.assertEqual(api.mutations(), [])
 
+    def test_created_release_can_publish_before_collection_lists_it(self):
+        class DelayedCollection(FakeGitHub):
+            def json(self, method, endpoint, payload=None):
+                result = super().json(method, endpoint, payload)
+                if method == "GET" and endpoint.startswith("releases?"):
+                    return []
+                return result
+
+        self.seal()
+        api = DelayedCollection()
+        self.assertEqual(self.publish(api)["status"], "published")
+        self.assertFalse(api.release["draft"])
+        self.assertEqual(api.content, {path.name: path.read_bytes() for path in self.directory.iterdir()})
+        self.assertEqual(api.release["target_commitish"], "a" * 40)
+
+    def test_create_response_binding_is_checked_before_upload(self):
+        class WrongCreateResponse(FakeGitHub):
+            def json(self, method, endpoint, payload=None):
+                result = super().json(method, endpoint, payload)
+                if method == "POST" and endpoint == "releases":
+                    result["body"] = "A different release body"
+                return result
+
+        self.seal()
+        api = WrongCreateResponse()
+        with self.assertRaisesRegex(release.Invalid, "release-binding-mismatch"):
+            self.publish(api)
+        self.assertTrue(api.release["draft"])
+        self.assertEqual(api.content, {})
+
+    def test_binding_failure_names_only_the_mismatched_field(self):
+        valid = {"id": 41, "draft": True, "tag_name": self.value["tag"],
+                 "target_commitish": SOURCE, "name": self.value["tag"],
+                 "prerelease": True, "body": release.changelog(self.value).decode()}
+        for field, wrong in [("id", True), ("draft", 1), ("tag_name", "wrong-tag"),
+                             ("target_commitish", "d" * 40), ("name", "wrong-name"),
+                             ("prerelease", 1), ("body", "SYNTHETIC-SECRET")]:
+            with self.subTest(field=field), self.assertRaises(release.Invalid) as error:
+                release.release_matches({**valid, field: wrong}, self.value)
+            self.assertEqual(str(error.exception), "release-binding-mismatch: " + field)
+        with self.assertRaises(release.Invalid) as error:
+            release.release_matches(None, self.value)
+        self.assertEqual(str(error.exception), "release-binding-mismatch: missing-or-invalid-release")
+
+    def test_duplicate_binding_after_create_stops_before_upload(self):
+        class DuplicateAfterCreate(FakeGitHub):
+            def json(self, method, endpoint, payload=None):
+                result = super().json(method, endpoint, payload)
+                if method == "GET" and endpoint.startswith("releases?") and result:
+                    return result + [{**result[0], "id": 42}]
+                return result
+
+        self.seal()
+        api = DuplicateAfterCreate()
+        with self.assertRaisesRegex(release.Invalid, "duplicate-release-binding"):
+            self.publish(api)
+        self.assertTrue(api.release["draft"])
+        self.assertEqual(api.content, {})
+
     def test_rerun_uses_sealed_title_and_subjects_without_current_pr_or_git(self):
         self.seal()
         api = FakeGitHub()
