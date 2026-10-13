@@ -1,0 +1,22 @@
+// !$*UTF8*$!
+{
+ archiveVersion = 1;
+ classes = {};
+ objectVersion = 56;
+ objects = {
+  D00000000000000000000001 = {isa = PBXProject; attributes = {LastUpgradeCheck = 2600; }; buildConfigurationList = D00000000000000000000002; compatibilityVersion = "Xcode 14.0"; developmentRegion = en; hasScannedForEncodings = 0; knownRegions = (en, Base); mainGroup = D00000000000000000000003; productRefGroup = D00000000000000000000004; projectDirPath = ""; projectRoot = ""; targets = (D00000000000000000000010); };
+  D00000000000000000000002 = {isa = XCConfigurationList; buildConfigurations = (D00000000000000000000005); defaultConfigurationIsVisible = 0; defaultConfigurationName = Debug; };
+  D00000000000000000000003 = {isa = PBXGroup; children = (D00000000000000000000006, D00000000000000000000004); sourceTree = "<group>"; };
+  D00000000000000000000004 = {isa = PBXGroup; children = (D00000000000000000000007); name = Products; sourceTree = "<group>"; };
+  D00000000000000000000005 = {isa = XCBuildConfiguration; buildSettings = {MACOSX_DEPLOYMENT_TARGET = 15.0; SDKROOT = macosx; SWIFT_VERSION = 5.0; }; name = Debug; };
+  D00000000000000000000006 = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DemoDriverUITests.swift; sourceTree = "<group>"; };
+  D00000000000000000000007 = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; path = LessMeetDemoDriver.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
+  D00000000000000000000008 = {isa = PBXBuildFile; fileRef = D00000000000000000000006; };
+  D00000000000000000000010 = {isa = PBXNativeTarget; buildConfigurationList = D00000000000000000000011; buildPhases = (D00000000000000000000012, D00000000000000000000013); buildRules = (); dependencies = (); name = LessMeetDemoDriver; productName = LessMeetDemoDriver; productReference = D00000000000000000000007; productType = "com.apple.product-type.bundle.ui-testing"; };
+  D00000000000000000000011 = {isa = XCConfigurationList; buildConfigurations = (D00000000000000000000015); defaultConfigurationIsVisible = 0; defaultConfigurationName = Debug; };
+  D00000000000000000000012 = {isa = PBXSourcesBuildPhase; buildActionMask = 2147483647; files = (D00000000000000000000008); runOnlyForDeploymentPostprocessing = 0; };
+  D00000000000000000000013 = {isa = PBXFrameworksBuildPhase; buildActionMask = 2147483647; files = (); runOnlyForDeploymentPostprocessing = 0; };
+  D00000000000000000000015 = {isa = XCBuildConfiguration; buildSettings = {CODE_SIGN_IDENTITY = "-"; CODE_SIGN_STYLE = Manual; GENERATE_INFOPLIST_FILE = YES; PRODUCT_BUNDLE_IDENTIFIER = com.lessmeet.verification.demo-driver; PRODUCT_NAME = "$(TARGET_NAME)"; SWIFT_OPTIMIZATION_LEVEL = "-Onone"; ENABLE_APP_SANDBOX = NO; }; name = Debug; };
+ };
+ rootObject = D00000000000000000000001;
+}

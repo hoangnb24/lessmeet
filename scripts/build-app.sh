@@ -67,6 +67,8 @@ mkdir -p "$app_dir/Contents/MacOS" "$app_dir/Contents/Resources"
 cp "$binary_dir/LessMeet" "$app_dir/Contents/MacOS/LessMeet"
 cp Resources/Info.plist "$app_dir/Contents/Info.plist"
 node scripts/configure-app.mjs "$app_dir/Contents/Info.plist" "$mode"
+# Store/TestFlight stamping below replaces this with the separately approved icon.
+cp Resources/Artwork/lessmeet-v2/LessMeet.icns "$app_dir/Contents/Resources/LessMeet.icns"
 if [[ "$mode" == store || "$mode" == testflight ]]; then
   python3 scripts/store-package.py stamp "$app_dir" --mode "$mode"
 fi

@@ -254,6 +254,9 @@ class AgentChecks(unittest.TestCase):
         self.assertEqual(inventory(app / "Contents/Resources/ModelLicenses"), inventory(ROOT / "Resources/ModelLicenses"))
         for bundle in BUNDLES:
             self.assertEqual(inventory(app / "Contents/Resources" / bundle), inventory(self.root / "binary" / bundle))
+        self.assertEqual((app / "Contents/Resources/LessMeet.icns").read_bytes(),
+                         (ROOT / "Resources/Artwork/lessmeet-v2/LessMeet.icns").read_bytes())
+        self.assertEqual(plistlib.loads((app / "Contents/Info.plist").read_bytes())["CFBundleIconFile"], "LessMeet.icns")
         for call in self.calls():
             if call[0] == "swift":
                 self.assertIn("--disable-keychain", call)

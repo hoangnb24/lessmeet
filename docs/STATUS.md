@@ -7923,3 +7923,25 @@ Google/Apple credentials or secret values scanned outside this project.
   local configuration. `.env.local` and node_modules are ignored.
 - `npx convex env list --names-only` succeeded: no environment variables set.
 - No app code changed in this setup step; Swift tests were not rerun.
+
+## Icon v2 and promo video (2026-10-13)
+
+Branch `design/icon-promotion-video`, base 4dc7e33 (PR16 merge). Lead owned every write scope and
+no Peers were used. Ownership is RELEASED.
+
+- Icon: `Resources/Artwork/lessmeet-v2/` (SVG, 1024 PNG, ICNS sha256 `fe2fa579…167114`). It is wired
+  through `CFBundleIconFile` in `Resources/Info.plist` and an ICNS copy step in `scripts/build-app.sh`.
+  Store/TestFlight stamping still overrides it. Packaging tests: 75 OK. `NSWorkspace` returns the new icon.
+  Dock/Finder display is UNVERIFIED because screen capture was denied.
+- Demo capture: `Sources/LessMeet/Presentation/DemoCapture.swift` is active only when the
+  `library-ui-check` fixture sets `LESSMEET_DEMO_CAPTURE_DIR`. `LibraryUICheckTests` 3/3 pass, and the
+  `local` and `library-ui-check` builds succeed.
+- Video: `design/promo-video/out/LessMeet-ad-30s-1080p60.mp4` sha256
+  `c7da83088b4689a7d88106c50b7a76a8a21218a9c72da888ecac17049a9423e4`. Specs: 30.000 s, 1920x1080,
+  60 fps (1800 frames), AAC, −17.9 LUFS, −1.7 dBTP. Rendered from the real-app capture in
+  `design/promo-video/capture/` by `app/ad.py`, and reproducible from that capture.
+  Disposition: ACCEPT.
+- Limits: offline demo build, sample meeting, fixture chat answer, some shots sped up 1.6–2×,
+  pre-release CTA ("Coming soon"). Superseded videos and backup takes were removed.
+- Known pre-existing failure: `scripts/test-library-ui.sh` fails its Library heading assertion (line 40).
+  Not investigated.
