@@ -1,5 +1,8 @@
 # Transcripts
 
+Legacy cloud workflow only. These controls are absent from the current local app.
+Use README's local transcription procedure for the current app.
+
 Users upload an approved recording, read its transcript and recover saved cloud work.
 
 ## Sub-features

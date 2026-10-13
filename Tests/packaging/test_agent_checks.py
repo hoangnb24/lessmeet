@@ -69,6 +69,20 @@ class AgentChecks(unittest.TestCase):
         sign = next(call for call in self.calls() if "--sign" in call)
         self.assertEqual(sign[sign.index("--sign") + 1], "-")
 
+    def test_local_and_offline_ignore_stale_revenuecat_bundle(self):
+        stale = self.root / "binary/RevenueCat_RevenueCat.bundle"
+        stale.mkdir()
+        (stale / "old-resource").write_bytes(b"retired SDK cache")
+        for mode in ("local", "offline-check"):
+            with self.subTest(mode=mode):
+                result = self.run_build(mode)
+                self.assertEqual(result.returncode, 0, result.stderr)
+                resources = self.root / "dist" / mode / "LessMeet.app/Contents/Resources"
+                self.assertFalse((resources / "RevenueCat_RevenueCat.bundle").exists())
+                for bundle in BUNDLES:
+                    self.assertTrue((resources / bundle).is_dir())
+        self.assertTrue((stale / "old-resource").is_file())
+
     def test_auth_identity_fails_before_any_build_or_config(self):
         (self.root / ".env.local").mkdir()
         for value in (None, "", "-", " \t", " - "):

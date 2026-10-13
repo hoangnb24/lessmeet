@@ -67,7 +67,7 @@ if [[ "$mode" == store || "$mode" == testflight ]]; then
   python3 scripts/store-package.py stamp "$app_dir" --mode "$mode"
 fi
 # Swift Build generates resource lookup through Bundle.main.resourceURL.
-for resource_bundle in Clerk_ClerkKit.bundle RevenueCat_RevenueCat.bundle LessMeet_LessMeet.bundle \
+for resource_bundle in Clerk_ClerkKit.bundle LessMeet_LessMeet.bundle \
   swift-transformers_Hub.bundle swift-crypto_Crypto.bundle; do
   test -d "$binary_dir/$resource_bundle"
   cp -R "$binary_dir/$resource_bundle" "$app_dir/Contents/Resources/"

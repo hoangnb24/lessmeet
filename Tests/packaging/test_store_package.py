@@ -45,7 +45,7 @@ class StoreTests(unittest.TestCase):
         (self.app / "Contents/Resources").mkdir(parents=True)
         (self.app / "Contents/MacOS").mkdir()
         (self.app / "Contents/MacOS/LessMeet").write_bytes(b"synthetic-not-executable")
-        for name in ["Clerk_ClerkKit.bundle", "RevenueCat_RevenueCat.bundle"]:
+        for name in ["Clerk_ClerkKit.bundle"]:
             (self.app / "Contents/Resources" / name).mkdir()
         self.info = plistlib.loads((ROOT / "Resources/Info.plist").read_bytes())
         self.info.update({prop: STORE_PUBLIC[key] for key, prop in store.PUBLIC.items()})

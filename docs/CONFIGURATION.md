@@ -5,7 +5,19 @@ ownership and release gates remain in [STATUS.md](STATUS.md). Update this docume
 after each configuration change, including environment, verification date/result,
 secret location and rollback limits. Never commit keys, tokens or private keys.
 
-## GitHub merged-main releases — 2026-10-12 candidate
+## Native cleanup boundary (2026-10-13)
+
+The current local app no longer uses RevenueCat. Its native SDK, subscription UI
+and bundle requirement are removed. Backend RevenueCat routes and provider-deletion
+jobs remain. Their settings and operator obligations below are not retired.
+Legacy packaging modes retain their public-configuration and approval contracts.
+Local/offline bundles still strip stale service keys; the release validator still
+rejects them. Native SDK removal does not cancel subscriptions or erase customers.
+Store/TestFlight readiness remains unverified. The existing installer validator
+rejects symlinks, while the app builder creates the required MLX shader symlink.
+This cleanup does not change that policy or authorize distribution.
+
+## GitHub merged-main releases (2026-10-12)
 
 Scope decision: GitHub Release with a build file and changelog only. TestFlight,
 App Store submission and public App Store release are excluded. Apple credentials
@@ -16,8 +28,10 @@ below are unchanged.
 
 Implementation: `.github/workflows/main-release.yml`, `scripts/github-release.py`
 and `scripts/build-github-release.py`. The existing manual diagnostic workflow
-remains separate. This candidate has not been pushed, merged or run on GitHub.
-Local verification does not establish a hosted Actions pass or exact-app E2E.
+remains separate. The installed pipeline produced tag
+`main-build-44-fded246dcf76d3cef1d7d04f84ec14536d77a55f` on 2026-10-12.
+That is the cleanup behavior baseline, not a release of this cleanup candidate.
+Local verification does not establish a new hosted Actions pass or exact-app E2E.
 
 ### Trigger, identity and ordering
 

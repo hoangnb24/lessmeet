@@ -1,6 +1,6 @@
 ---
 name: verify-lessmeet
-description: Validate LessMeet changes with Xcode, unit/component tests, XCUITest and Computer Use evidence. Use for repeatable offline account-status checks, debugging failed tests, or mapped recording, transcript, chat and billing verification.
+description: Validate LessMeet changes with Xcode, unit/component tests and Computer Use evidence. Use for local recording, transcription and ChatGPT chat checks, or the retained offline account-deletion XCUITest fixture.
 ---
 
 # Verify LessMeet
@@ -17,6 +17,17 @@ macOS 15+, Swift 6.3 with Swift Build, Node 22+, Python 3 and the installed
 
 ## Choose the verification path
 
+The current app uses local transcription and ChatGPT chat. Its source entry is
+`LessMeetApp`; launch its approved `local` artifact. Start component regression
+with `RecordingFinalizationTests`, `LocalPivotIntegrationTests`, the local
+transcription/chat suites and `RecordingStoreTests`. See README's local-model,
+chat and recording procedures. Model downloads, auth and chat can use the network;
+do not launch or send without the required scope.
+
+The procedure below is only for the retained legacy account-deletion fixture.
+It does not verify the current account, transcription, chat or recording flows.
+The native RevenueCat UI and subscription snapshot fixture have been retired.
+
 Use existing unit/component tests for changed logic. Use XCUITest for repeatable
 offline user flows. Use Xcode to inspect test reports and debug failures. Keep
 Computer Use for the required visual acceptance and exploratory checks. Run one
@@ -24,7 +35,7 @@ UI driver at a time. Do not substitute a build pass for a UI assertion pass.
 
 1. Run `swift test --filter 'AccountDeletionTests|OfflineAccountFixtureTests|ChatTextEditorTests'`
    for the initial account/model/editor checks. Select other suites for other changes.
-2. Run `bash scripts/test-ui.sh` for the five offline account UI tests. It builds
+2. Run `bash scripts/test-ui.sh` for the offline account UI tests. It builds
    the packaged fixture, runs XCUITest serially and prints a durable evidence path.
 3. Inspect `exit-code.txt`, `summary.json`, `cleanup.txt` and `Tests.xcresult` in
    that directory. Failed attempts retain logs and evidence too.
@@ -65,10 +76,11 @@ or service configuration and uses ad-hoc signing. Its entry point is compile-tim
 isolated in `Sources/LessMeet/LessMeetApp.swift`. It shares no recording store with
 normal builds. Still allow only one driver of this fixture instance.
 
-For authorized live features, use the exact approved bundle. The documented dev
-command is `bash scripts/build-app.sh` then `open dist/LessMeet.app`. It reads
-allowlisted public configuration from `.env.local`; do not print the file.
-For auth checks, follow README's `auth-check --preflight` and stable-signing procedure.
+For authorized current-app checks, use the exact approved `local` bundle.
+Build with `bash scripts/build-app.sh local`; its path is `dist/local/LessMeet.app`.
+It ignores `.env.local` and has no Clerk controls. `auth-check` is legacy tooling,
+not a ChatGPT sign-in verification route. Preserve the approved signing identity
+for Keychain checks; an ad-hoc build pass does not prove auth access.
 Do not rebuild or replace a signed artifact just to make automation work.
 Normal instances share `~/Library/Application Support/LessMeet/Recordings`;
 there is no UI launch flag for a separate library. Do not double-drive them.
@@ -124,7 +136,7 @@ another index. Never persist indices across snapshots or runs. For text, use
 input action and take a new snapshot. Use `sky.press_key` for mapped shortcuts.
 Inspect saved screenshots through `nodeRepl.emitImage` before making visual claims.
 
-Default proof: follow `account-status.md` for ready, pending and failure refreshes.
+For legacy fixture proof, follow `account-status.md` for ready, pending and failure refreshes.
 For example, select **Deletion pending**, click **Refresh deletion status**, and
 expect **Applied response: requested=true** plus **Account deletion requested**.
 The fixture returns the selected synthetic response through the real refresh model.
