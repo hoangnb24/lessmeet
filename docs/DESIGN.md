@@ -2,6 +2,12 @@
 
 Version 1 · 2026-09-25 · Human-approved landing-page style.
 
+2026-10-13 scope update: Human approved LM-SC-01 for ChatGPT account/sign-in
+and recording Chat, including its palette and copy. See `design/signin-chat/`.
+`ChatGPTStyle` contains the native light/dark tokens for those surfaces only.
+This does not authorize a full Library redesign. The landing-page references
+and future-work guidance below still apply outside those two surfaces.
+
 Purpose: preserve the visual language for a later native SwiftUI refactor, not
 authorize that refactor or specify new app behavior. Human accepted the landing
 page's appearance; native screens, dark mode and accessibility still need their
@@ -63,7 +69,8 @@ Measured main text/canvas: 11.82:1; secondary/canvas: 5.22:1;
 white/primary action: 9.52:1; secondary text/dark panel: 7.25:1.
 These are selected color-pair calculations, not a full accessibility certification.
 
-Dark mode is **not designed yet**: the landing page intentionally uses light mode.
+Landing-page dark mode is **not designed yet**. LM-SC-01 now supplies an approved
+dark palette for the two native account/Chat surfaces only.
 Do not invert these colors or treat the dark editorial panel as a dark-mode palette.
 For the future app, retain platform appearance behavior until semantic light/dark
 variants have been designed and checked in context.

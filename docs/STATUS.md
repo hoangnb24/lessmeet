@@ -1,6 +1,182 @@
 # LessMeet delivery
 
-## Post-pivot cleanup — ACCEPTED; hosted build next (2026-10-13)
+## Scoped commit/push authorization (2026-10-13)
+
+Human authorizes committing LM-SC-01 and LM-SC-NATIVE-01 and pushing only
+`design/signin-chat-preview` to `origin` (`hoangnb24/lessmeet`). This supersedes
+the earlier no-push boundary for this accepted work only. No merge, PR creation,
+tag, release, CI dispatch, deployment or live account/chat action is authorized.
+Local main, backup and unrelated changes remain untouched.
+
+The accepted native manifest still has SHA256
+`668814a6ebeea6f35c51f26407008bf3a6939b1bd98a15b4c44404aabf3fa21d`.
+Both manifests pass. Build artifact hashes and signatures match the accepted
+handoff. No product change or new feature fix is part of this publication task.
+Raw `.artifacts`, `dist`, credentials and operator configuration stay untracked.
+All runtime limitations and the reopened-signout copy issue below remain in force.
+
+Workflow inspection: remote main at
+`fded246dcf76d3cef1d7d04f84ec14536d77a55f` contains the same two workflow files
+as this candidate. `main-release.yml` starts only on a closed PR targeting main,
+and its build requires the PR to be merged. Publishing also requires
+`LESSMEET_GITHUB_RELEASE_ENABLED == 'true'`. `main-build-diagnostic.yml` is
+`workflow_dispatch` only. Neither workflow has a branch-push trigger. This push
+does not request a hosted build or create a build tag. No workflow is dispatched.
+
+Current frontier: commit the UI, offline rehearsal and public design/evidence
+groups; push the exact branch and read back its remote SHA. Lead owns git writes.
+No live UI owner or moving Peer write scope exists.
+
+## Sign-in and Chat native UI — LOCAL CANDIDATE ACCEPTED (2026-10-13)
+
+The following section records acceptance before the scoped publication above.
+
+Human approved LM-SC-01 layout, palette and copy, including the exact HTML hash
+recorded below. The design approval checkpoint is resolved. Implement only
+ChatGPT account/sign-in and recording Chat UI. Preserve auth/chat mechanisms,
+consent, disclosure, persistence and existing functions. Do not redesign Library.
+Local build, tests and offline native UI checks are authorized. Real login/chat,
+credential reads, uploads, paid API calls, push, merge, deploy, release and global
+configuration changes remain prohibited. Main, backup and unrelated edits stay intact.
+
+Current frontier: local implementation and offline technical acceptance complete.
+Human can view and try the isolated native candidate. Live auth/chat remains outside
+the authorized scope; no further local prerequisite blocks this handoff.
+Ownership: Lead owns shared presentation tokens, shell integration, offline harness,
+verification and status. Account and Chat writers have released their view files.
+Offline rehearsal writer has released its fixture and compile-time entry.
+Live UI owner: NONE. The only task-started app process exited after verification.
+No moving Peer scope remains. No other app instance or live Library was operated.
+Do not record private session identifiers in project documents.
+
+### Accepted native handoff
+
+ACCEPT **LM-SC-NATIVE-01** for local viewing and offline trials of the two changed
+surfaces. Base: `8b791b7ca6caf0b9fcbcd8fc224c68c456efb1a0`; uncommitted worktree.
+Exact source: `design/signin-chat/NATIVE-SHA256SUMS`, SHA256
+`668814a6ebeea6f35c51f26407008bf3a6939b1bd98a15b4c44404aabf3fa21d`.
+Reason: inspected code preserves the model contracts; both packaged builds and
+159 focused/packaging tests pass; native observation demonstrates usable account
+and Chat views, consent/model guards, multiline/send keys, partial/cancel, safe
+errors and synthetic save/readback. No substantive design departure was required.
+
+Usable bundle: `dist/chat-ui-check/LessMeet.app`, bundle ID
+`com.lessmeet.app.chat-ui-check`, executable SHA256
+`329d4f6d2616737696be55e7a7ac957ea2c05777df4525ad68ce2505cb653136`.
+Rebuild with `bash scripts/build-app.sh chat-ui-check`. This is a native offline
+fixture, not a replacement production bundle. It never performs real sign-in/chat.
+`dist/local/LessMeet.app` also built and passed signature verification; not launched.
+No commit, push, merge, deploy, release or global configuration change occurred.
+
+Observed UTC: 2026-10-13 05:22:21–05:28:38. Proof is retained under
+`.artifacts/signin-chat/native/`: identity, actions, 46 screenshots/accessibility
+captures, synthetic `chat.json` and cleanup. Sheet: 490 × 608. Compact standalone
+fixture: 820 × 668, content height 640. Light/dark and independent history scroll
+were inspected. Default size/light appearance restored before quitting.
+
+Read `design/signin-chat/README.md` for trial steps and `EVIDENCE.md` for exact
+commands, evidence mapping, source manifest and remaining limits. Production
+Library runtime, exact production minimum-width layout, real OAuth/catalog/chat,
+full quit/relaunch on the same store, VoiceOver and broader accessibility remain
+UNVERIFIED. The low-severity reopened-signout copy issue below remains known.
+No Human decision is needed to try this offline candidate. Real credential access,
+login/chat or publication needs separate scope and authority; acceptance grants none.
+
+### Integration decisions and verification history
+
+Technical shell decision: share `ChatGPTAccountSheet` between production and
+offline rehearsal. Use a 490 × 608-point sheet, a 48-point header, and an internal
+scrolling account body. Done and Back to chat dismiss without cancelling sign-in.
+Only the explicit Cancel action cancels it.
+ACCEPT `LocalChatView.swift` SHA256
+`a9600ba1c6ea3d7c339ddca3237a2eba6307b4d8e9659f5482f792447150e286`
+as an integration input. Source inspection preserves model guards, draft revision
+checks and disclosure. Library now wires account/transcript callbacks and recording
+state. Native rendering and behavior remain UNVERIFIED until runtime checks.
+ACCEPT account view SHA256 `f3bde3a9cc74919a47d65ae79b312d7df9f055aff0af57110518d7a168d2bd4c`
+and sign-in button SHA256 `785cc61913f82052ff08d5c7432f0a089582735ee3acc3edf8e2c3475701cefe`
+as integration inputs. Source preserves session actions, consent and welcome.
+Reopened busy-account copy is a known limitation pending review.
+ACCEPT rehearsal fixture SHA256 `34f73453c73dad7a2cc15f94be2091d32062025facc20efc54a619f9c4434181`
+and app entry SHA256 `ebbc32babe07ad0e8b86c8a4bc80eea87d257031def15b8f1ed164ff4f91517f`
+for build verification. Source uses injected memory credentials, mock transports,
+blocked links and an isolated temporary recording store. Normal app init is excluded.
+Fixture minimum height is 640; slow responses allow partial/cancel observation.
+No fixture result establishes live OAuth or chat success.
+ACCEPT independent source findings for candidate manifest
+`668814a6ebeea6f35c51f26407008bf3a6939b1bd98a15b4c44404aabf3fa21d`.
+All 11 file hashes matched before and after inspection. No new functional or safety
+regression was identified. Build and native proof remain separate.
+Known low-severity baseline issue: dismiss/reopen during sign-out can show sign-in
+waiting copy because operation classification is view-local. It cannot cancel
+sign-out or restore access. Defer classification changes; hiding all unclassified
+Cancel controls could remove cancellation after reopening an actual sign-in.
+Integration owns the return at the next account-operation UX change, or sooner if
+runtime evidence shows this candidate unusable. This limitation is not a PASS.
+
+Verification so far: normal local build and ad-hoc signature PASS (not launched).
+Focused Swift suites PASS: 138 tests, zero failures. Coverage includes auth,
+responses parsing, chat integration/model, recording persistence/finalization,
+local pivot integration and multiline editor. Packaging isolation PASS: 21 tests.
+Logs: `.artifacts/signin-chat/{build-local,swift-tests,packaging-tests}.log`.
+Preview static check still passes 20 states; it is not native proof.
+
+## Design preview handoff — APPROVED; evidence remains scoped
+
+Original preview scope: design artifacts and an offline preview only. Base is
+`cleanup/post-pivot-20261013` at `8b791b7ca6caf0b9fcbcd8fc224c68c456efb1a0`.
+Worktree: `/Users/tubakhuym/.paseo/worktrees/0v2r0tqq/lessmeet-signin-chat-preview`.
+The preview phase made no product source edits. Its former wait for design approval
+is superseded by the implementation decision above. Historical preview results do
+not establish native UI or real auth/chat success.
+Offline preview browser checks are complete; the task-created tab was closed.
+No live UI owner or moving Peer write scope remains.
+ACCEPT the read-only source checklist for base 8b791b7 as design input.
+Reason: consent, model selection, history ownership and partial-answer invariants
+match inspected code. Scope closed; no product/runtime acceptance is implied.
+
+ACCEPT LM-SC-01 as usable local review material. Human has now approved its design;
+native implementation acceptance remains a separate step.
+Exact artifact: `design/signin-chat/preview.html`, SHA256
+`207a39ece311a8478cad1b1fb0cb740a21f0e27c79e09d3fec1f89f4da9209d7`.
+Full artifact manifest after approval-text reconciliation:
+`design/signin-chat/SHA256SUMS`, SHA256
+`78b5ed1ceb304501eaf499c635555d28a2fad875988337335cc4d68e314ae712`.
+HTML and PNG bytes are unchanged. README and EVIDENCE now identify design approval
+as resolved and keep preview proof separate from native implementation evidence.
+Reason: both requested screens have viewable PNGs and an offline state preview;
+20 static-state checks pass, nine PNG exports were inspected, and browser clicks
+show the simulated sign-in/cancel and draft/send/cancel path. The independent
+read-only inspection of this exact HTML and the README found no defect requiring
+revision before approval. Its scope and evidence are recorded in
+`design/signin-chat/EVIDENCE.md`, under “Kiểm tra độc lập”.
+ACCEPT that bounded result; inspection scope is closed.
+
+Handoff correction: private session identifiers were removed from this preview
+section and EVIDENCE.md. Candidate bytes, existing evidence, acceptance reasons
+and limits are unchanged. The manifest was refreshed only for the corrected
+evidence document. No review was reopened by that documentation correction.
+Design approval was subsequently granted as recorded above.
+
+Human can open `design/signin-chat/preview.html` without a server and compare
+Sign-in, Chat, light/dark, waiting, consent, empty/model, partial and error states.
+`README.md` states the design and how to inspect it. `EVIDENCE.md` separates
+retained cleanup runtime, source inference and new mockup/browser evidence.
+At preview handoff, native UI, accessibility, real auth/chat and save/reopen were
+UNVERIFIED. New native offline results are recorded above and in EVIDENCE.md.
+App-check versions were read from both this base and the updated main source.
+This influenced evidence classification; no skill was copied or changed.
+Mobbin was inaccessible through the web tool; no service was purchased.
+Only `design/signin-chat/` and this status changed. No commit or push occurred.
+
+The retained handoff at
+`/Users/tubakhuym/lessmeet-backups/cleanup-20261013.o0nk81/retained-cleanup/docs/STATUS.md`
+supersedes the old cleanup frontier below. Cleanup, commit/push and hosted build
+are COMPLETE at the base SHA. Run 38342265359 succeeded at 03:40:27 UTC.
+This is a handoff reconciliation, not a new remote verification. Do not rerun it.
+Historical permissions below do not apply to the preview task.
+
+## Historical cleanup record — superseded by completed handoff above
 
 Human authorizes survey and local implementation of proven obsolete code,
 dependencies, configuration and instructions, explicitly including RevenueCat.
