@@ -1,6 +1,139 @@
 # LessMeet delivery
 
+## PR14 release repair in progress (2026-10-13)
+
+Human authorizes diagnosis, a scoped code/test/documentation fix, commit/push,
+and recovery of release 411365469 using original artifact 11794285906. Existing
+PR/merge/build/prerelease authority continues for this delivery. This supersedes
+the earlier recovery hold below. Preserve the approved UI, local main, backup,
+original artifact bytes, provenance and checksum guards. Do not move/delete tags,
+delete release/artifact data, change repository flags/global configuration or use
+live app credentials, recordings or paid APIs.
+
+Integration owns the repair and release actions. No other writer or UI is active.
+Plan: diagnose the failing boundary, prove a narrow correction, then publish and
+download the original build from the exact release. Initial investigation budget:
+20 minutes, at most three hypotheses. Reassess with evidence at that limit.
+Done means fail-to-pass regression evidence, unchanged safety guards, committed
+scoped fix, published release with four exact assets and downloaded archive hash
+`473cac276faad55406fb330e8a991cae240cf923a3526b107ca62ac6b3018034`.
+
+Data boundary: `release.json` binds source SHA, tag and four sealed files.
+GitHub release metadata binds the remote release ID to that manifest. The failed
+run discards the create response, lists releases again and applies one combined
+binding check before uploading. Current direct and list readbacks match every
+binding field. Missing/stale list state, metadata mismatch and permission-specific
+visibility are investigation hypotheses, not confirmed causes.
+
+Diagnosis result: the original publisher discards a valid create response and
+requires immediate collection visibility. A delayed-list fixture reproduces the
+same binding error with a valid draft and zero uploaded assets. That is a confirmed
+code failure mechanism. The hosted log lacks the failing object and call site,
+so it cannot prove that PR14 took this path. Transient field differences at the
+collection or first direct read remain alternatives. Current snapshots match the
+sealed changelog byte-for-byte. The draft URL is not part of binding validation.
+ACCEPT independent bounded diagnosis with this limit. Its read-only scope is closed.
+
+Local correction: validate and retain the successful create response. Keep the
+post-create duplicate check and all direct ID, exact body, tag and asset guards.
+Conflicts still require a matching existing release. Fixed-name error details
+identify a missing object or failed field without disclosing remote values.
+Red receipts: `.artifacts/signin-chat/release-binding-red.log` and
+`release-binding-diagnostics-red.log`. The original code fails delayed visibility
+and ignores an invalid create response. The corrected focused tests pass.
+ACCEPT script SHA256 `ef9b5d110bcd3c77e922011acf167ae79f8c0425ce7076baf16c996d190743bc`
+and tests SHA256 `df0df8421ba98221b7c49058453cc2c92ec5ef521b0aa914ddd3eaad714d2152`
+over `4cb16f2b262af891b10c7ddf498b42d811d65c66`. Reason: reproduced defect corrected,
+95 release tests and 74 packaging tests pass, workflow validation passes, and
+binding/checksum/no-overwrite guards remain intact. Independent review found no
+blocking regression. That read-only scope is closed. Native manifest entries match.
+
+ACCEPT the scoped recovery driver SHA256
+`8f11362eb737943490edc3a1ef0695872a0b2999d3f1cd6dfa3bc829f16579f1`
+for one attempt on release 411365469. It pins all four original file hashes,
+uses existing authenticated `gh`, and permits only those uploads and the final
+publish PATCH. It cannot create or delete a release/tag or overwrite an asset.
+Preflight readback passes without writes. A successful helper return is not final
+acceptance: download all four release assets and compare original hashes. The
+existing already-published path checks remote consistency, not local archive equality.
+
+Current frontier: commit/push the scoped correction, recover the original release,
+then land the fix through the authorized PR workflow and verify terminal outcomes.
+No remote write has occurred during this repair yet. Native runtime limits remain.
+
+## Merge complete; automatic publish FAILED (2026-10-13)
+
+Human authorizes a PR from `design/signin-chat-preview` to main, normal merge,
+and the existing `main-release.yml` build/tag/prerelease through terminal outcome.
+Input HEAD: `57c6c74096a91036b2f363953ad01e10b11bde8e`.
+This supersedes earlier no-PR/no-merge/no-release boundaries for this candidate.
+No workflow, global configuration or repository flag change is authorized.
+No force push, check bypass, manual tag, other deployment, live auth/chat,
+user-credential access, recording upload or paid API call is authorized.
+Local main and the retained backup remain untouched.
+
+The PR includes six commits over main `fded246dcf76d3cef1d7d04f84ec14536d77a55f`.
+Two are the accepted cleanup input through `8b791b7ca6caf0b9fcbcd8fc224c68c456efb1a0`.
+The retained cleanup STATUS confirms acceptance and exact-SHA hosted success in
+run 38342265359. The other four publish the accepted native UI and its evidence.
+All 11 native manifest entries match; the manifest hash remains
+`668814a6ebeea6f35c51f26407008bf3a6939b1bd98a15b4c44404aabf3fa21d`.
+No workflow file differs. `LESSMEET_GITHUB_RELEASE_ENABLED` reads `true`.
+Protection/rules APIs return HTTP 403 for this private repository's plan; use
+normal server-enforced PR merge without an admin override.
+
+ACCEPT candidate `57c6c74096a91036b2f363953ad01e10b11bde8e` for the authorized
+PR and normal merge. The exact diff contains the accepted cleanup and native UI
+inputs only. ACCEPT independent read-only findings: no unaccepted dependency or
+concrete integration blocker. That scope is closed. Fresh workflow validation,
+91 release tests and 74 packaging tests PASS. Both manifests PASS. An initial
+preview checksum command used the wrong working directory; the corrected command
+from `design/signin-chat` passes. No candidate bytes changed.
+PR [14](https://github.com/hoangnb24/lessmeet/pull/14) merged normally at
+2026-10-13 06:33:35 UTC. GitHub reported CLEAN/MERGEABLE and no branch checks.
+Merge used the exact expected head without bypass. Merge commit:
+`4cb16f2b262af891b10c7ddf498b42d811d65c66`.
+The automatic `pull_request_target` run is
+[38357389787](https://github.com/hoangnb24/lessmeet/actions/runs/38357389787).
+Terminal result: build SUCCESS; publish FAILURE at `Create or recover exact-SHA
+GitHub prerelease`, error `Release helper refused: release-binding-mismatch`.
+The watcher exited 1. No manual dispatch, retry or corrective remote write occurred.
+Both jobs checked out `4cb16f2b262af891b10c7ddf498b42d811d65c66`; the run's
+headSha `57c6c74` is PR metadata, not the build checkout. Merge parents match the
+accepted base/head. Merge tree and accepted head tree are identical.
+
+ACCEPT the hosted build/package result for this exact merge SHA. Workflow tests,
+compile, strict signature, sealed-file validation and immutable artifact upload
+all passed. Artifact [11794285906](https://github.com/hoangnb24/lessmeet/actions/runs/38357389787/artifacts/11794285906)
+contains four files. Downloaded files pass the existing dry-run release validator
+and SHA256SUMS. Archive SHA256:
+`473cac276faad55406fb330e8a991cae240cf923a3526b107ca62ac6b3018034`.
+This is diagnostic arm64/ad-hoc packaging, not notarized or runtime certification.
+
+Do not accept publication as complete. Automatic tag
+`main-build-45-4cb16f2b262af891b10c7ddf498b42d811d65c66` exists and points exactly
+to the merge SHA. Release ID 411365469 remains draft, prerelease=true,
+published_at=null, with zero release assets. Its current readback matches every
+field checked by `release_matches`, including the exact changelog body. The
+response that failed during publishing is unavailable; the underlying cause
+is therefore UNCONFIRMED. Do not label this a code defect or a proven transient.
+
+Evidence: `.artifacts/signin-chat/release-{watch.log,final.json,final.log,remote.json}`
+and `hosted-release-38357389787/`. An early local validation ran before artifact
+download completed and reported `invalid-sealed-directory`; after download,
+validation passed. That local sequencing error is separate from the hosted failure.
+Current frontier: terminal handoff. Human decides whether to authorize a bounded
+failed-publish-job retry using the original immutable artifact, or further
+diagnosis/correction. Do not rebuild, edit/delete the draft/tag, or change workflow
+or flags under the completed request. No watcher, writer or UI remains active.
+Integration owns status and remote actions. No moving writer or live UI exists.
+This local status receipt does not alter the immutable PR source candidate.
+Full Library, live auth/chat, accessibility and reopened-signout copy limits
+remain unchanged. Release permission does not convert them to PASS.
+
 ## Scoped commit/push — COMPLETE (2026-10-13)
+
+Historical authority and receipt; superseded only as stated above.
 
 Human authorizes committing LM-SC-01 and LM-SC-NATIVE-01 and pushing only
 `design/signin-chat-preview` to `origin` (`hoangnb24/lessmeet`). This supersedes
@@ -43,7 +176,7 @@ signatures still match. The existing 138 Swift tests and native runtime evidence
 remain the verification input; they were not rerun or relabeled as live proof.
 Only status bookkeeping changed during publication. All product bytes are unchanged.
 
-Current frontier: scoped publication complete; no further action is authorized.
+Frontier at that checkpoint: scoped publication complete; no further action authorized.
 Local main and backup remain untouched. No live UI owner or moving Peer write
 scope exists. Raw runtime evidence and built bundles remain local and ignored.
 

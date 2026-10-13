@@ -91,6 +91,13 @@ E2E evidence are not release assets. GitHub adds its own source archives.
 The ZIP excludes filesystem extended attributes, ACLs and resource-fork sidecars.
 Bundle resource files, executable permissions and the Metal lookup symlink remain.
 
+After a successful release creation, the helper validates the returned release
+record. It does not require the collection listing to contain that record yet.
+The listing still detects duplicate bindings. Before each upload, the helper
+reads the selected release by ID and checks its exact metadata and changelog.
+Creation conflicts still require a matching existing release. Binding errors
+name the failed field, but do not print remote values or release bodies.
+
 The app is **macOS arm64, ad-hoc signed, not notarized, diagnostic-only**. It is
 not a Developer ID distribution or App Store package. Gatekeeper may block it.
 No runtime launch is part of this pipeline. Exact-app E2E, real auth, inference,

@@ -554,10 +554,16 @@ def find_release(api, value):
 
 
 def release_matches(release, value):
-    require(isinstance(release, dict) and integer(release.get("id")) and type(release.get("draft")) is bool
-            and release.get("tag_name") == value["tag"] and release.get("target_commitish") == value["source_sha"]
-            and release.get("name") == value["tag"] and release.get("prerelease") is True
-            and release.get("body") == changelog(value).decode(), "release-binding-mismatch")
+    require(isinstance(release, dict), "release-binding-mismatch: missing-or-invalid-release")
+    checks = (("id", integer(release.get("id"))),
+              ("draft", type(release.get("draft")) is bool),
+              ("tag_name", release.get("tag_name") == value["tag"]),
+              ("target_commitish", release.get("target_commitish") == value["source_sha"]),
+              ("name", release.get("name") == value["tag"]),
+              ("prerelease", release.get("prerelease") is True),
+              ("body", release.get("body") == changelog(value).decode()))
+    for field, valid in checks:
+        require(valid, "release-binding-mismatch: " + field)
 
 
 def assets(api, release_id, allowed):
@@ -618,14 +624,17 @@ def publish(directory, expected_sha, repo, execute=False, api=None):
     else:
         tag_matches(api, value, create=True)
         try:
-            api.json("POST", "releases", {"tag_name": value["tag"], "target_commitish": value["source_sha"],
+            release = api.json("POST", "releases", {"tag_name": value["tag"], "target_commitish": value["source_sha"],
                                           "name": value["tag"], "body": changelog(value).decode(),
                                           "draft": True, "prerelease": True, "make_latest": "false"})
         except APIError as error:
             if error.status not in (409, 422):
                 raise
-        release = find_release(api, value)
+            release = find_release(api, value)
         release_matches(release, value)
+        listed = find_release(api, value)
+        if listed is not None:
+            require(listed.get("id") == release["id"], "duplicate-release-binding")
         if not release["draft"]:
             return remote_complete(api, release, value, allowed)
     for name in sorted(files):
