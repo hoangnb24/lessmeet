@@ -1,6 +1,17 @@
 import SwiftUI
 
-#if LESSMEET_OFFLINE_CHECK
+#if LESSMEET_CHAT_UI_CHECK
+@main
+struct LessMeetChatUICheckApp: App {
+    var body: some Scene {
+        WindowGroup("LessMeet Chat UI Check — Offline") {
+            ChatGPTUICheckView()
+                .frame(minWidth: 820, minHeight: 640)
+        }
+        .defaultSize(width: 1000, height: 760)
+    }
+}
+#elseif LESSMEET_OFFLINE_CHECK
 @main
 struct LessMeetOfflineApp: App {
     var body: some Scene {
