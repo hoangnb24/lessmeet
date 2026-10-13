@@ -139,6 +139,32 @@ class AgentChecks(unittest.TestCase):
         self.assertEqual(sign[sign.index("--sign") + 1], "Synthetic Identity")
         self.assertFalse(any("-DLESSMEET_OFFLINE_CHECK" in call for call in self.calls()))
 
+    def test_library_fixture_has_dedicated_identity_scratch_and_no_services(self):
+        (self.root / ".env.local").mkdir()
+        path = self.root / "Resources/Info.plist"
+        info = plistlib.loads(path.read_bytes())
+        info.update({key: "stale" for key in PROPERTIES})
+        path.write_bytes(plistlib.dumps(info))
+        result = self.run_build("library-ui-check", {
+            **{key: "invalid" for key in (*PUBLIC, "REVENUECAT_PUBLIC_APPLE_KEY",
+                                         "LESSMEET_PRIVACY_URL", "LESSMEET_TERMS_URL")},
+            "LESSMEET_SIGNING_IDENTITY": "Do not unlock this key"})
+        self.assertEqual(result.returncode, 0, result.stderr)
+        info = plistlib.loads((self.root / "dist/library-ui-check/LessMeet.app/Contents/Info.plist").read_bytes())
+        self.assertEqual(info["CFBundleIdentifier"], "com.lessmeet.app.library-ui-check")
+        self.assertEqual(info["CFBundleDisplayName"], "LessMeet Library UI Check")
+        self.assertEqual(info["LessMeetPackagingMode"], "library-ui-check")
+        self.assertFalse(set(PROPERTIES + ("CFBundleURLTypes",)) & info.keys())
+        for call in self.calls():
+            if call[0] == "swift":
+                self.assertIn("-DLESSMEET_LIBRARY_UI_CHECK", call)
+                self.assertNotIn("-DLESSMEET_CHAT_UI_CHECK", call)
+                self.assertNotIn("-DLESSMEET_OFFLINE_CHECK", call)
+                self.assertEqual(call[call.index("--scratch-path") + 1],
+                                 str(self.root / "dist/library-ui-check/swift-build"))
+            if "--sign" in call:
+                self.assertEqual(call[call.index("--sign") + 1], "-")
+
     def test_auth_required_config_cannot_come_from_local_file(self):
         (self.root / ".env.local").write_text("\n".join(f"{key}={value}" for key, value in PUBLIC.items()))
         for missing in PUBLIC:
@@ -162,7 +188,7 @@ class AgentChecks(unittest.TestCase):
         self.assertNotEqual(result.returncode, 0)
 
     def test_preflight_does_not_build_or_sign(self):
-        for mode, values in (("local", {}), ("offline-check", {}), ("auth-check", {**PUBLIC, "LESSMEET_SIGNING_IDENTITY": "Synthetic"})):
+        for mode, values in (("local", {}), ("offline-check", {}), ("library-ui-check", {}), ("auth-check", {**PUBLIC, "LESSMEET_SIGNING_IDENTITY": "Synthetic"})):
             result = self.run_build(mode, values, True)
             self.assertEqual(result.returncode, 0, result.stderr)
             self.assertEqual(self.calls(), [])

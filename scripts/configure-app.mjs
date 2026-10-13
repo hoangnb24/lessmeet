@@ -6,7 +6,7 @@ import { execFileSync } from "node:child_process";
 const plist = process.argv[2];
 if (!plist) throw new Error("Expected the app Info.plist path.");
 const mode = process.argv[3] ?? "dev";
-if (!["dev", "local", "offline-check", "chat-ui-check", "auth-check", "sandbox-dev", "store", "testflight"].includes(mode)) throw new Error("Unknown packaging mode.");
+if (!["dev", "local", "offline-check", "chat-ui-check", "library-ui-check", "auth-check", "sandbox-dev", "store", "testflight"].includes(mode)) throw new Error("Unknown packaging mode.");
 // Signed modes use only explicitly supplied public values, never local secrets.
 const local = mode === "dev" && existsSync(".env.local") ? parseEnv(readFileSync(".env.local", "utf8")) : {};
 const entries = [["LessMeetPackagingMode", mode]];
@@ -19,7 +19,7 @@ const publicProperties = [
 ];
 for (const [variable, property] of publicProperties) {
   // Do not even read service environment values for offline packaging.
-  if (mode === "offline-check" || mode === "chat-ui-check" || mode === "local") continue;
+  if (mode === "offline-check" || mode === "chat-ui-check" || mode === "library-ui-check" || mode === "local") continue;
   const value = (process.env[variable] ?? local[variable] ?? "").trim();
   if (!value) {
     const internalLegal = ["sandbox-dev", "testflight"].includes(mode) && ["LESSMEET_PRIVACY_URL", "LESSMEET_TERMS_URL"].includes(variable);
@@ -65,13 +65,16 @@ if (mode === "store") {
 }
 // Validate every field before writing anything. Never include values in errors.
 if (plist !== "--check") {
-  if (mode === "offline-check" || mode === "chat-ui-check" || mode === "auth-check" || mode === "local") {
+  if (mode === "offline-check" || mode === "chat-ui-check" || mode === "library-ui-check" || mode === "auth-check" || mode === "local") {
     // Replace stale configuration too, including optional values now omitted.
     const existing = JSON.parse(execFileSync("/usr/bin/plutil", ["-convert", "json", "-o", "-", plist], { encoding: "utf8" }));
     const remove = ["LessMeetPackagingMode", ...publicProperties.map(([, property]) => property)];
     if (mode === "local") {
       remove.push("CFBundleURLTypes", "CFBundleIdentifier");
       entries.push(["CFBundleIdentifier", "com.lessmeet.app.local"]);
+    } else if (mode === "library-ui-check") {
+      remove.push("CFBundleURLTypes", "CFBundleIdentifier", "CFBundleDisplayName");
+      entries.push(["CFBundleIdentifier", "com.lessmeet.app.library-ui-check"], ["CFBundleDisplayName", "LessMeet Library UI Check"]);
     } else if (mode === "chat-ui-check") {
       remove.push("CFBundleURLTypes", "CFBundleIdentifier", "CFBundleDisplayName");
       entries.push(["CFBundleIdentifier", "com.lessmeet.app.chat-ui-check"], ["CFBundleDisplayName", "LessMeet Chat UI Check"]);
