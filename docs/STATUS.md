@@ -1,6 +1,294 @@
 # LessMeet delivery
 
-## PR14 release repair in progress (2026-10-13)
+## Library repair PR opened (2026-10-13)
+
+Human authorized commit, branch push and a PR into `main` after local acceptance.
+Product and verification changes are committed as `28b8bfe` and pushed to
+`origin/fix/library-shell-navigation`. PR:
+[16 — preserve sidebar and Transcript/Chat navigation](https://github.com/hoangnb24/lessmeet/pull/16).
+Base remains `fc1960208926b2074d3b016a1da480b7e12c78af`.
+The documentation commit preserves the existing release receipt, handoff and
+Library acceptance below. Those sections describe their original checkpoints;
+their earlier publication restrictions are superseded only for this branch push
+and PR. No merge, release, real-data access or system-permission change is authorized.
+
+Source hashes still match the tested candidate. No product code changed during
+publication. `git diff --check` passes. The 162 Swift and 22 packaging test results
+remain valid for these exact source files; they were not rerun for documentation.
+Full-shell Computer Use PASS and XCUITest execution UNVERIFIED remain distinct.
+No raw captures, logs, local bundles or private meeting content were uploaded.
+Next frontier is PR review. Automated UI execution remains deferred until the
+approved automation environment works. Merge/release requires a new decision.
+
+## Library navigation repair — local candidate accepted (2026-10-13)
+
+Local diagnosis, implementation and isolated full-Library verification are complete.
+The historical handoff below remains intact; its stop instruction applied only
+to that completed handoff. No publication or real-data access is authorized.
+Base: `fc1960208926b2074d3b016a1da480b7e12c78af`, confirmed by remote readback;
+its tracked tree matches handoff `234e37b`. Branch: `fix/library-shell-navigation`.
+Only the prior STATUS receipt was dirty. Existing bundles/evidence stay intact.
+
+The current technical owner owns all integrated changes and serial verification.
+All delegated write and read-only scopes are closed. Computer Use has released
+the fixture after verifying the final bundle. XCUITest has also released its run;
+no live UI ownership remains.
+Plan: establish safe full-shell fixture; reproduce; correct the proven mechanism;
+repeat meeting selection, Transcript/Chat, navigation and resize checks.
+Initial investigation budget: 20 minutes and at most three hypotheses, then
+reconcile evidence. Done requires exact bundle identity and before/after runtime
+evidence, regression checks and an explicit technical disposition.
+Observed in supplied image: transcript visible, sidebar blank, tab switch absent.
+Image build and cause remain UNKNOWN; no private meeting content is copied.
+Hypotheses to distinguish: content layout overflow, split-view state, and a
+different/older artifact. Auth/consent/persistence and LM-SC-01 stay unchanged.
+Baseline component checks: 57 tests PASS, zero failures, using the release
+Swift Build path in `dist/local/swift-build`. Receipt:
+`.artifacts/library-navigation/baseline-tests.log`. This is not UI acceptance.
+ACCEPT independent read-only inspection of base `fc196020` as investigation
+input: sidebar and tab picker are unconditional; both tab layouts remain mounted.
+It supports geometry/visibility experiments, not a root-cause claim. Scope closed.
+ACCEPT baseline fixture executable `8b4452595fcc0bb5a89da5afe0a032e47b9f61c857db470bb628f9c6d930b564`
+as a safe runtime input, not a bug fix. Source inspection confirms isolated
+storage and injected external boundaries. Three component and 22 packaging tests
+pass. Signature verification passes. Product Library layout remains base-identical.
+Bundle: `dist/library-ui-check/LessMeet.app`, ID `com.lessmeet.app.library-ui-check`.
+The technical owner holds the sole UI scope for this bundle. No user app is driven.
+Baseline runtime FAIL at 1180 × 760 on macOS 26.4: Library initially shows its
+sidebar. Opening the long meeting makes the sidebar blank and moves the detail
+header and tabs outside the visible window. Accessibility still lists them.
+The short meeting also renders blank. Returning to Library restores navigation.
+Synthetic captures: `.artifacts/library-navigation/01-baseline-library.png`
+through `05-baseline-short-from-library.png`, with matching AX text and actions.
+The baseline bundle is retained at `dist/library-ui-baseline/LessMeet.app`.
+Its process exited after the check. Geometry instrumentation is temporary.
+Measured failure: selecting the short meeting expands the split view from
+1180 × 708 to 1180 × 3425, at global y = -1306.5. Both columns reach height 3373
+and y = -1254. The window stays 1180 × 760. Receipt:
+`.artifacts/library-navigation/geometry-baseline.log`, executable `c1247e3e`.
+ACCEPT the second read-only inspection as experiment guidance. Its scope is closed.
+Next experiment constrains the outer detail's vertical minimum, without removing
+either tab or changing chat state. Root-cause acceptance still needs this A/B.
+Fixture ownership is closed and transferred for integration. A separate writer
+owns only the full-Library XCUITest source, its dedicated runner script, required
+test-project wiring and test README. It does not operate UI. The technical owner
+will run the same regression against retained baseline and fixed candidate.
+Investigation checkpoint: the first 20-minute budget produced a reproduction and
+a successful controlled correction. With only `.frame(minHeight: 0, maxHeight:
+.infinity)` on the outer detail VStack, split height stays 708 and both columns
+stay within the 1180 × 760 window. Short and long transcripts, Chat and Recent
+selection are visible again. This confirms the detail sizing boundary caused
+the reproduced overflow. The exact internal SwiftUI minimum-size calculation and
+the build in the supplied image remain unknown. Hidden Chat was not removed.
+Temporary geometry code is removed. Continue the ready final build, UI regression
+and resize/draft checks. Next verification budget: 20 minutes, then reconcile any
+failed or unknown evidence. No new authority is needed for these local checks.
+Product and fixture snapshot is frozen at
+`.artifacts/library-navigation/candidate-source.tar`, SHA256
+`c518507022374f692aa917412958b8c9612117524f6dee53bfc1c7d63f7ef6ea`.
+ACCEPT independent read-only inspection of this exact snapshot: no blocking source
+finding, and the correction preserves mounted tabs and model state. Its scope is
+closed. Direct Show Files and Open Recording Permissions controls remain outside
+the fixture's URL interception; neither was invoked.
+ACCEPT regression snapshot `390ef5bd9681a7e544de68bca4cb580df6824778f2839a67d94da8f72f411f6d`
+as an integration input, not passing runtime evidence. Ownership is transferred
+and closed. Integration changed heading queries to match observed grouped AX text
+and removed an unsupported Xcode CLI option after exit 64. Failed receipts remain.
+
+Final noninstrumented runtime PASS: executable
+`d0b775acdb2ab0b47f12bf9c292fabc9b74e8a9e01df6893577a82ea1d39be0b`,
+`dist/library-ui-check/LessMeet.app`, on macOS 26.4. Opening the long Library row,
+Transcript/Chat roundtrip, retained draft, long-to-short Recent selection, transcript
+scroll, sidebar Library return and search all preserve visible usable navigation.
+Window checks cover 1180 × 760 and 1000 × 692 points, then restore 1180 × 760.
+Evidence: `.artifacts/library-navigation/12-candidate-library` through
+`27-candidate-library-restored` (PNG and AX), actions and bundle identity.
+The owned process exited normally. The network socket snapshot was empty;
+this is not a packet trace. No real credentials, recordings or cloud calls used.
+Final build and 22 packaging checks PASS. The first two broad Swift test runs
+stalled during compiler probes. A captured sample shows a blocked pipe write.
+Only owned test processes were stopped; logs are retained. A final retry uses
+the accepted fixture's separate build cache.
+Xcode build-for-testing PASS. Execution is UNVERIFIED: the baseline runner failed
+before tests with `Timed out while enabling automation mode.` No baseline layout
+assertion ran, so this failure does not establish regression sensitivity. Candidate
+execution is deferred for the same prerequisite. Receipt:
+`.artifacts/verify-lessmeet/library-xcode.wOhXO7/Tests.xcresult` and `summary.json`.
+Cleanup confirms no fixture process remains. No system permissions were changed.
+The verification owner must rerun both exact bundles when automation is available
+under approved permissions. Human owns any required system-permission change.
+This is a deferred automated check, not a blocker for the observed local repair.
+
+Final Swift regression PASS: 162 tests, zero failures, exit 0. Receipt:
+`.artifacts/library-navigation/candidate-tests-fixture-scratch.log`.
+This includes auth, responses, local chat, recording, transcription, editor and
+the three fixture-isolation tests. The final build cache retry completed without
+global changes. The earlier compiler stalls remain recorded as failed attempts.
+
+ACCEPT the local navigation repair in source snapshot `c5185070` and exact bundle
+executable `d0b775ac` identified above. The measured overflow is corrected, and
+the final full-shell runtime preserves sidebar, tabs and meeting navigation at
+both tested sizes. Auth/consent/persistence code remains unchanged. This accepts
+the scoped local outcome, not release readiness or the deferred XCUITest result.
+Plan complete within the verification budget. No writer or UI process remains.
+No commit, push, merge or release was performed. Existing local bundle, earlier
+evidence, dirty checkout and backup were preserved.
+
+Usable input: `dist/library-ui-check/LessMeet.app` is an isolated synthetic trial.
+Open it, select either Library row, switch Transcript/Chat, select the other Recent
+meeting, resize and return to Library. Do not use it for real meetings. It is not
+the normal app or a playback/auth validation. Full receipt:
+`.artifacts/library-navigation/result.md`; automated source identities:
+`.artifacts/library-navigation/ui-regression-SHA256SUMS`.
+Product edit: `Sources/LessMeet/Presentation/LibraryView.swift:49` only.
+Remaining decisions: Human permission is required for publication or any new
+real-data/system-permission scope. No such decision blocks trying this candidate.
+
+## Bàn giao Library — ownership đã nhường (2026-10-13)
+
+Yêu cầu hiện tại chỉ là bàn giao. Không chẩn đoán hoặc sửa bug trong phiên này.
+Không commit/push/merge/release, cleanup hoặc dừng app người dùng vì bàn giao.
+Các mục bên dưới là lịch sử; quyền release cũ chỉ áp dụng cho phần việc đã hoàn tất.
+
+### Đầu vào và mục tiêu phiên tiếp theo
+
+Người dùng báo: mở app và chọn một meeting thì transcript hiện, nhưng sidebar
+trống và không thấy điều hướng hoặc chỗ chuyển Transcript/Chat. Đây là quan sát
+người dùng cung cấp, chưa tái hiện độc lập. Build trong ảnh và root cause đều
+UNKNOWN. Chỉ tham chiếu ảnh tại đường dẫn sau; không chép nội dung meeting vào repo:
+
+`/var/folders/07/p5pz8vnd0cx_1hll7nsmrm9c0000gn/T/paseo-attachments-WqhdHl/720f8328564c6fcfb658463d290e093b0313d03270ee5250d28cea6096d7e7ee.png`
+
+Phiên mới dùng poteto-mode để tái hiện và sửa trên full Library shell.
+Standalone Chat fixture không đủ để nghiệm thu. Cần runtime evidence cho sidebar,
+chọn meeting, transcript và chuyển Transcript/Chat trên đúng candidate. Giữ cơ chế
+account, consent, chat persistence và UI đã duyệt ngoài phạm vi lỗi. Không suy ra
+quyền dùng recordings/credentials thật, API tính phí, upload hoặc publication mới
+từ quyền release cũ.
+
+### Repo và candidate
+
+- Cwd: `/Users/tubakhuym/.paseo/worktrees/0v2r0tqq/lessmeet-signin-chat-preview`.
+- Branch: `fix/pr14-release-binding`.
+- Actual HEAD và remote branch: `234e37b5658cc8967c4efb4d0157da3a15c71e49`.
+- Remote: `git@github.com:hoangnb24/lessmeet.git`.
+- Remote main: `fc1960208926b2074d3b016a1da480b7e12c78af` (PR15 merge).
+  HEAD và merge có cùng tracked tree; `git diff HEAD origin/main` rỗng.
+  Đây là mốc tích hợp cho phần việc mới sau khi kiểm tra lại remote.
+- UI đã nhận: `LM-SC-01` và `LM-SC-NATIVE-01`, trên cleanup base
+  `8b791b7ca6caf0b9fcbcd8fc224c68c456efb1a0`. Native handoff head:
+  `57c6c74096a91036b2f363953ad01e10b11bde8e`; PR14 merge:
+  `4cb16f2b262af891b10c7ddf498b42d811d65c66`.
+- `design/signin-chat/NATIVE-SHA256SUMS` khóa 11 source/script/test paths.
+  Manifest SHA256: `668814a6ebeea6f35c51f26407008bf3a6939b1bd98a15b4c44404aabf3fa21d`.
+- Latest published prerelease:
+  [build 46](https://github.com/hoangnb24/lessmeet/releases/tag/main-build-46-fc1960208926b2074d3b016a1da480b7e12c78af),
+  source đúng remote main trên. Run
+  [38375157261](https://github.com/hoangnb24/lessmeet/actions/runs/38375157261) SUCCESS.
+  ZIP SHA256: `7724298fdbfa5c1b4a14c7adbb196f58c99b3a6b474b5186ebd9f7ac9b194a83`.
+- [Build 45 gốc](https://github.com/hoangnb24/lessmeet/releases/tag/main-build-45-4cb16f2b262af891b10c7ddf498b42d811d65c66)
+  đã khôi phục và tải xuống; đủ bốn file khớp artifact gốc. ZIP SHA256:
+  `473cac276faad55406fb330e8a991cae240cf923a3526b107ca62ac6b3018034`.
+
+### Paths phải giữ
+
+Worktree này chỉ dirty `docs/STATUS.md`; không có staged changes hoặc non-ignored
+untracked files tại snapshot bàn giao. File đã có receipt cuối release trước khi
+thêm handoff. Receipt và handoff đều chưa commit. Giữ toàn bộ ignored `.artifacts/`
+và `dist/`.
+
+Checkout `/Users/tubakhuym/projects/lessmeet` ở local main
+`b08b3cdae5aeb4cbbd5c771a5f887584afaa518c`. Giữ các paths tại đó:
+
+- `.agents/skills/lessmeet-app-check/SKILL.md` (modified).
+- `docs/STATUS.md` (modified).
+- `.codex/better-harness/2026-09-27-lessmeet/findings.json` (untracked).
+- `.codex/better-harness/2026-09-27-lessmeet/report.html` (untracked).
+- `.codex/better-harness/2026-09-27-lessmeet/report.md` (untracked).
+
+Giữ backup `/Users/tubakhuym/lessmeet-backups/cleanup-20261013.o0nk81`.
+Không đọc hoặc đổi recordings, credentials và dữ liệu riêng ngoài phạm vi.
+
+### Bundle và evidence dùng lại
+
+- `dist/local/LessMeet.app`: `com.lessmeet.app.local`, build pass nhưng chưa launch
+  trong phần kiểm UI đã nhận. Executable SHA256:
+  `06a9a997cca7cd7b9a599541e452754081e4940351864c936e7b5d5a7e694d8b`.
+- `dist/chat-ui-check/LessMeet.app`: `com.lessmeet.app.chat-ui-check`, fixture
+  isolated dùng view thật và dữ liệu tổng hợp, không phải full Library.
+  Executable SHA256: `329d4f6d2616737696be55e7a7ac957ea2c05777df4525ad68ce2505cb653136`.
+- Lệnh build tương ứng: `bash scripts/build-app.sh local` và
+  `bash scripts/build-app.sh chat-ui-check`. Không rebuild trong lần bàn giao.
+- `.artifacts/signin-chat/native/`: 46 PNG/AX captures, `actions.jsonl`,
+  `result.md`, `identity.txt` và persistence evidence, chỉ dữ liệu tổng hợp.
+- `.artifacts/signin-chat/release-fix-download/`: bốn assets build 46 đã tải,
+  kiểm checksum và sealed manifest. ZIP chưa launch để kiểm UI.
+- `.artifacts/signin-chat/hosted-release-38357389787/` và `recovered-download/`:
+  artifact và assets build 45 đã so khớp byte-for-byte.
+- `.artifacts/signin-chat/release-fix-hosted-final.{json,log}` và
+  `recovery-hosted-final.{json,log}`: hosted receipts. Design/native handoff:
+  `design/signin-chat/README.md` và `EVIDENCE.md`.
+
+### Kết quả, giới hạn và known issues
+
+PASS trước đây: 138 Swift tests + 21 packaging tests cho native candidate;
+95 release tests + 74 packaging tests cho release fix. Native fixture đã quan sát
+account states, consent, model selection, prompt draft, send/cancel/error,
+same-run saved-chat reopen, light/dark và compact layout. Không dùng các kết quả
+này thay cho full Library runtime evidence.
+
+UNVERIFIED: full production Library trên candidate UI hiện tại; live OAuth/chat,
+real account changes, full quit/relaunch persistence, recording-active/switch UI,
+long names, VoiceOver/full keyboard/text scaling/contrast. Bằng chứng full Library
+ở cleanup base cũ không chứng minh candidate mới. Bug mới chưa tái hiện.
+
+Known issue đã hoãn: reopen account sheet khi sign-out đang bận có thể hiện copy
+sign-in và `Cancel sign-in` do state cục bộ. Không có bằng chứng nó hủy sign-out
+hoặc phục hồi quyền truy cập. Xem lại ở lần sửa account-operation UX hoặc runtime
+failure mới; không tự gộp vào bug Library. Release fix đã chứng minh lỗi bỏ create
+response và phụ thuộc list visibility. Nguyên nhân lịch sử chính xác của lần fail
+PR14 vẫn UNCONFIRMED do thiếu response gốc; publication không còn blocker.
+
+### Chỉ dẫn và đầu mối code
+
+1. Đọc `~/.config/codex-room/workflow/WORKSPACE_PROTOCOL.md`, `AGENTS.md`,
+   `docs/WORKSPACE_PROTOCOL.md` và handoff này. Kiểm tra lại repo và room.
+2. Đọc toàn bộ poteto-mode tại
+   `/Users/tubakhuym/.codex/plugins/cache/pstack-local/pstack-codex/0.2.0/skills/pstack-poteto-mode/SKILL.md`
+   và các tài liệu skill yêu cầu, gồm `playbooks/bug-fix.md`.
+3. Dùng `.agents/skills/lessmeet-app-check/SKILL.md` khi chẩn đoán UI và
+   `.agents/skills/verify-lessmeet/SKILL.md` khi validation. Tìm và đọc Computer
+   Use skill theo hướng dẫn hiện hành; không giả định tool cũ còn dùng được.
+4. Trước runtime, ghi một UI owner và xác định bundle/build, macOS, window size,
+   state. Ưu tiên full Library với dữ liệu tổng hợp và storage/auth isolation.
+   Normal app tạo `ChatGPTSession()` và default `RecordingStore`; không launch
+   thiếu kiểm tra ranh giới Keychain/recordings.
+5. Tái hiện trước khi kết luận. Không lưu meeting riêng vào evidence repo.
+   Nếu cần dữ liệu riêng, dừng app người dùng hoặc publication mới, xin quyền cụ thể.
+
+Các đầu mối sau không phải kết luận nguyên nhân:
+`Sources/LessMeet/LessMeetApp.swift` chọn app entry và window size;
+`Sources/LessMeet/Presentation/LibraryView.swift` chứa `NavigationSplitView`,
+sidebar, `RecordingDetailView`, `DetailTab` và picker Transcript/Chat;
+`Sources/LessMeet/Presentation/AppModel.swift` quản lý selection/store.
+`LocalChatView`, `ChatGPTStyle`, `ChatGPTAccountSheet` là UI đã nhận cần giữ ngoài
+phạm vi sửa. `ChatGPTUICheckView` không chứng minh full shell.
+
+### Ownership và điểm dừng
+
+Snapshot room: chín Peer cũ IDLE; mọi write/review scope cũ đã được disposition
+và đóng. Không còn writer, build watcher hoặc UI session của phần việc cũ.
+Fixture UI đã thoát. Phiên bàn giao không vận hành app. Snapshot process không
+thấy LessMeet/swift-build/swift-test/xcodebuild/gh; đây không phải bảo đảm về app
+ngoài snapshot. Không process nào bị dừng trong lần bàn giao.
+
+Sau khi ghi handoff này, phiên hiện tại nhường toàn bộ write và live UI ownership.
+Không giữ scope nào cho phiên cũ. Phiên mới có thể nhận ownership sau khi kiểm tra
+lại trạng thái. Không dispatch hoặc sửa bug ở phiên hiện tại; dừng chờ.
+Build trong ảnh và môi trường tái hiện vẫn cần xác định. Người dùng quyết định
+các quyền ngoài local diagnosis/fix; không suy ra quyền publication mới.
+
+## Release repair and original-artifact recovery complete (2026-10-13)
 
 Human authorizes diagnosis, a scoped code/test/documentation fix, commit/push,
 and recovery of release 411365469 using original artifact 11794285906. Existing
@@ -10,8 +298,8 @@ original artifact bytes, provenance and checksum guards. Do not move/delete tags
 delete release/artifact data, change repository flags/global configuration or use
 live app credentials, recordings or paid APIs.
 
-Integration owns the repair and release actions. No other writer or UI is active.
-Plan: diagnose the failing boundary, prove a narrow correction, then publish and
+Historical repair ownership is closed; write/UI ownership is released above.
+Completed plan: diagnose the failing boundary, prove a narrow correction, then publish and
 download the original build from the exact release. Initial investigation budget:
 20 minutes, at most three hypotheses. Reassess with evidence at that limit.
 Done means fail-to-pass regression evidence, unchanged safety guards, committed
@@ -78,10 +366,43 @@ Original and downloaded SHA256 values:
 Evidence: `.artifacts/signin-chat/recovery-execute.log`, `recovery-readback.json`
 and `recovered-download/`. Recovery proves publication and original bytes. It does
 not reconstruct the missing response from the initial failed hosted attempt.
-Current frontier: land the accepted correction, watch its automatic workflow,
-and verify one failed-job rerun of PR14 against the restored release. That rerun
-uses the original immutable build artifact and old helper's already-published path.
-Native runtime limits remain unchanged.
+PR14 run 38357389787 attempt 2 completed SUCCESS at 09:16:16 UTC. Only publish
+reran. It checked out the original `4cb16f2` and downloaded artifact 11794285906
+from attempt 1. The old helper returned `already-published` after its remote
+checks. The original build did not rerun. This confirms restored hosted readback,
+not the original failing response or a hosted execution of the new create path.
+
+PR15 merged normally at 09:16:40 UTC with head
+`234e37b5658cc8967c4efb4d0157da3a15c71e49`, including recovery receipt commit
+`234e37b`. Merge SHA: `fc1960208926b2074d3b016a1da480b7e12c78af`.
+Its tree matches the accepted branch head. GitHub reported CLEAN/MERGEABLE
+with no branch checks. No bypass or force operation occurred.
+Automatic run [38375157261](https://github.com/hoangnb24/lessmeet/actions/runs/38375157261)
+completed SUCCESS. Both jobs checked out `fc1960208926b2074d3b016a1da480b7e12c78af`.
+The corrected helper created and published release 411501050 at 09:25:13 UTC.
+Tag `main-build-46-fc1960208926b2074d3b016a1da480b7e12c78af` points to that merge.
+[Release](https://github.com/hoangnb24/lessmeet/releases/tag/main-build-46-fc1960208926b2074d3b016a1da480b7e12c78af)
+is published as a prerelease with all four assets. Its archive downloads and
+passes checksum and sealed-manifest validation. Archive SHA256:
+`7724298fdbfa5c1b4a14c7adbb196f58c99b3a6b474b5186ebd9f7ac9b194a83`.
+Build artifact ID: 11801301681. Evidence is under `.artifacts/signin-chat/` in
+`release-fix-hosted-final.{json,log}`, `release-fix-remote.json` and
+`release-fix-download/`. Original PR14 release/tag/assets remain unchanged.
+
+ACCEPT the scoped correction, original-artifact recovery and fresh hosted create
+result. Red-to-green fixtures prove the corrected failure mechanism. Successful
+remote publication and downloads prove the usable outcome. Neither recovers the
+missing response from the initial PR14 failure. Its exact trigger stays UNCONFIRMED.
+Integration owns any follow-up if another binding failure occurs; the error now
+identifies the failed field. No further action or permission is needed for the
+published artifacts. All watchers and read-only scopes are closed.
+
+Changed paths are `scripts/github-release.py`,
+`Tests/release/test_github_release.py`, `docs/CONFIGURATION.md` and `docs/STATUS.md`.
+Code and recovery receipt are committed, pushed and merged. This final status
+receipt stays local to avoid another documentation-only release cycle. Local main,
+backup, approved UI and original artifact bytes are unchanged. Full Library,
+live auth/chat, accessibility and reopened-signout copy remain non-PASS.
 
 ## Merge complete; automatic publish FAILED (2026-10-13)
 
