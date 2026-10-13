@@ -1,6 +1,6 @@
 # LessMeet delivery
 
-## Scoped commit/push authorization (2026-10-13)
+## Scoped commit/push — COMPLETE (2026-10-13)
 
 Human authorizes committing LM-SC-01 and LM-SC-NATIVE-01 and pushing only
 `design/signin-chat-preview` to `origin` (`hoangnb24/lessmeet`). This supersedes
@@ -23,9 +23,29 @@ and its build requires the PR to be merged. Publishing also requires
 `workflow_dispatch` only. Neither workflow has a branch-push trigger. This push
 does not request a hosted build or create a build tag. No workflow is dispatched.
 
-Current frontier: commit the UI, offline rehearsal and public design/evidence
-groups; push the exact branch and read back its remote SHA. Lead owns git writes.
-No live UI owner or moving Peer write scope exists.
+Published groups:
+
+- `17388b9a04c570fa9c093d9efcd200acf6046d21`: approved native account and Chat UI.
+- `653377c429f74fb56265cdd590b2c0a327ca1669`: isolated offline rehearsal and packaging tests.
+- `e3fa0bc27bf9597f1af36bd149d2e9c763da1142`: design, manifests and public evidence.
+
+Push to `origin/design/signin-chat-preview` succeeded. `git ls-remote` read back
+`e3fa0bc27bf9597f1af36bd149d2e9c763da1142` for the published candidate. This
+status-only receipt follows those groups; it does not change the candidate bytes.
+The branch now tracks `origin/design/signin-chat-preview`. Push used an explicit
+branch refspec and disabled automatic tag following. No PR was created.
+GitHub Actions readback returned zero runs for this branch. No automatic hosted
+build or build tag is expected from the inspected workflows.
+
+Commit-time checks: both manifests and whitespace checks PASS; preview checks
+PASS 20 states; packaging tests rerun PASS 21 tests. Accepted build hashes and
+signatures still match. The existing 138 Swift tests and native runtime evidence
+remain the verification input; they were not rerun or relabeled as live proof.
+Only status bookkeeping changed during publication. All product bytes are unchanged.
+
+Current frontier: scoped publication complete; no further action is authorized.
+Local main and backup remain untouched. No live UI owner or moving Peer write
+scope exists. Raw runtime evidence and built bundles remain local and ignored.
 
 ## Sign-in and Chat native UI — LOCAL CANDIDATE ACCEPTED (2026-10-13)
 
