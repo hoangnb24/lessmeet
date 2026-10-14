@@ -1,6 +1,7 @@
 #!/usr/bin/env python3
 """Sign a separate local development app. Never launch, upload or publish it."""
 import argparse
+from contextlib import nullcontext
 import hashlib
 import importlib.util
 import json
@@ -27,6 +28,15 @@ policy = module("signing_policy", "packaging-signing.py")
 build = module("diagnostic_build", "build-github-release.py")
 Invalid = policy.Invalid
 require = policy.require
+
+# Optional CI diagnostics use only these source-defined names. Local CLI stays quiet.
+SIGN_STAGES = frozenset((
+    "sign-paths", "sign-resource-links", "sign-source-validation", "sign-profile",
+    "sign-keychain-file", "sign-workspace", "sign-copy", "sign-configure",
+    "sign-embed-profile", "sign-entitlements", "sign-codesign", "sign-promote",
+    "verify-bundle", "verify-architecture", "verify-signature", "verify-timestamp",
+    "verify-entitlements", "verify-certificate", "verify-resources", "verify-digests",
+))
 
 
 def run(args, timeout=120):
@@ -70,73 +80,92 @@ def inputs(profile_path, fingerprint, mode="signed-local"):
     return original, {**template, **generated}
 
 
-def verify(app, fingerprint, original, entitlements, mode="signed-local"):
-    info = plistlib.loads((app / "Contents/Info.plist").read_bytes())
-    require(info.get("CFBundleIdentifier") == policy.BUNDLE and info.get("LessMeetPackagingMode") == mode,
-            "Signed bundle identity or mode mismatch.")
-    require(all(k not in info for k in build.PUBLIC_PROPERTIES), "Unexpected service configuration.")
-    require((app / "Contents/embedded.provisionprofile").read_bytes() == original, "Embedded profile changed.")
+def verify(app, fingerprint, original, entitlements, mode="signed-local", *, diagnostic=nullcontext):
+    with diagnostic("verify-bundle"):
+        info = plistlib.loads((app / "Contents/Info.plist").read_bytes())
+        require(info.get("CFBundleIdentifier") == policy.BUNDLE and info.get("LessMeetPackagingMode") == mode,
+                "Signed bundle identity or mode mismatch.")
+        require(all(k not in info for k in build.PUBLIC_PROPERTIES), "Unexpected service configuration.")
+        require((app / "Contents/embedded.provisionprofile").read_bytes() == original, "Embedded profile changed.")
     binary = app / "Contents/MacOS/LessMeet"
-    require(run(["/usr/bin/lipo", "-archs", binary]).decode().strip() == "arm64", "Expected arm64.")
-    run(["/usr/bin/codesign", "--verify", "--deep", "--strict", app])
+    with diagnostic("verify-architecture"):
+        require(run(["/usr/bin/lipo", "-archs", binary]).decode().strip() == "arm64", "Expected arm64.")
+    with diagnostic("verify-signature"):
+        run(["/usr/bin/codesign", "--verify", "--deep", "--strict", app])
     if mode == "developer-id":
         # codesign writes display metadata to stderr. Capture it separately.
-        details = build.run(["/usr/bin/codesign", "--display", "--verbose=4", app], "Signing metadata")
-        require("Timestamp=" in details and "(runtime)" in details, "Secure timestamp and hardened runtime required.")
-    actual = plistlib.loads(run(["/usr/bin/codesign", "--display", "--entitlements", ":-", app]))
-    require(actual == entitlements, "Signed entitlement allowlist mismatch.")
-    with tempfile.TemporaryDirectory(prefix="lessmeet-leaf-") as folder:
+        with diagnostic("verify-timestamp"):
+            details = build.run(["/usr/bin/codesign", "--display", "--verbose=4", app], "Signing metadata")
+            require("Timestamp=" in details and "(runtime)" in details, "Secure timestamp and hardened runtime required.")
+    with diagnostic("verify-entitlements"):
+        actual = plistlib.loads(run(["/usr/bin/codesign", "--display", "--entitlements", ":-", app]))
+        require(actual == entitlements, "Signed entitlement allowlist mismatch.")
+    with diagnostic("verify-certificate"), tempfile.TemporaryDirectory(prefix="lessmeet-leaf-") as folder:
         prefix = Path(folder) / "certificate"
         run(["/usr/bin/codesign", "--display", "--extract-certificates=" + str(prefix), app])
         leaf = Path(str(prefix) + "0")
         regular(leaf)
         require(hashlib.sha1(leaf.read_bytes()).hexdigest().upper() == fingerprint.upper(),
                 "Signature leaf does not match the selected certificate.")
-    build.verify_resources(app)
-    return {"signing": "developer-id" if mode == "developer-id" else "profile-backed-development", "bundle_identifier": policy.BUNDLE,
-            "architecture": "arm64", "notarized": False, "runtime": "unverified",
-            "executable_sha256": build.digest(binary), "profile_sha256": hashlib.sha256(original).hexdigest()}
+    with diagnostic("verify-resources"):
+        build.verify_resources(app)
+    with diagnostic("verify-digests"):
+        return {"signing": "developer-id" if mode == "developer-id" else "profile-backed-development", "bundle_identifier": policy.BUNDLE,
+                "architecture": "arm64", "notarized": False, "runtime": "unverified",
+                "executable_sha256": build.digest(binary), "profile_sha256": hashlib.sha256(original).hexdigest()}
 
 
-def sign(source, output, profile_path, fingerprint, keychain=None, mode="signed-local"):
-    source, output = source.absolute(), output.absolute()
-    no_links(source)
-    no_links(output)
-    require(output.suffix == ".app" and not output.exists(), "Use a new .app output; never overwrite a candidate.")
-    require(not output.is_relative_to(source), "Output must be outside the input app.")
+def sign(source, output, profile_path, fingerprint, keychain=None, mode="signed-local", *, diagnostic=nullcontext):
+    with diagnostic("sign-paths"):
+        source, output = source.absolute(), output.absolute()
+        no_links(source)
+        no_links(output)
+        require(output.suffix == ".app" and not output.exists(), "Use a new .app output; never overwrite a candidate.")
+        require(not output.is_relative_to(source), "Output must be outside the input app.")
     # Reject external resource links before copying or opening bundled inputs.
-    for entry in source.rglob("*"):
-        if entry.is_symlink():
-            require(entry.resolve().is_relative_to(source.resolve()), "Resource link escapes the input bundle.")
-    build.verify_app(source)
-    original, entitlements = inputs(profile_path, fingerprint, mode)
+    with diagnostic("sign-resource-links"):
+        for entry in source.rglob("*"):
+            if entry.is_symlink():
+                require(entry.resolve().is_relative_to(source.resolve()), "Resource link escapes the input bundle.")
+    with diagnostic("sign-source-validation"):
+        build.verify_app(source)
+    with diagnostic("sign-profile"):
+        original, entitlements = inputs(profile_path, fingerprint, mode)
     if keychain is not None:
-        regular(keychain)
-    output.parent.mkdir(parents=True, exist_ok=True)
+        with diagnostic("sign-keychain-file"):
+            regular(keychain)
+    with diagnostic("sign-workspace"):
+        output.parent.mkdir(parents=True, exist_ok=True)
     # Nothing is promoted until every check passes. Failed scratch is private.
     with tempfile.TemporaryDirectory(prefix="signing-", dir=output.parent) as folder:
         stage = Path(folder)
         app = stage / "LessMeet.app"
-        shutil.copytree(source, app, symlinks=True)
-        run(["node", ROOT / "scripts/configure-app.mjs", app / "Contents/Info.plist", "signed-local"])
-        if mode == "developer-id":
-            info_path = app / "Contents/Info.plist"
-            info = plistlib.loads(info_path.read_bytes())
-            info["LessMeetPackagingMode"] = "developer-id"
-            info_path.write_bytes(plistlib.dumps(info))
-        (app / "Contents/embedded.provisionprofile").write_bytes(original)
-        entitlement_path = stage / "entitlements.plist"
-        entitlement_path.write_bytes(plistlib.dumps(entitlements))
+        with diagnostic("sign-copy"):
+            shutil.copytree(source, app, symlinks=True)
+        with diagnostic("sign-configure"):
+            run(["node", ROOT / "scripts/configure-app.mjs", app / "Contents/Info.plist", "signed-local"])
+            if mode == "developer-id":
+                info_path = app / "Contents/Info.plist"
+                info = plistlib.loads(info_path.read_bytes())
+                info["LessMeetPackagingMode"] = "developer-id"
+                info_path.write_bytes(plistlib.dumps(info))
+        with diagnostic("sign-embed-profile"):
+            (app / "Contents/embedded.provisionprofile").write_bytes(original)
+        with diagnostic("sign-entitlements"):
+            entitlement_path = stage / "entitlements.plist"
+            entitlement_path.write_bytes(plistlib.dumps(entitlements))
         args = ["/usr/bin/codesign", "--force", "--sign", fingerprint.upper(), "--options", "runtime",
                 "--entitlements", entitlement_path]
         if keychain is not None:
             args += ["--keychain", keychain]
         if mode == "developer-id":
             args += ["--timestamp"]
-        run([*args, app])
-        summary = verify(app, fingerprint, original, entitlements, mode)
-        require(not output.exists(), "Output appeared during signing; refusing promotion.")
-        app.rename(output)
+        with diagnostic("sign-codesign"):
+            run([*args, app])
+        summary = verify(app, fingerprint, original, entitlements, mode, diagnostic=diagnostic)
+        with diagnostic("sign-promote"):
+            require(not output.exists(), "Output appeared during signing; refusing promotion.")
+            app.rename(output)
     return summary
 
 

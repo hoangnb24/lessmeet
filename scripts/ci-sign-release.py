@@ -39,7 +39,7 @@ STAGES = frozenset((
     "identity-validation", "notary-response", "output-validation", "private-workspace",
     "signed-workspace", "archive-create", "archive-structure", "archive-extract",
     "archive-staple", "archive-assessment", "archive-consistency", "receipt-write",
-))
+)) | signer.SIGN_STAGES
 
 
 @contextmanager
@@ -202,7 +202,7 @@ def execute(plan_path, output, root):
             work = signer.ROOT / "dist" / ("developer-id-" + root.name)
             work.mkdir(parents=True, exist_ok=False)
         app = work / "LessMeet.app"
-        step("app-signing", signer.sign, signer.ROOT / "dist/local/LessMeet.app", app, profile, fingerprint, keychain, "developer-id")
+        step("app-signing", signer.sign, signer.ROOT / "dist/local/LessMeet.app", app, profile, fingerprint, keychain, "developer-id", diagnostic=stage)
         identifier = notarize(app, work / "submission.zip", (notary_key, values["LESSMEET_NOTARY_KEY_ID"], values["LESSMEET_NOTARY_ISSUER_ID"]))
         summary = step("signed-app-validation", signer.verify, app, fingerprint, original, entitlements, "developer-id")
         with stage("archive-create"):

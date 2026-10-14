@@ -1,5 +1,46 @@
 # LessMeet delivery
 
+## App-signing substages after hosted failure (2026-10-14)
+
+PR #19 merged at `be6a3a53b871e195ddb02834345b5957d06764fd`.
+Run `38549402920` passed unsigned build, profile validation, certificate import,
+keychain access and identity validation. It failed at `app-signing`; cleanup
+passed. Notarization never started. This is not evidence of a bad password or
+certificate. The specific operation inside `sign()` remains UNKNOWN.
+
+The owner authorized the previously deferred safe substage diagnostics and tests.
+Branch `fix/ci-signing-substage-diagnostics` starts at that merge. The technical
+owner holds scripts/tests/status writes. A fresh read-only Peer checked the frozen
+candidate. No UI, credential changes, live signing or Apple submission is in scope.
+
+`sign()` and `verify()` now accept an optional diagnostic context. The local CLI
+defaults to no new markers and retains its existing JSON result. CI uses its allowlisted, best-effort
+logger. Fixed labels separate source/profile checks, copy, configure, embedding,
+codesign, bundle/architecture/signature/timestamp/entitlement/certificate/resource
+checks, and promotion. No arguments, paths, secrets or command output are logged.
+For example, a synthetic codesign error emits `sign-codesign: failed`, removes
+scratch and leaves the source intact without promoting an output app.
+
+Release tests: 119 PASS, including synthetic substage failures, quiet local
+success, broken log output, unchanged timestamp/keychain arguments, source
+preservation and scratch cleanup. Packaging: 76 PASS. Workflow validation and
+whitespace checks: PASS. No actual signing success or root-cause repair is claimed.
+
+ACCEPT the bounded diagnostics candidate after direct inspection and independent
+verification. Exact Git blobs: signer `a647ec2339ca0a99b266518c4b0b2b0e141d78f9`,
+CI `640dc9fd06e18f250735120e303fb6eca7f764a9`, tests
+`719f389bb38646e87a76294ad75a706dee69c2e4`. Independent checks confirm unchanged
+signing syntax trees after removing instrumentation, plus 24 offline profile
+tests. No Peer write scope remains. Remote readback retains signing enabled and
+publication disabled.
+
+Delivered `5cf5061` and opened [PR #20](https://github.com/hoangnb24/lessmeet/pull/20)
+on `fix/ci-signing-substage-diagnostics`. This follow-up records delivery only.
+Next: inspect the new merged run after the owner merges PR #20.
+Publication stays disabled. Do not rerun an old immutable
+workflow expecting new diagnostics. Actual signing/notarization and signed-app
+runtime remain UNVERIFIED.
+
 ## Signing failure and safe diagnostics candidate (2026-10-14)
 
 PR #18 was merged by the owner at `44b5419ba673132d34f5b8b2a2c9f6fae88fed06`.
