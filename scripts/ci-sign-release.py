@@ -54,8 +54,12 @@ def stage(name):
     emit("started")
     try:
         yield
-    except BaseException:
+    except BaseException as error:
         emit("failed")
+        if (isinstance(error, signer.CodesignFailure)
+                and error.reason in signer.CODESIGN_REASONS
+                and type(error.returncode) is int and -128 <= error.returncode <= 255):
+            emit(f"codesign-error={error.reason}; exit={error.returncode}")
         raise
     else:
         emit("passed")

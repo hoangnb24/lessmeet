@@ -1,5 +1,29 @@
 # LessMeet delivery
 
+## Codesign failure classification (2026-10-14)
+
+Run `38567719914` for merge `e93a208ba6deb9b43cdcb3a6e83622b327128032`
+completed/failure. All preparation, copy, configuration, embedded profile and
+entitlement stages passed. `sign-codesign` failed at 13:03:39 UTC in about 17 ms.
+Cleanup passed. No notarization stage started, so no in-flight submission from
+this run exists and no retry/submission has been made.
+
+Scoped repair: retain only an allowlisted reason and numeric exit code from
+failed codesign output. Raw stdout/stderr, command arguments, private paths and
+secret values remain unlogged. Unknown output maps to `unclassified`; no guessed
+credential, trust or metadata change is made. The existing fail-closed path and
+best-effort stage logger remain. Offline release tests: 121 PASS.
+ACCEPT after independent exact-candidate inspection. Reviewed signer blob
+`d545b929286e00ce48743e6111fb5f3b91738629`, CI
+`29480da71c69782544abd3d2a305c42e9896dcc4`, tests
+`ff5a5b65a55cb8b1bd47f165135cbda695efe241`; only a comment was then clarified
+to avoid claiming memory erasure. Classification is case-sensitive/first-match,
+not proof of root cause. No raw output in diagnostic fields/logs is claimed;
+Python traceback memory erasure is not. Packaging 76 PASS, workflow/whitespace
+PASS. No Peer write scope remains.
+Continue with an accepted normal PR merge and its actual run, then use that
+reason to select the smallest repair. Do not stop at this diagnostic increment.
+
 ## Initial merge authorized and completed (2026-10-14)
 
 The owner explicitly authorized this agent to merge PR #20. This resolves the

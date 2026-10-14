@@ -296,6 +296,26 @@ class SignedManifestTests(unittest.TestCase):
 
 
 class NotaryTests(unittest.TestCase):
+    def test_codesign_failure_is_classified_without_retaining_or_printing_raw_output(self):
+        for marker, reason in ci.signer.CODESIGN_ERRORS + ((b"unknown diagnostic", "unclassified"),):
+            with self.subTest(reason=reason):
+                result = subprocess.CompletedProcess([], 1, b"PRIVATE-stdout", b"PRIVATE-path-password " + marker)
+                output = io.StringIO()
+                with patch.object(ci.signer.subprocess, "run", return_value=result), \
+                     redirect_stdout(output), redirect_stderr(output), self.assertRaises(ci.signer.CodesignFailure) as caught:
+                    ci.step("sign-codesign", ci.signer.run, ["/usr/bin/codesign", "--sign", "PRIVATE", "PRIVATE.app"])
+                self.assertEqual(caught.exception.reason, reason)
+                self.assertEqual(caught.exception.returncode, 1)
+                self.assertIn(f"codesign-error={reason}; exit=1", output.getvalue())
+                self.assertNotIn("PRIVATE", output.getvalue() + str(vars(caught.exception)) + str(caught.exception))
+
+    def test_codesign_error_preserved_when_logging_breaks(self):
+        result = subprocess.CompletedProcess([], 1, b"PRIVATE", b"errSecInternalComponent")
+        with patch.object(ci.signer.subprocess, "run", return_value=result), \
+             patch("builtins.print", side_effect=BrokenPipeError()), self.assertRaises(ci.signer.CodesignFailure) as caught:
+            ci.step("sign-codesign", ci.signer.run, ["/usr/bin/codesign", "PRIVATE"])
+        self.assertEqual(caught.exception.reason, "security-internal")
+
     def test_broken_log_stream_does_not_skip_cleanup(self):
         for failure in (BrokenPipeError("PRIVATE"), ValueError("closed stream")):
             with self.subTest(failure=type(failure).__name__), tempfile.TemporaryDirectory() as directory:
