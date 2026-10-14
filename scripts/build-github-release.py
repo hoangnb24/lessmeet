@@ -89,9 +89,11 @@ def load_plan(path):
     sequence = plan.get("sequence")
     require(isinstance(sha, str) and re.fullmatch(r"[0-9a-f]{40}", sha), "Invalid source SHA.")
     require(type(sequence) is int and sequence > 0, "Invalid release sequence.")
-    tag = f"main-build-{sequence}-{sha}"
+    signed = plan.get("schema") == 3
+    tag = f"{'main-signed' if signed else 'main-build'}-{sequence}-{sha}"
     require(plan.get("tag") == tag, "Invalid release tag.")
-    require(plan.get("archive_name") == f"LessMeet-{tag}-macos-arm64-adhoc.zip", "Invalid archive name.")
+    suffix = "developer-id" if signed else "adhoc"
+    require(plan.get("archive_name") == f"LessMeet-{tag}-macos-arm64-{suffix}.zip", "Invalid archive name.")
     require(run(["git", "rev-parse", "HEAD"], "Source identity").strip() == sha, "Checkout does not match merge SHA.")
     require(int(run(["git", "rev-list", "--first-parent", "--count", "HEAD"], "Source order")) == sequence,
             "Release sequence does not match source history.")
@@ -114,6 +116,15 @@ def verify_app(app):
     run(["/usr/bin/codesign", "--verify", "--deep", "--strict", app], "Signature verification")
     signature = run(["/usr/bin/codesign", "--display", "--verbose=4", app], "Signature identity")
     require("Signature=adhoc" in signature.splitlines(), "Expected an ad-hoc signature.")
+    verify_resources(app)
+    return {"architecture": architecture, "signing": "ad-hoc", "notarized": False,
+            "bundle_identifier": info["CFBundleIdentifier"],
+            "app_version": info["CFBundleShortVersionString"], "app_build": info["CFBundleVersion"],
+            "executable_sha256": digest(binary)}
+
+
+def verify_resources(app):
+    """Shared resource gate; signed-local does not weaken the diagnostic gate."""
     for name in RESOURCE_BUNDLES:
         require((app / "Contents/Resources" / name).is_dir(), "A required resource bundle is missing.")
     shader = app / "Contents/Resources/mlx.metallib"
@@ -125,18 +136,15 @@ def verify_app(app):
         if notice.is_file():
             bundled = app / "Contents/Resources/ModelLicenses" / notice.name
             require(bundled.is_file() and digest(notice) == digest(bundled), "Model notice is missing or changed.")
-    return {"architecture": architecture, "signing": "ad-hoc", "notarized": False,
-            "bundle_identifier": info["CFBundleIdentifier"],
-            "app_version": info["CFBundleShortVersionString"], "app_build": info["CFBundleVersion"],
-            "executable_sha256": digest(binary)}
 
 
-def build(plan_path, output, execute=False):
+def build(plan_path, output, execute=False, prepare=False):
     plan = load_plan(plan_path)
+    require(prepare == (plan.get("schema") == 3), "Signed plans require prepare-only; no ad-hoc fallback.")
     require(not output.exists(), "Use a new output directory; existing release inputs are immutable.")
     if not execute:
         return {"mode": "dry-run", "source_sha": plan["source_sha"], "archive_name": plan["archive_name"],
-                "steps": ["check toolchain", "build local", "verify arm64/ad-hoc/resources", "archive", "seal"],
+                "steps": ["check toolchain", "build local", "verify arm64/ad-hoc/resources"] + ([] if prepare else ["archive", "seal"]),
                 "published": False}
     require(platform.system() == "Darwin" and platform.machine() == "arm64", "An Apple Silicon macOS runner is required.")
     xcode = run(["xcodebuild", "-version"], "Xcode check")
@@ -150,6 +158,9 @@ def build(plan_path, output, execute=False):
         "Unchanged source and pins")
     app = ROOT / "dist/local/LessMeet.app"
     summary = verify_app(app)
+    if prepare:
+        return {"mode": "prepared-unsigned", "source_sha": plan["source_sha"], "verification": summary,
+                "published": False}
     output.mkdir(parents=True)
     archive = output / plan["archive_name"]
     # Exclude filesystem metadata and __MACOSX sidecars, not bundle resources.
@@ -166,9 +177,10 @@ def main():
     parser.add_argument("--plan", required=True, type=Path)
     parser.add_argument("--output-dir", required=True, type=Path)
     parser.add_argument("--execute", action="store_true", help="Compile and package. Default only validates the plan.")
+    parser.add_argument("--prepare", action="store_true", help="Prepare unsigned inputs for a schema-3 signing stage; do not archive or seal")
     args = parser.parse_args()
     try:
-        result = build(args.plan.absolute(), args.output_dir.absolute(), args.execute)
+        result = build(args.plan.absolute(), args.output_dir.absolute(), args.execute, args.prepare)
         print(json.dumps(result, indent=2))
         return 0
     except (BuildError, OSError, ValueError, KeyError, TypeError, plistlib.InvalidFileException) as error:

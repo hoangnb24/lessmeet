@@ -32,8 +32,14 @@ open dist/local/LessMeet.app
 Open `Package.swift` in Xcode to browse/debug. For recording permission checks, use
 the packaged `.app`, not `swift run`: the bundle contains the usage descriptions
 and hardened-runtime audio-input entitlement. Local builds are ad-hoc signed by
-default. Set `LESSMEET_SIGNING_IDENTITY` to a stable signing identity for real
-Keychain/auth checks. The `local` mode uses `com.lessmeet.app.local`, reads no
+default and cannot verify the current Data Protection Keychain sign-in path.
+For profile-backed development builds, use `bash scripts/build-app.sh signed-local`
+with an exact `LESSMEET_SIGNING_IDENTITY` SHA1 and `LESSMEET_PROVISIONING_PROFILE`.
+The profile must authorize `com.lessmeet.app`; a certificate alone is insufficient.
+Output is `dist/signed-local/LessMeet.app`. Existing signed output is never
+overwritten. This is device-limited development signing, not public distribution.
+See [signing configuration](docs/CONFIGURATION.md#profile-backed-github-zip-signing).
+The diagnostic `local` mode uses `com.lessmeet.app.local`, reads no
 `.env.local` or cloud service settings, and includes no legacy OAuth URL callback.
 ChatGPT uses a temporary loopback listener on `127.0.0.1`.
 

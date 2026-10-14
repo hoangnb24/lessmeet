@@ -13,7 +13,7 @@ import tempfile
 
 BUNDLE = "com.lessmeet.app"
 TEAM = "63M98WD275"
-MODES = ("sandbox-dev", "store", "testflight")
+MODES = ("sandbox-dev", "store", "testflight", "signed-local", "developer-id")
 
 
 class Invalid(ValueError):
@@ -27,6 +27,7 @@ def require(condition, message):
 
 def run(args, **kwargs):
     try:
+        kwargs.setdefault("env", {k: os.environ[k] for k in ("PATH", "HOME", "TMPDIR", "LANG", "LC_ALL") if k in os.environ})
         return subprocess.run(args, check=True, stdout=subprocess.PIPE,
                               stderr=subprocess.PIPE, **kwargs).stdout
     except (OSError, subprocess.CalledProcessError):
@@ -71,7 +72,7 @@ def validate(profile, mode, fingerprint, certificate, device=None, now=None):
             "Profile must authorize the exact bundle with its own application prefix; wildcards are rejected.")
     # TN3125: macOS sandbox/debug entitlements are unrestricted and may be absent
     # from the profile. The app's minimal signing template enables App Sandbox.
-    require("com.apple.security.app-sandbox" not in ent or ent["com.apple.security.app-sandbox"] is True,
+    require(mode in ("signed-local", "developer-id") or "com.apple.security.app-sandbox" not in ent or ent["com.apple.security.app-sandbox"] is True,
             "Profile explicitly contradicts App Sandbox.")
     members = profile.get("DeveloperCertificates", [])
     require(isinstance(members, list) and all(isinstance(c, bytes) for c in members), "Invalid profile certificates.")
@@ -82,13 +83,23 @@ def validate(profile, mode, fingerprint, certificate, device=None, now=None):
     name = certificate.get("name", "")
     debug = [ent[key] for key in ("get-task-allow", "com.apple.security.get-task-allow") if key in ent]
     require(all(type(value) is bool for value in debug), "Invalid get-task-allow value.")
-    if mode == "sandbox-dev":
+    if mode in ("sandbox-dev", "signed-local"):
         require(name.startswith("Apple Development:"), "sandbox-dev requires Apple Development.")
         require(all(debug), "Profile explicitly contradicts development signing.")
         devices = profile.get("ProvisionedDevices")
-        require(isinstance(devices, list) and device and device.upper() in [str(d).upper() for d in devices],
-                "Development profile must cover this Mac's provisioning UDID.")
+        require(isinstance(devices, list) and devices and all(isinstance(d, str) and d for d in devices),
+                "Development profile must cover registered devices.")
+        # signed-local is a build-only path. The signing runner need not be a
+        # target device. This does not authorize running the resulting app.
+        if mode == "sandbox-dev" or device is not None:
+            require(device and device.upper() in [d.upper() for d in devices],
+                    "Development profile must cover this Mac's provisioning UDID.")
         require(not profile.get("ProvisionsAllDevices"), "All-device profiles are not supported.")
+    elif mode == "developer-id":
+        require(name.startswith("Developer ID Application:"), "Developer ID Application certificate required.")
+        require(not any(debug), "Developer ID profile must not permit debugging.")
+        require("ProvisionedDevices" not in profile and profile.get("ProvisionsAllDevices") is True,
+                "Developer ID requires an all-device profile, not development or Store.")
     else:
         require(name.startswith(("Apple Distribution:", "Mac App Distribution:", "3rd Party Mac Developer Application:")),
                 "store requires Apple Distribution or Mac App Distribution.")
@@ -132,7 +143,11 @@ def main():
         snapshot.write_bytes(original)
         decoded = run(["/usr/bin/security", "cms", "-D", "-i", str(snapshot)])
     profile = plistlib.loads(decoded)
-    fingerprint = select_identity(run(["/usr/bin/security", "find-identity", "-v", "-p", "codesigning"]).decode(), identity)
+    if args.mode in ("signed-local", "developer-id"):
+        require(re.fullmatch(r"[A-Fa-f0-9]{40}", identity), "signed-local requires an exact certificate SHA1.")
+        fingerprint = identity.upper()
+    else:
+        fingerprint = select_identity(run(["/usr/bin/security", "find-identity", "-v", "-p", "codesigning"]).decode(), identity)
     der = next((c for c in profile.get("DeveloperCertificates", [])
                 if isinstance(c, bytes) and hashlib.sha1(c).hexdigest().upper() == fingerprint), None)
     require(der is not None, "Selected signing certificate is not a profile member.")
@@ -143,11 +158,14 @@ def main():
         data = hardware["SPHardwareDataType"][0]
         device = data.get("provisioning_UDID") or data.get("platform_UUID")
     generated = validate(profile, args.mode, fingerprint, certificate_metadata(der), device)
-    template = Path(__file__).resolve().parent.parent / "Resources/LessMeet.sandbox.entitlements"
+    template_name = "LessMeet.entitlements" if args.mode in ("signed-local", "developer-id") else "LessMeet.sandbox.entitlements"
+    template = Path(__file__).resolve().parent.parent / "Resources" / template_name
     entitlements = plistlib.loads(template.read_bytes())
-    require(entitlements == {"com.apple.security.app-sandbox": True,
+    expected = {"com.apple.security.device.audio-input": True} if args.mode in ("signed-local", "developer-id") else {
+                             "com.apple.security.app-sandbox": True,
                              "com.apple.security.network.client": True,
-                             "com.apple.security.device.audio-input": True}, "Sandbox template contains unexpected capabilities.")
+                             "com.apple.security.device.audio-input": True}
+    require(entitlements == expected, "Signing template contains unexpected capabilities.")
     entitlements.update(generated)
     if args.output:
         output = Path(args.output)

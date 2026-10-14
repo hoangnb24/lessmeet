@@ -223,6 +223,16 @@ class ConfigTests(unittest.TestCase):
         self.assertEqual(info["ConvexSiteURL"], PUBLIC["CONVEX_SITE_URL"])
         self.assertEqual(info["CFBundleURLTypes"][0]["CFBundleURLSchemes"], ["com.lessmeet.app"])
 
+    def test_signed_local_strips_services_and_callback_without_reading_env_file(self):
+        (self.folder / ".env.local").write_text("CLERK_SECRET_KEY=synthetic-do-not-read\n")
+        result = self.configure(PUBLIC, "signed-local")
+        self.assertEqual(result.returncode, 0, result.stderr)
+        info = plistlib.loads(self.plist.read_bytes())
+        self.assertEqual(info["CFBundleIdentifier"], "com.lessmeet.app")
+        self.assertEqual(info["LessMeetPackagingMode"], "signed-local")
+        for key in ("CFBundleURLTypes", "ClerkPublishableKey", "ConvexSiteURL", "RevenueCatPublicAppleKey", "LessMeetPrivacyURL", "LessMeetTermsURL"):
+            self.assertNotIn(key, info)
+
     def test_every_missing_field_fails_without_partial_write(self):
         original = self.plist.read_bytes()
         for key in PUBLIC:
