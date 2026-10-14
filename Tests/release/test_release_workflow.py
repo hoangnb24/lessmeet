@@ -57,11 +57,16 @@ class WorkflowTests(unittest.TestCase):
                     self.assertIs(step["with"]["persist-credentials"], False)
                     self.assertNotIn("allow-unsafe-pr-checkout", step["with"])
 
-    def test_minimal_permissions_and_no_apple_secrets(self):
+    def test_minimal_permissions_and_step_scoped_apple_secrets(self):
         self.assertEqual(self.workflow["permissions"], {"contents": "read"})
         self.assertEqual(self.build["permissions"], {"contents": "read"})
         self.assertEqual(self.publish["permissions"], {"contents": "write"})
-        self.assertNotIn("secrets.", WORKFLOW.read_text())
+        secret_steps = [s for s in self.build["steps"] if "secrets." in json.dumps(s)]
+        self.assertEqual(len(secret_steps), 1)
+        self.assertIn("ci-sign-release.py --execute", secret_steps[0]["run"])
+        self.assertEqual(len(secret_steps[0]["env"]), 7)
+        self.assertEqual(self.build["environment"], "lessmeet-developer-id")
+        self.assertIn("vars.LESSMEET_DEVELOPER_ID_RELEASE_ENABLED == 'true'", self.build["if"])
         for name in ("ASC_", "TESTFLIGHT", "fastlane", "altool"):
             self.assertNotIn(name, WORKFLOW.read_text())
         token_steps = [step for job in (self.build, self.publish) for step in job["steps"]
@@ -83,7 +88,9 @@ class WorkflowTests(unittest.TestCase):
             self.assertNotIn("always()", job.get("if", ""))
             for step in job["steps"]:
                 self.assertNotIn("continue-on-error", step)
-                self.assertNotIn("always()", step.get("if", ""))
+                if "always()" in step.get("if", ""):
+                    self.assertEqual(step["run"], "python3 scripts/ci-sign-release.py --cleanup")
+                    self.assertNotIn("env", step)
         build_steps = [step.get("run", "") for step in self.build["steps"]]
         self.assertTrue(any("unittest discover -s Tests/release" in step for step in build_steps))
         self.assertTrue(any("unittest discover -s Tests/packaging" in step for step in build_steps))

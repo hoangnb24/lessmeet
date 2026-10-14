@@ -7,6 +7,7 @@ final class ChatGPTSession: ObservableObject {
     @Published private(set) var activeProfileID: String?
     @Published private(set) var busy = false
     @Published private(set) var error: String?
+    @Published private(set) var needsSignOutRetry = false
     @Published private var sessionRevision: String?
     @Published private var planEnabled = false
 
@@ -106,6 +107,7 @@ final class ChatGPTSession: ObservableObject {
             var record = try read()
             guard let index = record.registrations.firstIndex(where: { $0.profile?.id == selectedID && selectedID != nil }) else {
                 pendingLogoutProfileID = nil
+                needsSignOutRetry = false
                 publish(record, allowActive: false)
                 return
             }
@@ -123,11 +125,13 @@ final class ChatGPTSession: ObservableObject {
             }
             try save(record)
             pendingLogoutProfileID = nil
+            needsSignOutRetry = false
             publish(record, allowActive: false)
             if !confirmed {
                 error = "Signed out locally. Remote revocation was not confirmed. Disconnect LessMeet in ChatGPT Settings."
             }
         } catch {
+            needsSignOutRetry = true
             self.error = "Local sign-out could not be saved. Access is disabled in this app session. Retry sign-out before quitting; stored credentials may remain after restart."
         }
     }

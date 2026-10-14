@@ -4,6 +4,7 @@ import importlib.util
 import io
 import json
 import os
+import plistlib
 from pathlib import Path
 import subprocess
 import sys
@@ -40,7 +41,7 @@ def fixture_plan(sha=SOURCE):
 def fixture_zip(marker=b"synthetic-not-an-executable", extra=None):
     stream = io.BytesIO()
     with zipfile.ZipFile(stream, "w") as archive:
-        for name, data in [("LessMeet.app/Contents/Info.plist", b"synthetic-test-plist"),
+        for name, data in [("LessMeet.app/Contents/Info.plist", plistlib.dumps({"CFBundleIdentifier": "com.lessmeet.app.local", "LessMeetPackagingMode": "local"})),
                            ("LessMeet.app/Contents/MacOS/LessMeet", marker), *(extra or [])]:
             info = zipfile.ZipInfo(name, (2020, 1, 1, 0, 0, 0))
             info.external_attr = 0o100644 << 16

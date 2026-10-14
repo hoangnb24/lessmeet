@@ -1,5 +1,725 @@
 # LessMeet delivery
 
+## Signing inputs ready; owner merge is next (2026-10-14)
+
+The owner confirmed completion of the password helper. GitHub secret-name readback
+now confirms all seven intended secrets in `lessmeet-developer-id`, including
+`LESSMEET_DEVELOPER_ID_P12_PASSWORD` updated at `2026-10-14T09:51:34Z`.
+No secret values were retrieved. Rechecked the environment: only branch `main`
+is allowed, no tag rule and no required reviewer, as authorized.
+
+Enabled `LESSMEET_DEVELOPER_ID_RELEASE_ENABLED=true` and verified readback.
+`LESSMEET_GITHUB_RELEASE_ENABLED=false` remains unchanged. This permits signing
+and notarization after the owner merges; it does not permit public publication.
+
+ACCEPT the completed provisioning and documentation handoff for PR #18.
+Product, workflow, script and test bytes remain unchanged from accepted source
+candidate `dbbadc4b454ce07e90d0135f08ceb584854a5c94`; only CONFIGURATION and STATUS
+are updated. Previous offline release tests (112 PASS) and packaging tests
+(76 PASS) apply to those unchanged bytes. Whitespace validation is repeated
+before the documentation commit. No credentials or ignored helper are committed.
+
+Documentation commit `7ff811f774899601f15591ec36fa891dcf51499a` was pushed.
+PR #18 was marked ready; readback reports OPEN, isDraft=false and merge state
+CLEAN. The PR description now records the resolved inputs and current limits.
+This follow-up only records the completed handoff; it changes no executable bytes.
+Next action: only the owner merges. After that event, observe the merged-source workflow
+and verify its artifact. Hosted signing, notarization and signed-app runtime
+remain UNVERIFIED. Provisioning success is not artifact acceptance.
+
+The entries below are chronological checkpoints, newest first. Their pending
+input, disabled signing and draft-PR statements describe those earlier checkpoints;
+this entry supersedes them. No live UI scope or Peer write assignment is active.
+
+## Owner-only merge decision and environment provisioning (2026-10-14)
+
+Authorized decision: no required reviewer for the signing environment. The owner
+states only they merge into main. This supersedes the required-reviewer blocker
+below; do not ask for a paid-plan change. Leave PR #18 for the owner to merge,
+not an agent. Public publication remains excluded.
+
+Remote reconciliation: environment absent, repository-secret list empty, both
+signing/publication variables false, PR #18 OPEN/DRAFT at
+`dbbadc4b454ce07e90d0135f08ceb584854a5c94`, no merge commit. Collaborator API lists
+only `hoangnb24` with admin access. This is an observed collaborator list, not an
+enforced main-branch rule or an audit of every app/token with repository access.
+Existing branch-protection plan limits remain; no access rule was bypassed.
+
+Created `lessmeet-developer-id`, environment ID `24266624356`, with custom branch
+policy. Added and read back the sole rule: branch `main` (no tag policy), ID
+`63011760`. No required-reviewer rule. Existing unrelated environments, secrets
+and repository access were not modified. No plan or visibility change occurred.
+
+Provisioned six intended secrets with `gh` through stdin, not command arguments
+or files/logs containing values. The destination was checked empty first; no
+identity was silently replaced. Local PKCS#12/profile hashes matched the accepted
+inputs. Secret-name/timestamp readback confirms:
+
+- LESSMEET_DEVELOPER_ID_P12_BASE64
+- LESSMEET_DEVELOPER_ID_PROFILE_BASE64
+- LESSMEET_DEVELOPER_ID_CERT_SHA1
+- LESSMEET_NOTARY_KEY_BASE64
+- LESSMEET_NOTARY_KEY_ID
+- LESSMEET_NOTARY_ISSUER_ID
+
+Only LESSMEET_DEVELOPER_ID_P12_PASSWORD remains. The owner must run the ignored
+local helper with `/usr/bin/ruby`:
+`.artifacts/chatgpt-storage/ci-signing/provision-p12-password.rb`.
+It prompts without echo, validates the exact PKCS#12 hash/certificate/private-key
+match, then passes the password to `gh secret set` via stdin for this environment.
+It refuses to overwrite an existing password secret and retains no password file.
+Syntax validation PASS; execution awaits owner input. No password in chat.
+
+Signing activation stays false until all seven inputs are provisioned and the
+candidate/status handoff is reconciled. Publication stays false for the manual
+test. No merge or hosted run occurred. After password confirmation, verify the
+seven names and environment policy, finish the delivery documentation/PR handoff,
+enable only signing, then let the owner merge. Observe that merge's exact workflow
+through terminal completion and verify its artifact; do not claim success early.
+
+## Team notary key downloaded; Apple input preparation complete (2026-10-14)
+
+The owner performed Generate in the prepared Chrome form. Readback on the same
+verified App Store Connect team shows Active key `LessMeet CI Notary`, role
+Developer, Key ID `C252BFL5P7`, issuer
+`69a6de8c-6878-47e3-e053-5b8c7c11a4d1`. No second key was created and no existing
+key was modified or revoked. This replaces the pending Generate confirmation.
+
+Downloaded that exact row's one-time P8 through Chrome. The browser reported
+`AuthKey_C252BFL5P7.p8`, 257 bytes, Done; the row's Download action disappeared.
+Chrome saved it to Downloads without a save dialog. Set that exact new file to
+0600, then moved it without overwrite to:
+`/Users/tubakhuym/projects/lessmeet/keys/developer-id-ci/AuthKey_C252BFL5P7.p8`.
+The destination parent is 0700; destination mode is 0600 and its path is Git-ignored.
+No copy remains at the original Downloads path. The file is preserved at the new
+location; this was not key deletion. No cookies, browser tokens or key contents
+were extracted or printed. `openssl pkey -check -noout` reports Key is valid.
+
+ACCEPT the bounded input-preparation outcome: matched Developer ID PKCS#12 and
+MAC_APP_DIRECT profile `JUKU76YFHS` from the previous entry, plus this active
+Developer-role Team API key and private one-time download. These are the intended
+inputs for the accepted CI configuration. No new signing certificate was created.
+The technical owner has finished Apple UI work; no live UI write scope remains.
+The owner should keep an encrypted backup because Apple does not offer another
+download. Do not print or send the P8 or PKCS#12 password through chat.
+
+Remaining limits: key parsing and portal metadata are not a notarization-service
+authentication test. No actual signature, timestamp request, notarization
+submission, hosted CI run or app runtime check was performed here. Seven GitHub
+environment secrets remain unprovisioned. PKCS#12 password must be supplied through
+a secure local input channel during provisioning, not inferred from the helper
+receipt. The later owner decision above removes the required-reviewer condition.
+No paid-plan/visibility change or public publication is authorized. The owner
+retains merge; the current provisioning state is recorded above.
+
+At this preparation checkpoint the required-reviewer condition was unresolved;
+the later owner decision and provisioning above supersede that dependency.
+Continue the manual signed-build workflow with secure password input.
+No GitHub mutation, commit/push,
+merge or public release occurred in this preparation. STATUS and configuration
+references now record these prepared inputs without secret values.
+
+## Matched Developer ID input and completed profile (2026-10-14)
+
+ACCEPT the supplied PKCS#12 identity and downloaded profile as matched signing
+inputs, not as a signed/notarized app result. The owner ran the interactive helper;
+the 0600 public receipt reports a matching private key and certificate. Independently
+checked that the original's SHA256 still matches the receipt and that the selected
+Apple certificate's current public DER has the same fingerprint.
+
+- Original: `/Users/tubakhuym/Documents/AppleDeveloperID.p12`, PKCS#12, unchanged.
+  SHA256 `a4ecf8f9c46e95068d39e8a5f5ee4bcfe1a8990748eab2a5769fb54e17fb8816`.
+- Selected certificate resource: `3NSF74TP49`, Developer ID Application,
+  team `63M98WD275`, SHA1 `DE967875FB1C4BBEBCB60EED42BC7182D031E9F0`.
+  Certificate expires `2027-02-01T22:12:15Z`. Identity ambiguity is resolved.
+- The original has mode 0644. Made a byte-identical 0600 prepared copy at
+  `/Users/tubakhuym/projects/lessmeet/keys/developer-id-ci/AppleDeveloperID.p12`.
+  Its parent is 0700. No overwrite, original permission change, import or new
+  private-key export occurred. The owner should restrict access to the original.
+
+Rechecked the exact bundle and all existing MAC_APP_DIRECT profiles before the
+single create request. No profile existed. Created with asc using bundle resource
+`4KUL5K8UU2` and certificate resource `3NSF74TP49`, then downloaded:
+
+- Name `LessMeet_Developer_ID_20261014`; resource ID `JUKU76YFHS`.
+- Type `MAC_APP_DIRECT`; API state ACTIVE.
+- UUID `666d8699-0fbc-4e91-8b29-eb58356ef84b`.
+- File `/Users/tubakhuym/projects/lessmeet/keys/developer-id-ci/LessMeet_Developer_ID.provisionprofile`,
+  mode 0600, Git-ignored in its owning checkout.
+- SHA256 `aaecb8a165088f734db862548ce4dde6d2b6d30d9ce4dad571ab2f153e7102cc`.
+- API relationships independently confirm the exact bundle and sole certificate.
+  CMS-decoded profile confirms team `63M98WD275`, application identifier
+  `63M98WD275.com.lessmeet.app`, ProvisionsAllDevices=true, no device list and
+  no debugging entitlement. The selected certificate is its only certificate.
+- The accepted `sign-local-app.py` developer-id input policy passes. Resulting
+  signing entitlements remain audio-input plus application/team identifiers.
+  No broad profile keychain group or legacy service capability is copied.
+
+Expiry observations are distinct: the API create response reports
+`2027-02-01T22:12:15Z`; the downloaded profile's signed payload reports creation
+`2026-10-14T09:42:20Z` and expiration `2044-10-09T09:42:20Z`. The contained
+certificate still expires in 2027. Do not infer signing validity through 2044.
+
+Limits: helper success proves PKCS#12 parse and private/public-key correspondence;
+policy success proves profile compatibility. Neither is an actual signing,
+timestamp, notarization or full-app runtime test. Password was entered only by
+the owner and was not retained by the helper or provided to this agent. CI still
+needs secure password provisioning when the environment blocker is resolved.
+
+The subsequent owner action and completed key download are recorded above.
+The earlier "ran it" response confirmed only the PKCS#12 helper; it was not
+treated as key-creation confirmation. The owner later performed Generate.
+GitHub protection limits, disabled gates and draft PR #18 are unchanged. No
+commit/push or merge in this preparation; only existing STATUS changed locally.
+
+## Supplied signing export and Chrome route (2026-10-14)
+
+Current scope continues the two Apple resources below. Use the signed-in Chrome
+Apple session; no cookie/token extraction, browser security changes or unrelated
+browser data access. The technical owner owns Apple UI actions. Other app UI is
+out of scope. Computer Use requires action-time confirmation immediately before
+creating persistent API access; prepare and verify the exact key first.
+
+Top-level Documents signing-file search found one candidate only:
+`/Users/tubakhuym/Documents/AppleDeveloperID.p12`, 3240 bytes, modified
+2026-10-14 13:23:19 +0700. ASN.1 structure has PFX version 3 and the PKCS#7 data
+OID. This establishes a PKCS#12/PFX container, not a provisioning profile. It
+does not yet establish the enclosed identity or a matching private key. The
+original remains unchanged; no recursive search or unrelated file read occurred.
+
+Owner-interactive inspection helper:
+`.artifacts/chatgpt-storage/ci-signing/inspect-supplied-p12.rb` (ignored).
+Run it with `/usr/bin/ruby` in a terminal. It prompts without echo, checks the
+public fingerprint/team/date and private/public-key match in memory, and writes
+only a new 0600 metadata receipt to
+`/Users/tubakhuym/projects/lessmeet/keys/developer-id-ci/AppleDeveloperID-inspection.json`.
+It neither exports a private key nor modifies/imports the original. No password
+argument, chat password, brute-force or overwrite is allowed. Syntax check PASS;
+actual inspection and profile creation are now complete as recorded above.
+
+Chrome verification completed: the Apple Developer page explicitly shows team
+`63M98WD275`. The matching signed-in App Store Connect account's own Users and
+Access row shows Account Holder/Admin. The Team Keys page shows issuer
+`69a6de8c-6878-47e3-e053-5b8c7c11a4d1`. No browser cookies/tokens were read or
+copied. The separate asc web session is not assumed authenticated and is no
+longer required for the portal route.
+
+The Team Keys page has eight active keys. One possible existing project key is
+`Meetless Upload 2026-09-14`, ID `V8ZBF889R7`, role Developer; it has no Download
+action. Its intended reuse and available P8 file are not established. Do not
+export a key from other storage or reuse unrelated keys. The existing asc-release
+key is App Manager, not the least-privilege Developer choice for this new input.
+
+Prepared but NOT submitted: Generate API Key form, name `LessMeet CI Notary`,
+role Developer, enabled Generate button. Computer Use requires confirmation at
+this exact persistent-access creation step. Ask whether to create that key now;
+if the owner instead has the intended `V8ZBF889R7` P8, request its protected file
+location for reuse. No new key ID, P8, profile or Apple resource mutation exists
+from this turn. The form remains open; no browser security settings changed.
+
+The PKCS#12 helper and profile branch are complete as recorded above.
+After action-time confirmation, create/download the Developer
+Team key through the verified Chrome session into the protected destination.
+The technical owner retains Apple UI ownership pending that confirmation.
+Existing GitHub and no-publication limits remain unchanged. Only STATUS changed
+in tracked files; the helper is ignored. No commit/push was made.
+
+## Apple distribution input preparation (2026-10-14)
+
+Authorized resources: one `MAC_APP_DIRECT` profile for `com.lessmeet.app` and
+one Team API key suitable for notarization. Reuse suitable existing resources.
+No new Developer ID certificate/private key, revocation, unrelated account change,
+broader credential discovery or protection-policy change is authorized. The
+technical owner retains this scope; no Peer or live app UI scope is active.
+Input is draft PR #18 at `dbbadc4b454ce07e90d0135f08ceb584854a5c94`.
+
+Inspected installed `asc 5.14.0` help before requests. `profiles create` accepts
+profile type plus bundle/certificate resource IDs. `web api-keys create` supports
+Team key creation and one-time P8 download through a cached Apple web session.
+It defaults to ADMIN, so any authorized notary-key creation must explicitly use
+`--role DEVELOPER`. Its help promises P8 mode 0600 and no key material in output.
+This is web-session support, not a claim that the public API bootstraps new keys.
+
+Narrow read-only API results, using the existing team-named authentication profile:
+
+- Exact bundle resource `4KUL5K8UU2`: identifier `com.lessmeet.app`, platform
+  UNIVERSAL, seed `63M98WD275`. The identifier filter also returned a longer
+  services identifier; it was excluded after exact matching and direct lookup.
+- Existing bundle capabilities: IN_APP_PURCHASE and APPLE_ID_AUTH. No capability
+  was added or changed. The accepted signing code still requests only audio input
+  and profile-authorized application/team identifiers, not these legacy services.
+- No `MAC_APP_DIRECT` profiles were returned across all pages (ACTIVE/INVALID).
+- Three Developer ID Application certificates were returned. Public DER metadata
+  confirms each subject UID/OU is `63M98WD275`, each has a distinct SHA1, and each
+  expires `2027-02-01T22:12:15Z`. All start dates precede this inspection:
+
+| Certificate resource ID | SHA1 | Start (UTC) |
+| --- | --- | --- |
+| `3NSF74TP49` | `DE967875FB1C4BBEBCB60EED42BC7182D031E9F0` | 2026-10-14 06:12:33 |
+| `4A6J752KSR` | `D3CA2AEA2DCBF578D27CFC3557BFFCB41E370561` | 2026-08-25 00:23:32 |
+| `6P3LN2NGX6` | `6342DB21E850363841B97957D2E00E7D0CADA9D7` | 2026-04-30 13:13:22 |
+
+Certificate choice is AMBIGUOUS. Do not select the newest certificate or assume
+its signing private key exists locally. No profile was created/downloaded. The
+owner must identify the intended resource/fingerprint and matching prepared
+signing-key source. No private key was inspected/exported; certificate trust-chain
+and local private-key availability were not tested. Profile team/bundle/certificate
+membership, all-device/debug policy and entitlements remain UNVERIFIED because
+there is no selected profile yet.
+
+Team API key preparation: `asc web auth status` reports authenticated=false and
+passwordStored=false. No web key listing/creation was attempted without that
+session. Existing API authentication works, but does not establish a suitable
+reusable least-privilege notary key or enable web-session bootstrap. The existing
+profile reports issuer `69a6de8c-6878-47e3-e053-5b8c7c11a4d1`; this is metadata
+from that profile, not a newly created key or a verified new-key binding. New
+notary Key ID is not available. The IAP key was not opened or substituted.
+
+Apple's current roles table grants Notarize software to Developer, App Manager,
+Admin and Account Holder; Developer is the least privileged supported role in
+that table. Team-key creation requires Account Holder/Admin. Team keys apply
+across apps; they cannot be limited to LessMeet alone. No elevated ADMIN default
+will be used for the notary key.
+
+Prepared destination outside this worktree:
+`/Users/tubakhuym/projects/lessmeet/keys/developer-id-ci/` (created, mode 0700).
+Parent keys directory is mode 0700; profile/P8 paths are Git-ignored in the owning
+checkout. The directory is empty. Intended files are `AuthKey_<KEY_ID>.p8` and
+`LessMeet_Developer_ID.provisionprofile`, each mode 0600. No secret values were
+printed or saved in evidence logs. No Apple resource mutation occurred.
+
+Minimal owner action:
+
+1. Select one exact certificate above and identify its signing-key source. This
+   does not authorize a new signing certificate or private-key export.
+2. Sign in interactively using `asc web auth login --public-provider-id 63M98WD275`
+   in the owner's terminal, or sign in to App Store Connect in the browser. Do
+   not provide passwords or verification codes in chat. Account Holder/Admin
+   must use the intended team. No authentication bypass will be attempted.
+3. If using the browser, open Users and Access > Integrations > App Store Connect
+   API > Team Keys. Check for a suitable intended existing key before creating
+   `LessMeet CI Notary` with Developer access. If API access has not been enabled,
+   the Account Holder must request it. Download the P8 once to the protected
+   destination above, record Key ID and Issuer ID, and keep the file mode 0600.
+   Alternatively, after login, the CLI can perform the authorized key creation
+   and one-time download with explicit Developer role and output directory.
+
+Resume profile creation after certificate selection; resume key reuse/creation
+after authenticated team/session verification. These are independent branches.
+No GitHub environment change, secret upload, merge, publication, notary submission
+or installed-app operation occurred in this preparation. Existing delivery gates
+and the required-reviewer limitation remain unchanged. Only this status file
+changed locally; no new commit or push was made for this preparation.
+
+Sources checked: [Apple API key creation and one-time download](https://developer.apple.com/help/app-store-connect/get-started/app-store-connect-api),
+[Apple roles and access](https://developer.apple.com/help/account/access/roles),
+[Notary API authentication](https://developer.apple.com/documentation/notaryapi/submitting-software-for-notarization-over-the-web),
+[Profile creation attributes](https://developer.apple.com/documentation/appstoreconnectapi/profilecreaterequest/data-data.dictionary/attributes-data.dictionary).
+
+## Manual signed-build delivery (2026-10-14)
+
+Outcome requested: deliver the accepted secure-storage/signing changes to main
+and obtain a Developer ID signed/notarized GitHub Actions artifact for manual
+testing. Public release publication is excluded. The technical owner owns this
+delivery; no Peer or live UI write scope is active.
+
+Reconciliation: all 19 files matched accepted manifest SHA256
+`c06db248383116612c9b920c0ebcf05518dde2b9c2ee61d296390def77a0e604`.
+Remote main and local HEAD were both
+`7166ef5f6de6d30b69d7bdc0aa9e348c8f2b2fe4`. No remote feature branch or PR existed.
+Product/scripts/tests remain that accepted candidate. Only delivery status and
+configuration observations below are being updated.
+
+At that checkpoint, authority superseded local-only limits: commit/push/PR/merge,
+the seven intended environment secrets, scoped protections, hosted verification
+and Apple timestamp/notarization traffic were authorized. The latest decision
+above reserves merge to the owner. The resource-preparation
+entry above adds specific profile/Team API key creation authority. Other missing
+credentials may not be guessed, newly created or replaced. No unrelated key export, protection
+bypass, public release, real OAuth/chat or installed-app/data operation is allowed.
+
+Remote observations and actions at 06:11–06:13 UTC:
+
+- `LESSMEET_GITHUB_RELEASE_ENABLED` was `true`. Set it to `false` and verified
+  readback. Set `LESSMEET_DEVELOPER_ID_RELEASE_ENABLED=false` explicitly. Neither
+  gate may be enabled until its own prerequisites are met; publication stays off
+  for this verification run. Existing releases/tags/assets were not touched.
+- The private repository had no environments and no repository secrets listed.
+  Creating `lessmeet-developer-id` with a required signing-owner reviewer failed
+  with HTTP 422: the billing plan does not support required reviewers. The API
+  nevertheless created an unprotected empty environment. Verified its secrets
+  and variables were empty, then deleted only that newly created environment.
+  Readback confirms no environments remain. No secret was uploaded.
+- Branch-protection and ruleset reads returned HTTP 403 with a plan limitation.
+  No protection was bypassed or weakened. No plan or repository visibility change
+  was made. The owner must enable support for the intended protection policy.
+- Narrow inspection of the documented project `keys/` source found the two
+  Development profiles, not a prepared Developer ID PKCS#12 or all-device profile.
+  The documented `.p8` belongs to In-App Purchase/RevenueCat; it is not an
+  established Team API notary input and was not opened or reused. No broad
+  Keychain inventory, private-key export or unrelated credential read occurred.
+
+Independent preparation: repeat release tests **112 PASS** and packaging tests
+**76 PASS**. Shell/Node syntax and `git diff --check` pass. Preserve the accepted
+local storage evidence; no new full-app/runtime claim is made. Only the 19 in-scope
+paths were committed and pushed. Draft PR:
+https://github.com/hoangnb24/lessmeet/pull/18
+
+Delivered commits:
+
+- `062c280e4de1432e386e84a216fbbe7c56335dfc`: session-owned sign-out retry state,
+  synthetic storage namespace injection and coupled auth assertions.
+- `7efe7bb7eb7a9c2f77bcf2a5cbf48c3d3dd1cdc5`: signing/build/workflow configuration,
+  tests and delivery documentation. Remote branch readback matches this candidate.
+
+ACCEPT these commits for the prior bounded code/configuration outcome and local
+evidence. Do not accept a signed-build outcome: no such run or artifact exists.
+Main still equals the base above. No merge or workflow dispatch occurred; no
+feature-branch run was listed. Keep PR #18 in draft. This status-only follow-up
+records the remote handoff and does not change executable inputs. The next action
+is owned by the signing/repository owner as specified below, not another code task.
+
+BLOCKED for merge/signing activation: the signing owner must provide securely
+located, already-prepared Developer ID PKCS#12 plus password and exact certificate
+SHA1, matching all-device profile for `com.lessmeet.app` / team `63M98WD275`, and
+the intended Team API notary key plus key ID and issuer ID. If export or creation
+is needed, the owner must establish the exact identity/source and perform or
+separately authorize that action. The repository owner must resolve the protection
+plan limitation without making the private repository public or bypassing review.
+Resume at validated input/protection availability, then provision with `gh`,
+verify publication remains disabled, activate signing, merge and watch the exact
+merged-source build. No signed run, merge SHA or downloadable candidate exists yet.
+
+## Profile-backed build and CI signing repair (2026-10-14)
+
+Active scope: repository packaging scripts, workflow configuration, tests and
+documentation. Base `7166ef5f6de6d30b69d7bdc0aa9e348c8f2b2fe4`, branch
+`fix/chatgpt-secure-storage`. The prior accepted fixture and four source/test
+changes are preserved inputs. The technical owner owns all integrated changes.
+All read-only inspection scopes are closed; no UI scope is active.
+
+Plan: add a profile-backed path for the current local app, keep signing inputs
+out of compiler processes, verify exact identity/profile/entitlements after
+signing, and retain immutable release provenance and asset checks. Test policy
+failures and orchestration offline. No storage downgrade or real-data access.
+Distribution decision: retain GitHub ZIP with Developer ID signing and Apple
+notarization. This replaces the pending channel question. The existing development
+profile is device-limited and remains local-test input only. Implement an explicit
+Developer ID release contract; preserve historical ad-hoc assets and retry rules.
+At this acceptance checkpoint no notarization or remote activation was authorized.
+The manual signed-build delivery entry above records the subsequent authority.
+
+Historical authority at code acceptance: repository edits and exact local signing
+identity/profile for isolated synthetic verification. Not authorized: key
+export/transfer, secret upload, remote CI/settings changes or dispatch, global
+permission/Keychain policy changes, installed-app replacement, live OAuth/chat,
+push, merge, publication or paid services. Hosted CI and full-app runtime must
+remain UNVERIFIED unless separately evidenced. The prior request for permission
+to edit packaging below is settled by this scope; publication remains separate.
+
+### Disposition and exact local evidence
+
+ACCEPT the repository signing configuration with the offline and local-development
+evidence below. This is code/configuration acceptance, not acceptance of a public
+Developer ID artifact or hosted pipeline run. No commit was created. The exact
+working-tree candidate is recorded by per-file SHA256 in
+`.artifacts/chatgpt-storage/ci-signing/CANDIDATE_SHA256SUMS`; its inputs are the
+base above plus the complete changed paths listed there. No unrelated files were
+changed. The previous accepted source/fixture manifest still verifies unchanged.
+
+Implemented:
+
+- `signed-local` builds a separate `com.lessmeet.app` development artifact. It
+  strips legacy services/callbacks, preserves the production storage protections,
+  uses only minimal profile-backed entitlements, and never overwrites an existing
+  signed candidate. Compiler children receive no signing or publishing inputs.
+- `ci-sign-release.py` validates the Developer ID profile before importing the
+  exact selected identity into a temporary hosted-runner keychain. It requires
+  secure timestamp/hardened runtime, exact leaf/profile/entitlements, accepted
+  notarization, staple validation and assessment. It then checks the app extracted
+  from the final ZIP before sealing. No keychain import/ACL/notary operation was
+  executed locally.
+- Schema 3 uses `main-signed-<sequence>-<SHA>` and a `developer-id.zip` suffix.
+  Provenance, four-asset allowlist, immutable artifact-ID download, no-clobber and
+  exact-byte draft recovery remain. Schema 2 is retained for historical recovery.
+  Development profiles cannot be relabeled as either public release route.
+- The workflow is gated by `LESSMEET_DEVELOPER_ID_RELEASE_ENABLED` and protected
+  environment `lessmeet-developer-id`. Seven Apple secrets are exposed only to
+  the signing step. Publication retains its separate existing enable gate.
+  Neither gate nor any remote setting was changed.
+
+Local verification:
+
+- Release tests: **112 PASS**, including missing/wrong signing inputs, mode
+  mismatch, certificate extraction/fingerprint, secret-free children, no unsigned
+  sealing for signed plans, notarization rejection, staple/assessment failures,
+  interruption, cleanup retry and final-archive validation failure.
+- Packaging tests: **76 PASS**. Includes signed-local service/callback stripping.
+- `bash -n`, Node syntax and `git diff --check`: PASS. Ruby YAML workflow policy
+  checks run in the release suite. No local actionlint binary was available;
+  checksum-pinned actionlint execution and hosted validation remain UNVERIFIED.
+- Local toolchain: Xcode 26.6 (17F113), arm64, Metal 32023.883 available. No full
+  dependency/application build was performed for this increment.
+- New signing helper: PASS with only the previously authorized Development
+  fingerprint/profile, no prompt. A separate synthetic copy of the accepted CLI
+  fixture was repackaged with clearly labeled placeholder resource bundles/shader.
+  This exercises the actual signing/leaf/entitlement/profile/promotion path, not
+  full-app resource usability. Bundle:
+  `.artifacts/chatgpt-storage/ci-signing/signed-fixture/LessMeet.app`.
+  Executable SHA256:
+  `1699b11522bc7048f3c3f923b0751cdd7f166904996637491300afc57ed0c397`.
+- That exact helper-signed fixture passed real synthetic Keychain seed, separate
+  process reopen, update, injected pre-write logout failure, retry and reopen with
+  tokens absent. It ran under the prior process isolation policy, never through
+  UI or the installed app. No real credential namespace was queried.
+- The exact base release helper sealed a local-mode synthetic ZIP. The new reader
+  accepted its four assets byte-for-byte. Actual historical hosted assets were
+  not downloaded and remain UNVERIFIED.
+
+Receipts are in `.artifacts/chatgpt-storage/ci-signing/`: `release-tests-final.log`,
+`packaging-tests-final.log`, `local-preflight.log`, `real-signing-final.log`,
+`real-keychain.log`, `legacy-compatibility.log`, and `accepted-input-check.log`.
+Failed signing and initial test logs remain. One real local signing attempt caught
+the optional-argument syntax error in certificate extraction. The corrected
+`--extract-certificates=<prefix>` passed and has a regression test.
+
+Review dispositions: ACCEPT the initial architecture inspection as input for
+separate development and immutable release contracts. The subsequent channel
+decision extended implementation to Developer ID, without retaining an unnecessary
+development-only CI branch. REJECT frozen `review1` for cleanup that aborted after
+keychain deletion failed. ACCEPT corrected `review2`: payload cleanup proceeds
+independently, failed keychain/owner marker remain for retry, failure blocks upload,
+and the final ZIP is checked before sealing. The final 112-test rerun includes
+the last archive-failure extension. All affected inspection scopes are closed.
+
+### Remaining activation inputs and limits
+
+The distribution choice is settled. Human/signing owner must separately supply
+a Developer ID Application identity, its matching valid all-device profile for
+`com.lessmeet.app`, and a Team API notary key/ID/issuer. Exact seven secret names
+and formats are in `docs/CONFIGURATION.md#profile-backed-github-zip-signing`.
+The local Development profile must not be used for public distribution.
+
+The manual-test delivery request now grants authority for established intended
+credential provisioning, protected environment setup and timestamp/notarization
+traffic. Exact inputs and protection-plan support are still missing, as recorded
+above. Resolve those inputs before enabling signing or merging. Public publication
+remains excluded. A timed-out notary submission may continue at Apple; inspect
+the exact submission before retrying under the granted workflow authority.
+
+Developer ID signing, ephemeral CI keychain lifecycle, Apple notarization,
+native final-ZIP checks, hosted CI, full-app launch/save/reopen, existing-user
+credential compatibility and live OAuth remain UNVERIFIED. Offline mocks and the
+development fixture do not convert these limits to PASS. The prior bounded
+account UI acceptance remains valid for its exact original fixture only.
+
+## ChatGPT secure-storage investigation (2026-10-14)
+
+Active task: reproduce and repair sign-in storage failure locally. Base and remote
+main are `7166ef5f6de6d30b69d7bdc0aa9e348c8f2b2fe4`; branch is
+`fix/chatgpt-secure-storage`. PR16 and PR17 are merged. Earlier publication and
+handoff checkpoints below are historical, not new authority or open work.
+The technical owner owns integration and all writes. All read-only inspection
+scopes are closed. All owned fixture processes have exited; UI ownership is released.
+Preserve other checkouts, user data and existing artifacts. No publication,
+live OAuth/chat, real credential access, app termination or permission changes.
+
+Plan: trace error paths; reproduce with synthetic data at the real storage
+boundary; apply the smallest proven fix; repeat sign-in/error/retry and persistence
+checks on the candidate. Budget: three focused experiment rounds, then reassess.
+Done requires fail-to-pass evidence and exact candidate identity, or a concrete
+authority/input blocker. The supplied capture's build and failure stage remain
+unknown. Do not infer damaged Keychain data from the generic error.
+Hypotheses: signing/entitlements versus Data Protection Keychain requirements;
+store/lock errors before browser; persisted-record or later authorization errors.
+The initial tree was clean. No user app or real credential item was opened.
+
+### Local signed candidate — bounded acceptance
+
+ACCEPT the local fixture and retry-classification change for the synthetic offline
+scope below. This is not acceptance of a repaired release pipeline or live OAuth.
+Device coverage: **match**. Signing used only fingerprint
+`24E5A98A599DCBBA0FF05C1B9B1554A2DB101C3C` and the authorized replacement profile.
+No interactive key-use prompt appeared. No key export, ACL change, CI change,
+push, merge or publication occurred.
+
+Exact bundle: `dist/storage-signed-ui/LessMeetStorageCheck.app`, identifier
+`com.lessmeet.app`. Executable SHA256:
+`2e26e479951db6a26618b4f1e7fe2c518d8fbb95022bda9ac56f121c0bd35ee3`.
+Info.plist SHA256:
+`287caa587d39fbb83bb6a13b4ed8ca617fe157e11a66be7379afe30ff09a40ad`.
+Strict signature verification PASS. Complete source, fixture and policy hashes:
+`.artifacts/chatgpt-storage/signed/SHA256SUMS`. Build source and local evidence
+remain ignored; do not upload the profile, bundle or raw captures.
+
+Tracked changes: inject the Keychain service name with the unchanged production
+default; publish an explicit session-owned `needsSignOutRetry`; use that state
+in `ChatGPTAccountView`; assert storage-error, cancel and logout-retry behavior
+in `ChatGPTAuthTests`. Keychain protection flags and storage algorithm are unchanged.
+At this earlier fixture checkpoint, normal packaging was unchanged. The new
+repository repair above supersedes that packaging status, not the fixture limits.
+
+Verification on macOS 26.4:
+
+- Real signing boundary PASS: the production-equivalent probe changes from
+  update/add `-34018` to add/readback `0`. It deletes only its own fresh synthetic
+  item. This isolates a signing mismatch in the tested baseline, not the unknown
+  build from the original report.
+- Real production-store persistence PASS on the exact final executable: seed,
+  separate-process read, update, injected pre-write failure with unchanged real
+  bytes, successful logout retry retaining host/profile, and separate-process
+  read with tokens absent. Receipt: `persistence-final-ui-candidate.log`.
+  This does not test OS-level failed-write atomicity or real remote revocation.
+- Auth regression PASS: 37 tests, zero failures. A dependency-free scratch package
+  compiled the six actual auth source files and the actual test file. It is not
+  the full app regression suite. Receipt: `auth-tests.log`.
+- Signed account UI PASS, approximately 04:40–04:42 UTC: sign-in writes real
+  synthetic Keychain state and reaches the intercepted network boundary; retry
+  remains available; Cancel returns to signed-out UI; an injected storage error
+  no longer displays Retry sign-out. Only the actual account sheet/view/session
+  were hosted, not the full Library. Evidence: `verified-*`, `ui-runtime-v2.log`,
+  `ui-cancel.log`, `ui-failure.log` in the signed evidence directory.
+- Isolation canaries PASS: denied synthetic filesystem read/write/create/list/
+  symlink access, preference synchronization, fresh shared-memory names and five
+  preference/restoration service lookups. The final process policy also denies
+  network, URL launch, Apple Events and Launch Services database modification.
+  Manual windows disable restoration; explicit in-memory defaults supplement,
+  but do not replace, process restrictions. Receipt: `isolation-final.log`.
+  No real credential namespace or recording store was queried.
+
+Preserved failed attempts: an invalid synthetic host identifier failed session
+validation; it was corrected to a valid UUID. An early fixture created two
+NSApplication instances; using the subclass singleton before session construction
+fixed it without weakening isolation. Old capture helpers retained a baseline
+target and reopened the owned baseline fixture; those captures are rejected as
+candidate evidence. Explicit path calls plus PID checks verified the final runs.
+The unintended baseline process was identified and terminated; the installed app
+was not operated or stopped. No processes remain from these trials.
+
+ACCEPT the independent isolation findings as preparation input, not runtime proof.
+ACCEPT the independent source/persistence inspection for the manifest's four
+source/test hashes and preserved `fixture-v1`; no blocking selected-account
+regression was found. Final UI evidence was inspected separately. A nonblocking
+edge remains: direct `signOut()` with no active target can leave retry state after
+a read/lock failure while a direct `signIn()` remains possible. The normal view
+routes this state to retry. The technical owner will revisit this edge with a
+no-target recovery test at the next auth-state change; do not equate the retry
+boolean with the optional target as a universal invariant.
+
+Usable result: the local signed fixture proves the secure-storage route and the
+affected offline UI recovery. Existing real credentials, full-app save/reopen,
+live OAuth/chat, and release packaging remain UNVERIFIED or unresolved. The
+waiting UI text mentions a browser, but no browser was opened in the fixture.
+Synthetic namespaces remain for evidence; they contain only fabricated data.
+The later scope above authorizes repository packaging repair and selects GitHub
+Developer ID distribution. Credential provisioning, activation and publication
+remain separate; do not ask again for the settled repository/channel permission.
+
+### Earlier reproduction and signing-input checkpoints
+
+ACCEPT the independent source inspection of base
+`7166ef5f6de6d30b69d7bdc0aa9e348c8f2b2fe4` as diagnosis input, not a fixed
+candidate. Direct inspection confirms the release builder forces ad-hoc signing,
+rejects an embedded profile, and checks `Signature=adhoc`. The ordinary entitlement
+file contains only audio-input permission. The store selects Data Protection
+Keychain with non-synchronizing, unlocked-device-only protection.
+
+On macOS 26.4, a production-equivalent query in a fresh synthetic namespace
+returns read `-25300` and update/add `-34018` (missing entitlement). The production
+store stops after failed update; the separate add probe also fails. No test item
+was created. This confirms an incompatible storage/signing configuration in the
+tested artifact, not corruption or the identity of the originally reported build.
+Apple's [TN3137](https://developer.apple.com/documentation/technotes/tn3137-on-mac-keychains)
+describes profile-authorized entitlements for this storage implementation.
+
+UI reproduction PASS as a failing baseline, not a repair: the unchanged production
+account view and session were compiled in an isolated harness. Only the store's
+service string differs; lock/defaults and external boundaries are isolated.
+Clicking Continue with ChatGPT at 02:26:53 UTC produced the storage error and
+Retry sign-out. A second click at 02:27:19 UTC repeated it. Logs show the first
+save fails before discovery/browser. No sign-out had occurred: the retry label
+is a separate confirmed state-classification defect in `ChatGPTAccountView`.
+The harness is not the full Library and does not prove its sidebar state.
+
+Bundle: `dist/storage-ui-baseline/LessMeetStorageCheck.app`.
+Executable SHA256:
+`b5bb29076dffd128e64c55061202624f8cfaf64e85bbd12e0bf9b7932dcd3670`.
+Info.plist SHA256:
+`6f50fec70947d32a3737384561d5aeb0060026edaad48e524af97c846cbfa985`.
+Strict signature verification PASS; this does not prove Keychain capability.
+The owned process exited through Quit at 02:27:20 UTC. Private synthetic evidence,
+source hashes and the local handoff are in `.artifacts/chatgpt-storage/`.
+
+Additional checks PASS: real isolated Keychain failures preserve signed-out state,
+release the lock across two attempts, and leave the namespace empty. A separate
+memory fault model verifies logout failure retains bytes and disables activation;
+retry clears tokens but retains host/profile. This is not successful Keychain
+persistence evidence. One initial harness compile failed on a throwing expression
+inside `precondition`; the corrected harness compiled and ran. Product code did
+not change. `git diff --check` passes. No full app regression suite was run.
+
+At the baseline checkpoint, no repair candidate was accepted. Product, packaging and tests remained
+base-identical. Only this tracked status file had changed; probes and bundles were
+ignored local artifacts. The pstack bug-fix workflow prevents substituting mock
+success or a storage downgrade for a real fail-to-pass result.
+
+Signing-input discovery (2026-10-14): authorized read-only local inspection found
+both ignored development profiles under `/Users/tubakhuym/projects/lessmeet/keys/`.
+`asc --read-only profiles inspect` confirms the replacement
+`Lessmeet_Sandbox_Dev_20260923 (1).provisionprofile` targets `com.lessmeet.app`,
+team `63M98WD275`, expires `2027-09-23T09:12:32Z`, and covers one device.
+It contains the historically documented certificate fingerprint
+`24E5A98A599DCBBA0FF05C1B9B1554A2DB101C3C`. No device identifiers or private-key
+contents were printed. No remote ASC call, Keychain scan or signing occurred.
+This resolved the profile-location question. Keep both profiles and the old
+checkout unchanged. The subsequent identifier decision below supersedes the
+proposed separate verification bundle identifier; the old baseline remains intact.
+
+Confirmed build identifier: `com.lessmeet.app`. Use it for the secure-storage
+fix and next verification build, with the supplied replacement profile. Do not
+use `com.lessmeet.storage-ui-probe` for that build. Its previous artifact remains
+only the failing baseline. Bundle identity does not change storage authorization.
+
+Narrow identity check at `2026-10-14T02:52:52Z`: the exact public certificate was
+selected by SHA1 from the supplied profile. `SecIdentityCreateWithCertificate`
+returned `0`; `SecIdentityCopyPrivateKey` returned `0` with a non-null reference.
+This confirms the matching identity/private-key reference is present. No other
+identities were enumerated. No private-key material was read/exported, signature
+created, trust/ACL changed, or unlock requested. Interaction was disabled only
+within the checker process. Evidence: `.artifacts/chatgpt-storage/IdentityCheck.swift`
+and `identity-check.log`. Key-use permission, successful codesign, revocation
+status and current device coverage are not established by this result.
+
+Verification plan: retain the production store algorithm and protection flags,
+but use a fresh synthetic service namespace, synthetic tokens, private lock/root
+and explicit test defaults. Never construct the default production session or
+recording store. Network/browser/URL actions remain intercepted. Build into a new
+worktree-local output; never replace the installed app or the baseline. Launch
+the exact executable and verify its PID/path before UI actions; do not route by
+the shared bundle ID. Check for an existing same-ID app before launch, without
+operating or stopping it. A shared bundle ID also shares OS preference/restoration
+identity: explicit fixture defaults alone do not isolate all framework state.
+Isolate process preferences and disable restoration before the signed UI trial;
+report any unresolved boundary rather than launch the normal app. Persistence
+checks must reuse only the run's synthetic namespace across owned processes.
+
+Local signing is now authorized for the test fixture only: exact fingerprint
+`24E5A98A599DCBBA0FF05C1B9B1554A2DB101C3C`, supplied replacement profile,
+bundle `com.lessmeet.app`. Device coverage may be checked with match/no-match
+output only. Resolve preferences/restoration/routing isolation before launch.
+If key use requires interactive authorization, report it and wait for its owner;
+do not bypass it or change Keychain policy. No export, global permission change,
+real ChatGPT access, installed-app operation or CI change is authorized.
+Plan for this increment: isolated fixture preparation; same-source real-storage
+comparison; affected UI and retry verification. Reassess after 30 minutes or three
+failed experimental routes. Continue the same-source signing comparison, then the smallest local packaging repair
+and real store write/read/update/restart checks. Fix the retry classification with
+session-state regression proof, separately from the storage repair. If valid
+provisioned signing still fails, reopen the signing-only hypothesis.
+That pre-verification checkpoint is superseded by the bounded local acceptance
+above. Live OAuth, the reported build's identity and existing-data compatibility
+remain UNVERIFIED. No push, merge, release, reset or fallback storage is authorized.
+
 ## Library repair PR opened (2026-10-13)
 
 Human authorized commit, branch push and a PR into `main` after local acceptance.

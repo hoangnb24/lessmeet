@@ -21,9 +21,11 @@ jobs:
       github.event.pull_request.merged == true &&
       github.event.pull_request.base.ref == 'main' &&
       github.event.pull_request.base.repo.full_name == github.repository &&
-      github.repository == 'hoangnb24/lessmeet'
+      github.repository == 'hoangnb24/lessmeet' &&
+      vars.LESSMEET_DEVELOPER_ID_RELEASE_ENABLED == 'true'
     runs-on: macos-26
-    timeout-minutes: 40
+    timeout-minutes: 60
+    environment: lessmeet-developer-id
     permissions:
       contents: read
     env:
@@ -59,7 +61,8 @@ jobs:
           mkdir -p release-work
           python3 scripts/github-release.py plan \
             --event "$GITHUB_EVENT_PATH" --repo "$GITHUB_REPOSITORY" \
-            --output release-work/plan.json --github-output "$GITHUB_OUTPUT" --fetch-pr-head
+            --output release-work/plan.json --github-output "$GITHUB_OUTPUT" --fetch-pr-head \
+            --distribution developer-id
 
       - name: Validate workflow and run offline release tests
         timeout-minutes: 5
@@ -68,12 +71,30 @@ jobs:
           python3 -m unittest discover -s Tests/release -p 'test_*.py' -v
           python3 -m unittest discover -s Tests/packaging -p 'test_*.py' -v
 
-      - name: Build, verify and seal diagnostic arm64 package
+      - name: Build and verify unsigned arm64 inputs without Apple secrets
         timeout-minutes: 25
         run: |
           python3 scripts/build-github-release.py \
-            --plan release-work/plan.json --output-dir release-assets --execute
+            --plan release-work/plan.json --output-dir release-assets --prepare --execute
           git diff --exit-code -- Package.swift Package.resolved Sources Resources scripts .github
+
+      - name: Sign with Developer ID, notarize, staple and seal
+        timeout-minutes: 25
+        env:
+          LESSMEET_DEVELOPER_ID_P12_BASE64: ${{ secrets.LESSMEET_DEVELOPER_ID_P12_BASE64 }}
+          LESSMEET_DEVELOPER_ID_P12_PASSWORD: ${{ secrets.LESSMEET_DEVELOPER_ID_P12_PASSWORD }}
+          LESSMEET_DEVELOPER_ID_PROFILE_BASE64: ${{ secrets.LESSMEET_DEVELOPER_ID_PROFILE_BASE64 }}
+          LESSMEET_DEVELOPER_ID_CERT_SHA1: ${{ secrets.LESSMEET_DEVELOPER_ID_CERT_SHA1 }}
+          LESSMEET_NOTARY_KEY_BASE64: ${{ secrets.LESSMEET_NOTARY_KEY_BASE64 }}
+          LESSMEET_NOTARY_KEY_ID: ${{ secrets.LESSMEET_NOTARY_KEY_ID }}
+          LESSMEET_NOTARY_ISSUER_ID: ${{ secrets.LESSMEET_NOTARY_ISSUER_ID }}
+        run: |
+          python3 scripts/ci-sign-release.py --execute \
+            --plan release-work/plan.json --output-dir release-assets
+
+      - name: Remove only this run's temporary signing credentials
+        if: always()
+        run: python3 scripts/ci-sign-release.py --cleanup
 
       - name: Check sealed release without network writes
         env:

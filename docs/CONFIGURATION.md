@@ -17,7 +17,138 @@ Store/TestFlight readiness remains unverified. The existing installer validator
 rejects symlinks, while the app builder creates the required MLX shader symlink.
 This cleanup does not change that policy or authorize distribution.
 
-## GitHub merged-main releases (2026-10-12)
+## Profile-backed GitHub ZIP signing
+
+Decision (2026-10-14): retain GitHub ZIP with Developer ID + notarization. No
+App Store/TestFlight channel is selected. The manual-test delivery request now
+authorizes provisioning established intended inputs, scoped remote activation
+and actual notarization. Public publication and unspecified key export/credential
+creation remain excluded. See STATUS for current blockers and authority.
+The schema-2 contract below is historical.
+
+`main-release.yml` requires `LESSMEET_DEVELOPER_ID_RELEASE_ENABLED=true` before
+building or submitting anything. It uses environment `lessmeet-developer-id`.
+The owner explicitly chose no required reviewer and retains merging to main.
+Environment `lessmeet-developer-id` now exists with a single allowed branch,
+`main`, and no allowed tag rule. `LESSMEET_GITHUB_RELEASE_ENABLED=true` separately controls
+publication. Signing activation permits timestamp requests and notarization uploads
+even while publication is disabled. On 2026-10-14, publication was changed from
+`true` to `false`; signing was explicitly set to `false`. Both readbacks matched.
+
+The earlier required-reviewer attempt failed with HTTP 422 due to the billing
+plan, and its empty environment was removed. That condition is superseded by the
+owner's explicit no-reviewer decision. A new main-only environment was created and
+verified. All seven secrets below are provisioned. Names-only readback includes
+the password secret updated at `2026-10-14T09:51:34Z`.
+Signing is now enabled: `LESSMEET_DEVELOPER_ID_RELEASE_ENABLED=true`.
+Publication remains false throughout this verification run. The owner alone
+merges PR #18; the agent does not merge. Do not substitute
+Development/IAP credentials for the intended inputs.
+
+Prepared local inputs (2026-10-14), outside Git in
+`/Users/tubakhuym/projects/lessmeet/keys/developer-id-ci/` (directory 0700, files 0600):
+
+- `AppleDeveloperID.p12`: owner-supplied PKCS#12 with matching private key;
+  certificate resource `3NSF74TP49`, SHA1
+  `DE967875FB1C4BBEBCB60EED42BC7182D031E9F0`, team `63M98WD275`.
+- `LessMeet_Developer_ID.provisionprofile`: MAC_APP_DIRECT resource `JUKU76YFHS`,
+  exact bundle `com.lessmeet.app`, all-device, only the selected certificate.
+- `AuthKey_C252BFL5P7.p8`: `LessMeet CI Notary`, Team API key, Developer role;
+  Key ID `C252BFL5P7`, issuer `69a6de8c-6878-47e3-e053-5b8c7c11a4d1`.
+
+The three prepared files and their certificate/key/issuer identifiers have been
+uploaded to the six matching environment secrets via `gh` stdin. This does not
+establish a notarized app. The owner completed the ignored
+`provision-p12-password.rb` helper for the seventh secret. It prompts securely,
+validates the exact export, and uploads the password without retaining a file.
+The agent verified its secret name and timestamp, not its value.
+Keep an encrypted backup of the one-time P8 download. See STATUS for exact checks,
+profile/certificate expiry differences and remaining verification limits.
+
+### Required environment secrets
+
+Provision only established intended inputs under the authority recorded in STATUS.
+Never record their values in repository files, chat, logs or debug artifacts.
+
+| Secret | Required input |
+| --- | --- |
+| `LESSMEET_DEVELOPER_ID_P12_BASE64` | Base64 PKCS#12 with only the selected Developer ID Application identity/private key; its certificate chain may be included. Export/transfer remains a separate owner action. |
+| `LESSMEET_DEVELOPER_ID_P12_PASSWORD` | Nonempty password protecting that PKCS#12. |
+| `LESSMEET_DEVELOPER_ID_PROFILE_BASE64` | Base64 CMS Developer ID profile for exact `com.lessmeet.app`, approved team, selected certificate, valid dates, all devices and no debugging. |
+| `LESSMEET_DEVELOPER_ID_CERT_SHA1` | Exact 40-hex fingerprint of the Developer ID Application certificate, not a name or Development/Installer identity. |
+| `LESSMEET_NOTARY_KEY_BASE64` | Base64 `.p8` Team API key accepted by Apple's notary service. This is not the signing key. |
+| `LESSMEET_NOTARY_KEY_ID` | Team API key ID. |
+| `LESSMEET_NOTARY_ISSUER_ID` | Team API issuer UUID. Individual API keys are not supported by this configuration. |
+
+Team remains `63M98WD275`. The application identifier uses the profile's own
+prefix. It need not equal the team ID. Entitlements contain only audio input
+plus profile-authorized application/team identifiers. No wildcard Keychain
+groups, debugging or App Sandbox capability is copied. Storage protections are
+unchanged. The existing Apple Development profile is local-test input only.
+
+### Build, sign and seal
+
+1. Verify the merged-main event and check out its immutable source SHA.
+2. Record complete original-PR provenance in a schema-3 plan.
+3. Compile and verify the local staging app without Apple/publishing secrets in
+   child environments. Preserve arm64, resource, notice, pin and signature gates.
+4. Expose the seven secrets only to `ci-sign-release.py`. Validate the profile
+   before importing the exact identity into a new run-only keychain.
+5. Sign a separate copy with `com.lessmeet.app`, hardened runtime and secure
+   timestamp. Verify its exact leaf, embedded profile and entitlement allowlist.
+6. Submit a temporary ZIP with `notarytool --wait --timeout 15m`. Require
+   `Accepted`, staple, validate the ticket and pass Gatekeeper assessment.
+7. Verify again, then create the final ZIP after stapling. Bind executable/profile
+   hashes and the signing/notarization receipt to the source and archive hashes.
+8. Seal and upload only ZIP, `release.json`, `changelog.md` and `SHA256SUMS`.
+   Publishing still downloads the exact successful artifact ID.
+9. Remove only the run-owned keychain and credential files in a finally block.
+   An `always()` step retries cleanup after ordinary cancellation. Hard runner
+   loss cannot execute cleanup; only ephemeral GitHub-hosted runners are supported.
+
+Tags use `main-signed-<first-parent sequence>-<full SHA>`. ZIPs end with
+`-macos-arm64-developer-id.zip`. This separate namespace prevents replacing old
+ad-hoc release or partial-draft bytes for the same source. Schema 2 remains
+readable for historical recovery. Asset allowlists, exact-byte retry checks,
+`latest=false`, version numbers and source provenance remain intact. Development
+bundles are rejected by both public sealing paths.
+
+Unknown, rejected or timed-out notarization stops before seal/upload. A timed-out
+submission can still be processing at Apple. Do not retry blindly; inspect that
+submission with separately approved remote authority first. The full app is never
+launched by CI. A signature/notary pass is not runtime, OAuth, migration or
+recording acceptance.
+
+The compiler environment allowlist is not a same-user sandbox. Trusted merged
+code and pinned dependencies remain the trust boundary. The new keychain is
+selected explicitly. Scripts do not set a default keychain or replace the search
+list. Access settings apply only to the newly created CI keychain. No such commands
+were run against the operator's Keychain during local verification.
+
+### Local development signing
+
+Use `bash scripts/build-app.sh signed-local` with exact
+`LESSMEET_SIGNING_IDENTITY` SHA1 and `LESSMEET_PROVISIONING_PROFILE` path.
+Output is `dist/signed-local/LessMeet.app`. It adds no App Sandbox or legacy backend
+configuration. For an already built local bundle, use `sign-local-app.py --app
+<local.app> --output <new.app>`. Input and existing outputs are never overwritten.
+This local path neither imports/exports keys nor changes Keychain ACLs. If key use
+prompts, wait for its owner; do not bypass the prompt.
+
+A development build verifies registered target devices exist in the profile.
+It does not require the build runner itself to be covered because it does not run
+the app. Before any runtime check, verify the target device match and isolate
+preferences, restoration, routing, storage and network as recorded in STATUS.
+Build success does not authorize launching the normal app against real data.
+
+References: [Apple Developer ID](https://developer.apple.com/developer-id/),
+[notarization workflow](https://developer.apple.com/documentation/security/customizing-the-notarization-workflow),
+[Keychain requirements](https://developer.apple.com/documentation/technotes/tn3137-on-mac-keychains).
+
+## Historical ad-hoc GitHub contract (2026-10-12)
+
+The following describes schema 2 and old releases. The schema-3 configuration
+above supersedes its no-Apple-input rule for future merged-main releases.
 
 Scope decision: GitHub Release with a build file and changelog only. TestFlight,
 App Store submission and public App Store release are excluded. Apple credentials

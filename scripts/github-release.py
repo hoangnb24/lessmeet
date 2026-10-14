@@ -12,6 +12,7 @@ import heapq
 import io
 import json
 import os
+import plistlib
 from pathlib import Path
 import re
 import stat
@@ -25,6 +26,7 @@ import zipfile
 
 API_VERSION = "2026-03-10"
 READINESS = "diagnostic; build/package only; runtime/auth/inference unverified"
+SIGNED_READINESS = "Developer ID notarized; runtime/auth/inference unverified"
 SHA = re.compile(r"[0-9a-f]{40}\Z")
 HASH = re.compile(r"[0-9a-f]{64}\Z")
 REPO = re.compile(r"[A-Za-z0-9][A-Za-z0-9-]{0,99}/[A-Za-z0-9][A-Za-z0-9_.-]{0,99}\Z")
@@ -221,15 +223,17 @@ def pr_provenance(pr, repo, number, source, fetch_head):
 
 def validate_plan(plan):
     require(isinstance(plan, dict) and set(plan) == PLAN_KEYS, "invalid-plan-schema")
-    require(type(plan["schema"]) is int and plan["schema"] == 2, "invalid-plan-schema")
+    require(type(plan["schema"]) is int and plan["schema"] in (2, 3), "invalid-plan-schema")
     require(isinstance(plan["source_sha"], str) and SHA.fullmatch(plan["source_sha"]), "invalid-source-sha")
     for field in ("pr_head_sha", "pr_base_sha", "integration_boundary_sha"):
         require(isinstance(plan[field], str) and SHA.fullmatch(plan[field]), "invalid-pr-provenance-sha")
     require(integer(plan["sequence"]) and integer(plan["pr_number"]), "invalid-sequence-or-pr")
     repo = repository(plan["repository"])
     require(plan["repository"] == repo, "noncanonical-repository")
-    tag = "main-build-{}-{}".format(plan["sequence"], plan["source_sha"])
-    require(plan["tag"] == tag and plan["archive_name"] == "LessMeet-" + tag + "-macos-arm64-adhoc.zip", "invalid-derived-names")
+    signed = plan["schema"] == 3
+    tag = ("main-signed-" if signed else "main-build-") + "{}-{}".format(plan["sequence"], plan["source_sha"])
+    suffix = "developer-id" if signed else "adhoc"
+    require(plan["tag"] == tag and plan["archive_name"] == "LessMeet-" + tag + "-macos-arm64-" + suffix + ".zip", "invalid-derived-names")
     commits = plan["commit_shas"]
     require(isinstance(commits, list) and 0 < len(commits) <= 2048
             and all(isinstance(c, str) and SHA.fullmatch(c) for c in commits)
@@ -246,12 +250,13 @@ def validate_plan(plan):
             and all(canonical_text(s) == s for s in subjects), "invalid-commit-subjects")
     require(plan["pr_url"] == "https://github.com/{}/pull/{}".format(repo, plan["pr_number"])
             and plan["compare_url"] == "https://github.com/{}/compare/{}...{}".format(repo, plan["pr_base_sha"], plan["pr_head_sha"])
-            and plan["readiness"] == READINESS, "invalid-provenance-or-readiness")
+            and plan["readiness"] == (SIGNED_READINESS if signed else READINESS), "invalid-provenance-or-readiness")
     require(len(encode(plan)) <= MAX_METADATA // 2, "provenance-snapshot-too-large")
     return plan
 
 
-def plan(event_path, repo, output, github_output=None, fetch_head=False):
+def plan(event_path, repo, output, github_output=None, fetch_head=False, distribution="adhoc"):
+    require(distribution in ("adhoc", "developer-id"), "invalid-distribution")
     repo = repository(repo)
     event_name = os.environ.get("GITHUB_EVENT_NAME")
     require(event_name is None or event_name in ("pull_request_target", "pull_request"), "unsupported-event-name")
@@ -281,13 +286,14 @@ def plan(event_path, repo, output, github_output=None, fetch_head=False):
     require(sha in git("rev-list", "--first-parent", main_ref).splitlines(), "merge-not-on-main-first-parent")
     provenance = pr_provenance(pr, repo, number, sha, fetch_head)
     sequence = int(git("rev-list", "--first-parent", "--count", sha))
-    tag = "main-build-{}-{}".format(sequence, sha)
-    value = validate_plan({"schema": 2, "source_sha": sha, "sequence": sequence, "tag": tag,
-                           "archive_name": "LessMeet-" + tag + "-macos-arm64-adhoc.zip", "repository": repo,
+    signed = distribution == "developer-id"
+    tag = ("main-signed-" if signed else "main-build-") + "{}-{}".format(sequence, sha)
+    value = validate_plan({"schema": 3 if signed else 2, "source_sha": sha, "sequence": sequence, "tag": tag,
+                           "archive_name": "LessMeet-" + tag + "-macos-arm64-" + distribution + ".zip", "repository": repo,
                            "pr_number": number, **provenance,
                            "pr_url": "https://github.com/{}/pull/{}".format(repo, number),
                            "compare_url": "https://github.com/{}/compare/{}...{}".format(repo, provenance["pr_base_sha"], provenance["pr_head_sha"]),
-                           "readiness": READINESS})
+                           "readiness": SIGNED_READINESS if signed else READINESS})
     payload = encode(value)
     dest = path_without_links(output)
     if dest.exists():
@@ -305,7 +311,8 @@ def plan(event_path, repo, output, github_output=None, fetch_head=False):
 
 
 def changelog(plan):
-    lines = ["# " + plan["tag"], "", "Diagnostic macOS arm64 ad-hoc build. Not notarized.",
+    description = "Developer ID signed and notarized macOS arm64 build." if plan["schema"] == 3 else "Diagnostic macOS arm64 ad-hoc build. Not notarized."
+    lines = ["# " + plan["tag"], "", description,
              "Runtime, authentication and inference are not verified by this release.", "",
              "Merged PR: [#{}]({}) — {}".format(plan["pr_number"], plan["pr_url"], inert_text(plan["pr_title"])),
              "Original PR changes: [compare captured base and head]({})".format(plan["compare_url"]),
@@ -319,7 +326,7 @@ def changelog(plan):
     return ("\n".join(lines) + "\n").encode()
 
 
-def validate_zip(data):
+def validate_zip(data, signed=False):
     try:
         with zipfile.ZipFile(io.BytesIO(data)) as archive:
             names = set()
@@ -365,6 +372,18 @@ def validate_zip(data):
                             pending = replacement + pending
             require({"lessmeet.app/contents/info.plist", "lessmeet.app/contents/macos/lessmeet"} <= names,
                     "archive-not-completed-app-bundle")
+            info_entry = next(e for e in entries if e.filename.casefold() == "lessmeet.app/contents/info.plist")
+            require(info_entry.file_size <= MAX_METADATA and (info_entry.external_attr >> 16) & 0o170000 != stat.S_IFLNK,
+                    "archive-invalid-app-metadata")
+            try:
+                info = plistlib.loads(archive.read(info_entry))
+            except Exception:
+                raise Invalid("archive-invalid-app-metadata") from None
+            require(isinstance(info, dict) and info.get("CFBundleIdentifier") == ("com.lessmeet.app" if signed else "com.lessmeet.app.local")
+                    and info.get("LessMeetPackagingMode") == ("developer-id" if signed else "local"), "archive-signing-mode-mismatch")
+            profiles = {name for name in names if name.endswith(".provisionprofile")}
+            require(profiles == ({"lessmeet.app/contents/embedded.provisionprofile"} if signed else set()),
+                    "archive-profile-policy-mismatch")
             require(archive.testzip() is None, "archive-corrupt")
     except (zipfile.BadZipFile, RuntimeError, UnicodeError, OSError):
         raise Invalid("archive-invalid") from None
@@ -374,13 +393,27 @@ def checksums(files):
     return "".join("{}  {}\n".format(digest(files[name]), name) for name in sorted(files)).encode()
 
 
+def verify_signed_archive(data, verification):
+    # The macOS signing stage verifies the signature and ticket. Bind its
+    # verified executable/profile bytes to the final ZIP on every platform.
+    with zipfile.ZipFile(io.BytesIO(data)) as archive:
+        for name, field in (("LessMeet.app/Contents/MacOS/LessMeet", "executable_sha256"),
+                            ("LessMeet.app/Contents/embedded.provisionprofile", "profile_sha256")):
+            entry = archive.getinfo(name)
+            require((entry.external_attr >> 16) & 0o170000 in (0, stat.S_IFREG), "signed-archive-input-not-regular")
+            require(digest(archive.read(entry)) == verification[field], "signed-archive-verification-mismatch")
+
+
 def manifest_plan(value):
-    require(isinstance(value, dict) and set(value) == PLAN_KEYS | {"archive", "architecture", "signing", "notarized"},
+    signed = isinstance(value, dict) and value.get("schema") == 3
+    require(isinstance(value, dict) and set(value) == PLAN_KEYS | {"archive", "architecture", "signing", "notarized"} | ({"verification"} if signed else set()),
             "invalid-release-schema")
     plan_value = validate_plan({k: value[k] for k in PLAN_KEYS})
-    require(value["architecture"] == "arm64" and value["signing"] == "ad-hoc" and value["notarized"] is False,
+    require(value["architecture"] == "arm64" and value["signing"] == ("developer-id" if signed else "ad-hoc") and value["notarized"] is signed,
             "invalid-diagnostic-distribution")
     archive = value["archive"]
+    if signed:
+        validate_verification(value["verification"])
     require(isinstance(archive, dict) and set(archive) == {"name", "sha256", "size"}
             and archive["name"] == value["archive_name"] and isinstance(archive["sha256"], str)
             and HASH.fullmatch(archive["sha256"]) and integer(archive["size"])
@@ -388,12 +421,37 @@ def manifest_plan(value):
     return plan_value
 
 
-def seal(plan_path, archive_path, output_dir):
+def validate_verification(value):
+    require(isinstance(value, dict) and set(value) == {"certificate_sha1", "team_id", "profile_sha256", "executable_sha256", "notarization_id", "status", "stapled"},
+            "invalid-signing-verification")
+    require(value["team_id"] == "63M98WD275" and isinstance(value["certificate_sha1"], str)
+            and re.fullmatch(r"[A-F0-9]{40}", value["certificate_sha1"]), "invalid-signer")
+    for key in ("profile_sha256", "executable_sha256"):
+        require(isinstance(value[key], str) and HASH.fullmatch(value[key]), "invalid-signing-hash")
+    require(value["status"] == "Accepted" and value["stapled"] is True and isinstance(value["notarization_id"], str)
+            and re.fullmatch(r"[a-fA-F0-9]{8}(-[a-fA-F0-9]{4}){3}-[a-fA-F0-9]{12}", value["notarization_id"]),
+            "notarization-not-verified")
+
+
+def seal(plan_path, archive_path, output_dir, verification_path=None):
     value = validate_plan(decode(read(plan_path, MAX_METADATA)))
     archive_path = path_without_links(archive_path)
     require(archive_path.name == value["archive_name"], "archive-name-mismatch")
     archive = read(archive_path, MAX_ARCHIVE)
-    validate_zip(archive)
+    signed = value["schema"] == 3
+    validate_zip(archive, signed)
+    verification = None
+    if signed:
+        require(verification_path is not None, "signed-release-requires-verification")
+        receipt = decode(read(verification_path, MAX_METADATA))
+        require(isinstance(receipt, dict) and set(receipt) == {"source_sha", "archive_sha256", "verification"}
+                and receipt["source_sha"] == value["source_sha"] and receipt["archive_sha256"] == digest(archive),
+                "verification-binding-mismatch")
+        verification = receipt["verification"]
+        validate_verification(verification)
+        verify_signed_archive(archive, verification)
+    else:
+        require(verification_path is None, "unexpected-signing-verification")
     directory = path_without_links(output_dir)
     if not directory.exists():
         directory.mkdir(parents=True)
@@ -406,7 +464,9 @@ def seal(plan_path, archive_path, output_dir):
     else:
         write_new(existing, archive)
     release = {**value, "archive": {"name": value["archive_name"], "sha256": digest(archive), "size": len(archive)},
-               "architecture": "arm64", "signing": "ad-hoc", "notarized": False}
+               "architecture": "arm64", "signing": "developer-id" if signed else "ad-hoc", "notarized": signed}
+    if signed:
+        release["verification"] = verification
     files = {value["archive_name"]: archive, "changelog.md": changelog(value), "release.json": encode(release)}
     for name in ("changelog.md", "release.json"):
         write_new(directory / name, files[name])
@@ -434,7 +494,9 @@ def sealed(directory, expected_sha, repo):
             "sealed-archive-digest-mismatch")
     require(files["SHA256SUMS"] == checksums({k: v for k, v in files.items() if k != "SHA256SUMS"}),
             "sealed-checksum-mismatch")
-    validate_zip(archive)
+    validate_zip(archive, manifest["schema"] == 3)
+    if manifest["schema"] == 3:
+        verify_signed_archive(archive, manifest["verification"])
     return manifest, files
 
 
@@ -683,10 +745,12 @@ def main(argv=None):
     p.add_argument("--output", required=True)
     p.add_argument("--github-output")
     p.add_argument("--fetch-pr-head", action="store_true", help="Allow read-only GitHub fetch if captured PR objects are absent.")
+    p.add_argument("--distribution", choices=("adhoc", "developer-id"), default="adhoc")
     s = commands.add_parser("seal")
     s.add_argument("--plan", required=True)
     s.add_argument("--archive", required=True)
     s.add_argument("--output-dir", required=True)
+    s.add_argument("--verification")
     p = commands.add_parser("publish")
     p.add_argument("--directory", required=True)
     p.add_argument("--expected-sha", required=True)
@@ -695,9 +759,9 @@ def main(argv=None):
     args = parser.parse_args(argv)
     try:
         if args.command == "plan":
-            result = plan(args.event, args.repo, args.output, args.github_output, args.fetch_pr_head)
+            result = plan(args.event, args.repo, args.output, args.github_output, args.fetch_pr_head, args.distribution)
         elif args.command == "seal":
-            result = seal(args.plan, args.archive, args.output_dir)
+            result = seal(args.plan, args.archive, args.output_dir, args.verification)
         else:
             result = publish(args.directory, args.expected_sha, args.repo, args.execute)
         print(json.dumps(result, sort_keys=True))

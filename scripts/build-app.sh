@@ -3,9 +3,16 @@ set -euo pipefail
 cd "$(dirname "$0")/.."
 mode="${1:-dev}"
 action="${2:-build}"
-if [[ $# -gt 2 || ! "$mode" =~ ^(dev|local|offline-check|chat-ui-check|library-ui-check|auth-check|sandbox-dev|store|testflight)$ || ! "$action" =~ ^(build|--preflight)$ ]]; then
-  printf 'Usage: bash scripts/build-app.sh [dev|local|offline-check|chat-ui-check|library-ui-check|auth-check|sandbox-dev|store|testflight] [--preflight]\n' >&2
+if [[ $# -gt 2 || ! "$mode" =~ ^(dev|local|signed-local|offline-check|chat-ui-check|library-ui-check|auth-check|sandbox-dev|store|testflight)$ || ! "$action" =~ ^(build|--preflight)$ ]]; then
+  printf 'Usage: bash scripts/build-app.sh [dev|local|signed-local|offline-check|chat-ui-check|library-ui-check|auth-check|sandbox-dev|store|testflight] [--preflight]\n' >&2
   exit 1
+fi
+if [[ "$mode" == signed-local ]]; then
+  if [[ "$action" == --preflight ]]; then
+    exec python3 scripts/packaging-signing.py signed-local
+  fi
+  # The wrapper compiles without signing inputs, then signs a separate copy.
+  exec python3 scripts/sign-local-app.py --build --output dist/signed-local/LessMeet.app
 fi
 output_dir="$PWD/dist"
 profile_mode=false
