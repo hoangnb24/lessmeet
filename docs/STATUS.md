@@ -1,5 +1,67 @@
 # LessMeet delivery
 
+## Signed CI artifact accepted for manual testing (2026-10-14)
+
+The search-list repair resolved the observed hosted codesign failure.
+[Run 38571374166](https://github.com/hoangnb24/lessmeet/actions/runs/38571374166)
+completed successfully. Checkout logs and sealed metadata bind the build to
+merged source `8965929bd735ae3623fa13e8d7cee0c4265b97e3` (PR #22).
+The run API's head SHA is the PR head, not the checked-out merge SHA.
+
+[Download artifact 11897678766](https://github.com/hoangnb24/lessmeet/actions/runs/38571374166/artifacts/11897678766)
+for manual testing. It expires on 2026-11-13. Public publication was skipped and
+remains disabled. The artifact contains the signed arm64 ZIP, `release.json`,
+`changelog.md` and `SHA256SUMS`.
+
+- Inner ZIP: `LessMeet-main-signed-53-8965929bd735ae3623fa13e8d7cee0c4265b97e3-macos-arm64-developer-id.zip`.
+- ZIP SHA256: `dc748b0956df5a8660fc8af1a42048fd0716675c90f4702eeb99d8f94498fb11`.
+- GitHub artifact envelope digest: `sha256:f05b9216681013de1a5a07389470f2f9af320ebe27a577da31119b2936606bea` (API-reported; distinct from inner ZIP).
+- Certificate SHA1: `DE967875FB1C4BBEBCB60EED42BC7182D031E9F0`.
+- Profile SHA256: `aaecb8a165088f734db862548ce4dde6d2b6d30d9ce4dad571ab2f153e7102cc`.
+- Executable SHA256: `b16f5dd356a5efa42a7c040ec3fecad0dcf16c532399f3b99b2d542a79115f35`.
+- Apple notarization: `d6ea5f5f-679c-4a16-b4bc-6f1a9f0f7eb6`, `Accepted`, stapled.
+
+Downloaded artifact was independently checked locally with the sealed-release
+dry run against the exact source SHA. Checksums, canonical metadata, file allowlist
+and executable/profile binding passed. Native verification passed for bundle
+`com.lessmeet.app`, arm64, exact selected certificate/profile, minimal entitlements,
+secure timestamp, hardened runtime, strict signature and packaged resources.
+`stapler validate` passed; `spctl --assess --type execute --verbose=4` returned
+`accepted`, `source=Notarized Developer ID` on the extracted final ZIP.
+The signer's summary has a static `notarized: false`; it does not assess tickets.
+The separate staple/Gatekeeper checks establish notarization.
+
+The first local sealed check refused `/tmp` because it is a symlink. The same
+check passed with canonical `/private/tmp`, with no guard change. Local files
+remain at `/private/tmp/lessmeet-ci-38571374166.w2RCvT/` for inspection.
+Hosted search-list restoration, credential cleanup and separate cleanup step
+all passed. No duplicate notary submission or rerun was needed. No local keys,
+installed app, recordings or runtime state were changed by artifact checks.
+
+ACCEPT artifact `11897678766` and the exact inner ZIP hash above for manual
+testing. Direct inspection and fresh independent read-only verification agree.
+The independent check also matched extracted files/link bytes to the ZIP, with
+no extras, on macOS 26.4 (`25E246`). GitHub provenance was checked directly;
+the independent check covered local bytes and native signature/ticket evidence.
+Disposition sent; no further Peer work, writer or UI ownership remains.
+Full-app UI, recording/playback, auth, inference and save/reopen behavior
+remain UNVERIFIED for this artifact. This is a signed distribution candidate for
+manual testing, not runtime acceptance or authorization for public release.
+The bounded fix/merge/build loop is complete. No extra build or notary retry is
+needed. The owner can download this artifact for manual testing. Any later UI
+acceptance must use the required app-check skill and respect existing data and
+live-auth limits. Earlier pending-run and missing-artifact entries are historical.
+
+## Search-list repair merged; hosted verification underway (2026-10-14)
+
+PR #22 merged accepted candidate `68e85536c28db73d1f96c77de95912898cf8855b`
+normally at `8965929bd735ae3623fa13e8d7cee0c4265b97e3`, with exact head match
+and no bypass. Run `38571374166` passed provenance and offline checks and is
+building arm64 inputs. Observe completion before any retry or further repair.
+Publication remains disabled. No signed/notarized artifact is accepted yet.
+The technical owner holds the delivery scope; no Peer writer or live UI owner
+is active. Earlier underway/waiting entries below are historical.
+
 ## Restore ephemeral keychain discovery for codesign (2026-10-14)
 
 Run `38569381901` completed/failure at `sign-codesign` with
