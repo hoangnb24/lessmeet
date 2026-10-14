@@ -30,10 +30,20 @@ requires merged-source binding, sealed artifact hashes, Developer ID signature,
 accepted notarization, staple verification and cleanup evidence. Tests alone
 do not establish delivery or full-app runtime acceptance.
 
-Current dependency: the owner's initial PR #20 merge. No technical repair has
-been selected without its resulting run. Resume on the merge event, then watch
-that exact hosted run to completion. No duplicate notarization is in flight from
-this work; the latest completed run stopped at app-signing before submission.
+BLOCKED at the initial owner-only merge, not at a technical repair decision.
+The bounded backoff watcher completed after about 18 minutes without a merge.
+Final readback at 12:53 UTC: PR #20 OPEN/CLEAN at the same head, mergeCommit=null;
+main still `be6a3a53b871e195ddb02834345b5957d06764fd`. Latest run remains
+`38549402920`, completed/failure, with `CI signing stage app-signing: failed`.
+No new run or artifact exists from this continuation. No code repair, credential
+change, protection change or initial merge was attempted. Only delivery status
+was committed/pushed on the separate branch; PR #20 was left untouched.
+
+Minimum owner action: complete the initial PR #20 merge (or explicitly revise
+that initial-merge boundary). On that event, resume the already-authorized
+fix/merge/build loop without re-requesting follow-up authority. No duplicate
+notarization is in flight from this work; the latest completed run stopped at
+app-signing before submission. Valid signed/notarized delivery remains unmet.
 
 ## App-signing substages after hosted failure (2026-10-14)
 
