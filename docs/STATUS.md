@@ -43,8 +43,23 @@ Remote observations and actions at 06:11–06:13 UTC:
 
 Independent preparation: repeat release tests **112 PASS** and packaging tests
 **76 PASS**. Shell/Node syntax and `git diff --check` pass. Preserve the accepted
-local storage evidence; no new full-app/runtime claim is made. Commit and push
-only the 19 in-scope paths, then leave a draft PR pending the inputs below.
+local storage evidence; no new full-app/runtime claim is made. Only the 19 in-scope
+paths were committed and pushed. Draft PR:
+https://github.com/hoangnb24/lessmeet/pull/18
+
+Delivered commits:
+
+- `062c280e4de1432e386e84a216fbbe7c56335dfc`: session-owned sign-out retry state,
+  synthetic storage namespace injection and coupled auth assertions.
+- `7efe7bb7eb7a9c2f77bcf2a5cbf48c3d3dd1cdc5`: signing/build/workflow configuration,
+  tests and delivery documentation. Remote branch readback matches this candidate.
+
+ACCEPT these commits for the prior bounded code/configuration outcome and local
+evidence. Do not accept a signed-build outcome: no such run or artifact exists.
+Main still equals the base above. No merge or workflow dispatch occurred; no
+feature-branch run was listed. Keep PR #18 in draft. This status-only follow-up
+records the remote handoff and does not change executable inputs. The next action
+is owned by the signing/repository owner as specified below, not another code task.
 
 BLOCKED for merge/signing activation: the signing owner must provide securely
 located, already-prepared Developer ID PKCS#12 plus password and exact certificate
@@ -167,12 +182,12 @@ a Developer ID Application identity, its matching valid all-device profile for
 and formats are in `docs/CONFIGURATION.md#profile-backed-github-zip-signing`.
 The local Development profile must not be used for public distribution.
 
-Before activation, obtain explicit authority for credential provisioning/transfer,
-configure and protect the environment, authorize real timestamp/notarization
-traffic, then enable the signing gate for an approved hosted verification run.
-Enable publication only after its own approval and artifact acceptance. No remote
-operation is implied by this handoff. A timed-out notary submission may continue
-at Apple; inspect it with separate authority before retrying.
+The manual-test delivery request now grants authority for established intended
+credential provisioning, protected environment setup and timestamp/notarization
+traffic. Exact inputs and protection-plan support are still missing, as recorded
+above. Resolve those inputs before enabling signing or merging. Public publication
+remains excluded. A timed-out notary submission may continue at Apple; inspect
+the exact submission before retrying under the granted workflow authority.
 
 Developer ID signing, ephemeral CI keychain lifecycle, Apple notarization,
 native final-ZIP checks, hosted CI, full-app launch/save/reopen, existing-user
