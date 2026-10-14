@@ -12,7 +12,6 @@ struct ChatGPTAccountView: View {
     @State private var showingPlanWelcome = false
     @State private var showingAccountSelection = false
     @State private var signingOut = false
-    @State private var attemptedSignOut = false
 
     private let usageURL = URL(string: "https://chatgpt.com/settings/usage")!
 
@@ -20,13 +19,12 @@ struct ChatGPTAccountView: View {
         session.profiles.first { $0.id == session.activeProfileID }
     }
 
-    // Preserve the existing retry path after cleanup clears the active ID.
     private var needsSignOutRetry: Bool {
-        session.activeProfileID == nil && session.error != nil
+        session.needsSignOutRetry
     }
 
     private var signOutNeedsAttention: Bool {
-        attemptedSignOut && needsSignOutRetry
+        needsSignOutRetry
     }
 
     var body: some View {
@@ -55,7 +53,6 @@ struct ChatGPTAccountView: View {
         .onChange(of: session.activeProfileID, initial: true) { _, id in
             selectedProfileID = id
             showingAccountSelection = id == nil && !session.profiles.isEmpty
-            if id != nil { attemptedSignOut = false }
         }
         .onChange(of: session.canUseChatGPTPlan, initial: true) { _, enabled in
             showingPlanWelcome = enabled && !acknowledgedPlanWelcome
@@ -154,13 +151,11 @@ struct ChatGPTAccountView: View {
                 Button("Switch account") {
                     selectedProfileID = session.activeProfileID
                     showingAccountSelection = true
-                    attemptedSignOut = false
                 }
                 .frame(maxWidth: .infinity)
                 Button("Add account") {
                     selectedProfileID = nil
                     showingAccountSelection = true
-                    attemptedSignOut = false
                 }
                 .frame(maxWidth: .infinity)
             }
@@ -326,7 +321,6 @@ struct ChatGPTAccountView: View {
 
     private func signOut() {
         beforeAccountChange()
-        attemptedSignOut = true
         signingOut = true
         Task {
             await session.signOut()

@@ -185,6 +185,7 @@ final class ChatGPTAuthTests: XCTestCase {
         XCTAssertEqual(session.error, ChatGPTAuthError.storage.localizedDescription)
         XCTAssertNil(h.authorization)
         XCTAssertNil(session.activeProfileID)
+        XCTAssertFalse(session.needsSignOutRetry)
     }
 
     func testFailedAtomicSaveDoesNotPublishNewCredentials() async throws {
@@ -329,6 +330,7 @@ final class ChatGPTAuthTests: XCTestCase {
         XCTAssertNil(session.activeProfileID)
         XCTAssertEqual(h.exchanges, 0)
         XCTAssertFalse(session.busy)
+        XCTAssertFalse(session.needsSignOutRetry)
     }
 
     func testKernelFileLockSerializesIndependentInstances() async throws {
@@ -508,6 +510,7 @@ final class ChatGPTAuthTests: XCTestCase {
             XCTAssertNil(session.sessionIdentifier)
             XCTAssertFalse(session.canUseChatGPTPlan)
             XCTAssertEqual(try h.record().registrations.filter { $0.tokens != nil }.count, 2)
+            XCTAssertTrue(session.needsSignOutRetry)
             await assertThrows(.signedOut) { try await session.accessToken() }
             let exchanges = h.exchanges
             await session.signIn(profileID: firstID)
@@ -521,6 +524,7 @@ final class ChatGPTAuthTests: XCTestCase {
             XCTAssertEqual(record.hostID, host)
             XCTAssertEqual(session.profiles.count, 2)
             XCTAssertNil(session.activeProfileID)
+            XCTAssertFalse(session.needsSignOutRetry)
             if remoteStatus == 200 { XCTAssertNil(session.error) }
             else { XCTAssertTrue(session.error?.contains("Remote revocation was not confirmed") == true) }
         }

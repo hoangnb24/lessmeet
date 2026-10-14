@@ -3,7 +3,12 @@ import Security
 
 @MainActor
 final class ChatGPTKeychainStore: ChatGPTCredentialStore {
-    private let service = "com.lessmeet.chatgpt.auth.v1"
+    private let service: String
+
+    init(service: String = "com.lessmeet.chatgpt.auth.v1") {
+        self.service = service
+    }
+
     private var query: [String: Any] {
         [kSecClass as String: kSecClassGenericPassword,
          kSecAttrService as String: service,
