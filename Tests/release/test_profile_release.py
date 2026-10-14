@@ -296,6 +296,64 @@ class SignedManifestTests(unittest.TestCase):
 
 
 class NotaryTests(unittest.TestCase):
+    def test_search_list_snapshot_activation_and_exact_restore(self):
+        with tempfile.TemporaryDirectory() as directory:
+            root = Path(directory).resolve() / "owned"
+            root.mkdir()
+            (root / "owner").write_text("LessMeet ephemeral signing\n")
+            prior = ["/synthetic/login.keychain-db", "/synthetic/path with spaces/keychain-db"]
+            current, calls = list(prior), []
+            def command(args):
+                calls.append(args)
+                if "delete-keychain" in args:
+                    Path(args[-1]).unlink()
+                if "list-keychains" in args:
+                    if "-s" in args:
+                        current[:] = args[args.index("-s") + 1:]
+                    return "\n".join(json.dumps(p) for p in current).encode()
+                return b""
+            with patch.object(ci.signer, "run", side_effect=command):
+                ci.save_search_list(root)
+                self.assertEqual((root / "search-list.json").stat().st_mode & 0o777, 0o600)
+                keychain = root / "signing.keychain-db"
+                keychain.write_bytes(b"synthetic")
+                ci.activate_search_list(root)
+                self.assertEqual(current, [str(keychain), *prior])
+                ci.cleanup(root)
+            self.assertEqual(current, prior)
+            self.assertFalse(root.exists())
+            restore = next(i for i, args in enumerate(calls) if "-s" in args and args[-2:] == prior)
+            delete = next(i for i, args in enumerate(calls) if "delete-keychain" in args)
+            self.assertLess(restore, delete)
+
+    def test_search_restore_failure_still_removes_secrets_and_allows_retry(self):
+        with tempfile.TemporaryDirectory() as directory:
+            root = Path(directory).resolve() / "owned"
+            root.mkdir()
+            (root / "owner").write_text("LessMeet ephemeral signing\n")
+            (root / "search-list.json").write_text('["/synthetic/login.keychain-db"]')
+            for name in ("signing.keychain-db", "certificate.p12", "profile.provisionprofile", "notary.p8"):
+                (root / name).write_bytes(b"synthetic")
+            def command(args):
+                if "list-keychains" in args:
+                    raise ci.Invalid("PRIVATE-restoration-failure")
+                if "delete-keychain" in args:
+                    Path(args[-1]).unlink()
+                return b""
+            with patch.object(ci.signer, "run", side_effect=command), self.assertRaises(ci.Invalid):
+                ci.cleanup(root)
+            self.assertEqual({p.name for p in root.iterdir()}, {"owner", "search-list.json"})
+            with patch.object(ci.signer, "run", return_value=b'"/synthetic/login.keychain-db"'):
+                ci.cleanup(root)
+            self.assertFalse(root.exists())
+
+    def test_search_list_rejects_unsafe_entries_and_readback_mismatch(self):
+        for paths in ("/path", ["relative"], ["-option"], ["/line\nbreak"], ["/same", "/same"]):
+            with self.subTest(paths=paths), self.assertRaises(ci.Invalid):
+                ci.validate_search_list(paths)
+        with patch.object(ci.signer, "run", return_value=b'"/different/keychain"'), self.assertRaises(ci.Invalid):
+            ci.set_search_list(["/synthetic/keychain"])
+
     def test_codesign_failure_is_classified_without_retaining_or_printing_raw_output(self):
         for marker, reason in ci.signer.CODESIGN_ERRORS + ((b"unknown diagnostic", "unclassified"),):
             with self.subTest(reason=reason):
@@ -389,6 +447,7 @@ class NotaryTests(unittest.TestCase):
                 plan_path.write_bytes(release.encode(signed_plan()))
                 output = root / "assets"
                 calls = []
+                search_list = ["/synthetic/login.keychain-db"]
                 values = {name: base64.b64encode(b"synthetic").decode() for name in ci.SECRET_NAMES}
                 values.update(LESSMEET_DEVELOPER_ID_CERT_SHA1=FP, LESSMEET_NOTARY_KEY_ID="FAKEKEY123",
                               LESSMEET_NOTARY_ISSUER_ID=verification()["notarization_id"])
@@ -396,8 +455,14 @@ class NotaryTests(unittest.TestCase):
                     calls.append(args)
                     if fail == "import" and "import" in args:
                         raise ci.Invalid("PRIVATE-import-error")
+                    if "list-keychains" in args:
+                        if "-s" in args:
+                            search_list[:] = args[args.index("-s") + 1:]
+                        return ("\n".join(json.dumps(p) for p in search_list)).encode()
                     if "create-keychain" in args:
                         Path(args[-1]).write_bytes(b"synthetic")
+                        # Model the platform command adding the newly created keychain.
+                        search_list.append(str(args[-1]))
                     if "delete-keychain" in args:
                         Path(args[-1]).unlink()
                     if "find-identity" in args:
@@ -407,6 +472,7 @@ class NotaryTests(unittest.TestCase):
                     return b""
                 def do_sign(*args, **kwargs):
                     self.assertIs(kwargs["diagnostic"], ci.stage)
+                    self.assertEqual(search_list, [str(private / "signing.keychain-db"), "/synthetic/login.keychain-db"])
                     calls.append(["sign"])
                 def notary(*args):
                     calls.append(["notary"])
@@ -440,6 +506,7 @@ class NotaryTests(unittest.TestCase):
                         self.assertLess(calls.index(["sign"]), calls.index(["notary"]))
                         self.assertLess(calls.index(["notary"]), calls.index(["verify"]))
                 self.assertFalse(private.exists())
+                self.assertEqual(search_list, ["/synthetic/login.keychain-db"])
                 self.assertTrue(any("delete-keychain" in c for c in calls))
                 self.assertNotIn("PRIVATE", diagnostic.getvalue())
                 self.assertNotIn(str(root), diagnostic.getvalue())

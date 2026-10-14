@@ -10,6 +10,7 @@ import os
 from pathlib import Path
 import re
 import secrets
+import shlex
 import signal
 import sys
 import uuid
@@ -39,6 +40,7 @@ STAGES = frozenset((
     "identity-validation", "notary-response", "output-validation", "private-workspace",
     "signed-workspace", "archive-create", "archive-structure", "archive-extract",
     "archive-staple", "archive-assessment", "archive-consistency", "receipt-write",
+    "keychain-search-save", "keychain-search-activate", "keychain-search-restore",
 )) | signer.SIGN_STAGES
 
 
@@ -102,6 +104,15 @@ def cleanup(root):
     signer.regular(root / "owner")
     require((root / "owner").read_text() == "LessMeet ephemeral signing\n", "Unowned cleanup directory.")
     failed = False
+    snapshot = root / "search-list.json"
+    if snapshot.exists():
+        try:
+            with stage("keychain-search-restore"):
+                previous = saved_search_list(root)
+                set_search_list(previous)
+                snapshot.unlink()
+        except Exception:
+            failed = True
     keychain = root / "signing.keychain-db"
     if keychain.exists():
         try:
@@ -123,6 +134,48 @@ def cleanup(root):
     require(set(p.name for p in root.iterdir()) == {"owner"}, "Unexpected signing files remain; do not publish.")
     (root / "owner").unlink()
     root.rmdir()
+
+
+def validate_search_list(paths):
+    require(isinstance(paths, list) and len(paths) <= 64
+            and all(isinstance(p, str) and 0 < len(p) <= 4096
+                    and Path(p).is_absolute() and not any(c in p for c in ("\0", "\n", "\r")) for p in paths)
+            and len(set(paths)) == len(paths), "Invalid runner keychain search list.")
+    return paths
+
+
+def read_search_list():
+    return validate_search_list(shlex.split(signer.run(["/usr/bin/security", "list-keychains", "-d", "user"]).decode()))
+
+
+def saved_search_list(root):
+    path = root / "search-list.json"
+    signer.regular(path)
+    require(path.stat().st_size <= 300000, "Invalid keychain search-list snapshot.")
+    paths = validate_search_list(json.loads(path.read_text()))
+    require(str(root / "signing.keychain-db") not in paths, "Owned keychain cannot be in the prior search list.")
+    return paths
+
+
+def save_search_list(root):
+    # Snapshot before create-keychain: that command may itself alter the list.
+    previous = read_search_list()
+    require(str(root / "signing.keychain-db") not in previous, "Unexpected prior owned keychain.")
+    with (root / "search-list.json").open("x") as stream:
+        os.chmod(stream.name, 0o600)
+        json.dump(previous, stream)
+
+
+def set_search_list(paths):
+    signer.run(["/usr/bin/security", "list-keychains", "-d", "user", "-s", *validate_search_list(paths)])
+    require(read_search_list() == paths, "Runner keychain search-list readback mismatch.")
+
+
+def activate_search_list(root):
+    # Preserve existing entries. Never change the default keychain or trust settings.
+    keychain = root / "signing.keychain-db"
+    signer.regular(keychain)
+    set_search_list([str(keychain), *saved_search_list(root)])
 
 
 def secret_file(root, name, encoded):
@@ -190,12 +243,14 @@ def execute(plan_path, output, root):
         notary_key = step("private-inputs", secret_file, root, "notary.p8", values["LESSMEET_NOTARY_KEY_BASE64"])
         password = secrets.token_urlsafe(40)
         keychain = root / "signing.keychain-db"
+        step("keychain-search-save", save_search_list, root)
         step("keychain-create", signer.run, ["/usr/bin/security", "create-keychain", "-p", password, keychain])
         step("keychain-unlock", signer.run, ["/usr/bin/security", "unlock-keychain", "-p", password, keychain])
         step("certificate-import", signer.run, ["/usr/bin/security", "import", p12, "-k", keychain, "-P", values["LESSMEET_DEVELOPER_ID_P12_PASSWORD"],
                     "-T", "/usr/bin/codesign"])
         step("keychain-access", signer.run, ["/usr/bin/security", "set-key-partition-list", "-S", "apple-tool:,apple:,codesign:", "-s", "-k", password, keychain])
-        # No search-list/default-keychain changes. Select only the new keychain.
+        step("keychain-search-activate", activate_search_list, root)
+        # Select only the new identity; preserve and later restore the runner list.
         identity_bytes = step("identity-check", signer.run, ["/usr/bin/security", "find-identity", "-v", "-p", "codesigning", keychain])
         with stage("identity-validation"):
             identities = identity_bytes.decode()

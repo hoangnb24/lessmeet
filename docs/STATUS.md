@@ -1,5 +1,49 @@
 # LessMeet delivery
 
+## Restore ephemeral keychain discovery for codesign (2026-10-14)
+
+Run `38569381901` completed/failure at `sign-codesign` with
+`codesign-error=identity-missing; exit=1`. Profile/import and explicit
+`security find-identity` checks passed. Cleanup passed; notarization never
+started. There is no in-flight submission from this run to duplicate.
+
+Evidence-led repair: the local Apple `codesign(1)` SIGNING IDENTITIES section
+requires the identity's keychain in the calling user's search list. `--keychain`
+restricts identity selection but does not replace search-list membership.
+The previous implementation explicitly omitted search-list registration.
+GitHub's [macOS signing guide](https://docs.github.com/en/actions/how-tos/deploy/deploy-to-third-party-platforms/sign-xcode-applications)
+also registers the temporary keychain. This identifies a concrete missing step;
+hosted success still must establish whether it resolves this run's failure.
+
+Snapshot the runner's prior user search list before creating a keychain. Keep a
+0600 snapshot inside the owned temporary directory. Prepend only this run's new
+keychain, preserving existing entries, and verify readback. In cleanup restore
+the exact prior list before deleting the owned keychain. If restore fails, still
+remove imported credentials and retain the snapshot/owner marker for the separate
+cleanup step to retry. Failure still blocks publication. No default keychain,
+trust setting, existing identity or permission policy changes. These operations
+remain confined to the hosted job; no local machine keychain is changed here.
+
+Release tests: 124 PASS, including original-list restoration after success,
+failure and interruption, create-keychain side effects, spaces in paths, protected
+snapshot mode, failed-restoration cleanup/retry and readback mismatch rejection.
+ACCEPT the bounded repair for hosted verification after direct inspection and
+independent in-memory normal/error/retry cleanup checks. Exact blobs: CI
+`91e16d587443db637795526096bf434542897bd7`, tests
+`2afca79f3c179c22d726d9b1ff363c26d271b7ca`. Packaging 76 PASS, workflow and
+whitespace checks PASS. Actual identity discovery and notarized artifact remain
+UNVERIFIED until the next run. The technical owner retains all writes; no Peer
+write or live UI scope remains.
+
+## Classified-codesign run underway (2026-10-14)
+
+Accepted candidate `7fea9da1bafd17405796f078a7a22472a008120f` was delivered in
+PR #21 and merged normally, with exact head match and no bypass, at
+`0c343284dcde3cdc54fa29b7326a9a6cb93fea96`. Run `38569381901` is the next
+hosted attempt. Observe its completion before selecting the repair. The previous
+run never entered notarization; no duplicate submission is being retried.
+Publication remains disabled. No signed/notarized artifact is accepted yet.
+
 ## Codesign failure classification (2026-10-14)
 
 Run `38567719914` for merge `e93a208ba6deb9b43cdcb3a6e83622b327128032`
