@@ -42,8 +42,11 @@ Git blob identities: script `40693afffd208428a41d9321b380e5828e054693`, test
 despite stdout write/flush failures and identity-decode failure before signing.
 The earlier blocking finding is resolved. No Peer write scope remains.
 
-The next usable result is a PR that identifies the failed stage in a new merged
-run, not a repaired signing result. Only the owner merges. Public publication
+Delivered commit `cea8d99` on `fix/ci-signing-stage-diagnostics` and opened
+[PR #19](https://github.com/hoangnb24/lessmeet/pull/19). This follow-up records
+delivery only. The owner can merge PR #19 to get stage markers in a new run.
+Do not rerun the old immutable run expecting new diagnostics. This is diagnostic
+readiness, not a repaired signing result. Only the owner merges. Public publication
 remains disabled. Actual signing, notarization and signed-app runtime remain
 UNVERIFIED for this candidate.
 
