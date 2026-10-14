@@ -1,5 +1,40 @@
 # LessMeet delivery
 
+## Bounded signed-artifact delivery loop (2026-10-14)
+
+Authorized outcome: a valid signed/notarized downloadable CI artifact for manual
+testing, not a public release. The owner retains the initial PR #20 merge.
+Subsequent evidence-led scoped fixes, commits, pushes, PR creation and normal
+follow-up merges are now authorized. This supersedes older owner-only follow-up
+merge limits below. Do not race or perform the initial PR #20 merge.
+
+At resumption PR #20 is OPEN at `d3246f2c9ff8bbdb3f9e1d6bcb22d6393da9a932`;
+main remains `be6a3a53b871e195ddb02834345b5957d06764fd`. A bounded read-only
+watcher awaits the owner's merge with backoff and emits state transitions only.
+No new hosted run or notary submission has been started by this work.
+The technical owner holds the delivery scope; no Peer writer or UI owner is active.
+Local delivery branch is separate from PR #20 and does not change its remote head.
+
+Rechecked environment `24266624356`: only branch `main`, rule `63011760`, no tag
+rule or required reviewer. Signing remains enabled, publication disabled. Keep
+bundle `com.lessmeet.app`, selected certificate/profile/notary inputs and these
+protections unchanged. No storage downgrade, ad-hoc fallback, force push,
+provenance/asset-guard bypass, broad credential replacement or unrelated changes.
+Preserve installed app, recordings and credentials; no live OAuth/chat testing.
+
+On each run failure, inspect actual logs before choosing a repair. Account for
+any in-flight notary submission before retrying. Review exact repair candidates,
+record explicit dispositions here, then continue normal delivery. New external
+cost/security/distribution decisions remain with the owner. Final acceptance
+requires merged-source binding, sealed artifact hashes, Developer ID signature,
+accepted notarization, staple verification and cleanup evidence. Tests alone
+do not establish delivery or full-app runtime acceptance.
+
+Current dependency: the owner's initial PR #20 merge. No technical repair has
+been selected without its resulting run. Resume on the merge event, then watch
+that exact hosted run to completion. No duplicate notarization is in flight from
+this work; the latest completed run stopped at app-signing before submission.
+
 ## App-signing substages after hosted failure (2026-10-14)
 
 PR #19 merged at `be6a3a53b871e195ddb02834345b5957d06764fd`.
