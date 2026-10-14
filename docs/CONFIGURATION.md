@@ -121,8 +121,11 @@ recording acceptance.
 
 The compiler environment allowlist is not a same-user sandbox. Trusted merged
 code and pinned dependencies remain the trust boundary. The new keychain is
-selected explicitly. Scripts do not set a default keychain or replace the search
-list. Access settings apply only to the newly created CI keychain. No such commands
+selected explicitly and temporarily prepended to the runner's user search list.
+The prior list is saved before keychain creation and restored with readback during
+cleanup. Existing entries are preserved; the default keychain and trust settings
+are not changed. Failed restoration retains a protected snapshot for cleanup retry
+and blocks delivery. Access settings apply only to the newly created CI keychain. No such commands
 were run against the operator's Keychain during local verification.
 
 ### Local development signing
