@@ -22,8 +22,10 @@ This cleanup does not change that policy or authorize distribution.
 Decision (2026-10-14): retain GitHub ZIP with Developer ID + notarization. No
 App Store/TestFlight channel is selected. The manual-test delivery request now
 authorizes provisioning established intended inputs, scoped remote activation
-and actual notarization. Public publication and unspecified key export/credential
-creation remain excluded. See STATUS for current blockers and authority.
+and actual notarization. The owner subsequently authorized automatic GitHub
+pre-release publication after each eligible merge and successful signed build.
+Unspecified key export/credential creation remains excluded. See STATUS for
+current evidence and authority.
 The schema-2 contract below is historical.
 
 `main-release.yml` requires `LESSMEET_DEVELOPER_ID_RELEASE_ENABLED=true` before
@@ -32,8 +34,12 @@ The owner explicitly chose no required reviewer and retains merging to main.
 Environment `lessmeet-developer-id` now exists with a single allowed branch,
 `main`, and no allowed tag rule. `LESSMEET_GITHUB_RELEASE_ENABLED=true` separately controls
 publication. Signing activation permits timestamp requests and notarization uploads
-even while publication is disabled. On 2026-10-14, publication was changed from
-`true` to `false`; signing was explicitly set to `false`. Both readbacks matched.
+even while publication is disabled. Current readback on 2026-10-14 confirms both
+`LESSMEET_DEVELOPER_ID_RELEASE_ENABLED=true` and
+`LESSMEET_GITHUB_RELEASE_ENABLED=true`. Each merged PR into `main` can now
+produce a pre-release after build, signing, notarization and artifact validation
+succeed. Branch pushes and unmerged closed PRs do not publish. Pre-releases are
+not marked as the stable latest release. Earlier disabled gates are historical.
 
 The earlier required-reviewer attempt failed with HTTP 422 due to the billing
 plan, and its empty environment was removed. That condition is superseded by the

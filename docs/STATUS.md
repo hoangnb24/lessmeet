@@ -1,5 +1,28 @@
 # LessMeet delivery
 
+## Automatic merged-main pre-releases enabled (2026-10-14)
+
+The owner authorized automatic release publication after merges with successful
+builds. Set repository variable `LESSMEET_GITHUB_RELEASE_ENABLED=true` and
+verified readback. `LESSMEET_DEVELOPER_ID_RELEASE_ENABLED` remains `true`.
+This supersedes earlier per-candidate-only publication limits and disabled-gate
+entries below. No credentials, environment protections or workflow code changed.
+
+Verified the workflow on remote `main` matches the inspected local blob
+`63a7fb6ce9d3c4c799c7d9faa6135e22a836fa71`. Only merged PRs into `main`
+trigger the existing path. A successful build must sign, notarize, staple, seal
+and upload the immutable artifact before the publish job can run. The publisher
+checks the exact source SHA, artifact ID and asset bindings before exposing the
+pre-release. Failed builds and branch pushes do not publish. Releases remain
+pre-releases, not stable latest releases.
+
+ACCEPT the requested gate configuration based on remote readback and existing
+workflow conditions. No new merge/build was triggered solely to test the gate.
+The first subsequent eligible merge will verify the enabled automatic path;
+this turn does not claim that hosted execution occurred. The already-published
+signed build 53 remains available. Runtime/UI limits remain unchanged.
+No Peer writer or UI owner is active.
+
 ## Signed pre-release published on request (2026-10-14)
 
 The owner authorized publishing the accepted artifact to GitHub Releases.
