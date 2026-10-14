@@ -2,6 +2,8 @@
 """Opt-in hosted CI signing/notarization. No local invocation or implicit upload."""
 import argparse
 import base64
+from contextlib import contextmanager
+from functools import wraps
 import hashlib
 import json
 import os
@@ -26,7 +28,55 @@ SECRET_NAMES = (
     "LESSMEET_NOTARY_KEY_BASE64", "LESSMEET_NOTARY_KEY_ID", "LESSMEET_NOTARY_ISSUER_ID",
 )
 
+# Only source-defined labels enter logs. Never format exceptions or arguments.
+STAGES = frozenset((
+    "runner-preflight", "signing-pipeline", "cleanup", "plan-validation",
+    "unsigned-app-validation", "profile-validation", "keychain-create",
+    "keychain-unlock", "certificate-import", "keychain-access", "identity-check",
+    "app-signing", "notarization", "submission-archive", "notary-submit",
+    "staple", "staple-validation", "gatekeeper-assessment", "signed-app-validation",
+    "archive-validation", "release-seal", "secret-validation", "private-inputs",
+    "identity-validation", "notary-response", "output-validation", "private-workspace",
+    "signed-workspace", "archive-create", "archive-structure", "archive-extract",
+    "archive-staple", "archive-assessment", "archive-consistency", "receipt-write",
+))
 
+
+@contextmanager
+def stage(name):
+    require(name in STAGES, "Unknown diagnostic stage.")
+    def emit(outcome):
+        try:
+            print(f"CI signing stage {name}: {outcome}", flush=True)
+        except Exception:
+            # A broken log stream must not skip cleanup or replace an outcome.
+            pass
+    emit("started")
+    try:
+        yield
+    except BaseException:
+        emit("failed")
+        raise
+    else:
+        emit("passed")
+
+
+def traced(name):
+    def decorate(function):
+        @wraps(function)
+        def wrapped(*args, **kwargs):
+            with stage(name):
+                return function(*args, **kwargs)
+        return wrapped
+    return decorate
+
+
+def step(name, function, *args, **kwargs):
+    with stage(name):
+        return function(*args, **kwargs)
+
+
+@traced("runner-preflight")
 def private_root():
     require(os.environ.get("GITHUB_ACTIONS") == "true" and os.environ.get("RUNNER_ENVIRONMENT") == "github-hosted",
             "This command requires an explicitly enabled GitHub-hosted job.")
@@ -38,6 +88,7 @@ def private_root():
     return root / ("lessmeet-signing-" + run_id + "-" + attempt)
 
 
+@traced("cleanup")
 def cleanup(root):
     # Only this run's private files. Never touch login/default Keychains or use
     # recursive removal with an environment-selected root.
@@ -83,87 +134,101 @@ def secret_file(root, name, encoded):
     return path
 
 
+@traced("notarization")
 def notarize(app, submission, credentials):
-    signer.run(["/usr/bin/ditto", "-c", "-k", "--norsrc", "--noextattr", "--noacl", "--keepParent", app, submission])
+    step("submission-archive", signer.run, ["/usr/bin/ditto", "-c", "-k", "--norsrc", "--noextattr", "--noacl", "--keepParent", app, submission])
     # Bounded wait; timeout/invalid/unknown responses must not seal or publish.
-    response = signer.run(["xcrun", "notarytool", "submit", submission, "--key", credentials[0],
+    response = step("notary-submit", signer.run, ["xcrun", "notarytool", "submit", submission, "--key", credentials[0],
                                 "--key-id", credentials[1], "--issuer", credentials[2], "--wait",
                                 "--timeout", "15m", "--output-format", "json"], timeout=960)
-    try:
-        result = json.loads(response)
-        identifier = str(uuid.UUID(result["id"]))
-    except (ValueError, KeyError, TypeError):
-        raise Invalid("Invalid notarization response; do not publish.") from None
-    require(result.get("status") == "Accepted", "Notarization was not accepted; do not publish.")
-    signer.run(["xcrun", "stapler", "staple", app])
-    signer.run(["xcrun", "stapler", "validate", app])
-    signer.run(["/usr/sbin/spctl", "--assess", "--type", "execute", app])
+    with stage("notary-response"):
+        try:
+            result = json.loads(response)
+            identifier = str(uuid.UUID(result["id"]))
+        except (ValueError, KeyError, TypeError):
+            raise Invalid("Invalid notarization response; do not publish.") from None
+        require(result.get("status") == "Accepted", "Notarization was not accepted; do not publish.")
+    step("staple", signer.run, ["xcrun", "stapler", "staple", app])
+    step("staple-validation", signer.run, ["xcrun", "stapler", "validate", app])
+    step("gatekeeper-assessment", signer.run, ["/usr/sbin/spctl", "--assess", "--type", "execute", app])
     return identifier
 
 
+@traced("signing-pipeline")
 def execute(plan_path, output, root):
-    plan = release.validate_plan(release.decode(release.read(plan_path, release.MAX_METADATA)))
-    require(plan["schema"] == 3, "Only Developer ID release plans may use this stage.")
-    signer.build.load_plan(plan_path)
-    require(not output.exists(), "Existing release inputs are immutable.")
-    signer.no_links(output.absolute())
+    with stage("plan-validation"):
+        plan = release.validate_plan(release.decode(release.read(plan_path, release.MAX_METADATA)))
+        require(plan["schema"] == 3, "Only Developer ID release plans may use this stage.")
+        signer.build.load_plan(plan_path)
+    with stage("output-validation"):
+        require(not output.exists(), "Existing release inputs are immutable.")
+        signer.no_links(output.absolute())
     # Check the unsigned bundle before materializing any secret files.
-    signer.build.verify_app(signer.ROOT / "dist/local/LessMeet.app")
-    values = {name: os.environ.pop(name, "") for name in SECRET_NAMES}
-    require(all(values.values()), "Required Developer ID and notarization inputs are missing.")
-    fingerprint = values["LESSMEET_DEVELOPER_ID_CERT_SHA1"]
-    require(re.fullmatch(r"[A-Fa-f0-9]{40}", fingerprint), "Invalid certificate fingerprint.")
-    require(re.fullmatch(r"[A-Z0-9]{10}", values["LESSMEET_NOTARY_KEY_ID"]), "Invalid notary key ID.")
+    step("unsigned-app-validation", signer.build.verify_app, signer.ROOT / "dist/local/LessMeet.app")
+    with stage("secret-validation"):
+        values = {name: os.environ.pop(name, "") for name in SECRET_NAMES}
+        require(all(values.values()), "Required Developer ID and notarization inputs are missing.")
+        fingerprint = values["LESSMEET_DEVELOPER_ID_CERT_SHA1"]
+        require(re.fullmatch(r"[A-Fa-f0-9]{40}", fingerprint), "Invalid certificate fingerprint.")
+        require(re.fullmatch(r"[A-Z0-9]{10}", values["LESSMEET_NOTARY_KEY_ID"]), "Invalid notary key ID.")
+        try:
+            uuid.UUID(values["LESSMEET_NOTARY_ISSUER_ID"])
+        except ValueError:
+            raise Invalid("Invalid notary issuer ID.") from None
+    with stage("private-workspace"):
+        root.mkdir(mode=0o700, exist_ok=False)
+        (root / "owner").write_text("LessMeet ephemeral signing\n")
     try:
-        uuid.UUID(values["LESSMEET_NOTARY_ISSUER_ID"])
-    except ValueError:
-        raise Invalid("Invalid notary issuer ID.") from None
-    root.mkdir(mode=0o700, exist_ok=False)
-    (root / "owner").write_text("LessMeet ephemeral signing\n")
-    try:
-        profile = secret_file(root, "profile.provisionprofile", values["LESSMEET_DEVELOPER_ID_PROFILE_BASE64"])
+        profile = step("private-inputs", secret_file, root, "profile.provisionprofile", values["LESSMEET_DEVELOPER_ID_PROFILE_BASE64"])
         # Reject development/Store/wrong/expired profiles before importing a key.
-        original, entitlements = signer.inputs(profile, fingerprint, "developer-id")
-        p12 = secret_file(root, "certificate.p12", values["LESSMEET_DEVELOPER_ID_P12_BASE64"])
-        notary_key = secret_file(root, "notary.p8", values["LESSMEET_NOTARY_KEY_BASE64"])
+        original, entitlements = step("profile-validation", signer.inputs, profile, fingerprint, "developer-id")
+        p12 = step("private-inputs", secret_file, root, "certificate.p12", values["LESSMEET_DEVELOPER_ID_P12_BASE64"])
+        notary_key = step("private-inputs", secret_file, root, "notary.p8", values["LESSMEET_NOTARY_KEY_BASE64"])
         password = secrets.token_urlsafe(40)
         keychain = root / "signing.keychain-db"
-        signer.run(["/usr/bin/security", "create-keychain", "-p", password, keychain])
-        signer.run(["/usr/bin/security", "unlock-keychain", "-p", password, keychain])
-        signer.run(["/usr/bin/security", "import", p12, "-k", keychain, "-P", values["LESSMEET_DEVELOPER_ID_P12_PASSWORD"],
+        step("keychain-create", signer.run, ["/usr/bin/security", "create-keychain", "-p", password, keychain])
+        step("keychain-unlock", signer.run, ["/usr/bin/security", "unlock-keychain", "-p", password, keychain])
+        step("certificate-import", signer.run, ["/usr/bin/security", "import", p12, "-k", keychain, "-P", values["LESSMEET_DEVELOPER_ID_P12_PASSWORD"],
                     "-T", "/usr/bin/codesign"])
-        signer.run(["/usr/bin/security", "set-key-partition-list", "-S", "apple-tool:,apple:,codesign:", "-s", "-k", password, keychain])
+        step("keychain-access", signer.run, ["/usr/bin/security", "set-key-partition-list", "-S", "apple-tool:,apple:,codesign:", "-s", "-k", password, keychain])
         # No search-list/default-keychain changes. Select only the new keychain.
-        identities = signer.run(["/usr/bin/security", "find-identity", "-v", "-p", "codesigning", keychain]).decode()
-        found = re.findall(r'\b([A-Fa-f0-9]{40})\s+"([^"\n]+)"', identities)
-        require(len(found) == 1 and found[0][0].upper() == fingerprint.upper() and found[0][1].startswith("Developer ID Application:"),
-                "Imported keychain must contain only the selected Developer ID identity.")
-        work = signer.ROOT / "dist" / ("developer-id-" + root.name)
-        work.mkdir(parents=True, exist_ok=False)
+        identity_bytes = step("identity-check", signer.run, ["/usr/bin/security", "find-identity", "-v", "-p", "codesigning", keychain])
+        with stage("identity-validation"):
+            identities = identity_bytes.decode()
+            found = re.findall(r'\b([A-Fa-f0-9]{40})\s+"([^"\n]+)"', identities)
+            require(len(found) == 1 and found[0][0].upper() == fingerprint.upper() and found[0][1].startswith("Developer ID Application:"),
+                    "Imported keychain must contain only the selected Developer ID identity.")
+        with stage("signed-workspace"):
+            work = signer.ROOT / "dist" / ("developer-id-" + root.name)
+            work.mkdir(parents=True, exist_ok=False)
         app = work / "LessMeet.app"
-        signer.sign(signer.ROOT / "dist/local/LessMeet.app", app, profile, fingerprint, keychain, "developer-id")
+        step("app-signing", signer.sign, signer.ROOT / "dist/local/LessMeet.app", app, profile, fingerprint, keychain, "developer-id")
         identifier = notarize(app, work / "submission.zip", (notary_key, values["LESSMEET_NOTARY_KEY_ID"], values["LESSMEET_NOTARY_ISSUER_ID"]))
-        summary = signer.verify(app, fingerprint, original, entitlements, "developer-id")
-        output.mkdir(parents=True, exist_ok=False)
-        archive = output / plan["archive_name"]
-        signer.run(["/usr/bin/ditto", "-c", "-k", "--norsrc", "--noextattr", "--noacl", "--keepParent", app, archive])
+        summary = step("signed-app-validation", signer.verify, app, fingerprint, original, entitlements, "developer-id")
+        with stage("archive-create"):
+            output.mkdir(parents=True, exist_ok=False)
+            archive = output / plan["archive_name"]
+            signer.run(["/usr/bin/ditto", "-c", "-k", "--norsrc", "--noextattr", "--noacl", "--keepParent", app, archive])
         # Check the artifact bytes that will be distributed, including the
         # archived staple, rather than relying on the pre-archive app alone.
-        release.validate_zip(release.read(archive, release.MAX_ARCHIVE), signed=True)
+        with stage("archive-structure"):
+            release.validate_zip(release.read(archive, release.MAX_ARCHIVE), signed=True)
         extracted = work / "archive-check"
-        signer.run(["/usr/bin/ditto", "-x", "-k", archive, extracted])
+        step("archive-extract", signer.run, ["/usr/bin/ditto", "-x", "-k", archive, extracted])
         archived_app = extracted / "LessMeet.app"
-        signer.run(["xcrun", "stapler", "validate", archived_app])
-        signer.run(["/usr/sbin/spctl", "--assess", "--type", "execute", archived_app])
-        archived_summary = signer.verify(archived_app, fingerprint, original, entitlements, "developer-id")
-        require(archived_summary == summary, "Final archive differs from the verified signed app.")
+        step("archive-staple", signer.run, ["xcrun", "stapler", "validate", archived_app])
+        step("archive-assessment", signer.run, ["/usr/sbin/spctl", "--assess", "--type", "execute", archived_app])
+        archived_summary = step("archive-validation", signer.verify, archived_app, fingerprint, original, entitlements, "developer-id")
+        with stage("archive-consistency"):
+            require(archived_summary == summary, "Final archive differs from the verified signed app.")
         verification = {"certificate_sha1": fingerprint.upper(), "team_id": signer.policy.TEAM,
                         "profile_sha256": summary["profile_sha256"], "executable_sha256": summary["executable_sha256"],
                         "notarization_id": identifier, "status": "Accepted", "stapled": True}
         receipt = work / "verification.json"
-        receipt.write_bytes(release.encode({"source_sha": plan["source_sha"], "archive_sha256": signer.build.digest(archive),
-                                            "verification": verification}))
-        release.seal(plan_path, archive, output, receipt)
+        with stage("receipt-write"):
+            receipt.write_bytes(release.encode({"source_sha": plan["source_sha"], "archive_sha256": signer.build.digest(archive),
+                                                "verification": verification}))
+        step("release-seal", release.seal, plan_path, archive, output, receipt)
     finally:
         cleanup(root)
 
@@ -191,5 +256,5 @@ if __name__ == "__main__":
         main()
     except Exception:
         # Never emit commands, secret paths, process output, passwords or payloads.
-        print("CI signing failed; no publication authorized. Check inputs and retained stage outcome.", file=sys.stderr)
+        print("CI signing failed; no publication authorized. Check stage markers above.", file=sys.stderr)
         sys.exit(1)

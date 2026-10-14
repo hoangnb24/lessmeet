@@ -1,5 +1,6 @@
 """Offline signing/notarization contract tests. All keys, profiles and responses are synthetic."""
 import base64
+from contextlib import redirect_stdout, redirect_stderr
 import datetime as dt
 import hashlib
 import importlib.util
@@ -223,8 +224,72 @@ class SignedManifestTests(unittest.TestCase):
 
 
 class NotaryTests(unittest.TestCase):
+    def test_broken_log_stream_does_not_skip_cleanup(self):
+        for failure in (BrokenPipeError("PRIVATE"), ValueError("closed stream")):
+            with self.subTest(failure=type(failure).__name__), tempfile.TemporaryDirectory() as directory:
+                root = Path(directory).resolve() / "owned"
+                root.mkdir()
+                (root / "owner").write_text("LessMeet ephemeral signing\n")
+                (root / "notary.p8").write_bytes(b"synthetic")
+                with patch("builtins.print", side_effect=failure):
+                    ci.cleanup(root)
+                self.assertFalse(root.exists())
+
+    def test_broken_log_stream_preserves_result_and_original_exception(self):
+        original = ci.Invalid("PRIVATE-operation-failure")
+        with patch("builtins.print", side_effect=BrokenPipeError("PRIVATE-log-failure")):
+            self.assertEqual(ci.step("certificate-import", lambda: 42), 42)
+            with self.assertRaises(ci.Invalid) as caught:
+                with ci.stage("certificate-import"):
+                    raise original
+        self.assertIs(caught.exception, original)
+
+    def test_stage_logs_only_allowlisted_names_not_values_or_exceptions(self):
+        sentinel = "PRIVATE-password-key-command-output-path"
+        for name in ci.STAGES:
+            for failure in (RuntimeError(sentinel), KeyboardInterrupt(sentinel)):
+                with self.subTest(stage=name, failure=type(failure).__name__):
+                    output = io.StringIO()
+                    def fail(*args, **kwargs):
+                        raise failure
+                    with redirect_stdout(output), redirect_stderr(output), self.assertRaises(type(failure)):
+                        ci.step(name, fail, sentinel, credential=sentinel)
+                    self.assertEqual(output.getvalue(),
+                                     f"CI signing stage {name}: started\nCI signing stage {name}: failed\n")
+
+    def test_stage_success_returns_result_without_logging_it(self):
+        output = io.StringIO()
+        with redirect_stdout(output):
+            self.assertEqual(ci.step("certificate-import", lambda: b"PRIVATE"), b"PRIVATE")
+        self.assertEqual(output.getvalue(),
+                         "CI signing stage certificate-import: started\nCI signing stage certificate-import: passed\n")
+
+    def test_unknown_stage_is_rejected_without_logging_value_or_running_action(self):
+        output = io.StringIO()
+        with redirect_stdout(output), redirect_stderr(output), patch.object(ci.signer, "run") as run:
+            with self.assertRaises(ci.Invalid):
+                ci.step("PRIVATE-invalid-label", run)
+            run.assert_not_called()
+        self.assertEqual(output.getvalue(), "")
+
+    def test_cleanup_failure_does_not_erase_primary_failure_marker(self):
+        output = io.StringIO()
+        with redirect_stdout(output), redirect_stderr(output), self.assertRaises(RuntimeError):
+            try:
+                with ci.stage("certificate-import"):
+                    raise ValueError("PRIVATE-primary")
+            finally:
+                with ci.stage("cleanup"):
+                    raise RuntimeError("PRIVATE-cleanup")
+        self.assertEqual(output.getvalue().splitlines(), [
+            "CI signing stage certificate-import: started",
+            "CI signing stage certificate-import: failed",
+            "CI signing stage cleanup: started",
+            "CI signing stage cleanup: failed",
+        ])
+
     def test_execute_orders_sign_notary_verify_seal_and_cleans_on_failure(self):
-        for fail in (False, True, "interrupt", "archive-check"):
+        for fail in (False, True, "interrupt", "archive-check", "import"):
             with self.subTest(fail=fail), tempfile.TemporaryDirectory() as directory:
                 root = Path(directory).resolve()
                 private = root / "private"
@@ -237,6 +302,8 @@ class NotaryTests(unittest.TestCase):
                               LESSMEET_NOTARY_ISSUER_ID=verification()["notarization_id"])
                 def command(args, **kwargs):
                     calls.append(args)
+                    if fail == "import" and "import" in args:
+                        raise ci.Invalid("PRIVATE-import-error")
                     if "create-keychain" in args:
                         Path(args[-1]).write_bytes(b"synthetic")
                     if "delete-keychain" in args:
@@ -260,7 +327,9 @@ class NotaryTests(unittest.TestCase):
                     if fail == "archive-check" and "archive-check" in str(args[0]):
                         raise ci.Invalid("synthetic final-archive failure")
                     return verification()
-                with patch.dict(os.environ, values), patch.object(ci.signer, "ROOT", root), \
+                diagnostic = io.StringIO()
+                with redirect_stdout(diagnostic), redirect_stderr(diagnostic), \
+                     patch.dict(os.environ, values), patch.object(ci.signer, "ROOT", root), \
                      patch.object(ci.signer.build, "load_plan"), patch.object(ci.signer.build, "verify_app"), \
                      patch.object(ci.signer, "inputs", return_value=(b"synthetic-profile", {})), \
                      patch.object(ci.signer, "sign", side_effect=do_sign), patch.object(ci, "notarize", side_effect=notary), \
@@ -279,6 +348,12 @@ class NotaryTests(unittest.TestCase):
                         self.assertLess(calls.index(["notary"]), calls.index(["verify"]))
                 self.assertFalse(private.exists())
                 self.assertTrue(any("delete-keychain" in c for c in calls))
+                self.assertNotIn("PRIVATE", diagnostic.getvalue())
+                self.assertNotIn(str(root), diagnostic.getvalue())
+                if fail == "import":
+                    self.assertIn("CI signing stage certificate-import: failed", diagnostic.getvalue())
+                    self.assertIn("CI signing stage cleanup: passed", diagnostic.getvalue())
+                    self.assertNotIn(["sign"], calls)
 
     def test_notary_success_requires_staple_validate_and_assess(self):
         calls = []
