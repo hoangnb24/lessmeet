@@ -34,8 +34,10 @@ signing syntax trees after removing instrumentation, plus 24 offline profile
 tests. No Peer write scope remains. Remote readback retains signing enabled and
 publication disabled.
 
-Next: deliver the accepted PR, then inspect the new merged run after
-the owner merges. Publication stays disabled. Do not rerun an old immutable
+Delivered `5cf5061` and opened [PR #20](https://github.com/hoangnb24/lessmeet/pull/20)
+on `fix/ci-signing-substage-diagnostics`. This follow-up records delivery only.
+Next: inspect the new merged run after the owner merges PR #20.
+Publication stays disabled. Do not rerun an old immutable
 workflow expecting new diagnostics. Actual signing/notarization and signed-app
 runtime remain UNVERIFIED.
 
