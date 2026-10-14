@@ -1,5 +1,26 @@
 # LessMeet delivery
 
+## Signed pre-release published on request (2026-10-14)
+
+The owner authorized publishing the accepted artifact to GitHub Releases.
+This supersedes the publication prohibition for this exact candidate only.
+The automatic release gate remains disabled; no future release policy changed.
+
+Published [main-signed-53](https://github.com/hoangnb24/lessmeet/releases/tag/main-signed-53-8965929bd735ae3623fa13e8d7cee0c4265b97e3),
+release ID `412798921`, as a non-draft pre-release, not the stable latest release.
+The existing guarded publisher used the original downloaded artifact and exact
+source `8965929bd735ae3623fa13e8d7cee0c4265b97e3`. No rebuild, signing or
+notary submission occurred. Tag, canonical metadata, four-asset allowlist,
+remote digests and downloaded remote manifest/checksum/notes passed validation.
+The signed ZIP SHA256 remains
+`dc748b0956df5a8660fc8af1a42048fd0716675c90f4702eeb99d8f94498fb11`.
+
+ACCEPT this published release as the requested distribution of the previously
+accepted artifact. Users can download its signed arm64 ZIP from Releases.
+Full-app runtime, UI, auth, inference and save/reopen limits below still apply.
+No Peer writer or UI owner is active. Earlier publication-disabled entries are
+historical for this candidate; automatic publication remains disabled.
+
 ## Signed CI artifact accepted for manual testing (2026-10-14)
 
 The search-list repair resolved the observed hosted codesign failure.
