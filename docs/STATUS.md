@@ -1,5 +1,18 @@
 # LessMeet delivery
 
+## Initial merge authorized and completed (2026-10-14)
+
+The owner explicitly authorized this agent to merge PR #20. This resolves the
+initial owner-only merge dependency below. Normal merge used exact accepted head
+`d3246f2c9ff8bbdb3f9e1d6bcb22d6393da9a932`, without admin bypass or force push.
+PR #20 is MERGED at `e93a208ba6deb9b43cdcb3a6e83622b327128032`, 12:56:32 UTC.
+Signing remains enabled, publication disabled. The separate delivery branch
+incorporates that main merge without overwriting its status commits.
+
+Next: observe this merge's hosted run; then continue the authorized evidence-led
+repair/review/merge loop until a verified CI artifact or a new owner-only blocker.
+No signed result is yet accepted. Earlier waiting/blocker entries are historical.
+
 ## Bounded signed-artifact delivery loop (2026-10-14)
 
 Authorized outcome: a valid signed/notarized downloadable CI artifact for manual
