@@ -1,5 +1,52 @@
 # LessMeet delivery
 
+## Signing failure and safe diagnostics candidate (2026-10-14)
+
+PR #18 was merged by the owner at `44b5419ba673132d34f5b8b2a2c9f6fae88fed06`.
+Run `38546153531` built and verified unsigned arm64 inputs successfully, then
+failed in signing/notarization. Cleanup passed; upload and publication were
+skipped. The run has no artifact. Its generic error does not establish a bad
+password, certificate or Apple service failure. The exact cause remains UNKNOWN.
+This supersedes the owner-merge frontier below.
+
+Authorized follow-up: add secret-safe stage diagnostics, tests and a PR for the
+owner to merge. Branch `fix/ci-signing-stage-diagnostics` starts at that exact
+merge. The technical owner holds scripts/tests/status writes. A fresh read-only
+Peer inspected the frozen script/test candidate; no live UI ownership is needed.
+No credential changes, Apple calls, workflow rerun or merge occur in this work.
+
+Diagnostics print only fixed allowlisted stage names and started/passed/failed.
+They do not print exception text, arguments, paths, process output or return values.
+For example, a synthetic import failure prints `certificate-import: failed`
+before cleanup markers. Cleanup failure leaves the earlier failure marker in
+the log. Existing signing policy, commands, secret access and cleanup targets
+remain unchanged. No raw log artifact or secret-bearing payload is retained.
+
+The first frozen candidate was REJECTED after independent inspection showed that
+a broken log stream could prevent cleanup. Revised diagnostics treat log writes
+as best-effort. Synthetic broken-pipe/closed-stream tests prove that cleanup runs,
+return values survive and the original exception is preserved. Identity decoding
+now occurs inside its validation marker. Revised release tests: 118 PASS.
+Packaging tests: 76 PASS. Workflow validator and whitespace checks: PASS.
+
+Bounded limit: `app-signing` groups the existing local signer's copy/configure,
+codesign and post-sign checks. Do not broaden that shared API speculatively.
+If the next hosted run fails in that category, the technical owner must inspect
+and add focused safe substages there. Root cause and actual Apple result remain
+unknown.
+
+ACCEPT the revised bounded diagnostics candidate after direct inspection and
+independent fault injection. Base `44b5419ba673132d34f5b8b2a2c9f6fae88fed06`;
+Git blob identities: script `40693afffd208428a41d9321b380e5828e054693`, test
+`c0c2b980ef06bc6616e264acf3a56f9e3b971bde`. Independent checks confirm cleanup
+despite stdout write/flush failures and identity-decode failure before signing.
+The earlier blocking finding is resolved. No Peer write scope remains.
+
+The next usable result is a PR that identifies the failed stage in a new merged
+run, not a repaired signing result. Only the owner merges. Public publication
+remains disabled. Actual signing, notarization and signed-app runtime remain
+UNVERIFIED for this candidate.
+
 ## Signing inputs ready; owner merge is next (2026-10-14)
 
 The owner confirmed completion of the password helper. GitHub secret-name readback
