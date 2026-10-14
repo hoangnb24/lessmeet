@@ -1,5 +1,318 @@
 # LessMeet delivery
 
+## Signing inputs ready; owner merge is next (2026-10-14)
+
+The owner confirmed completion of the password helper. GitHub secret-name readback
+now confirms all seven intended secrets in `lessmeet-developer-id`, including
+`LESSMEET_DEVELOPER_ID_P12_PASSWORD` updated at `2026-10-14T09:51:34Z`.
+No secret values were retrieved. Rechecked the environment: only branch `main`
+is allowed, no tag rule and no required reviewer, as authorized.
+
+Enabled `LESSMEET_DEVELOPER_ID_RELEASE_ENABLED=true` and verified readback.
+`LESSMEET_GITHUB_RELEASE_ENABLED=false` remains unchanged. This permits signing
+and notarization after the owner merges; it does not permit public publication.
+
+ACCEPT the completed provisioning and documentation handoff for PR #18.
+Product, workflow, script and test bytes remain unchanged from accepted source
+candidate `dbbadc4b454ce07e90d0135f08ceb584854a5c94`; only CONFIGURATION and STATUS
+are updated. Previous offline release tests (112 PASS) and packaging tests
+(76 PASS) apply to those unchanged bytes. Whitespace validation is repeated
+before the documentation commit. No credentials or ignored helper are committed.
+
+Next action: push this documentation update and mark PR #18 ready for the owner.
+Only the owner merges. After that event, observe the exact merged-source workflow
+and verify its artifact. Hosted signing, notarization and signed-app runtime
+remain UNVERIFIED. Provisioning success is not artifact acceptance.
+
+The entries below are chronological checkpoints, newest first. Their pending
+input, disabled signing and draft-PR statements describe those earlier checkpoints;
+this entry supersedes them. No live UI scope or Peer write assignment is active.
+
+## Owner-only merge decision and environment provisioning (2026-10-14)
+
+Authorized decision: no required reviewer for the signing environment. The owner
+states only they merge into main. This supersedes the required-reviewer blocker
+below; do not ask for a paid-plan change. Leave PR #18 for the owner to merge,
+not an agent. Public publication remains excluded.
+
+Remote reconciliation: environment absent, repository-secret list empty, both
+signing/publication variables false, PR #18 OPEN/DRAFT at
+`dbbadc4b454ce07e90d0135f08ceb584854a5c94`, no merge commit. Collaborator API lists
+only `hoangnb24` with admin access. This is an observed collaborator list, not an
+enforced main-branch rule or an audit of every app/token with repository access.
+Existing branch-protection plan limits remain; no access rule was bypassed.
+
+Created `lessmeet-developer-id`, environment ID `24266624356`, with custom branch
+policy. Added and read back the sole rule: branch `main` (no tag policy), ID
+`63011760`. No required-reviewer rule. Existing unrelated environments, secrets
+and repository access were not modified. No plan or visibility change occurred.
+
+Provisioned six intended secrets with `gh` through stdin, not command arguments
+or files/logs containing values. The destination was checked empty first; no
+identity was silently replaced. Local PKCS#12/profile hashes matched the accepted
+inputs. Secret-name/timestamp readback confirms:
+
+- LESSMEET_DEVELOPER_ID_P12_BASE64
+- LESSMEET_DEVELOPER_ID_PROFILE_BASE64
+- LESSMEET_DEVELOPER_ID_CERT_SHA1
+- LESSMEET_NOTARY_KEY_BASE64
+- LESSMEET_NOTARY_KEY_ID
+- LESSMEET_NOTARY_ISSUER_ID
+
+Only LESSMEET_DEVELOPER_ID_P12_PASSWORD remains. The owner must run the ignored
+local helper with `/usr/bin/ruby`:
+`.artifacts/chatgpt-storage/ci-signing/provision-p12-password.rb`.
+It prompts without echo, validates the exact PKCS#12 hash/certificate/private-key
+match, then passes the password to `gh secret set` via stdin for this environment.
+It refuses to overwrite an existing password secret and retains no password file.
+Syntax validation PASS; execution awaits owner input. No password in chat.
+
+Signing activation stays false until all seven inputs are provisioned and the
+candidate/status handoff is reconciled. Publication stays false for the manual
+test. No merge or hosted run occurred. After password confirmation, verify the
+seven names and environment policy, finish the delivery documentation/PR handoff,
+enable only signing, then let the owner merge. Observe that merge's exact workflow
+through terminal completion and verify its artifact; do not claim success early.
+
+## Team notary key downloaded; Apple input preparation complete (2026-10-14)
+
+The owner performed Generate in the prepared Chrome form. Readback on the same
+verified App Store Connect team shows Active key `LessMeet CI Notary`, role
+Developer, Key ID `C252BFL5P7`, issuer
+`69a6de8c-6878-47e3-e053-5b8c7c11a4d1`. No second key was created and no existing
+key was modified or revoked. This replaces the pending Generate confirmation.
+
+Downloaded that exact row's one-time P8 through Chrome. The browser reported
+`AuthKey_C252BFL5P7.p8`, 257 bytes, Done; the row's Download action disappeared.
+Chrome saved it to Downloads without a save dialog. Set that exact new file to
+0600, then moved it without overwrite to:
+`/Users/tubakhuym/projects/lessmeet/keys/developer-id-ci/AuthKey_C252BFL5P7.p8`.
+The destination parent is 0700; destination mode is 0600 and its path is Git-ignored.
+No copy remains at the original Downloads path. The file is preserved at the new
+location; this was not key deletion. No cookies, browser tokens or key contents
+were extracted or printed. `openssl pkey -check -noout` reports Key is valid.
+
+ACCEPT the bounded input-preparation outcome: matched Developer ID PKCS#12 and
+MAC_APP_DIRECT profile `JUKU76YFHS` from the previous entry, plus this active
+Developer-role Team API key and private one-time download. These are the intended
+inputs for the accepted CI configuration. No new signing certificate was created.
+The technical owner has finished Apple UI work; no live UI write scope remains.
+The owner should keep an encrypted backup because Apple does not offer another
+download. Do not print or send the P8 or PKCS#12 password through chat.
+
+Remaining limits: key parsing and portal metadata are not a notarization-service
+authentication test. No actual signature, timestamp request, notarization
+submission, hosted CI run or app runtime check was performed here. Seven GitHub
+environment secrets remain unprovisioned. PKCS#12 password must be supplied through
+a secure local input channel during provisioning, not inferred from the helper
+receipt. The later owner decision above removes the required-reviewer condition.
+No paid-plan/visibility change or public publication is authorized. The owner
+retains merge; the current provisioning state is recorded above.
+
+At this preparation checkpoint the required-reviewer condition was unresolved;
+the later owner decision and provisioning above supersede that dependency.
+Continue the manual signed-build workflow with secure password input.
+No GitHub mutation, commit/push,
+merge or public release occurred in this preparation. STATUS and configuration
+references now record these prepared inputs without secret values.
+
+## Matched Developer ID input and completed profile (2026-10-14)
+
+ACCEPT the supplied PKCS#12 identity and downloaded profile as matched signing
+inputs, not as a signed/notarized app result. The owner ran the interactive helper;
+the 0600 public receipt reports a matching private key and certificate. Independently
+checked that the original's SHA256 still matches the receipt and that the selected
+Apple certificate's current public DER has the same fingerprint.
+
+- Original: `/Users/tubakhuym/Documents/AppleDeveloperID.p12`, PKCS#12, unchanged.
+  SHA256 `a4ecf8f9c46e95068d39e8a5f5ee4bcfe1a8990748eab2a5769fb54e17fb8816`.
+- Selected certificate resource: `3NSF74TP49`, Developer ID Application,
+  team `63M98WD275`, SHA1 `DE967875FB1C4BBEBCB60EED42BC7182D031E9F0`.
+  Certificate expires `2027-02-01T22:12:15Z`. Identity ambiguity is resolved.
+- The original has mode 0644. Made a byte-identical 0600 prepared copy at
+  `/Users/tubakhuym/projects/lessmeet/keys/developer-id-ci/AppleDeveloperID.p12`.
+  Its parent is 0700. No overwrite, original permission change, import or new
+  private-key export occurred. The owner should restrict access to the original.
+
+Rechecked the exact bundle and all existing MAC_APP_DIRECT profiles before the
+single create request. No profile existed. Created with asc using bundle resource
+`4KUL5K8UU2` and certificate resource `3NSF74TP49`, then downloaded:
+
+- Name `LessMeet_Developer_ID_20261014`; resource ID `JUKU76YFHS`.
+- Type `MAC_APP_DIRECT`; API state ACTIVE.
+- UUID `666d8699-0fbc-4e91-8b29-eb58356ef84b`.
+- File `/Users/tubakhuym/projects/lessmeet/keys/developer-id-ci/LessMeet_Developer_ID.provisionprofile`,
+  mode 0600, Git-ignored in its owning checkout.
+- SHA256 `aaecb8a165088f734db862548ce4dde6d2b6d30d9ce4dad571ab2f153e7102cc`.
+- API relationships independently confirm the exact bundle and sole certificate.
+  CMS-decoded profile confirms team `63M98WD275`, application identifier
+  `63M98WD275.com.lessmeet.app`, ProvisionsAllDevices=true, no device list and
+  no debugging entitlement. The selected certificate is its only certificate.
+- The accepted `sign-local-app.py` developer-id input policy passes. Resulting
+  signing entitlements remain audio-input plus application/team identifiers.
+  No broad profile keychain group or legacy service capability is copied.
+
+Expiry observations are distinct: the API create response reports
+`2027-02-01T22:12:15Z`; the downloaded profile's signed payload reports creation
+`2026-10-14T09:42:20Z` and expiration `2044-10-09T09:42:20Z`. The contained
+certificate still expires in 2027. Do not infer signing validity through 2044.
+
+Limits: helper success proves PKCS#12 parse and private/public-key correspondence;
+policy success proves profile compatibility. Neither is an actual signing,
+timestamp, notarization or full-app runtime test. Password was entered only by
+the owner and was not retained by the helper or provided to this agent. CI still
+needs secure password provisioning when the environment blocker is resolved.
+
+The subsequent owner action and completed key download are recorded above.
+The earlier "ran it" response confirmed only the PKCS#12 helper; it was not
+treated as key-creation confirmation. The owner later performed Generate.
+GitHub protection limits, disabled gates and draft PR #18 are unchanged. No
+commit/push or merge in this preparation; only existing STATUS changed locally.
+
+## Supplied signing export and Chrome route (2026-10-14)
+
+Current scope continues the two Apple resources below. Use the signed-in Chrome
+Apple session; no cookie/token extraction, browser security changes or unrelated
+browser data access. The technical owner owns Apple UI actions. Other app UI is
+out of scope. Computer Use requires action-time confirmation immediately before
+creating persistent API access; prepare and verify the exact key first.
+
+Top-level Documents signing-file search found one candidate only:
+`/Users/tubakhuym/Documents/AppleDeveloperID.p12`, 3240 bytes, modified
+2026-10-14 13:23:19 +0700. ASN.1 structure has PFX version 3 and the PKCS#7 data
+OID. This establishes a PKCS#12/PFX container, not a provisioning profile. It
+does not yet establish the enclosed identity or a matching private key. The
+original remains unchanged; no recursive search or unrelated file read occurred.
+
+Owner-interactive inspection helper:
+`.artifacts/chatgpt-storage/ci-signing/inspect-supplied-p12.rb` (ignored).
+Run it with `/usr/bin/ruby` in a terminal. It prompts without echo, checks the
+public fingerprint/team/date and private/public-key match in memory, and writes
+only a new 0600 metadata receipt to
+`/Users/tubakhuym/projects/lessmeet/keys/developer-id-ci/AppleDeveloperID-inspection.json`.
+It neither exports a private key nor modifies/imports the original. No password
+argument, chat password, brute-force or overwrite is allowed. Syntax check PASS;
+actual inspection and profile creation are now complete as recorded above.
+
+Chrome verification completed: the Apple Developer page explicitly shows team
+`63M98WD275`. The matching signed-in App Store Connect account's own Users and
+Access row shows Account Holder/Admin. The Team Keys page shows issuer
+`69a6de8c-6878-47e3-e053-5b8c7c11a4d1`. No browser cookies/tokens were read or
+copied. The separate asc web session is not assumed authenticated and is no
+longer required for the portal route.
+
+The Team Keys page has eight active keys. One possible existing project key is
+`Meetless Upload 2026-09-14`, ID `V8ZBF889R7`, role Developer; it has no Download
+action. Its intended reuse and available P8 file are not established. Do not
+export a key from other storage or reuse unrelated keys. The existing asc-release
+key is App Manager, not the least-privilege Developer choice for this new input.
+
+Prepared but NOT submitted: Generate API Key form, name `LessMeet CI Notary`,
+role Developer, enabled Generate button. Computer Use requires confirmation at
+this exact persistent-access creation step. Ask whether to create that key now;
+if the owner instead has the intended `V8ZBF889R7` P8, request its protected file
+location for reuse. No new key ID, P8, profile or Apple resource mutation exists
+from this turn. The form remains open; no browser security settings changed.
+
+The PKCS#12 helper and profile branch are complete as recorded above.
+After action-time confirmation, create/download the Developer
+Team key through the verified Chrome session into the protected destination.
+The technical owner retains Apple UI ownership pending that confirmation.
+Existing GitHub and no-publication limits remain unchanged. Only STATUS changed
+in tracked files; the helper is ignored. No commit/push was made.
+
+## Apple distribution input preparation (2026-10-14)
+
+Authorized resources: one `MAC_APP_DIRECT` profile for `com.lessmeet.app` and
+one Team API key suitable for notarization. Reuse suitable existing resources.
+No new Developer ID certificate/private key, revocation, unrelated account change,
+broader credential discovery or protection-policy change is authorized. The
+technical owner retains this scope; no Peer or live app UI scope is active.
+Input is draft PR #18 at `dbbadc4b454ce07e90d0135f08ceb584854a5c94`.
+
+Inspected installed `asc 5.14.0` help before requests. `profiles create` accepts
+profile type plus bundle/certificate resource IDs. `web api-keys create` supports
+Team key creation and one-time P8 download through a cached Apple web session.
+It defaults to ADMIN, so any authorized notary-key creation must explicitly use
+`--role DEVELOPER`. Its help promises P8 mode 0600 and no key material in output.
+This is web-session support, not a claim that the public API bootstraps new keys.
+
+Narrow read-only API results, using the existing team-named authentication profile:
+
+- Exact bundle resource `4KUL5K8UU2`: identifier `com.lessmeet.app`, platform
+  UNIVERSAL, seed `63M98WD275`. The identifier filter also returned a longer
+  services identifier; it was excluded after exact matching and direct lookup.
+- Existing bundle capabilities: IN_APP_PURCHASE and APPLE_ID_AUTH. No capability
+  was added or changed. The accepted signing code still requests only audio input
+  and profile-authorized application/team identifiers, not these legacy services.
+- No `MAC_APP_DIRECT` profiles were returned across all pages (ACTIVE/INVALID).
+- Three Developer ID Application certificates were returned. Public DER metadata
+  confirms each subject UID/OU is `63M98WD275`, each has a distinct SHA1, and each
+  expires `2027-02-01T22:12:15Z`. All start dates precede this inspection:
+
+| Certificate resource ID | SHA1 | Start (UTC) |
+| --- | --- | --- |
+| `3NSF74TP49` | `DE967875FB1C4BBEBCB60EED42BC7182D031E9F0` | 2026-10-14 06:12:33 |
+| `4A6J752KSR` | `D3CA2AEA2DCBF578D27CFC3557BFFCB41E370561` | 2026-08-25 00:23:32 |
+| `6P3LN2NGX6` | `6342DB21E850363841B97957D2E00E7D0CADA9D7` | 2026-04-30 13:13:22 |
+
+Certificate choice is AMBIGUOUS. Do not select the newest certificate or assume
+its signing private key exists locally. No profile was created/downloaded. The
+owner must identify the intended resource/fingerprint and matching prepared
+signing-key source. No private key was inspected/exported; certificate trust-chain
+and local private-key availability were not tested. Profile team/bundle/certificate
+membership, all-device/debug policy and entitlements remain UNVERIFIED because
+there is no selected profile yet.
+
+Team API key preparation: `asc web auth status` reports authenticated=false and
+passwordStored=false. No web key listing/creation was attempted without that
+session. Existing API authentication works, but does not establish a suitable
+reusable least-privilege notary key or enable web-session bootstrap. The existing
+profile reports issuer `69a6de8c-6878-47e3-e053-5b8c7c11a4d1`; this is metadata
+from that profile, not a newly created key or a verified new-key binding. New
+notary Key ID is not available. The IAP key was not opened or substituted.
+
+Apple's current roles table grants Notarize software to Developer, App Manager,
+Admin and Account Holder; Developer is the least privileged supported role in
+that table. Team-key creation requires Account Holder/Admin. Team keys apply
+across apps; they cannot be limited to LessMeet alone. No elevated ADMIN default
+will be used for the notary key.
+
+Prepared destination outside this worktree:
+`/Users/tubakhuym/projects/lessmeet/keys/developer-id-ci/` (created, mode 0700).
+Parent keys directory is mode 0700; profile/P8 paths are Git-ignored in the owning
+checkout. The directory is empty. Intended files are `AuthKey_<KEY_ID>.p8` and
+`LessMeet_Developer_ID.provisionprofile`, each mode 0600. No secret values were
+printed or saved in evidence logs. No Apple resource mutation occurred.
+
+Minimal owner action:
+
+1. Select one exact certificate above and identify its signing-key source. This
+   does not authorize a new signing certificate or private-key export.
+2. Sign in interactively using `asc web auth login --public-provider-id 63M98WD275`
+   in the owner's terminal, or sign in to App Store Connect in the browser. Do
+   not provide passwords or verification codes in chat. Account Holder/Admin
+   must use the intended team. No authentication bypass will be attempted.
+3. If using the browser, open Users and Access > Integrations > App Store Connect
+   API > Team Keys. Check for a suitable intended existing key before creating
+   `LessMeet CI Notary` with Developer access. If API access has not been enabled,
+   the Account Holder must request it. Download the P8 once to the protected
+   destination above, record Key ID and Issuer ID, and keep the file mode 0600.
+   Alternatively, after login, the CLI can perform the authorized key creation
+   and one-time download with explicit Developer role and output directory.
+
+Resume profile creation after certificate selection; resume key reuse/creation
+after authenticated team/session verification. These are independent branches.
+No GitHub environment change, secret upload, merge, publication, notary submission
+or installed-app operation occurred in this preparation. Existing delivery gates
+and the required-reviewer limitation remain unchanged. Only this status file
+changed locally; no new commit or push was made for this preparation.
+
+Sources checked: [Apple API key creation and one-time download](https://developer.apple.com/help/app-store-connect/get-started/app-store-connect-api),
+[Apple roles and access](https://developer.apple.com/help/account/access/roles),
+[Notary API authentication](https://developer.apple.com/documentation/notaryapi/submitting-software-for-notarization-over-the-web),
+[Profile creation attributes](https://developer.apple.com/documentation/appstoreconnectapi/profilecreaterequest/data-data.dictionary/attributes-data.dictionary).
+
 ## Manual signed-build delivery (2026-10-14)
 
 Outcome requested: deliver the accepted secure-storage/signing changes to main
@@ -14,10 +327,12 @@ Remote main and local HEAD were both
 Product/scripts/tests remain that accepted candidate. Only delivery status and
 configuration observations below are being updated.
 
-Current authority supersedes the earlier local-only limits: commit/push/PR/merge,
+At that checkpoint, authority superseded local-only limits: commit/push/PR/merge,
 the seven intended environment secrets, scoped protections, hosted verification
-and Apple timestamp/notarization traffic are authorized. Missing credentials may
-not be guessed, newly created or replaced. No unrelated key export, protection
+and Apple timestamp/notarization traffic were authorized. The latest decision
+above reserves merge to the owner. The resource-preparation
+entry above adds specific profile/Team API key creation authority. Other missing
+credentials may not be guessed, newly created or replaced. No unrelated key export, protection
 bypass, public release, real OAuth/chat or installed-app/data operation is allowed.
 
 Remote observations and actions at 06:11–06:13 UTC:

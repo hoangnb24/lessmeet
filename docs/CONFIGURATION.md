@@ -28,20 +28,42 @@ The schema-2 contract below is historical.
 
 `main-release.yml` requires `LESSMEET_DEVELOPER_ID_RELEASE_ENABLED=true` before
 building or submitting anything. It uses environment `lessmeet-developer-id`.
-Create that protected environment first, restrict it to main, and require approval
-from the signing owner. `LESSMEET_GITHUB_RELEASE_ENABLED=true` separately controls
+The owner explicitly chose no required reviewer and retains merging to main.
+Environment `lessmeet-developer-id` now exists with a single allowed branch,
+`main`, and no allowed tag rule. `LESSMEET_GITHUB_RELEASE_ENABLED=true` separately controls
 publication. Signing activation permits timestamp requests and notarization uploads
 even while publication is disabled. On 2026-10-14, publication was changed from
 `true` to `false`; signing was explicitly set to `false`. Both readbacks matched.
 
-Activation is blocked. The environment creation API rejected required reviewers
-with HTTP 422 because of the repository's billing plan. It left an empty,
-unprotected environment; that newly created environment was removed after checking
-that it held no secrets or variables. No environment or Apple secrets remain
-configured. Do not retry with weaker protections. The repository owner must
-resolve plan support before provisioning. The documented local key source contains
-Development profiles and an IAP/RevenueCat key, not established Developer ID and
-Team API notary inputs. Do not substitute those credentials.
+The earlier required-reviewer attempt failed with HTTP 422 due to the billing
+plan, and its empty environment was removed. That condition is superseded by the
+owner's explicit no-reviewer decision. A new main-only environment was created and
+verified. All seven secrets below are provisioned. Names-only readback includes
+the password secret updated at `2026-10-14T09:51:34Z`.
+Signing is now enabled: `LESSMEET_DEVELOPER_ID_RELEASE_ENABLED=true`.
+Publication remains false throughout this verification run. The owner alone
+merges PR #18; the agent does not merge. Do not substitute
+Development/IAP credentials for the intended inputs.
+
+Prepared local inputs (2026-10-14), outside Git in
+`/Users/tubakhuym/projects/lessmeet/keys/developer-id-ci/` (directory 0700, files 0600):
+
+- `AppleDeveloperID.p12`: owner-supplied PKCS#12 with matching private key;
+  certificate resource `3NSF74TP49`, SHA1
+  `DE967875FB1C4BBEBCB60EED42BC7182D031E9F0`, team `63M98WD275`.
+- `LessMeet_Developer_ID.provisionprofile`: MAC_APP_DIRECT resource `JUKU76YFHS`,
+  exact bundle `com.lessmeet.app`, all-device, only the selected certificate.
+- `AuthKey_C252BFL5P7.p8`: `LessMeet CI Notary`, Team API key, Developer role;
+  Key ID `C252BFL5P7`, issuer `69a6de8c-6878-47e3-e053-5b8c7c11a4d1`.
+
+The three prepared files and their certificate/key/issuer identifiers have been
+uploaded to the six matching environment secrets via `gh` stdin. This does not
+establish a notarized app. The owner completed the ignored
+`provision-p12-password.rb` helper for the seventh secret. It prompts securely,
+validates the exact export, and uploads the password without retaining a file.
+The agent verified its secret name and timestamp, not its value.
+Keep an encrypted backup of the one-time P8 download. See STATUS for exact checks,
+profile/certificate expiry differences and remaining verification limits.
 
 ### Required environment secrets
 
