@@ -19,8 +19,11 @@ are updated. Previous offline release tests (112 PASS) and packaging tests
 (76 PASS) apply to those unchanged bytes. Whitespace validation is repeated
 before the documentation commit. No credentials or ignored helper are committed.
 
-Next action: push this documentation update and mark PR #18 ready for the owner.
-Only the owner merges. After that event, observe the exact merged-source workflow
+Documentation commit `7ff811f774899601f15591ec36fa891dcf51499a` was pushed.
+PR #18 was marked ready; readback reports OPEN, isDraft=false and merge state
+CLEAN. The PR description now records the resolved inputs and current limits.
+This follow-up only records the completed handoff; it changes no executable bytes.
+Next action: only the owner merges. After that event, observe the merged-source workflow
 and verify its artifact. Hosted signing, notarization and signed-app runtime
 remain UNVERIFIED. Provisioning success is not artifact acceptance.
 
