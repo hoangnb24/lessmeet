@@ -1,5 +1,87 @@
 # LessMeet delivery
 
+## Codesign failure classification (2026-10-14)
+
+Run `38567719914` for merge `e93a208ba6deb9b43cdcb3a6e83622b327128032`
+completed/failure. All preparation, copy, configuration, embedded profile and
+entitlement stages passed. `sign-codesign` failed at 13:03:39 UTC in about 17 ms.
+Cleanup passed. No notarization stage started, so no in-flight submission from
+this run exists and no retry/submission has been made.
+
+Scoped repair: retain only an allowlisted reason and numeric exit code from
+failed codesign output. Raw stdout/stderr, command arguments, private paths and
+secret values remain unlogged. Unknown output maps to `unclassified`; no guessed
+credential, trust or metadata change is made. The existing fail-closed path and
+best-effort stage logger remain. Offline release tests: 121 PASS.
+ACCEPT after independent exact-candidate inspection. Reviewed signer blob
+`d545b929286e00ce48743e6111fb5f3b91738629`, CI
+`29480da71c69782544abd3d2a305c42e9896dcc4`, tests
+`ff5a5b65a55cb8b1bd47f165135cbda695efe241`; only a comment was then clarified
+to avoid claiming memory erasure. Classification is case-sensitive/first-match,
+not proof of root cause. No raw output in diagnostic fields/logs is claimed;
+Python traceback memory erasure is not. Packaging 76 PASS, workflow/whitespace
+PASS. No Peer write scope remains.
+Continue with an accepted normal PR merge and its actual run, then use that
+reason to select the smallest repair. Do not stop at this diagnostic increment.
+
+## Initial merge authorized and completed (2026-10-14)
+
+The owner explicitly authorized this agent to merge PR #20. This resolves the
+initial owner-only merge dependency below. Normal merge used exact accepted head
+`d3246f2c9ff8bbdb3f9e1d6bcb22d6393da9a932`, without admin bypass or force push.
+PR #20 is MERGED at `e93a208ba6deb9b43cdcb3a6e83622b327128032`, 12:56:32 UTC.
+Signing remains enabled, publication disabled. The separate delivery branch
+incorporates that main merge without overwriting its status commits.
+
+Next: observe this merge's hosted run; then continue the authorized evidence-led
+repair/review/merge loop until a verified CI artifact or a new owner-only blocker.
+No signed result is yet accepted. Earlier waiting/blocker entries are historical.
+
+## Bounded signed-artifact delivery loop (2026-10-14)
+
+Authorized outcome: a valid signed/notarized downloadable CI artifact for manual
+testing, not a public release. The owner retains the initial PR #20 merge.
+Subsequent evidence-led scoped fixes, commits, pushes, PR creation and normal
+follow-up merges are now authorized. This supersedes older owner-only follow-up
+merge limits below. Do not race or perform the initial PR #20 merge.
+
+At resumption PR #20 is OPEN at `d3246f2c9ff8bbdb3f9e1d6bcb22d6393da9a932`;
+main remains `be6a3a53b871e195ddb02834345b5957d06764fd`. A bounded read-only
+watcher awaits the owner's merge with backoff and emits state transitions only.
+No new hosted run or notary submission has been started by this work.
+The technical owner holds the delivery scope; no Peer writer or UI owner is active.
+Local delivery branch is separate from PR #20 and does not change its remote head.
+
+Rechecked environment `24266624356`: only branch `main`, rule `63011760`, no tag
+rule or required reviewer. Signing remains enabled, publication disabled. Keep
+bundle `com.lessmeet.app`, selected certificate/profile/notary inputs and these
+protections unchanged. No storage downgrade, ad-hoc fallback, force push,
+provenance/asset-guard bypass, broad credential replacement or unrelated changes.
+Preserve installed app, recordings and credentials; no live OAuth/chat testing.
+
+On each run failure, inspect actual logs before choosing a repair. Account for
+any in-flight notary submission before retrying. Review exact repair candidates,
+record explicit dispositions here, then continue normal delivery. New external
+cost/security/distribution decisions remain with the owner. Final acceptance
+requires merged-source binding, sealed artifact hashes, Developer ID signature,
+accepted notarization, staple verification and cleanup evidence. Tests alone
+do not establish delivery or full-app runtime acceptance.
+
+BLOCKED at the initial owner-only merge, not at a technical repair decision.
+The bounded backoff watcher completed after about 18 minutes without a merge.
+Final readback at 12:53 UTC: PR #20 OPEN/CLEAN at the same head, mergeCommit=null;
+main still `be6a3a53b871e195ddb02834345b5957d06764fd`. Latest run remains
+`38549402920`, completed/failure, with `CI signing stage app-signing: failed`.
+No new run or artifact exists from this continuation. No code repair, credential
+change, protection change or initial merge was attempted. Only delivery status
+was committed/pushed on the separate branch; PR #20 was left untouched.
+
+Minimum owner action: complete the initial PR #20 merge (or explicitly revise
+that initial-merge boundary). On that event, resume the already-authorized
+fix/merge/build loop without re-requesting follow-up authority. No duplicate
+notarization is in flight from this work; the latest completed run stopped at
+app-signing before submission. Valid signed/notarized delivery remains unmet.
+
 ## App-signing substages after hosted failure (2026-10-14)
 
 PR #19 merged at `be6a3a53b871e195ddb02834345b5957d06764fd`.

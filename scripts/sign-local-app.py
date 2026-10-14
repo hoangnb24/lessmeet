@@ -38,6 +38,29 @@ SIGN_STAGES = frozenset((
     "verify-entitlements", "verify-certificate", "verify-resources", "verify-digests",
 ))
 
+# Match known error text; never copy raw output into diagnostic fields or logs.
+CODESIGN_ERRORS = (
+    (b"resource fork, Finder information, or similar detritus not allowed", "resource-metadata"),
+    (b"unable to build chain to self-signed root", "certificate-chain"),
+    (b"errSecInternalComponent", "security-internal"),
+    (b"User interaction is not allowed", "keychain-interaction"),
+    (b"The specified item could not be found in the keychain", "keychain-item-missing"),
+    (b"no identity found", "identity-missing"),
+    (b"code object is not signed at all", "unsigned-nested-code"),
+    (b"bundle format unrecognized", "bundle-format"),
+    (b"unsealed contents present", "unsealed-contents"),
+    (b"timestamp service is not available", "timestamp-service"),
+    (b"invalid or unsupported format for signature", "signature-format"),
+)
+CODESIGN_REASONS = frozenset(reason for _, reason in CODESIGN_ERRORS) | {"unclassified"}
+
+
+class CodesignFailure(Invalid):
+    def __init__(self, returncode, reason):
+        super().__init__("Codesign command failed; no candidate was promoted.")
+        self.returncode = returncode
+        self.reason = reason if reason in CODESIGN_REASONS else "unclassified"
+
 
 def run(args, timeout=120):
     # No signing payloads, publishing tokens or operator configuration reach
@@ -47,6 +70,9 @@ def run(args, timeout=120):
                                 env=build.build_environment(), capture_output=True, timeout=timeout)
     except (OSError, subprocess.TimeoutExpired):
         raise Invalid("Signing command failed or timed out.") from None
+    if result.returncode != 0 and str(args[0]) == "/usr/bin/codesign":
+        reason = next((label for marker, label in CODESIGN_ERRORS if marker in result.stderr), "unclassified")
+        raise CodesignFailure(result.returncode, reason)
     require(result.returncode == 0, "Signing command failed; no candidate was promoted.")
     return result.stdout
 
