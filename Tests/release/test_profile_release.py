@@ -138,6 +138,78 @@ class ProfilePolicyTests(unittest.TestCase):
             signer.run(["synthetic"])
         self.assertNotIn("SYNTHETIC-SECRET", str(child.call_args.kwargs["env"]))
 
+    def test_sign_substages_preserve_failure_cleanup_and_quiet_local_success(self):
+        for failure in (None, "sign-copy", "sign-configure", "sign-codesign",
+                        "verify-signature", "verify-timestamp", "verify-entitlements",
+                        "verify-certificate", "sign-promote", "quiet", "broken-log"):
+            with self.subTest(failure=failure), tempfile.TemporaryDirectory() as directory:
+                root = Path(directory).resolve()
+                source, output = root / "Input.app", root / "Output.app"
+                (source / "Contents/MacOS").mkdir(parents=True)
+                info = plistlib.dumps({"CFBundleIdentifier": "com.lessmeet.app", "LessMeetPackagingMode": "signed-local"})
+                (source / "Contents/Info.plist").write_bytes(info)
+                (source / "Contents/MacOS/LessMeet").write_bytes(b"synthetic-code")
+                keychain = root / "synthetic.keychain-db"
+                keychain.write_bytes(b"synthetic")
+                original_error = signer.Invalid("PRIVATE-command-output-password")
+                calls = []
+                copytree, rename = signer.shutil.copytree, Path.rename
+                def copy(*args, **kwargs):
+                    if failure == "sign-copy":
+                        raise original_error
+                    return copytree(*args, **kwargs)
+                def promote(path, destination):
+                    if failure == "sign-promote":
+                        raise original_error
+                    return rename(path, destination)
+                def command(args, **kwargs):
+                    calls.append(args)
+                    category = ("sign-configure" if args[0] == "node" else
+                                "sign-codesign" if "--force" in args else
+                                "verify-signature" if "--verify" in args else None)
+                    if category is not None and failure == category:
+                        raise original_error
+                    if args[0] == "/usr/bin/lipo":
+                        return b"arm64"
+                    if "--entitlements" in args and "--display" in args:
+                        return b"PRIVATE-malformed" if failure == "verify-entitlements" else plistlib.dumps({})
+                    for arg in args:
+                        if str(arg).startswith("--extract-certificates="):
+                            Path(str(arg).split("=", 1)[1] + "0").write_bytes(b"wrong" if failure == "verify-certificate" else DER)
+                    return b""
+                diagnostic = {} if failure == "quiet" else {"diagnostic": ci.stage}
+                log = io.StringIO()
+                with redirect_stdout(log), redirect_stderr(log), \
+                     patch.object(signer.build, "verify_app"), \
+                     patch.object(signer, "inputs", return_value=(b"profile", {})), \
+                     patch.object(signer.shutil, "copytree", side_effect=copy), \
+                     patch.object(Path, "rename", promote), \
+                     patch.object(signer, "run", side_effect=command), \
+                     patch.object(signer.build, "run", return_value="PRIVATE" if failure == "verify-timestamp" else "Timestamp=synthetic (runtime)"), \
+                     patch.object(signer.build, "verify_resources"):
+                    if failure == "broken-log":
+                        with patch("builtins.print", side_effect=BrokenPipeError("PRIVATE")):
+                            signer.sign(source, output, root / "profile", FP, keychain, "developer-id", **diagnostic)
+                    elif failure not in (None, "quiet"):
+                        with self.assertRaises(Exception):
+                            signer.sign(source, output, root / "profile", FP, keychain, "developer-id", **diagnostic)
+                    else:
+                        signer.sign(source, output, root / "profile", FP, keychain, "developer-id", **diagnostic)
+                self.assertEqual((source / "Contents/Info.plist").read_bytes(), info)
+                self.assertFalse(list(root.glob("signing-*")))
+                self.assertNotIn("PRIVATE", log.getvalue())
+                self.assertNotIn(str(root), log.getvalue())
+                if failure in (None, "quiet", "broken-log"):
+                    self.assertTrue(output.exists())
+                    signing = next(c for c in calls if "--force" in c)
+                    self.assertIn("--timestamp", signing)
+                    self.assertIn(keychain, signing)
+                    if failure == "quiet":
+                        self.assertEqual(log.getvalue(), "")
+                else:
+                    self.assertFalse(output.exists())
+                    self.assertIn(f"CI signing stage {failure}: failed", log.getvalue())
+
     def test_verify_extracts_leaf_with_optional_argument_syntax(self):
         with tempfile.TemporaryDirectory() as directory:
             app = Path(directory).resolve() / "Fixture.app"
@@ -313,7 +385,8 @@ class NotaryTests(unittest.TestCase):
                     if args[0] == "/usr/bin/ditto" and "-c" in args:
                         Path(args[-1]).write_bytes(signed_zip())
                     return b""
-                def do_sign(*args):
+                def do_sign(*args, **kwargs):
+                    self.assertIs(kwargs["diagnostic"], ci.stage)
                     calls.append(["sign"])
                 def notary(*args):
                     calls.append(["notary"])
