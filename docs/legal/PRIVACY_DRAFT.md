@@ -1,7 +1,11 @@
 # LessMeet Privacy Policy — unpublished draft
 
 NOT FOR PUBLICATION until the operator has reviewed and completed this document.
-This describes the current implementation, not a legal-compliance certification.
+This is a draft for review, not a legal-compliance certification.
+
+Implementation notes reconciled 2026-10-13 against local source and recorded
+acceptance. No live settings or external legal terms were revalidated. The
+[runbook](DELETION_RUNBOOK.md) owns current deletion scope and evidence.
 
 Reconciled 2026-09-24 against `b42a7a00a9e0f60a72eaeeadaa17b0c9c190f605`
 and the accepted working-tree evidence in [STATUS](../STATUS.md),
@@ -61,8 +65,8 @@ items. These outputs may contain information about you or other participants.
 Convex stores uploaded audio, transcripts and chat indefinitely unless deletion is
 requested; there is no automatic content-expiry policy. Native account-deletion
 initiation, confirmation and status refresh exist in the accepted implementation.
-The guarded backend is deployed to development, with new-request intake and
-automation gates off. This is not an available end-to-end provider deletion service.
+Production provisioning and a selected-case deletion are recorded. This does not
+establish an available end-to-end provider deletion service.
 The backend attempts exact temporary Google File cleanup when its identifier is
 known and durably tracks known IDs and ambiguous operations. Cleanup may fail;
 unknown/legacy copies and interrupted generation remain reconciliation exceptions.
@@ -110,8 +114,10 @@ renewal must be managed separately; cancellation is not a prerequisite to deleti
 The approved operational retention policies are distinct from content retention:
 
 - Incomplete deletion requests retain the exact-owner guard and reconciliation
-  evidence. After local cleanup and all five provider/residual confirmations, the
-  identifier-bearing ledger is retained for 90 days of continuous completion.
+  evidence. Local cleanup, all five provider/residual confirmations and reconciled
+  execution evidence are required before the 90-day completed-ledger clock starts.
+  New requests also require durable Google acknowledgement or evidence-backed
+  non-applicability. The ledger is retained for 90 days of continuous completion.
   Reopened completion cancels the clock; unresolved work blocks purge. Daily bounded
   cleanup then removes the request and linked inventory, stage, outbox, contact and
   send records, leaving only an unlinkable completion/purge-time and policy receipt.
@@ -121,20 +127,19 @@ The approved operational retention policies are distinct from content retention:
   That receipt is not the final unlinkable ledger receipt and is removed with the
   completed request. Neither duration is a deletion-completion deadline.
 
-Both policies are deployed to development and run independently of activation gates;
-they do not approve new contact collection, email sends or provider destruction.
-The separately gated notification implementation can retain a verified primary
-non-relay email address and frozen completion message; it is not active. Resend is
-the selected notification processor. Its account-level retention, contact/send
-activation privacy and an alternative for absent/relay-only contacts remain to be
-resolved. Submission would not establish delivery; no verified delivery path exists.
+Retention workers run independently of activation gates. They do not authorize
+contact collection, email sends or provider destruction. Resend is the selected
+notification processor. Its provider retention and contact/send privacy review
+remain open. One manual status email has recipient-reported receipt; automatic
+contact capture and automatic delivery remain unverified.
 
-Clerk transport is accepted only as a disconnected, mocked module. The worker's
-Clerk/Apple/RevenueCat destructive stages are not integrated; residual-copy handling
-and original Apple revocation provenance remain unresolved. A synthetic development
-ledger rehearsal used synthetic provider confirmations, not actual provider deletion.
-End-to-end handling, completion timing and notification still need verification and
-approval. No immediate deletion, response deadline or provider-erasure promise is made.
+Clerk, Apple and RevenueCat workers are integrated in source. Recorded live evidence
+covers one selected Clerk deletion, not full provider fulfillment. The local Google
+extension still needs a separately authorized live trial. The approved operating
+policy is normal scoped deletion within seven calendar days of receipt, with email
+updates/results. Exceptions need a status, reason and next-update time. This is
+not a promise of immediate deletion or universal provider erasure. See the
+[approved procedure and limits](DELETION_RUNBOOK.md#approved-7-calendar-day-email-operation--implementationreadback-required).
 
 ## Publication checklist — remove only after resolution
 

@@ -16,15 +16,17 @@ test disclosures and requires acknowledgement; public legal URLs may be absent
 only in sandbox-dev. Store builds still require both HTTPS links. Sign into
 Lessmeet normally; `sandbox@kieng.io.vn` is the Apple sandbox tester, not a
 required Clerk login. Confirm Apple's sheet is a sandbox test before approving.
-Packaging/signature verification is complete; runtime and transactions are not.
+The recorded signed sandbox artifact has packaging/signature acceptance and
+Human-reported core billing checks. See STATUS for the exact scope and remaining
+lifecycle checks; this runbook does not verify a newly built artifact.
 
 ## 1. Apple prerequisites (Account Holder)
 
 Priority: owner-only internal sandbox first. Account deletion and full public
 legal publication remain pre-release gates, not blockers for synthetic internal
 billing tests. Keep failed deletion evidence separate from sandbox acceptance.
-The existing native/build legal-URL requirement must be deliberately resolved for
-internal testing; do not substitute dead URLs or call drafts production policies.
+`sandbox-dev` permits acknowledged unpublished legal links. Do not substitute dead
+URLs or call drafts production policies. Store mode still requires published links.
 
 Target: team `63M98WD275`, macOS app `6815021182`, bundle `com.lessmeet.app`.
 Do not change Meetless (`com.meetless.app`).
@@ -107,14 +109,10 @@ quota tests first and mark live quota settlement NOT RUN until separately author
 Privacy and Terms drafts are in `docs/legal/`. Human supplied operator Hoang Bang,
 contact `hoang@2m0r.com`, and domain `www.lessmeet.2m0r.com`. Proposed paths are
 `https://www.lessmeet.2m0r.com/privacy` and `https://www.lessmeet.2m0r.com/terms`;
-neither is verified as published. Human must review provider practices and approve
-the text before publication. Do not claim automatic deletion or an implemented deletion workflow:
-the deployed version retains cloud data indefinitely. Local deletion source is
-accepted with default-off intake, guards and bounded cleanup; it has not been
-deployed or live-verified. Ledger retention and fulfillment timing/channel decisions
-are required even before deployment; see docs/BACKEND.md's deletion contract.
-Account deletion/privacy-request handling needs a real operational decision before
-public launch; a drafted contact address is not that implementation.
+neither is verified as published. Human must approve the text before publication.
+Deletion workers and limited live evidence now exist. They do not establish full
+fulfillment or public readiness. The [deletion runbook](legal/DELETION_RUNBOOK.md)
+owns the approved timing, retention conditions and remaining evidence.
 
 ## 4. Mac signing gates
 
@@ -127,11 +125,11 @@ package` command signs an isolated installer and requires separately authorized
 real signing inputs. Do not run it merely because offline tests pass. Actual
 distribution compatibility, install/runtime and Apple upload remain unverified.
 
-`scripts/build-app.sh` supports `dev`, `sandbox-dev` and `store`. Default `dev`
-remains ad-hoc; signed modes have isolated outputs, profile validation and minimal
-App Sandbox/client-network/audio entitlements. Offline packaging checks passed;
-real signed artifact/runtime verification remains pending. A successful strict
-signature check is not Mac App Store acceptance.
+`scripts/build-app.sh` supports `dev`, `offline-check`, `auth-check`, `sandbox-dev`,
+`store` and `testflight`. Default `dev` uses ad-hoc signing. The three profile-based
+modes are `sandbox-dev`, `store` and `testflight`; their outputs are isolated.
+The [packaging contract](../Tests/packaging/STORE_INPUTS.md) defines signing inputs.
+A successful strict signature check is not Mac App Store acceptance.
 
 For store packaging, select the correct Apple distribution identity/profile for
 the exact team and bundle. Add App Sandbox and required client-network/audio
@@ -152,7 +150,8 @@ Sources: [distribution signing](https://developer.apple.com/documentation/xcode/
 
 ## 5. Required evidence matrix
 
-All rows initially **NOT RUN** against Apple sandbox. For each run record build
+This matrix defines checks, not current results. Core sandbox checks have
+Human-reported acceptance; remaining checks stay unverified in STATUS. For each run record build
 hash, macOS version, selected dev deployment, timestamp, pseudonymous test-account
 labels, expected/actual result and redacted evidence location in STATUS.md.
 Never store tokens, receipts, raw subscriber payloads or real recordings in docs.
@@ -184,11 +183,10 @@ evidence); do not loosen fail-closed parsing merely to make a test pass.
   malformed containers, forged timing/payloads, nesting/sample amplification and
   truncated frames; measure CPU/memory and decoder-equivalent duration. Reject or
   normalize before paid inference. Keep public activation blocked until resolved.
-- Long recordings: generate synthetic representative durations (proposed 30/60/120
-  minutes), measure recording/export time, memory, encoded size and decoded length.
-  Check the 18 MiB boundary and visible rejection without local loss; separately
-  listen to real capture with authorized participants. Do not infer quality from
-  silent/synthetic files or promise an untested maximum session length.
+- Long recordings: retain the [completed synthetic export measurements](../Tests/LessMeetTests/LONG_CAPTURE_HANDOFF.md).
+  The internal [batch path](BATCH_CONTRACT.md) handles bounded chunks but does not
+  establish public long-session readiness. Real capture quality, drift and live
+  provider behavior still need evidence. Do not infer these from synthetic files.
 - AI economics: Human first approves a spending cap and synthetic/non-sensitive
   inputs. Record actual model/version, billed usage, request count, storage/transfer
   and failure costs; report per transcribed hour and per question. Compare full

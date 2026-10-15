@@ -1,21 +1,18 @@
 # LessMeet
 
-Release-preparation checkpoint (2026-09-24): the core product flow and core sandbox
-billing have Human-reported acceptance. The accepted backend, including deletion
-orchestration and retention workers, is deployed to development, not production.
-A synthetic deletion rehearsal verified orchestration, not provider erasure.
-Deletion intake, automation, inventory and email activation remain off; destructive
-Clerk/Apple/RevenueCat adapters are not implemented. Main deletion-ledger retention
-(90 days after full completion) and preflight retention (30 days after the latest
-accepted transition) are approved. Legal/listing drafts remain unpublished; Store
-packaging tooling has offline acceptance, not a verified uploadable release.
-See [current acceptance and remaining
-gates](docs/STATUS.md), [configuration inventory and secret locations](docs/CONFIGURATION.md)
-and [deletion contract](docs/BACKEND.md#account-deletion--development-deployed-activation-off).
-Older development/runtime notes below do not supersede this checkpoint.
-
 A native Swift macOS app for local microphone + system-audio recordings, with
 Gemini transcription and transcript chat through an owner-isolated Convex backend.
+
+This checkout contains the cloud-backed app. Production provisioning is recorded,
+but public-release acceptance is incomplete. Source code, deployed versions and
+live verification have different checkpoints. Start with these references:
+
+- [Current work and acceptance](docs/STATUS.md).
+- [Configuration and secret locations](docs/CONFIGURATION.md).
+- [HTTP and deletion contracts](docs/BACKEND.md).
+- [Internal batch transcription and chat](docs/BATCH_CONTRACT.md).
+- [Sandbox billing checks](docs/STORE_SANDBOX.md).
+- [Approved visual direction](docs/DESIGN.md).
 
 ## Run locally
 
@@ -58,32 +55,24 @@ Original audio is retained if combining fails. A recording interrupted by app
 termination is marked interrupted when the library is reopened. Automatic repair,
 device switching, pause/resume and cloud sync are outside the first version.
 
-Synthetic 30/60/120-minute exports completed locally but measured 29.56/59.11/118.22
-MiB, all above the 18 MiB upload limit. Long local recording does not currently imply
-long-meeting transcription support. See the [reproducible opt-in test and limits](Tests/LessMeetTests/LONG_CAPTURE_HANDOFF.md);
-these measurements do not establish real-device sound quality or drift.
+Synthetic 30/60/120-minute exports exceeded the legacy single-upload limit of
+18 MiB. The current transcript action prepares bounded chunks instead; its internal
+backend gates can still block uploads. Neither route establishes real-device sound
+quality or drift. See the [export measurements](Tests/LessMeetTests/LONG_CAPTURE_HANDOFF.md)
+and [batch limits](docs/BATCH_CONTRACT.md).
 
 ## Account and cloud
 
-The owner approved development cloud access and indefinite recording retention;
-sandbox billing enforcement was subsequently enabled on the same development
-backend. The earlier unlimited-access checkpoint is not the current billing policy.
-`GEMINI_BILLABLE_ENABLED` defaults off if missing and does not replace owner checks
-or billing admission. Recorded configuration is not a fresh live switch readback.
+Clerk handles hosted sign-in. Login sessions may use Keychain; Gemini keys never
+enter the app. Convex holds the owner-funded Gemini key and checks each request's
+owner. Missing `GEMINI_BILLABLE_ENABLED` disables new AI work. Billing and internal
+batch gates impose additional checks.
 
-This is a multi-user product. Gemini keys will **not** be saved in Keychain or
-bundled in Swift. The product owner funds one shared key in Convex env.
-Clerk hosted login is wired into the sidebar; Google and Apple are enabled for the
-development instance. Clerk may persist login sessions in Keychain; this never
-stores the Gemini key. Human reported a successful login/transcript/chat round;
-both providers and production credentials are not independently verified by it.
-Transcript/chat backend is deployed to development and connected to the Swift UI.
-See [the HTTP contract](docs/BACKEND.md).
-Audio uploads are limited to 18 MiB. Uploaded audio/transcripts remain in Convex
-indefinitely unless an approved deletion workflow removes them. Guarded in-app
-deletion initiation is implemented and its backend is deployed to dev, but intake
-is off and provider deletion is not live-verified. Core development sandbox billing
-was Human-tested; see status for remaining lifecycle/release checks.
+Cloud audio, transcripts and chat remain stored indefinitely unless the deletion
+workflow removes them. Account deletion preserves local files and does not cancel
+Apple renewal. Provider workers exist, but a local implementation is not proof of
+live fulfillment. See the [deletion runbook](docs/legal/DELETION_RUNBOOK.md) for the
+accepted scope, seven-calendar-day operating policy and remaining evidence.
 
 **Plan & usage** in the sidebar shows server-verified allowances and offers
 purchase/restore when configured. RevenueCat identifies the signed-in Clerk user;
@@ -105,28 +94,41 @@ setup; development shared OAuth credentials do not establish production readines
 
 ### Using transcript and chat
 
-Sign in from the sidebar, select a saved recording and choose **Create Transcript**.
-Confirm the upload/retention notice. The app uploads only `combined.m4a`, saves the
-remote ID and waits for Markdown transcription. Use **Refresh** after reopening
-or a connection failure; it reuses the saved ID instead of uploading again.
-Once ready, type a question and choose **Send**. Results are saved with the local
-recording, separately for each backend/Clerk account. Signing out hides cloud caches;
-the local recording library remains available. Local caches are not encrypted by
-this app; this is account-aware UI isolation, not protection from the macOS user.
+1. Connect your account from the sidebar and sign in if needed.
+2. Select a saved recording and choose **Create Transcript**.
+3. Review the upload notice, then choose **Upload and Create Transcript**.
+4. After reopening or a connection failure, use **Refresh** before continuing.
+5. When the batch is complete and chat is available, enter a question and choose **Send**.
+
+The app derives chunks from `combined.m4a`: at most five minutes each, with
+five-second overlap, a 120-minute source cap and an 18 MiB cap per chunk. Originals
+stay on the Mac. It saves the batch identity and manifest before the first request.
+The backend requires an enabled, exact-owner-allowlisted internal batch service;
+chat has a separate gate and requires complete results that fit its context limit.
+For example, a 600-second source produces three chunks starting at 0, 295 and
+590 seconds. The five-second overlap accounts for the third, ten-second chunk.
+
+Saved legacy single-upload transcripts and their chat remain separate. Results
+are stored per backend and Clerk account. Signing out hides cloud caches but keeps
+local recordings. These caches are not encrypted by the app and do not protect
+data from the macOS user. See the [batch contract](docs/BATCH_CONTRACT.md) for
+recovery, partial results and explicit retry rules.
 
 **Meeting notes → Summarize / Action items** prepares a grounded question in the
 composer; review and Send explicitly. Each successful request consumes one AI
 question when quotas are enabled, with the result saved in the conversation.
 
 **Stop Waiting** cancels local waiting, not work already accepted by the server.
-If the connection is lost before an upload ID is saved, the app cannot recover that
-remote recording automatically. Uploading again may incur another charge. There
-are no automatic mutation retries. Failed/oversize files never replace local audio.
+Batch recovery uses the saved identity. Unknown generation is not automatically
+retried. The legacy single-upload route cannot recover an upload whose response
+was lost before its remote ID was saved. Resubmitting it may incur another charge.
+Failed or oversized uploads never replace local audio.
 
 ### Convex development setup
 
 Project: [hoang-bang/lessmeet](https://dashboard.convex.dev/t/hoang-bang/lessmeet).
-Dev deployment: `zany-octopus-315` (US East); no production deployment yet.
+Dev deployment: `zany-octopus-315` (US East). Production is a separate target;
+see [accounts and environments](docs/CONFIGURATION.md#accounts-and-environments).
 
 ```sh
 npm ci
@@ -141,14 +143,9 @@ Environment variables are deployment-specific. Local Convex selection is kept in
 ignored `.env.local`. The owner has set `GEMINI_API_KEY`; only its existence was
 checked, never its value.
 
-Research: [Vercel AI SDK](https://ai-sdk.dev/docs/getting-started/nodejs),
-[Google provider](https://github.com/vercel/ai/blob/main/packages/google/src/google-provider.ts),
-[Convex Swift](https://docs.convex.dev/client/swift/overview),
-[Gemini model catalog](https://ai.google.dev/gemini-api/docs/models),
-[Interactions API](https://ai.google.dev/gemini-api/docs/interactions-overview).
-The backend contract uses `gemini-flash-latest`, with a server-side `GEMINI_MODEL`
-override. Human reported successful transcription/chat; exact model/version,
-systematic response quality and cost per quota have not been measured.
+The backend uses the Vercel AI SDK Google provider. The default model is
+`gemini-flash-latest`, with a server-side `GEMINI_MODEL` override. Native requests
+use the [HTTP contract](docs/BACKEND.md), not a Convex Swift SDK integration.
 
 ## Verification and next checks
 
@@ -170,8 +167,6 @@ Before considering the recorder verified, record a short known conversation with
 mic-only, system-only and overlapping speech, including a long pause in playback.
 Stop, quit, reopen and listen to the beginning/end and both source files. Repeat
 with denied permissions. Test on the intended microphone/headphones.
-
-Current decisions, ownership and acceptance: [docs/STATUS.md](docs/STATUS.md).
 
 ### Agent native UI checks
 

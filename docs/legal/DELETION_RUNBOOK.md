@@ -231,21 +231,13 @@ and privacy research do not change that operational deadline.
 
 ## Intake and verification
 
-Native Account settings now include Delete Account, destructive confirmation and
-Refresh deletion status. Accepted intake, exact-owner guards, local cleanup,
-partial automation and retention workers are deployed to dev `zany-octopus-315`;
-new-request intake, automation and preflight activation gates are off. Contact
-capture/sends are not active. Local source now includes separately gated durable
-Clerk execution with fresh inventory, Apple-evidence fencing, observe-before-retry
-and explicit operator reconciliation. Sep 26 production update: these workers are
-now deployed to uncommon-narwhal-733; intake and automation are enabled there.
-Oct3: Clerk/RevenueCat execution is configured and enabled; exact case adoption
-is still required. Apple/contact/email remain off. Backend cleanup is real;
-full live fulfillment is not established.
-See [the local Clerk execution contract](../BACKEND.md#durable-clerk-execution--local-only).
-Local source also includes bounded Apple/RevenueCat execution and explicit manual
-case reconciliation; live fulfillment and verified notification delivery remain
-unestablished. See [the provider execution contract](../BACKEND.md#apple-and-revenuecat-execution--local-only).
+Native Account settings include Delete Account, destructive confirmation and
+Refresh deletion status. The backend has owner guards, cleanup, retention and
+separately gated provider workers. Recorded production provisioning and the Oct4
+selected-case Clerk deletion do not prove complete fulfillment. The later Google
+prerequisite and automatic contact/send path still need live evidence.
+See the [Clerk contract](../BACKEND.md#durable-clerk-execution) and
+[Apple/RevenueCat contract](../BACKEND.md#apple-and-revenuecat-execution).
 Use [the accepted internal operator contract](../BACKEND.md#internal-exact-owner-operator-procedure)
 for guarded request/inventory/retry/reconciliation/provider-confirmation work,
 not ad-hoc row deletion. [Configuration](../CONFIGURATION.md) records deployment
@@ -311,8 +303,10 @@ and activation evidence; this reconciliation performed no account or environment
 
 Main content remains indefinite unless deletion is requested; no content TTL is
 introduced. Incomplete requests retain their exact-owner guard and operational
-evidence. After local cleanup and all five provider/residual confirmations, the
-identifier-bearing ledger remains for 90 continuous days. Reopening a flag cancels
+evidence. The 90-day clock requires local cleanup, all five provider/residual
+confirmations and reconciled execution evidence. New requests also require durable
+Google acknowledgement or evidence-backed non-applicability. The identifier-bearing
+ledger remains for 90 continuous days of completion. Reopening a flag cancels
 the clock; unresolved owner work blocks purge. Daily bounded purge removes the
 request and linked preflight, stage, outbox, contact and send rows. The remainder
 has completion/purge times and policy revision only: no owner, subject, email,
@@ -665,7 +659,8 @@ confirmation against the actual submitted build and completed operational flow.
 Manual fulfillment can remain behind it, but email-only initiation is insufficient.
 Apple's [account deletion guidance](https://developer.apple.com/support/offering-account-deletion-in-your-app/)
 was rechecked 2026-09-24; it requires timing and completion communication for
-non-immediate fulfillment. No new estimate is supplied by this runbook.
+non-immediate fulfillment. The later approved seven-calendar-day policy above
+supersedes the historical absence of a completion estimate.
 
 ## Remaining fulfillment and public-release evidence
 

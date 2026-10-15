@@ -131,10 +131,10 @@ only explicit eligible failed-chunk retry. Save results/status before publishing
 preserve legacy recordings/caches, account/session fences and localoriginals.
 Cancellation stops local work/waiting, not presumed remote generation. Show actual
 progress, saved partial output, missing/unknown ranges and cleanup warnings.
-Cross-language digest/boundary vectors required. No real-provider test during
-implementation; deterministic synthetic/mock HTTP-to-storage-to-worker-to-cache
-evidence first. Batch chat is a follow-on integration checkpoint; preserve legacy
-chat and do not pretend batch chat is working until its route is implemented.
+Cross-language digest/boundary vectors are required. Deterministic mocked
+HTTP-to-storage-to-worker-to-cache evidence does not prove live provider behavior.
+Batch chat is implemented under the separate contract below; it does not replace
+legacy chat or imply that either production gate is enabled.
 
 ## Batch chat v1 follow-on contract (2026-09-25)
 

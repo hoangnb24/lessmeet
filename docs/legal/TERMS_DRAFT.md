@@ -3,6 +3,9 @@
 NOT FOR PUBLICATION until reviewed and completed by the operator. This is product
 copy for review, not a complete jurisdiction-specific legal agreement.
 
+Implementation notes reconciled 2026-10-13 against local source and recorded
+acceptance. No external legal terms or live settings were revalidated.
+
 Reconciled 2026-09-24 against `b42a7a00a9e0f60a72eaeeadaa17b0c9c190f605`
 and the accepted working-tree/development evidence in [STATUS](../STATUS.md).
 Approved commercial inputs below are not evidence of public availability or
@@ -44,9 +47,10 @@ any individual 120-minute recording can currently be uploaded.
 Google sign-in uses Clerk and basic identity, email and profile information, not
 Calendar or Drive permissions. Signing in alone does not upload a recording or
 start a subscription. You separately confirm a cloud upload or an App Store purchase.
-Production Google publishing is still being completed; Apple login credentials
-and end-to-end production login remain unverified. These are review notes to
-reconcile before publication, not a promise of current availability.
+Production Google publishing remains incomplete in the recorded handoff. Apple
+credential readback and Human-reported hosted login were accepted Sep26; native
+callback and full production flow remain separate checks. These review notes are
+not a promise of current availability. See [configuration](../CONFIGURATION.md).
 
 ## Plans and allowances
 
@@ -82,12 +86,11 @@ Subscription cancellation does not delete stored data. See the Privacy Policy fo
 current retention and the approved privacy-request process.
 
 Account deletion also does not cancel Apple renewal. Accepted native Account
-settings include initiation, confirmation and status refresh. The guarded backend
-and approved operational retention workers are deployed to development with intake
-and automation gates off. Clerk transport is accepted only as a disconnected module;
-Clerk/Apple/RevenueCat destructive fulfillment is not integrated and completion
-notification delivery remains unverified. Do not present this as an available
-end-to-end deletion service. Deletion may remove access tied to the original LessMeet
+settings include initiation, confirmation and status refresh. Provider workers are
+integrated, and a selected Clerk deletion has recorded live evidence. Complete
+provider fulfillment and automatic notification delivery remain unverified. See
+the [deletion runbook](DELETION_RUNBOOK.md); do not present partial evidence as an
+available end-to-end deletion service. Deletion may remove access tied to the original LessMeet
 account; do not promise recovery, subscription transfer or a new allowance after
 re-registration. Explain these consequences without making cancellation or a
 support conversation a prerequisite for requesting deletion.
@@ -95,8 +98,10 @@ support conversation a prerequisite for requesting deletion.
 Cloud content remains indefinite unless deletion is requested. The separate approved
 30-day provider-inventory inactivity policy and 90-day completed operational-ledger
 policy are not content-expiry or fulfillment deadlines; see the Privacy draft for
-their conditions. Timing, provider residual handling and notification still require
-verification and approval before public claims. Local files remain separate.
+their conditions. The approved operating policy is normal scoped deletion within
+seven calendar days of receipt, with email updates/results. Exceptions require a
+status, reason and next-update time. Actual fulfillment and remaining provider
+handling still need evidence before public claims. Local files remain separate.
 
 ## Publication checklist — unresolved legal decisions
 

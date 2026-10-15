@@ -1,6 +1,8 @@
 # Configuration reference
 
-Last reconciled: 2026-10-03 (issue #3 scoped provider provisioning; older service observations retain their dates). This is the configuration inventory; decisions,
+Documentation reconciled: 2026-10-13 against local source and recorded acceptance,
+not live service readback. Older service observations retain their dates.
+This is the configuration inventory; decisions,
 ownership and release gates remain in [STATUS.md](STATUS.md). Update this document
 after each configuration change, including environment, verification date/result,
 secret location and rollback limits. Never commit keys, tokens or private keys.
@@ -95,7 +97,7 @@ change performed. Reconcile the public support field before Branding submission.
 | Clerk issuer | `https://major-fish-4158.clerk.accounts.dev` | Explicit dev env value matches dashboard Sep 24. |
 | RevenueCat | **Lessmeet**, dashboard `a83a7730`, API v2 `proja83a7730` | Sep 24: Keep with original App User ID; separate sandbox transfer behavior off. Do not use unrelated Meetless project. |
 | RevenueCat apps | App Store `app0efc34c2fb`; Test Store `app2b707bf0f0` | Dashboard inventory Sep 24. |
-| Resend | Team `kieng`; domain `lessmeet.2m0r.com`; Tokyo `ap-northeast-1` | Domain/DNS verified; no real sends. |
+| Resend | Team `kieng`; domain `lessmeet.2m0r.com`; Tokyo `ap-northeast-1` | Domain/DNS verified at the recorded checkpoint. Oct4 manual status email has recipient-reported receipt; automatic delivery remains unverified. |
 | Cloudflare | Account `6031f1f85e189c44fb3bcd150ca65920`, zone `2m0r.com` | Three LessMeet email records added and verified; unrelated records untouched. |
 | Native app | Bundle `com.lessmeet.app`, callback `com.lessmeet.app://callback`, team `63M98WD275` | Sep 24: Sign In with Apple enabled as primary App ID after Human approval; saved and reopened to verify. Existing provisioning profiles for this App ID must be regenerated. Callback is existing project configuration; signing/profile compatibility not verified. |
 
@@ -142,13 +144,12 @@ Production callback `com.lessmeet.app://callback` is saved as
 through exact-instance API reads. No secret keys were printed/exported or copied
 from dev; Clerk's production instance/key provisioning stays provider-managed.
 
-Chrome runtime initialization currently fails on a missing browser-service module;
-no provider page or browser authentication was inspected this turn. Wrangler
-4.136.3 is logged in and sees the expected Cloudflare account, but its displayed
+At the earlier Sep25 checkpoint, Chrome initialization failed on a missing module;
+no provider page was inspected in that pass. Wrangler
+4.136.3 saw the expected Cloudflare account, but its displayed
 OAuth scopes have zone read, not DNS write. Do not substitute unrelated credentials
-or reauthorize broad scopes to bypass this. Human completed the DNS additions;
-Apple/Google credential setup still needs working dashboard access or an approved
-scoped alternative. DNS verification can continue through Clerk CLI.
+or reauthorize broad scopes to bypass this. Later dashboard access and Apple
+credential acceptance are recorded below; this failure is not a current blocker.
 
 ### Google production credentials — configured, public release incomplete
 
@@ -161,8 +162,8 @@ for hosted Clerk flow. Human reports only openid/userinfo.email/userinfo.profile
 scopes, no Calendar/Drive; owner accepted Google User Data Policy. Client secret
 entered directly into Clerk, not exported/read back or included in this inventory.
 
-Lead exact Clerk config read independently confirms enabled=true, matching client
-ID and aud=convex. CLI deploy status reports Google configured, Apple pending.
+Sep25 Clerk config read independently confirmed enabled=true, matching client
+ID and aud=convex. Sep26 Apple provisioning supersedes its then-pending status.
 Human reached Google account chooser from the production account portal; full
 sign-in/consent/callback/session and native/backend JWT smoke remain untested.
 Google dashboard state is Human-reported: Testing, no test users; Publish app blocked
@@ -175,9 +176,10 @@ dependency; the landing deployment does not authorize publishing legal drafts.
 Do not recreate this project/client or put any client secret into app configuration.
 Google project identity here establishes OAuth only, not Gemini API project/key binding.
 
-Current containment: production backend is now deployed with activation gates off;
-do not point the native release at this runtime-unverified stack yet. Development
-remains selected. See Sep 26 provisioning/rollback checkpoint below.
+Production is deployed. Oct3 intake, automation and Clerk/RevenueCat gates were
+enabled for scoped deletion work; other gates retain their dated observations.
+This does not authorize switching native release configuration. See the Oct3
+checkpoint and [current work](STATUS.md) before any operation.
 The new Clerk instance is retained for resumable setup, not deleted. Reopen if its
 domain/issuer or provider identity changes. Creating this instance does not prove
 production billing eligibility or authorize paid upgrades.
@@ -222,9 +224,9 @@ unrelated `meetless.2m0r.com` / `meetless-website`. See [website README](../webs
 
 ## Backend configuration map — not an activation script
 
-RC preflight credential, project, revision and verified flag are provisioned to dev;
-the other new names below were absent at the recorded checkpoint. Activation gates
-remain off/unset until their configuration and external-operation approvals exist.
+RC preflight was provisioned to development Sep24; production provisioning and
+activation differ as recorded per variable below. Source defaults are not live
+switch readbacks. External operations still require exact scope and authority.
 Approved retention policies do not themselves activate inventory or deletion.
 Source behavior is specified in [BACKEND.md](BACKEND.md).
 
@@ -232,7 +234,7 @@ Source behavior is specified in [BACKEND.md](BACKEND.md).
 | --- | --- |
 | `ACCOUNT_DELETION_ENABLED` | New account-deletion intake; defaults off. |
 | `DELETION_AUTOMATION_ENABLED` | Durable worker admission; does not implement missing destructive adapters. |
-| `CLERK_DELETION_ENABLED` | Oct3 production true; bound credential/revision provisioned. Requires automation gate, exact adoption and frozen Apple disposition. No live deletion tested. |
+| `CLERK_DELETION_ENABLED` | Oct3 production true; bound credential/revision provisioned. Oct4 selected Clerk deletion accepted within recorded limits. The later local Google prerequisite is not live-verified. |
 | `GOOGLE_DELETION_ENABLED` | Local Oct5 extension, default-off. Required before new Clerk execution adoption or destructive effects. Not activated by tests or old-case approval. |
 | `GOOGLE_DELETION_CLIENT_ID`, `GOOGLE_DELETION_AUTHORIZED_PARTY_ID` | Exact trusted OAuth client IDs for tokeninfo `aud` and `azp`. Do not infer one from the other or use Clerk publishable keys. |
 | `GOOGLE_DELETION_PROJECT_REF`, `GOOGLE_DELETION_CONFIG_REF` | Verified project provenance label and immutable revision. Google revocation can affect this user's grants across clients in that project. Exact live scope confirmation is required. |
@@ -387,12 +389,6 @@ production candidate; the prior #2 deployed source is HEAD8edfcee, but rollback
 compatibility with new execution records must be checked. Preserve issuer/key
 binding and evidence tables during any rollback.
 
-Earlier Sep 26 checkpoint (superseded by provisioning above): Human accepts operating costs and waives another billing/plan audit.
-Historical cost/allowance holds below are superseded; no numeric budget is required
-to continue technical production setup. Exact production CLI refresh still returns
-no env names and functions: []; production Gemini is not provisioned. Retain dev,
-secret hygiene and separate destructive/public-release boundaries.
-
 ### Sep 26 Apple credential setup accepted
 
 Human saved credentials directly in Clerk production. Exact readback: enabled=true,
@@ -408,74 +404,20 @@ private-relay Email Source registration/delivery, native
 callback and backend JWT acceptance remain unverified. Do not treat configuration
 acceptance as a working revocation signer or change development shared credentials.
 
-### Sep 25 production access refresh
+### Historical provisioning evidence and remaining limits
 
-Convex production empty-state and region are now verified by the bounded read-only
-audit accepted in STATUS. Team usage state Default does not identify its plan.
-Spending-limit readback has disableThresholdCents=null and state=null; deployment
-usage limits list is empty. Seeded usage reported nonzero query/mutation compute
-(4.1666666666666667e-7 GB-hours day/month) and eight other metrics zero before
-subsequent diagnostic reads. This is not zero-cost proof. Verify actual plan,
-remaining allowance and Human-approved spending boundary before deploying the
-backend with its nominal 7,202 scheduled invocations/day. Do not change team-wide
-limits without considering other deployments or silently disable retention crons.
+The Sep25 empty-production, missing-Apple-credential and cost-hold observations
+were superseded by Sep26 provisioning. Their original evidence remains in
+[STATUS.md](STATUS.md#issue-2-resumed--exact-provideraccess-checks-2026-09-25).
+The accepted operating-cost decision does not authorize unrelated paid upgrades.
 
-Clerk exact production config readback: Apple enabled, but Services ID, Team ID,
-Key ID, secret and optional native bundle ID fields are empty. Google enabled with
-the previously recorded client ID. Session aud=convex, Native API enabled and the
-single exact callback com.lessmeet.app://callback remain verified. Deploy status is
-oauth_pending (Apple only); DNS/SSL/mail complete. No configuration was changed.
+The RC preflight key's configuration-read probe returned 403
+`authorization_error`; customer-read scope does not imply app-configuration access.
+Keep that key unchanged. The [secret inventory](#secrets-where-to-find-them) records
+its approved storage exception and separate deletion credential. Move the local
+secret to approved durable storage before release or removing its workstation copy.
 
-Apple next input: inspect existing Services IDs and Sign in with Apple keys under
-team 63M98WD275 before creating anything. Bind the hosted OAuth client to existing
-primary App ID com.lessmeet.app; do not substitute an IAP/ASC key. For hosted login,
-Clerk requires Services ID, Team ID, Key ID and Apple private key. Preserve dev's
-shared credentials. Obtain Return URL and private-relay Email Source from the exact
-production Apple connection; do not invent the relay sender. Keep private-key
-material out of Git/chat and decide durable secure storage before generating a
-download-once key. [Clerk Apple setup](https://clerk.com/docs/guides/configure/auth-strategies/social-connections/apple)
-checked Sep 25. Browser/computer-use startup is still broken, before authentication;
-there is no usable Apple management CLI credential established by this audit.
-
-RevenueCat exact read-only probe GET /v2/projects/proja83a7730/apps/app0efc34c2fb
-with the existing scoped preflight key returned 403 authorization_error, requiring
-project_configuration:apps:read. This is a permissions limit, not evidence of an
-incorrect app or absent products. Keep that customer-inventory key unchanged;
-complete app/products/entitlement readback using the dashboard or a separately
-approved least-privilege configuration-read credential. No customers, purchases or
-provider mutations occurred. Match bundle com.lessmeet.app, entitlement lessmeet_pro,
-and products com.lessmeet.app.pro.monthly / com.lessmeet.app.pro.yearly.
-
-Gemini exact production project/billing identity remains unverified; Human asked
-for Project ID and managing account, not an API key. Google OAuth project lessmeet
-does not establish Gemini binding. No gcloud executable available in the current
-shell. Source fallback model is gemini-flash-latest (convex/gemini.ts); a source
-default is not a verified production model or evidence of access/data settings.
-No live generation or secret copying is authorized by this check.
-
-Sep 24 authorized setup: enabled Sign In with Apple as primary App ID for Lessmeet
-`com.lessmeet.app` under team `63M98WD275`; saved and reopened the identifier to
-verify the checked state. Apple warned that this invalidates provisioning profiles
-containing the App ID: regenerate them before future signing. No profile regeneration,
-Services ID/private-key creation or Clerk connection changes performed.
-RevenueCat V2 preflight key creation is complete. Human explicitly replaced the
-blocked 1Password route with ignored local storage. `keys/.env` contains the secret
-and exact project ID, has mode 0600, is covered by `/keys/`, and is not tracked.
-Dashboard readback shows the V2 key with the approved name. A read-only GET for a
-synthetic missing subject returned 404 `resource_missing`, establishing the key's
-binding to exact project `proja83a7730` without creating or reading a real customer.
-Convex dev `zany-octopus-315` now has the matching secret, project ID, immutable
-revision `rc_lessmeet_preflight_20260924_v1`, and project-verified flag. The
-automation, preflight and retention-approval gates remain absent, so this does not
-activate provider reads. Move the secret to durable approved storage before release
-or removing the workstation copy; never commit or paste it into chat.
-
-Apple custom credentials must be bound to the original hosted OAuth Services ID;
-preserve the existing shared development login until the target environment and
-identity migration implications are decided. Apple ambiguous revocation remains an
-operator exception. RC inventory's separate v2 read key is provisioned; it does not
-grant destructive permission. SDK/cross-device recreation risk remains unresolved.
-Ledger/preflight retention approval and dev deployment are complete as recorded
-above; contact/send privacy, provider activation, live tests and production remain
-separate checkpoints. Store signing inputs remain in
-[STORE_INPUTS.md](../Tests/packaging/STORE_INPUTS.md).
+Gemini project/data settings, Apple original-client revocation provenance, RC
+recreation risk and contact/send privacy remain separate evidence obligations.
+Do not infer them from key presence or login success. Store signing inputs remain
+in [STORE_INPUTS.md](../Tests/packaging/STORE_INPUTS.md).

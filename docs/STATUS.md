@@ -1,5 +1,76 @@
 # LessMeet delivery
 
+## Documentation cleanup (2026-10-13)
+
+Lead owns this documentation-only scope in the main checkout at `b08b3cd`.
+Peer `a0df6f8e` completed a read-only audit of the pinned configuration/legal docs.
+ACCEPT its six source/status discrepancy findings: worker integration, timing,
+retention prerequisites, email evidence, production state and Apple credentials.
+No write scope or UI ownership was delegated. Existing Oct12/13 entries and
+operator-owned `.codex/` remain unchanged.
+
+The current references are README for entry points, BACKEND/BATCH_CONTRACT for
+source behavior, CONFIGURATION for dated service observations, and the deletion
+runbook for operator steps. Removed duplicate provisioning instructions and old
+MVP contract prose; retained their acceptance evidence below. No whole file was
+proven obsolete. Legal drafts, design intent and historical failure evidence still
+support unresolved release work. This cleanup does not approve publication.
+
+Current handoff, based on recorded evidence rather than a fresh service readback:
+
+- The Oct5 Google deletion increment is accepted locally, not deployed or live-verified.
+  Issue #3 still needs exact-account Google proof and a scoped completion notice.
+  The [Oct8 registration entry](#takeover-and-live-test-account-registration-2026-10-08)
+  records the later trial artifact and authority limits.
+- Issue #4 owns broad provider/privacy completeness and public disclosures. The
+  seven-calendar-day scoped operating policy and existing retention periods remain.
+- The [Oct12 cleanup entry](#session-cleanup-2026-10-12) retains worktrees with
+  local data or a running app pending Human disposition.
+
+The entries below form a dated evidence journal. Old ownership, "current" labels,
+test totals and next steps describe their own checkpoint, not new authority.
+Later explicit dispositions supersede them.
+
+ACCEPT the documentation candidate over `b08b3cd`, diff SHA256
+`cb63dbc91c7d5fd022929bfc8ebc59ad7b4730ae09e489c0901b183152a36a9b`,
+before this verification receipt. Fresh read-only review `d7aaf300` found no
+concrete issue; its scope is closed. Source inspection, local file/heading links
+and `git diff --check` pass. Existing Oct12/13 additions match byte-for-byte;
+AGENTS, WORKSPACE_PROTOCOL and code have no diff. No app/test suite, live service,
+external-link or legal-policy verification was run. No commit or push occurred.
+These docs are usable for local development and the recorded open-work handoff,
+not as approved public policies or fresh production-state evidence.
+
+## Computer Use rule update (2026-10-13)
+
+Human requested updating the app-check rule for the currently exposed tools.
+This documentation scope is complete. `lessmeet-app-check` now uses
+`mcp__cua_repl__js`, `cua.getApp(...)` and the tool's returned API documentation.
+The current workflow does not require the absent legacy Computer Use SKILL.md.
+The older node_repl workflow still requires its own installed instructions.
+UI ownership, action authority and runtime-evidence requirements remain in force.
+Validation: skill validator and scoped `git diff --check` pass. Entry-point usage
+was checked against the current tool instructions. No app was selected or operated;
+runtime access, macOS permissions and LessMeet UI behavior remain UNVERIFIED.
+No live UI ownership was acquired. Existing status content and `.codex/` preserved.
+
+## Session cleanup (2026-10-12)
+
+Human requested archiving LessMeet sessions and cleaning merged worktrees.
+Archived 68 active session records and both main-checkout workspace records.
+The main checkout and operator-owned `.codex/` remain unchanged by cleanup.
+Remote main was verified at `96412826c688a9042ca278bdaf2088a21712048d`.
+All five auxiliary worktree HEADs are ancestors of that commit.
+Removed clean worktree `lessmeet-ci-publish.o1wyqc`; its commit remains on main.
+Retained `integration-local-first-pivot`, `pivot-chatgpt-signin`,
+`pivot-local-models`, and `lessmeet-main-build-check.sMcDRC`.
+They contain uncommitted files, local verification evidence, or build data.
+Integration also has a running LessMeet app. No app was stopped.
+The three worktree workspace records remain active to avoid deleting those files.
+Cleanup is partial. Human decides when the app can stop and whether to retain
+these directories as backups or discard their local data. Resume worktree cleanup
+after that decision. No branch deletion, push, deployment or runtime acceptance.
+
 ## Commit and push of accepted local work (2026-10-11)
 
 - Human authorized commit and push to origin/main only. No deploy, flag change
@@ -4933,13 +5004,6 @@ above kept separate from fixture/build acceptance.
   CLI setup complete; development backend deployed (see verification below).
   Reference dependency resolved: /Users/tubakhuym/projects/unclebob/references.
 
-## Milestones
-
-1. Foundation, local library and launchable app bundle.
-2. Dual capture and aligned combined playback.
-3. Gemini transcript and chat, integrated native UI.
-4. Focused verification, independent candidate inspection, usable handoff.
-
 ## Active backend contract (supersedes earlier proposed endpoint list)
 
 Human requests implementing owner-isolated Gemini backend now; key is configured.
@@ -4967,20 +5031,9 @@ No valid live JWT, personal audio upload or paid Gemini request was exercised.
 Backend contract/retention/limits documented in docs/BACKEND.md. Next frontier:
 connect native Swift cloud actions, then human-assisted valid login/audio trial.
 Lead owns docs, acceptance and deployment; no live paid API tests.
-Accepted MVP: authenticated HTTP POST /recordings with raw audio (max 18 MiB,
-below Convex HTTP 20 MB limit) creates server-owned storage + record and schedules
-internal transcription; returns 202 {recordingId}. GET /recordings?id=... returns
-only owner's status/transcript/messages. POST /chat {recordingId,message} uses
-owned server transcript/history, persists the exchange and returns {text}.
-Keep GET /account. Identity is always derived from ctx.auth, never client owner IDs.
-No public storage URLs or client-supplied storage IDs, no shared caches/history.
-Internal helpers only, except HTTP routes. Gemini key only process.env.GEMINI_API_KEY;
-Vercel AI SDK Google provider, default gemini-flash-latest (server env override).
-Model availability remains live-unverified. No vector DB, tools, streaming, billing
-framework, automatic retry or deletion feature. Bound inputs/output/history; preserve
-local recording and expose actionable safe failures. Oversize audio is rejected,
-not truncated. Before deployment, focused owner/other-user/unauthenticated tests
-must pass and independent inspection must resolve concrete authorization risks.
+The original MVP wire contract is maintained in [BACKEND.md](BACKEND.md).
+Billing, deletion and [batch transcription/chat](BATCH_CONTRACT.md) were added
+later; the acceptance evidence here covers only the original checkpoint.
 
 Original local UI milestone: library/detail, rename, playback, Markdown presentation
 and recording lifecycle; cloud placeholders were not feature acceptance. They are
