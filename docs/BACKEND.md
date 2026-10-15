@@ -1,5 +1,8 @@
 # Gemini backend contract
 
+This contract covers retained cloud services and pre-pivot clients. The current
+local-first app uses local transcription and ChatGPT, not these upload routes.
+
 Development endpoint: `https://zany-octopus-315.convex.site`.
 Production endpoint: `https://uncommon-narwhal-733.convex.site`.
 This document describes local source contracts, not current live switch values.
@@ -22,7 +25,7 @@ The application does not accept a client-supplied owner or storage ID.
 
 ## Upload and transcription
 
-The current native Create Transcript action uses [batch transcription](BATCH_CONTRACT.md).
+The pre-pivot native Create Transcript action uses [batch transcription](BATCH_CONTRACT.md).
 The following single-upload contract remains for legacy recordings and clients.
 
 `POST /recordings` sends the combined audio as the raw request body, with its audio

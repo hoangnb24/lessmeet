@@ -5,6 +5,7 @@
 <key>CFBundleIdentifier</key><string>com.lessmeet.app</string>
 <key>CFBundleName</key><string>LessMeet</string>
 <key>CFBundleDisplayName</key><string>LessMeet</string>
+<key>CFBundleIconFile</key><string>LessMeet.icns</string>
 <key>CFBundlePackageType</key><string>APPL</string>
 <key>CFBundleURLTypes</key><array><dict>
 <key>CFBundleURLName</key><string>com.lessmeet.app</string>

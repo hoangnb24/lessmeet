@@ -8,7 +8,6 @@ final class AccountSession: ObservableObject {
     @Published private(set) var error: String?
     @Published private var deletionLockedIdentity: CloudIdentity?
     lazy var deletion = AccountDeletionModel(account: self)
-    var revokeBillingAdmission: (() -> Void)?
 
     var cloudAccessLocked: Bool {
         guard let userID, let sessionIdentifier else { return false }
@@ -17,7 +16,6 @@ final class AccountSession: ObservableObject {
     func setDeletionLock(_ identity: CloudIdentity, locked: Bool) {
         guard identity.owner == userID, identity.session == sessionIdentifier else { return }
         deletionLockedIdentity = locked ? identity : nil
-        if locked { revokeBillingAdmission?() }
     }
 
     // Clerk is itself @Observable. Reading these values in a SwiftUI body tracks
@@ -91,7 +89,6 @@ final class AccountSession: ObservableObject {
 
     func signOut() async {
         guard !busy else { return }
-        revokeBillingAdmission?()
         error = nil
         guard let clerk else { error = configurationIssue ?? "Account is not connected. The saved session has not been changed."; return }
         busy = true

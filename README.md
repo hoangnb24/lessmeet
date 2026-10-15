@@ -1,44 +1,98 @@
 # LessMeet
 
-A native Swift macOS app for local microphone + system-audio recordings, with
-Gemini transcription and transcript chat through an owner-isolated Convex backend.
+[![LessMeet: 30-second promo](design/promo-video/out/poster-ad.png)](design/promo-video/out/LessMeet-ad-30s-1080p60.mp4)
 
-This checkout contains the cloud-backed app. Production provisioning is recorded,
-but public-release acceptance is incomplete. Source code, deployed versions and
-live verification have different checkpoints. Start with these references:
+*Be in the conversation. Keep the details.* ([watch the 30 s video](design/promo-video/out/LessMeet-ad-30s-1080p60.mp4))
+
+Local pivot checkpoint (2026-10-11): LessMeet is moving to a native, open-source
+macOS app. The current app shell records locally and uses **Continue with ChatGPT**
+for transcript chat. It no longer instantiates the legacy Clerk, Convex or billing
+controllers. The native RevenueCat SDK and subscription screen have been removed.
+Legacy backend services and saved cloud metadata remain intact.
+
+ChatGPT auth, streaming and local history have offline component tests. The
+synthetic account/chat UI subset passed, including saved history after reopening.
+Live sign-in/chat and the full app UI are not yet accepted. The shell now shares
+the local-model manager and transcription queue. See
+[current ownership, evidence and limits](docs/STATUS.md) and the pinned
+[local-model contract](docs/LOCAL_MODELS.md). No release or publication is implied.
+
+The current app is local-first. Retained cloud services have separate deployment
+and verification checkpoints. Start with these references:
 
 - [Current work and acceptance](docs/STATUS.md).
 - [Configuration and secret locations](docs/CONFIGURATION.md).
-- [HTTP and deletion contracts](docs/BACKEND.md).
-- [Internal batch transcription and chat](docs/BATCH_CONTRACT.md).
-- [Sandbox billing checks](docs/STORE_SANDBOX.md).
+- [Retained cloud HTTP and deletion contracts](docs/BACKEND.md).
+- [Historical internal batch transcription and chat](docs/BATCH_CONTRACT.md).
+- [Historical sandbox billing checks](docs/STORE_SANDBOX.md).
 - [Approved visual direction](docs/DESIGN.md).
 
 ## Run locally
 
-Requires macOS 15+, Swift 6.3 with the Swift Build engine, and Node 22+.
+Requires Apple Silicon, macOS 15+, Swift 6.3 with the Swift Build engine, Node 22+, and the
+Xcode Metal Toolchain for packaged builds. The build stops if Metal is unavailable.
 
 ```sh
-swift test
-bash scripts/build-app.sh
-open dist/LessMeet.app
+swift test --disable-keychain --disable-netrc
+xcrun -sdk macosx metal --version
+bash scripts/build-app.sh local
+open dist/local/LessMeet.app
 ```
 
 Open `Package.swift` in Xcode to browse/debug. For recording permission checks, use
 the packaged `.app`, not `swift run`: the bundle contains the usage descriptions
-and hardened-runtime audio-input entitlement. Development builds are ad-hoc signed;
-set `LESSMEET_SIGNING_IDENTITY` to your own identity for stable signed builds.
-An isolated signed `sandbox-dev` app was accepted for internal testing. Store
-distribution signing and installer tooling exist but real Store packaging/upload
-remain unverified. Sign In with Apple was enabled on the App ID on Sep 24;
-provisioning profiles must be regenerated before future signing. See
-[packaging inputs](Tests/packaging/STORE_INPUTS.md).
+and hardened-runtime audio-input entitlement. Local builds are ad-hoc signed by
+default and cannot verify the current Data Protection Keychain sign-in path.
+For profile-backed development builds, use `bash scripts/build-app.sh signed-local`
+with an exact `LESSMEET_SIGNING_IDENTITY` SHA1 and `LESSMEET_PROVISIONING_PROFILE`.
+The profile must authorize `com.lessmeet.app`; a certificate alone is insufficient.
+Output is `dist/signed-local/LessMeet.app`. Existing signed output is never
+overwritten. This is device-limited development signing, not public distribution.
+See [signing configuration](docs/CONFIGURATION.md#profile-backed-github-zip-signing).
+The diagnostic `local` mode uses `com.lessmeet.app.local`, reads no
+`.env.local` or cloud service settings, and includes no legacy OAuth URL callback.
+ChatGPT uses a temporary loopback listener on `127.0.0.1`.
+
+## Local model setup
+
+The first app launch checks pinned model files and automatically downloads missing
+files. The payload is 3,200,167,866 bytes. Allow extra space for partial files and
+Core ML caches. Open **Local models** to see progress, cancel, resume or retry.
+Failed or cancelled setup does not retry automatically during that app session.
+The model cache is `~/Library/Application Support/LessMeet/Models/`.
+
+After **Stop & Save** finishes successfully, LessMeet queues local transcription.
+If models are not ready, the job waits for setup. Open **Transcript** to see the
+job and saved output. **Transcribe on this Mac** also processes an existing ready
+recording. **Cancel all transcription** cancels the active job and pending jobs.
+Cancellation or failure preserves a previous saved transcript.
+
+## Chat with a local transcript
+
+1. Open **ChatGPT account** in the sidebar.
+2. Choose **Continue with ChatGPT** and finish in your browser.
+3. If plan permission was declined, choose **Enable ChatGPT plan usage**.
+4. Open a recording with a valid local `transcript.json` and choose **Chat**.
+5. Choose **Load models**, then select an available model.
+6. Enter a question and choose **Send**, or press **⌘Return**.
+
+Each send includes the full local transcript and the recording's saved chat
+history. These go to OpenAI using the selected ChatGPT plan. Audio stays local.
+**Manage usage** opens ChatGPT usage settings. No question runs automatically.
+Incomplete, canceled or failed answers are not saved. Completed pairs are saved
+atomically in `chat.json` and reload when the recording is reopened.
+
+Chat history belongs to the local recording, not an account. Switching accounts
+keeps that history; a later send transmits it with the new account. Local files
+are not encrypted by LessMeet. Credentials stay in the device-only Keychain.
+If local sign-out cleanup fails, retry before quitting. The error disables access
+in that process but does not guarantee that credentials are gone after restart.
 
 ## Recording
 
-Click **Start Recording** and grant Microphone and Screen & System Audio Recording
+Click **New recording** and grant Microphone and Screen & System Audio Recording
 access. If macOS asks for a relaunch, reopen the app and start a new recording.
-Click **Stop Recording**, wait for saving, then play or reveal the recording files.
+Click **Stop & Save**, wait for saving, then play or reveal the recording files.
 Use headphones to avoid the microphone picking up your speaker output.
 
 System audio means the whole system, excluding LessMeet playback—not a selected
@@ -46,7 +100,9 @@ meeting app. No video track is saved. Obtain participants' consent before record
 
 Recordings live at `~/Library/Application Support/LessMeet/Recordings/<UUID>/`:
 
-- `recording.json`: title, date, duration, status, transcript and chat.
+- `recording.json`: title, date, duration and status; legacy fields are preserved.
+- `transcript.json`: versioned local segments with timestamps and optional speakers.
+- `chat.json`: versioned completed user/assistant pairs for this recording.
 - `microphone.caf`, `system.caf`: separate source audio when received.
 - `capture-timeline.json`: source offsets for the common timeline.
 - `combined.m4a`: derived audio for playback/transcription.
@@ -55,13 +111,19 @@ Original audio is retained if combining fails. A recording interrupted by app
 termination is marked interrupted when the library is reopened. Automatic repair,
 device switching, pause/resume and cloud sync are outside the first version.
 
-Synthetic 30/60/120-minute exports exceeded the legacy single-upload limit of
-18 MiB. The current transcript action prepares bounded chunks instead; its internal
-backend gates can still block uploads. Neither route establishes real-device sound
-quality or drift. See the [export measurements](Tests/LessMeetTests/LONG_CAPTURE_HANDOFF.md)
-and [batch limits](docs/BATCH_CONTRACT.md).
+Synthetic 30/60/120-minute exports measured 29.56/59.11/118.22 MiB. The historical
+18 MiB cloud-upload limit does not apply to local transcription. These export
+checks do not establish long-meeting transcription, real-device sound quality or
+drift. See the [opt-in test and limits](Tests/LessMeetTests/LONG_CAPTURE_HANDOFF.md)
+and the [local-model contract](docs/LOCAL_MODELS.md).
 
-## Account and cloud
+## Legacy account and cloud implementation
+
+The following notes describe the pre-pivot app and retained services. The current
+app has no Clerk account, cloud-upload or Plan & usage controls. Use the local
+instructions above. Do not use historical instructions as permission to mutate
+services. Current service observations and obligations are in
+[CONFIGURATION.md](docs/CONFIGURATION.md) and the [HTTP contract](docs/BACKEND.md).
 
 Clerk handles hosted sign-in. Login sessions may use Keychain; Gemini keys never
 enter the app. Convex holds the owner-funded Gemini key and checks each request's
@@ -74,15 +136,15 @@ Apple renewal. Provider workers exist, but a local implementation is not proof o
 live fulfillment. See the [deletion runbook](docs/legal/DELETION_RUNBOOK.md) for the
 accepted scope, seven-calendar-day operating policy and remaining evidence.
 
-**Plan & usage** in the sidebar shows server-verified allowances and offers
-purchase/restore when configured. RevenueCat identifies the signed-in Clerk user;
-it never authorizes cloud work by itself. Free includes one-time 120 minutes and
-20 questions; Pro includes 1,200 minutes and 200 questions each month, also on
-annual billing. Pricing targets are USD 9.99/month or 99.99/year; actual purchase
-prices come from StoreKit. See [rollout prerequisites](docs/BACKEND.md#subscription-integration-development-sandbox-production-pending).
-Purchases stay disabled without legal links, store configuration and active server
-enforcement. Internal `sandbox-dev` permits explicitly acknowledged unpublished
-legal links; Store mode does not. Local recording remains available without billing.
+Historical Clerk sessions can remain in Keychain. Native cleanup does not delete
+them or change provider data.
+
+The current app cannot purchase or restore RevenueCat subscriptions. SDK removal
+does not cancel subscriptions or delete customers. Backend billing, provider
+deletion and historical operator contracts remain. See
+[billing obligations](docs/BACKEND.md#subscription-integration-development-sandbox-production-pending).
+Store/TestFlight tooling retains its approval gates; those gates do not establish
+that the current app supports the old billing product.
 
 Before building, set public `CLERK_PUBLISHABLE_KEY` and `CONVEX_SITE_URL` in ignored
 `.env.local`. The packaging script copies only allowlisted public values into Info.plist.
@@ -92,7 +154,7 @@ Native API enabled, `com.lessmeet.app://callback` registered, and session claim
 Production Google/Apple provider credentials and distribution signing are separate
 setup; development shared OAuth credentials do not establish production readiness.
 
-### Using transcript and chat
+### Historical cloud transcript and chat
 
 1. Connect your account from the sidebar and sign in if needed.
 2. Select a saved recording and choose **Create Transcript**.
@@ -124,11 +186,11 @@ retried. The legacy single-upload route cannot recover an upload whose response
 was lost before its remote ID was saved. Resubmitting it may incur another charge.
 Failed or oversized uploads never replace local audio.
 
-### Convex development setup
+### Historical Convex development setup
 
 Project: [hoang-bang/lessmeet](https://dashboard.convex.dev/t/hoang-bang/lessmeet).
-Dev deployment: `zany-octopus-315` (US East). Production is a separate target;
-see [accounts and environments](docs/CONFIGURATION.md#accounts-and-environments).
+Historical dev deployment: `zany-octopus-315` (US East). This setup snippet is
+not a current deployment inventory. See CONFIGURATION.md before operator work.
 
 ```sh
 npm ci
@@ -159,8 +221,10 @@ the current release binary's complete runtime matrix or production readiness.
 `swift test` exercises persistence/reopen and synthetic sample buffers through the
 real CAF/M4A writer/exporter. These do not prove live capture, acoustic quality,
 long-session synchronization, TCC behavior, or macOS 15 runtime compatibility.
-The native suite includes billing identity/cancellation fixtures, HTTP contract,
-cloud lifecycle, persistence and local rendering checks. Exact current acceptance
+The native suite includes local transcription/chat, HTTP contract, retained cloud
+lifecycle, persistence and local rendering checks. Billing-only tests and the
+`LESSMEET_SUBSCRIPTION_SNAPSHOT` fixture were retired with the native SDK.
+Exact current acceptance
 results are in STATUS.md. No real OAuth or paid Gemini call was used for these tests.
 
 Before considering the recorder verified, record a short known conversation with
@@ -170,7 +234,8 @@ with denied permissions. Test on the intended microphone/headphones.
 
 ### Agent native UI checks
 
-Use Xcode and the repeatable offline UI suite to validate agent changes:
+Use the current packaged local app for current-app UI acceptance. The repeatable
+Xcode suite below covers the retained legacy account-deletion fixture only:
 
 ```sh
 bash scripts/test-ui.sh
@@ -216,7 +281,11 @@ The fixture shares the real deletion view/model. Delete and subscription links
 are disabled or absent. These checks do not verify OAuth, Keychain permissions,
 HTTP transport, billing, recording or production deletion.
 
-#### Real account connection
+#### Historical Clerk account connection
+
+This procedure applies only to a pre-pivot artifact with **Connect Account**.
+The current app uses **ChatGPT account**. `auth-check` packaging does not restore
+the removed Clerk controls and is not the ChatGPT verification route.
 
 Normal app startup stays local. Opening Account does not access Clerk. Click
 **Connect Account** to restore the saved session, then sign in if needed.

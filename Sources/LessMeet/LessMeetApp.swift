@@ -1,6 +1,29 @@
 import SwiftUI
 
-#if LESSMEET_OFFLINE_CHECK
+#if LESSMEET_LIBRARY_UI_CHECK
+@main
+struct LessMeetLibraryUICheckApp: App {
+    var body: some Scene {
+        WindowGroup(DemoCapture.isActive ? "LessMeet" : "LessMeet Library UI Check — Offline") {
+            LibraryUICheckView()
+                .frame(minWidth: 1000, minHeight: 640)
+        }
+        .defaultSize(width: 1180, height: 760)
+        .commands { CommandGroup(replacing: .newItem) {} }
+    }
+}
+#elseif LESSMEET_CHAT_UI_CHECK
+@main
+struct LessMeetChatUICheckApp: App {
+    var body: some Scene {
+        WindowGroup("LessMeet Chat UI Check — Offline") {
+            ChatGPTUICheckView()
+                .frame(minWidth: 820, minHeight: 640)
+        }
+        .defaultSize(width: 1000, height: 760)
+    }
+}
+#elseif LESSMEET_OFFLINE_CHECK
 @main
 struct LessMeetOfflineApp: App {
     var body: some Scene {
@@ -14,31 +37,37 @@ struct LessMeetOfflineApp: App {
 @main
 struct LessMeetApp: App {
     @StateObject private var model: AppModel
-    @StateObject private var accountSession: AccountSession
-    @StateObject private var cloud: RecordingCloudModel
-    @StateObject private var billing: BillingStore
-    @StateObject private var subscription: SubscriptionModel
-    private let billingConfiguration: BillingConfiguration?
+    @StateObject private var chatGPTSession: ChatGPTSession
+    @StateObject private var modelManager: LocalModelManager
+    @StateObject private var transcription: LocalTranscriptionModel
+    @State private var chat: LocalChatModel?
     @NSApplicationDelegateAdaptor(AppDelegate.self) private var appDelegate
 
     init() {
         let model = AppModel()
-        let account = AccountSession()
+        let session = ChatGPTSession()
+        let manager = LocalModelManager()
+        let transcription = LocalTranscriptionModel(app: model, manager: manager)
+        model.onRecordingFinalized = { [weak transcription] id in
+            transcription?.transcribe(recordingID: id)
+        }
         _model = StateObject(wrappedValue: model)
-        _accountSession = StateObject(wrappedValue: account)
-        _cloud = StateObject(wrappedValue: RecordingCloudModel(app: model, account: account))
-        let configuration = try? BillingConfiguration.load()
-        billingConfiguration = configuration
-        _billing = StateObject(wrappedValue: BillingStore(publicAppleAPIKey: configuration?.publicAppleAPIKey, account: account))
-        _subscription = StateObject(wrappedValue: SubscriptionModel(account: account))
+        _chatGPTSession = StateObject(wrappedValue: session)
+        _modelManager = StateObject(wrappedValue: manager)
+        _transcription = StateObject(wrappedValue: transcription)
+        _chat = State(initialValue: model.store.map { store in
+            LocalChatModel(store: store, sessionID: { session.sessionIdentifier },
+                           accessToken: { try await session.accessToken() })
+        })
     }
 
     var body: some Scene {
         WindowGroup {
-            LibraryView(model: model, accountSession: accountSession, cloud: cloud,
-                        billing: billing, subscription: subscription, billingConfiguration: billingConfiguration)
+            LibraryView(model: model, session: chatGPTSession, chat: chat,
+                        modelManager: modelManager, transcription: transcription)
                 .frame(minWidth: 1000, minHeight: 640)
                 .onAppear { appDelegate.model = model }
+                .task { await modelManager.startup() }
         }
         .defaultSize(width: 1180, height: 760)
         .commands { CommandGroup(replacing: .newItem) {} }

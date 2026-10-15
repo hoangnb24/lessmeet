@@ -1,0 +1,177 @@
+name: LessMeet merged-main prerelease
+
+# Only accepted, merged code executes. Never check out pull_request.head.sha.
+on:
+  pull_request_target:
+    types: [closed]
+    branches: [main]
+
+permissions:
+  contents: read
+
+# Different merges never cancel each other. Same-SHA retries share one lock.
+concurrency:
+  group: lessmeet-main-release-${{ github.event.pull_request.merge_commit_sha || github.run_id }}
+  cancel-in-progress: false
+
+jobs:
+  build:
+    if: >-
+      github.event.action == 'closed' &&
+      github.event.pull_request.merged == true &&
+      github.event.pull_request.base.ref == 'main' &&
+      github.event.pull_request.base.repo.full_name == github.repository &&
+      github.repository == 'hoangnb24/lessmeet' &&
+      vars.LESSMEET_DEVELOPER_ID_RELEASE_ENABLED == 'true'
+    runs-on: macos-26
+    timeout-minutes: 60
+    environment: lessmeet-developer-id
+    permissions:
+      contents: read
+    env:
+      DEVELOPER_DIR: /Applications/Xcode_26.6.app/Contents/Developer
+    outputs:
+      source_sha: ${{ steps.plan.outputs.source_sha }}
+      artifact_id: ${{ steps.upload.outputs.artifact-id }}
+    defaults:
+      run:
+        shell: bash
+    steps:
+      - name: Fetch trusted main history
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          fetch-depth: 0
+          persist-credentials: false
+
+      - name: Select only the immutable commit already merged into main
+        env:
+          MERGE_SHA: ${{ github.event.pull_request.merge_commit_sha }}
+        run: |
+          [[ "$MERGE_SHA" =~ ^[0-9a-f]{40}$ ]]
+          git merge-base --is-ancestor "$MERGE_SHA" refs/remotes/origin/main
+          git checkout --detach "$MERGE_SHA"
+          test "$(git rev-parse HEAD)" = "$MERGE_SHA"
+
+      - name: Validate merge provenance and release identity
+        id: plan
+        env:
+          # Read-only job token. PR objects are data only; never checked out.
+          GH_READ_TOKEN: ${{ github.token }}
+        run: |
+          mkdir -p release-work
+          python3 scripts/github-release.py plan \
+            --event "$GITHUB_EVENT_PATH" --repo "$GITHUB_REPOSITORY" \
+            --output release-work/plan.json --github-output "$GITHUB_OUTPUT" --fetch-pr-head \
+            --distribution developer-id
+
+      - name: Validate workflow and run offline release tests
+        timeout-minutes: 5
+        run: |
+          bash scripts/check-release-workflow.sh
+          python3 -m unittest discover -s Tests/release -p 'test_*.py' -v
+          python3 -m unittest discover -s Tests/packaging -p 'test_*.py' -v
+
+      - name: Build and verify unsigned arm64 inputs without Apple secrets
+        timeout-minutes: 25
+        run: |
+          python3 scripts/build-github-release.py \
+            --plan release-work/plan.json --output-dir release-assets --prepare --execute
+          git diff --exit-code -- Package.swift Package.resolved Sources Resources scripts .github
+
+      - name: Sign with Developer ID, notarize, staple and seal
+        timeout-minutes: 25
+        env:
+          LESSMEET_DEVELOPER_ID_P12_BASE64: ${{ secrets.LESSMEET_DEVELOPER_ID_P12_BASE64 }}
+          LESSMEET_DEVELOPER_ID_P12_PASSWORD: ${{ secrets.LESSMEET_DEVELOPER_ID_P12_PASSWORD }}
+          LESSMEET_DEVELOPER_ID_PROFILE_BASE64: ${{ secrets.LESSMEET_DEVELOPER_ID_PROFILE_BASE64 }}
+          LESSMEET_DEVELOPER_ID_CERT_SHA1: ${{ secrets.LESSMEET_DEVELOPER_ID_CERT_SHA1 }}
+          LESSMEET_NOTARY_KEY_BASE64: ${{ secrets.LESSMEET_NOTARY_KEY_BASE64 }}
+          LESSMEET_NOTARY_KEY_ID: ${{ secrets.LESSMEET_NOTARY_KEY_ID }}
+          LESSMEET_NOTARY_ISSUER_ID: ${{ secrets.LESSMEET_NOTARY_ISSUER_ID }}
+        run: |
+          python3 scripts/ci-sign-release.py --execute \
+            --plan release-work/plan.json --output-dir release-assets
+
+      - name: Remove only this run's temporary signing credentials
+        if: always()
+        run: python3 scripts/ci-sign-release.py --cleanup
+
+      - name: Check sealed release without network writes
+        env:
+          MERGE_SHA: ${{ steps.plan.outputs.source_sha }}
+        run: |
+          python3 scripts/github-release.py publish \
+            --directory release-assets --expected-sha "$MERGE_SHA" --repo "$GITHUB_REPOSITORY"
+
+      - name: Preserve immutable release inputs
+        id: upload
+        uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2
+        with:
+          name: main-release-${{ steps.plan.outputs.source_sha }}-${{ github.run_id }}-${{ github.run_attempt }}
+          path: |
+            release-assets/${{ steps.plan.outputs.archive_name }}
+            release-assets/release.json
+            release-assets/changelog.md
+            release-assets/SHA256SUMS
+          if-no-files-found: error
+          retention-days: 30
+          compression-level: 0
+          overwrite: false
+          include-hidden-files: false
+
+  publish:
+    needs: build
+    if: >-
+      needs.build.result == 'success' &&
+      github.event.pull_request.merged == true &&
+      github.event.pull_request.base.ref == 'main' &&
+      github.repository == 'hoangnb24/lessmeet' &&
+      vars.LESSMEET_GITHUB_RELEASE_ENABLED == 'true'
+    runs-on: ubuntu-24.04
+    timeout-minutes: 15
+    permissions:
+      contents: write
+    defaults:
+      run:
+        shell: bash
+    steps:
+      - name: Fetch trusted main history without persisted credentials
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          fetch-depth: 0
+          persist-credentials: false
+
+      - name: Select the same immutable merged release implementation
+        env:
+          MERGE_SHA: ${{ needs.build.outputs.source_sha }}
+          EVENT_MERGE_SHA: ${{ github.event.pull_request.merge_commit_sha }}
+        run: |
+          [[ "$MERGE_SHA" =~ ^[0-9a-f]{40}$ ]]
+          test "$MERGE_SHA" = "$EVENT_MERGE_SHA"
+          git merge-base --is-ancestor "$MERGE_SHA" refs/remotes/origin/main
+          git checkout --detach "$MERGE_SHA"
+          test "$(git rev-parse HEAD)" = "$MERGE_SHA"
+
+      # The build job's ID survives a rerun of failed publish jobs. Never select
+      # the newest artifact by name or rebuild partially uploaded release bytes.
+      - name: Download only this successful build's immutable artifact
+        uses: actions/download-artifact@3e5f45b2cfb9172054b4087a40e8e0b5a5461e7c # v8.0.1
+        with:
+          artifact-ids: ${{ needs.build.outputs.artifact_id }}
+          path: release-assets
+          digest-mismatch: error
+
+      - name: Verify downloaded files before exposing a write token
+        env:
+          MERGE_SHA: ${{ needs.build.outputs.source_sha }}
+        run: |
+          python3 scripts/github-release.py publish \
+            --directory release-assets --expected-sha "$MERGE_SHA" --repo "$GITHUB_REPOSITORY"
+
+      - name: Create or recover exact-SHA GitHub prerelease
+        env:
+          GH_TOKEN: ${{ github.token }}
+          MERGE_SHA: ${{ needs.build.outputs.source_sha }}
+        run: |
+          python3 scripts/github-release.py publish \
+            --directory release-assets --expected-sha "$MERGE_SHA" --repo "$GITHUB_REPOSITORY" --execute

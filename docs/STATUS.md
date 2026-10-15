@@ -1,5 +1,3927 @@
 # LessMeet delivery
 
+## Documentation integration and local cleanup (2026-10-15)
+
+The owner authorized integrating the retained documentation/skill edits and the
+delivery handoff, pushing/merging through the existing workflow, updating local
+main, and removing only integrated local branches and three verified idle sessions.
+This scope owns documentation integration and cleanup only. No implementation,
+UI, credential, provider-deployment or new release mechanism is in scope.
+
+Original edits are preserved in commits `bed254c` (app-check procedure) and
+`c647692` (cloud documentation) over `b08b3cd`. Merge reconciliation keeps the
+current local-first README and moves cloud instructions under its historical
+section. Dated acceptance and policy limitations remain; no public legal approval
+or fresh app acceptance is inferred. Operator-owned `.codex`, backup
+`/Users/tubakhuym/lessmeet-backups/cleanup-20261013.o0nk81`, ignored evidence,
+artifacts, credentials and recordings remain outside the write scope.
+
+Fresh GitHub/Git inspection: PRs #18 through #22 already integrated signing,
+safe diagnostics and temporary keychain discovery into main `8965929`.
+The remaining delivery commits `889b245`, `293bb72` and `02bb5de` change only
+CONFIGURATION and STATUS. They record accepted signed delivery, publication and
+automatic prerelease authorization. Preserve their ancestry and those decisions;
+no CI code change is needed. Both release variables read `true` on Oct15.
+The existing workflow builds only merged main PRs, signs/notarizes with scoped
+environment secrets, then publishes a prerelease after artifact validation.
+Branch pushes do not trigger this workflow. No secret values were read.
+
+Integration verification and cleanup disposition will be recorded here before
+handoff. Historical tests below do not verify the new merge artifact.
+
+## Automatic merged-main pre-releases enabled (2026-10-14)
+
+The owner authorized automatic release publication after merges with successful
+builds. Set repository variable `LESSMEET_GITHUB_RELEASE_ENABLED=true` and
+verified readback. `LESSMEET_DEVELOPER_ID_RELEASE_ENABLED` remains `true`.
+This supersedes earlier per-candidate-only publication limits and disabled-gate
+entries below. No credentials, environment protections or workflow code changed.
+
+Verified the workflow on remote `main` matches the inspected local blob
+`63a7fb6ce9d3c4c799c7d9faa6135e22a836fa71`. Only merged PRs into `main`
+trigger the existing path. A successful build must sign, notarize, staple, seal
+and upload the immutable artifact before the publish job can run. The publisher
+checks the exact source SHA, artifact ID and asset bindings before exposing the
+pre-release. Failed builds and branch pushes do not publish. Releases remain
+pre-releases, not stable latest releases.
+
+ACCEPT the requested gate configuration based on remote readback and existing
+workflow conditions. No new merge/build was triggered solely to test the gate.
+The first subsequent eligible merge will verify the enabled automatic path;
+this turn does not claim that hosted execution occurred. The already-published
+signed build 53 remains available. Runtime/UI limits remain unchanged.
+No Peer writer or UI owner is active.
+
+## Signed pre-release published on request (2026-10-14)
+
+The owner authorized publishing the accepted artifact to GitHub Releases.
+This supersedes the publication prohibition for this exact candidate only.
+The automatic release gate remains disabled; no future release policy changed.
+
+Published [main-signed-53](https://github.com/hoangnb24/lessmeet/releases/tag/main-signed-53-8965929bd735ae3623fa13e8d7cee0c4265b97e3),
+release ID `412798921`, as a non-draft pre-release, not the stable latest release.
+The existing guarded publisher used the original downloaded artifact and exact
+source `8965929bd735ae3623fa13e8d7cee0c4265b97e3`. No rebuild, signing or
+notary submission occurred. Tag, canonical metadata, four-asset allowlist,
+remote digests and downloaded remote manifest/checksum/notes passed validation.
+The signed ZIP SHA256 remains
+`dc748b0956df5a8660fc8af1a42048fd0716675c90f4702eeb99d8f94498fb11`.
+
+ACCEPT this published release as the requested distribution of the previously
+accepted artifact. Users can download its signed arm64 ZIP from Releases.
+Full-app runtime, UI, auth, inference and save/reopen limits below still apply.
+No Peer writer or UI owner is active. Earlier publication-disabled entries are
+historical for this candidate; automatic publication remains disabled.
+
+## Signed CI artifact accepted for manual testing (2026-10-14)
+
+The search-list repair resolved the observed hosted codesign failure.
+[Run 38571374166](https://github.com/hoangnb24/lessmeet/actions/runs/38571374166)
+completed successfully. Checkout logs and sealed metadata bind the build to
+merged source `8965929bd735ae3623fa13e8d7cee0c4265b97e3` (PR #22).
+The run API's head SHA is the PR head, not the checked-out merge SHA.
+
+[Download artifact 11897678766](https://github.com/hoangnb24/lessmeet/actions/runs/38571374166/artifacts/11897678766)
+for manual testing. It expires on 2026-11-13. Public publication was skipped and
+remains disabled. The artifact contains the signed arm64 ZIP, `release.json`,
+`changelog.md` and `SHA256SUMS`.
+
+- Inner ZIP: `LessMeet-main-signed-53-8965929bd735ae3623fa13e8d7cee0c4265b97e3-macos-arm64-developer-id.zip`.
+- ZIP SHA256: `dc748b0956df5a8660fc8af1a42048fd0716675c90f4702eeb99d8f94498fb11`.
+- GitHub artifact envelope digest: `sha256:f05b9216681013de1a5a07389470f2f9af320ebe27a577da31119b2936606bea` (API-reported; distinct from inner ZIP).
+- Certificate SHA1: `DE967875FB1C4BBEBCB60EED42BC7182D031E9F0`.
+- Profile SHA256: `aaecb8a165088f734db862548ce4dde6d2b6d30d9ce4dad571ab2f153e7102cc`.
+- Executable SHA256: `b16f5dd356a5efa42a7c040ec3fecad0dcf16c532399f3b99b2d542a79115f35`.
+- Apple notarization: `d6ea5f5f-679c-4a16-b4bc-6f1a9f0f7eb6`, `Accepted`, stapled.
+
+Downloaded artifact was independently checked locally with the sealed-release
+dry run against the exact source SHA. Checksums, canonical metadata, file allowlist
+and executable/profile binding passed. Native verification passed for bundle
+`com.lessmeet.app`, arm64, exact selected certificate/profile, minimal entitlements,
+secure timestamp, hardened runtime, strict signature and packaged resources.
+`stapler validate` passed; `spctl --assess --type execute --verbose=4` returned
+`accepted`, `source=Notarized Developer ID` on the extracted final ZIP.
+The signer's summary has a static `notarized: false`; it does not assess tickets.
+The separate staple/Gatekeeper checks establish notarization.
+
+The first local sealed check refused `/tmp` because it is a symlink. The same
+check passed with canonical `/private/tmp`, with no guard change. Local files
+remain at `/private/tmp/lessmeet-ci-38571374166.w2RCvT/` for inspection.
+Hosted search-list restoration, credential cleanup and separate cleanup step
+all passed. No duplicate notary submission or rerun was needed. No local keys,
+installed app, recordings or runtime state were changed by artifact checks.
+
+ACCEPT artifact `11897678766` and the exact inner ZIP hash above for manual
+testing. Direct inspection and fresh independent read-only verification agree.
+The independent check also matched extracted files/link bytes to the ZIP, with
+no extras, on macOS 26.4 (`25E246`). GitHub provenance was checked directly;
+the independent check covered local bytes and native signature/ticket evidence.
+Disposition sent; no further Peer work, writer or UI ownership remains.
+Full-app UI, recording/playback, auth, inference and save/reopen behavior
+remain UNVERIFIED for this artifact. This is a signed distribution candidate for
+manual testing, not runtime acceptance or authorization for public release.
+The bounded fix/merge/build loop is complete. No extra build or notary retry is
+needed. The owner can download this artifact for manual testing. Any later UI
+acceptance must use the required app-check skill and respect existing data and
+live-auth limits. Earlier pending-run and missing-artifact entries are historical.
+
+## Search-list repair merged; hosted verification underway (2026-10-14)
+
+PR #22 merged accepted candidate `68e85536c28db73d1f96c77de95912898cf8855b`
+normally at `8965929bd735ae3623fa13e8d7cee0c4265b97e3`, with exact head match
+and no bypass. Run `38571374166` passed provenance and offline checks and is
+building arm64 inputs. Observe completion before any retry or further repair.
+Publication remains disabled. No signed/notarized artifact is accepted yet.
+The technical owner holds the delivery scope; no Peer writer or live UI owner
+is active. Earlier underway/waiting entries below are historical.
+
+## Restore ephemeral keychain discovery for codesign (2026-10-14)
+
+Run `38569381901` completed/failure at `sign-codesign` with
+`codesign-error=identity-missing; exit=1`. Profile/import and explicit
+`security find-identity` checks passed. Cleanup passed; notarization never
+started. There is no in-flight submission from this run to duplicate.
+
+Evidence-led repair: the local Apple `codesign(1)` SIGNING IDENTITIES section
+requires the identity's keychain in the calling user's search list. `--keychain`
+restricts identity selection but does not replace search-list membership.
+The previous implementation explicitly omitted search-list registration.
+GitHub's [macOS signing guide](https://docs.github.com/en/actions/how-tos/deploy/deploy-to-third-party-platforms/sign-xcode-applications)
+also registers the temporary keychain. This identifies a concrete missing step;
+hosted success still must establish whether it resolves this run's failure.
+
+Snapshot the runner's prior user search list before creating a keychain. Keep a
+0600 snapshot inside the owned temporary directory. Prepend only this run's new
+keychain, preserving existing entries, and verify readback. In cleanup restore
+the exact prior list before deleting the owned keychain. If restore fails, still
+remove imported credentials and retain the snapshot/owner marker for the separate
+cleanup step to retry. Failure still blocks publication. No default keychain,
+trust setting, existing identity or permission policy changes. These operations
+remain confined to the hosted job; no local machine keychain is changed here.
+
+Release tests: 124 PASS, including original-list restoration after success,
+failure and interruption, create-keychain side effects, spaces in paths, protected
+snapshot mode, failed-restoration cleanup/retry and readback mismatch rejection.
+ACCEPT the bounded repair for hosted verification after direct inspection and
+independent in-memory normal/error/retry cleanup checks. Exact blobs: CI
+`91e16d587443db637795526096bf434542897bd7`, tests
+`2afca79f3c179c22d726d9b1ff363c26d271b7ca`. Packaging 76 PASS, workflow and
+whitespace checks PASS. Actual identity discovery and notarized artifact remain
+UNVERIFIED until the next run. The technical owner retains all writes; no Peer
+write or live UI scope remains.
+
+## Classified-codesign run underway (2026-10-14)
+
+Accepted candidate `7fea9da1bafd17405796f078a7a22472a008120f` was delivered in
+PR #21 and merged normally, with exact head match and no bypass, at
+`0c343284dcde3cdc54fa29b7326a9a6cb93fea96`. Run `38569381901` is the next
+hosted attempt. Observe its completion before selecting the repair. The previous
+run never entered notarization; no duplicate submission is being retried.
+Publication remains disabled. No signed/notarized artifact is accepted yet.
+
+## Codesign failure classification (2026-10-14)
+
+Run `38567719914` for merge `e93a208ba6deb9b43cdcb3a6e83622b327128032`
+completed/failure. All preparation, copy, configuration, embedded profile and
+entitlement stages passed. `sign-codesign` failed at 13:03:39 UTC in about 17 ms.
+Cleanup passed. No notarization stage started, so no in-flight submission from
+this run exists and no retry/submission has been made.
+
+Scoped repair: retain only an allowlisted reason and numeric exit code from
+failed codesign output. Raw stdout/stderr, command arguments, private paths and
+secret values remain unlogged. Unknown output maps to `unclassified`; no guessed
+credential, trust or metadata change is made. The existing fail-closed path and
+best-effort stage logger remain. Offline release tests: 121 PASS.
+ACCEPT after independent exact-candidate inspection. Reviewed signer blob
+`d545b929286e00ce48743e6111fb5f3b91738629`, CI
+`29480da71c69782544abd3d2a305c42e9896dcc4`, tests
+`ff5a5b65a55cb8b1bd47f165135cbda695efe241`; only a comment was then clarified
+to avoid claiming memory erasure. Classification is case-sensitive/first-match,
+not proof of root cause. No raw output in diagnostic fields/logs is claimed;
+Python traceback memory erasure is not. Packaging 76 PASS, workflow/whitespace
+PASS. No Peer write scope remains.
+Continue with an accepted normal PR merge and its actual run, then use that
+reason to select the smallest repair. Do not stop at this diagnostic increment.
+
+## Initial merge authorized and completed (2026-10-14)
+
+The owner explicitly authorized this agent to merge PR #20. This resolves the
+initial owner-only merge dependency below. Normal merge used exact accepted head
+`d3246f2c9ff8bbdb3f9e1d6bcb22d6393da9a932`, without admin bypass or force push.
+PR #20 is MERGED at `e93a208ba6deb9b43cdcb3a6e83622b327128032`, 12:56:32 UTC.
+Signing remains enabled, publication disabled. The separate delivery branch
+incorporates that main merge without overwriting its status commits.
+
+Next: observe this merge's hosted run; then continue the authorized evidence-led
+repair/review/merge loop until a verified CI artifact or a new owner-only blocker.
+No signed result is yet accepted. Earlier waiting/blocker entries are historical.
+
+## Bounded signed-artifact delivery loop (2026-10-14)
+
+Authorized outcome: a valid signed/notarized downloadable CI artifact for manual
+testing, not a public release. The owner retains the initial PR #20 merge.
+Subsequent evidence-led scoped fixes, commits, pushes, PR creation and normal
+follow-up merges are now authorized. This supersedes older owner-only follow-up
+merge limits below. Do not race or perform the initial PR #20 merge.
+
+At resumption PR #20 is OPEN at `d3246f2c9ff8bbdb3f9e1d6bcb22d6393da9a932`;
+main remains `be6a3a53b871e195ddb02834345b5957d06764fd`. A bounded read-only
+watcher awaits the owner's merge with backoff and emits state transitions only.
+No new hosted run or notary submission has been started by this work.
+The technical owner holds the delivery scope; no Peer writer or UI owner is active.
+Local delivery branch is separate from PR #20 and does not change its remote head.
+
+Rechecked environment `24266624356`: only branch `main`, rule `63011760`, no tag
+rule or required reviewer. Signing remains enabled, publication disabled. Keep
+bundle `com.lessmeet.app`, selected certificate/profile/notary inputs and these
+protections unchanged. No storage downgrade, ad-hoc fallback, force push,
+provenance/asset-guard bypass, broad credential replacement or unrelated changes.
+Preserve installed app, recordings and credentials; no live OAuth/chat testing.
+
+On each run failure, inspect actual logs before choosing a repair. Account for
+any in-flight notary submission before retrying. Review exact repair candidates,
+record explicit dispositions here, then continue normal delivery. New external
+cost/security/distribution decisions remain with the owner. Final acceptance
+requires merged-source binding, sealed artifact hashes, Developer ID signature,
+accepted notarization, staple verification and cleanup evidence. Tests alone
+do not establish delivery or full-app runtime acceptance.
+
+BLOCKED at the initial owner-only merge, not at a technical repair decision.
+The bounded backoff watcher completed after about 18 minutes without a merge.
+Final readback at 12:53 UTC: PR #20 OPEN/CLEAN at the same head, mergeCommit=null;
+main still `be6a3a53b871e195ddb02834345b5957d06764fd`. Latest run remains
+`38549402920`, completed/failure, with `CI signing stage app-signing: failed`.
+No new run or artifact exists from this continuation. No code repair, credential
+change, protection change or initial merge was attempted. Only delivery status
+was committed/pushed on the separate branch; PR #20 was left untouched.
+
+Minimum owner action: complete the initial PR #20 merge (or explicitly revise
+that initial-merge boundary). On that event, resume the already-authorized
+fix/merge/build loop without re-requesting follow-up authority. No duplicate
+notarization is in flight from this work; the latest completed run stopped at
+app-signing before submission. Valid signed/notarized delivery remains unmet.
+
+## App-signing substages after hosted failure (2026-10-14)
+
+PR #19 merged at `be6a3a53b871e195ddb02834345b5957d06764fd`.
+Run `38549402920` passed unsigned build, profile validation, certificate import,
+keychain access and identity validation. It failed at `app-signing`; cleanup
+passed. Notarization never started. This is not evidence of a bad password or
+certificate. The specific operation inside `sign()` remains UNKNOWN.
+
+The owner authorized the previously deferred safe substage diagnostics and tests.
+Branch `fix/ci-signing-substage-diagnostics` starts at that merge. The technical
+owner holds scripts/tests/status writes. A fresh read-only Peer checked the frozen
+candidate. No UI, credential changes, live signing or Apple submission is in scope.
+
+`sign()` and `verify()` now accept an optional diagnostic context. The local CLI
+defaults to no new markers and retains its existing JSON result. CI uses its allowlisted, best-effort
+logger. Fixed labels separate source/profile checks, copy, configure, embedding,
+codesign, bundle/architecture/signature/timestamp/entitlement/certificate/resource
+checks, and promotion. No arguments, paths, secrets or command output are logged.
+For example, a synthetic codesign error emits `sign-codesign: failed`, removes
+scratch and leaves the source intact without promoting an output app.
+
+Release tests: 119 PASS, including synthetic substage failures, quiet local
+success, broken log output, unchanged timestamp/keychain arguments, source
+preservation and scratch cleanup. Packaging: 76 PASS. Workflow validation and
+whitespace checks: PASS. No actual signing success or root-cause repair is claimed.
+
+ACCEPT the bounded diagnostics candidate after direct inspection and independent
+verification. Exact Git blobs: signer `a647ec2339ca0a99b266518c4b0b2b0e141d78f9`,
+CI `640dc9fd06e18f250735120e303fb6eca7f764a9`, tests
+`719f389bb38646e87a76294ad75a706dee69c2e4`. Independent checks confirm unchanged
+signing syntax trees after removing instrumentation, plus 24 offline profile
+tests. No Peer write scope remains. Remote readback retains signing enabled and
+publication disabled.
+
+Delivered `5cf5061` and opened [PR #20](https://github.com/hoangnb24/lessmeet/pull/20)
+on `fix/ci-signing-substage-diagnostics`. This follow-up records delivery only.
+Next: inspect the new merged run after the owner merges PR #20.
+Publication stays disabled. Do not rerun an old immutable
+workflow expecting new diagnostics. Actual signing/notarization and signed-app
+runtime remain UNVERIFIED.
+
+## Signing failure and safe diagnostics candidate (2026-10-14)
+
+PR #18 was merged by the owner at `44b5419ba673132d34f5b8b2a2c9f6fae88fed06`.
+Run `38546153531` built and verified unsigned arm64 inputs successfully, then
+failed in signing/notarization. Cleanup passed; upload and publication were
+skipped. The run has no artifact. Its generic error does not establish a bad
+password, certificate or Apple service failure. The exact cause remains UNKNOWN.
+This supersedes the owner-merge frontier below.
+
+Authorized follow-up: add secret-safe stage diagnostics, tests and a PR for the
+owner to merge. Branch `fix/ci-signing-stage-diagnostics` starts at that exact
+merge. The technical owner holds scripts/tests/status writes. A fresh read-only
+Peer inspected the frozen script/test candidate; no live UI ownership is needed.
+No credential changes, Apple calls, workflow rerun or merge occur in this work.
+
+Diagnostics print only fixed allowlisted stage names and started/passed/failed.
+They do not print exception text, arguments, paths, process output or return values.
+For example, a synthetic import failure prints `certificate-import: failed`
+before cleanup markers. Cleanup failure leaves the earlier failure marker in
+the log. Existing signing policy, commands, secret access and cleanup targets
+remain unchanged. No raw log artifact or secret-bearing payload is retained.
+
+The first frozen candidate was REJECTED after independent inspection showed that
+a broken log stream could prevent cleanup. Revised diagnostics treat log writes
+as best-effort. Synthetic broken-pipe/closed-stream tests prove that cleanup runs,
+return values survive and the original exception is preserved. Identity decoding
+now occurs inside its validation marker. Revised release tests: 118 PASS.
+Packaging tests: 76 PASS. Workflow validator and whitespace checks: PASS.
+
+Bounded limit: `app-signing` groups the existing local signer's copy/configure,
+codesign and post-sign checks. Do not broaden that shared API speculatively.
+If the next hosted run fails in that category, the technical owner must inspect
+and add focused safe substages there. Root cause and actual Apple result remain
+unknown.
+
+ACCEPT the revised bounded diagnostics candidate after direct inspection and
+independent fault injection. Base `44b5419ba673132d34f5b8b2a2c9f6fae88fed06`;
+Git blob identities: script `40693afffd208428a41d9321b380e5828e054693`, test
+`c0c2b980ef06bc6616e264acf3a56f9e3b971bde`. Independent checks confirm cleanup
+despite stdout write/flush failures and identity-decode failure before signing.
+The earlier blocking finding is resolved. No Peer write scope remains.
+
+Delivered commit `cea8d99` on `fix/ci-signing-stage-diagnostics` and opened
+[PR #19](https://github.com/hoangnb24/lessmeet/pull/19). This follow-up records
+delivery only. The owner can merge PR #19 to get stage markers in a new run.
+Do not rerun the old immutable run expecting new diagnostics. This is diagnostic
+readiness, not a repaired signing result. Only the owner merges. Public publication
+remains disabled. Actual signing, notarization and signed-app runtime remain
+UNVERIFIED for this candidate.
+
+## Signing inputs ready; owner merge is next (2026-10-14)
+
+The owner confirmed completion of the password helper. GitHub secret-name readback
+now confirms all seven intended secrets in `lessmeet-developer-id`, including
+`LESSMEET_DEVELOPER_ID_P12_PASSWORD` updated at `2026-10-14T09:51:34Z`.
+No secret values were retrieved. Rechecked the environment: only branch `main`
+is allowed, no tag rule and no required reviewer, as authorized.
+
+Enabled `LESSMEET_DEVELOPER_ID_RELEASE_ENABLED=true` and verified readback.
+`LESSMEET_GITHUB_RELEASE_ENABLED=false` remains unchanged. This permits signing
+and notarization after the owner merges; it does not permit public publication.
+
+ACCEPT the completed provisioning and documentation handoff for PR #18.
+Product, workflow, script and test bytes remain unchanged from accepted source
+candidate `dbbadc4b454ce07e90d0135f08ceb584854a5c94`; only CONFIGURATION and STATUS
+are updated. Previous offline release tests (112 PASS) and packaging tests
+(76 PASS) apply to those unchanged bytes. Whitespace validation is repeated
+before the documentation commit. No credentials or ignored helper are committed.
+
+Documentation commit `7ff811f774899601f15591ec36fa891dcf51499a` was pushed.
+PR #18 was marked ready; readback reports OPEN, isDraft=false and merge state
+CLEAN. The PR description now records the resolved inputs and current limits.
+This follow-up only records the completed handoff; it changes no executable bytes.
+Next action: only the owner merges. After that event, observe the merged-source workflow
+and verify its artifact. Hosted signing, notarization and signed-app runtime
+remain UNVERIFIED. Provisioning success is not artifact acceptance.
+
+The entries below are chronological checkpoints, newest first. Their pending
+input, disabled signing and draft-PR statements describe those earlier checkpoints;
+this entry supersedes them. No live UI scope or Peer write assignment is active.
+
+## Owner-only merge decision and environment provisioning (2026-10-14)
+
+Authorized decision: no required reviewer for the signing environment. The owner
+states only they merge into main. This supersedes the required-reviewer blocker
+below; do not ask for a paid-plan change. Leave PR #18 for the owner to merge,
+not an agent. Public publication remains excluded.
+
+Remote reconciliation: environment absent, repository-secret list empty, both
+signing/publication variables false, PR #18 OPEN/DRAFT at
+`dbbadc4b454ce07e90d0135f08ceb584854a5c94`, no merge commit. Collaborator API lists
+only `hoangnb24` with admin access. This is an observed collaborator list, not an
+enforced main-branch rule or an audit of every app/token with repository access.
+Existing branch-protection plan limits remain; no access rule was bypassed.
+
+Created `lessmeet-developer-id`, environment ID `24266624356`, with custom branch
+policy. Added and read back the sole rule: branch `main` (no tag policy), ID
+`63011760`. No required-reviewer rule. Existing unrelated environments, secrets
+and repository access were not modified. No plan or visibility change occurred.
+
+Provisioned six intended secrets with `gh` through stdin, not command arguments
+or files/logs containing values. The destination was checked empty first; no
+identity was silently replaced. Local PKCS#12/profile hashes matched the accepted
+inputs. Secret-name/timestamp readback confirms:
+
+- LESSMEET_DEVELOPER_ID_P12_BASE64
+- LESSMEET_DEVELOPER_ID_PROFILE_BASE64
+- LESSMEET_DEVELOPER_ID_CERT_SHA1
+- LESSMEET_NOTARY_KEY_BASE64
+- LESSMEET_NOTARY_KEY_ID
+- LESSMEET_NOTARY_ISSUER_ID
+
+Only LESSMEET_DEVELOPER_ID_P12_PASSWORD remains. The owner must run the ignored
+local helper with `/usr/bin/ruby`:
+`.artifacts/chatgpt-storage/ci-signing/provision-p12-password.rb`.
+It prompts without echo, validates the exact PKCS#12 hash/certificate/private-key
+match, then passes the password to `gh secret set` via stdin for this environment.
+It refuses to overwrite an existing password secret and retains no password file.
+Syntax validation PASS; execution awaits owner input. No password in chat.
+
+Signing activation stays false until all seven inputs are provisioned and the
+candidate/status handoff is reconciled. Publication stays false for the manual
+test. No merge or hosted run occurred. After password confirmation, verify the
+seven names and environment policy, finish the delivery documentation/PR handoff,
+enable only signing, then let the owner merge. Observe that merge's exact workflow
+through terminal completion and verify its artifact; do not claim success early.
+
+## Team notary key downloaded; Apple input preparation complete (2026-10-14)
+
+The owner performed Generate in the prepared Chrome form. Readback on the same
+verified App Store Connect team shows Active key `LessMeet CI Notary`, role
+Developer, Key ID `C252BFL5P7`, issuer
+`69a6de8c-6878-47e3-e053-5b8c7c11a4d1`. No second key was created and no existing
+key was modified or revoked. This replaces the pending Generate confirmation.
+
+Downloaded that exact row's one-time P8 through Chrome. The browser reported
+`AuthKey_C252BFL5P7.p8`, 257 bytes, Done; the row's Download action disappeared.
+Chrome saved it to Downloads without a save dialog. Set that exact new file to
+0600, then moved it without overwrite to:
+`/Users/tubakhuym/projects/lessmeet/keys/developer-id-ci/AuthKey_C252BFL5P7.p8`.
+The destination parent is 0700; destination mode is 0600 and its path is Git-ignored.
+No copy remains at the original Downloads path. The file is preserved at the new
+location; this was not key deletion. No cookies, browser tokens or key contents
+were extracted or printed. `openssl pkey -check -noout` reports Key is valid.
+
+ACCEPT the bounded input-preparation outcome: matched Developer ID PKCS#12 and
+MAC_APP_DIRECT profile `JUKU76YFHS` from the previous entry, plus this active
+Developer-role Team API key and private one-time download. These are the intended
+inputs for the accepted CI configuration. No new signing certificate was created.
+The technical owner has finished Apple UI work; no live UI write scope remains.
+The owner should keep an encrypted backup because Apple does not offer another
+download. Do not print or send the P8 or PKCS#12 password through chat.
+
+Remaining limits: key parsing and portal metadata are not a notarization-service
+authentication test. No actual signature, timestamp request, notarization
+submission, hosted CI run or app runtime check was performed here. Seven GitHub
+environment secrets remain unprovisioned. PKCS#12 password must be supplied through
+a secure local input channel during provisioning, not inferred from the helper
+receipt. The later owner decision above removes the required-reviewer condition.
+No paid-plan/visibility change or public publication is authorized. The owner
+retains merge; the current provisioning state is recorded above.
+
+At this preparation checkpoint the required-reviewer condition was unresolved;
+the later owner decision and provisioning above supersede that dependency.
+Continue the manual signed-build workflow with secure password input.
+No GitHub mutation, commit/push,
+merge or public release occurred in this preparation. STATUS and configuration
+references now record these prepared inputs without secret values.
+
+## Matched Developer ID input and completed profile (2026-10-14)
+
+ACCEPT the supplied PKCS#12 identity and downloaded profile as matched signing
+inputs, not as a signed/notarized app result. The owner ran the interactive helper;
+the 0600 public receipt reports a matching private key and certificate. Independently
+checked that the original's SHA256 still matches the receipt and that the selected
+Apple certificate's current public DER has the same fingerprint.
+
+- Original: `/Users/tubakhuym/Documents/AppleDeveloperID.p12`, PKCS#12, unchanged.
+  SHA256 `a4ecf8f9c46e95068d39e8a5f5ee4bcfe1a8990748eab2a5769fb54e17fb8816`.
+- Selected certificate resource: `3NSF74TP49`, Developer ID Application,
+  team `63M98WD275`, SHA1 `DE967875FB1C4BBEBCB60EED42BC7182D031E9F0`.
+  Certificate expires `2027-02-01T22:12:15Z`. Identity ambiguity is resolved.
+- The original has mode 0644. Made a byte-identical 0600 prepared copy at
+  `/Users/tubakhuym/projects/lessmeet/keys/developer-id-ci/AppleDeveloperID.p12`.
+  Its parent is 0700. No overwrite, original permission change, import or new
+  private-key export occurred. The owner should restrict access to the original.
+
+Rechecked the exact bundle and all existing MAC_APP_DIRECT profiles before the
+single create request. No profile existed. Created with asc using bundle resource
+`4KUL5K8UU2` and certificate resource `3NSF74TP49`, then downloaded:
+
+- Name `LessMeet_Developer_ID_20261014`; resource ID `JUKU76YFHS`.
+- Type `MAC_APP_DIRECT`; API state ACTIVE.
+- UUID `666d8699-0fbc-4e91-8b29-eb58356ef84b`.
+- File `/Users/tubakhuym/projects/lessmeet/keys/developer-id-ci/LessMeet_Developer_ID.provisionprofile`,
+  mode 0600, Git-ignored in its owning checkout.
+- SHA256 `aaecb8a165088f734db862548ce4dde6d2b6d30d9ce4dad571ab2f153e7102cc`.
+- API relationships independently confirm the exact bundle and sole certificate.
+  CMS-decoded profile confirms team `63M98WD275`, application identifier
+  `63M98WD275.com.lessmeet.app`, ProvisionsAllDevices=true, no device list and
+  no debugging entitlement. The selected certificate is its only certificate.
+- The accepted `sign-local-app.py` developer-id input policy passes. Resulting
+  signing entitlements remain audio-input plus application/team identifiers.
+  No broad profile keychain group or legacy service capability is copied.
+
+Expiry observations are distinct: the API create response reports
+`2027-02-01T22:12:15Z`; the downloaded profile's signed payload reports creation
+`2026-10-14T09:42:20Z` and expiration `2044-10-09T09:42:20Z`. The contained
+certificate still expires in 2027. Do not infer signing validity through 2044.
+
+Limits: helper success proves PKCS#12 parse and private/public-key correspondence;
+policy success proves profile compatibility. Neither is an actual signing,
+timestamp, notarization or full-app runtime test. Password was entered only by
+the owner and was not retained by the helper or provided to this agent. CI still
+needs secure password provisioning when the environment blocker is resolved.
+
+The subsequent owner action and completed key download are recorded above.
+The earlier "ran it" response confirmed only the PKCS#12 helper; it was not
+treated as key-creation confirmation. The owner later performed Generate.
+GitHub protection limits, disabled gates and draft PR #18 are unchanged. No
+commit/push or merge in this preparation; only existing STATUS changed locally.
+
+## Supplied signing export and Chrome route (2026-10-14)
+
+Current scope continues the two Apple resources below. Use the signed-in Chrome
+Apple session; no cookie/token extraction, browser security changes or unrelated
+browser data access. The technical owner owns Apple UI actions. Other app UI is
+out of scope. Computer Use requires action-time confirmation immediately before
+creating persistent API access; prepare and verify the exact key first.
+
+Top-level Documents signing-file search found one candidate only:
+`/Users/tubakhuym/Documents/AppleDeveloperID.p12`, 3240 bytes, modified
+2026-10-14 13:23:19 +0700. ASN.1 structure has PFX version 3 and the PKCS#7 data
+OID. This establishes a PKCS#12/PFX container, not a provisioning profile. It
+does not yet establish the enclosed identity or a matching private key. The
+original remains unchanged; no recursive search or unrelated file read occurred.
+
+Owner-interactive inspection helper:
+`.artifacts/chatgpt-storage/ci-signing/inspect-supplied-p12.rb` (ignored).
+Run it with `/usr/bin/ruby` in a terminal. It prompts without echo, checks the
+public fingerprint/team/date and private/public-key match in memory, and writes
+only a new 0600 metadata receipt to
+`/Users/tubakhuym/projects/lessmeet/keys/developer-id-ci/AppleDeveloperID-inspection.json`.
+It neither exports a private key nor modifies/imports the original. No password
+argument, chat password, brute-force or overwrite is allowed. Syntax check PASS;
+actual inspection and profile creation are now complete as recorded above.
+
+Chrome verification completed: the Apple Developer page explicitly shows team
+`63M98WD275`. The matching signed-in App Store Connect account's own Users and
+Access row shows Account Holder/Admin. The Team Keys page shows issuer
+`69a6de8c-6878-47e3-e053-5b8c7c11a4d1`. No browser cookies/tokens were read or
+copied. The separate asc web session is not assumed authenticated and is no
+longer required for the portal route.
+
+The Team Keys page has eight active keys. One possible existing project key is
+`Meetless Upload 2026-09-14`, ID `V8ZBF889R7`, role Developer; it has no Download
+action. Its intended reuse and available P8 file are not established. Do not
+export a key from other storage or reuse unrelated keys. The existing asc-release
+key is App Manager, not the least-privilege Developer choice for this new input.
+
+Prepared but NOT submitted: Generate API Key form, name `LessMeet CI Notary`,
+role Developer, enabled Generate button. Computer Use requires confirmation at
+this exact persistent-access creation step. Ask whether to create that key now;
+if the owner instead has the intended `V8ZBF889R7` P8, request its protected file
+location for reuse. No new key ID, P8, profile or Apple resource mutation exists
+from this turn. The form remains open; no browser security settings changed.
+
+The PKCS#12 helper and profile branch are complete as recorded above.
+After action-time confirmation, create/download the Developer
+Team key through the verified Chrome session into the protected destination.
+The technical owner retains Apple UI ownership pending that confirmation.
+Existing GitHub and no-publication limits remain unchanged. Only STATUS changed
+in tracked files; the helper is ignored. No commit/push was made.
+
+## Apple distribution input preparation (2026-10-14)
+
+Authorized resources: one `MAC_APP_DIRECT` profile for `com.lessmeet.app` and
+one Team API key suitable for notarization. Reuse suitable existing resources.
+No new Developer ID certificate/private key, revocation, unrelated account change,
+broader credential discovery or protection-policy change is authorized. The
+technical owner retains this scope; no Peer or live app UI scope is active.
+Input is draft PR #18 at `dbbadc4b454ce07e90d0135f08ceb584854a5c94`.
+
+Inspected installed `asc 5.14.0` help before requests. `profiles create` accepts
+profile type plus bundle/certificate resource IDs. `web api-keys create` supports
+Team key creation and one-time P8 download through a cached Apple web session.
+It defaults to ADMIN, so any authorized notary-key creation must explicitly use
+`--role DEVELOPER`. Its help promises P8 mode 0600 and no key material in output.
+This is web-session support, not a claim that the public API bootstraps new keys.
+
+Narrow read-only API results, using the existing team-named authentication profile:
+
+- Exact bundle resource `4KUL5K8UU2`: identifier `com.lessmeet.app`, platform
+  UNIVERSAL, seed `63M98WD275`. The identifier filter also returned a longer
+  services identifier; it was excluded after exact matching and direct lookup.
+- Existing bundle capabilities: IN_APP_PURCHASE and APPLE_ID_AUTH. No capability
+  was added or changed. The accepted signing code still requests only audio input
+  and profile-authorized application/team identifiers, not these legacy services.
+- No `MAC_APP_DIRECT` profiles were returned across all pages (ACTIVE/INVALID).
+- Three Developer ID Application certificates were returned. Public DER metadata
+  confirms each subject UID/OU is `63M98WD275`, each has a distinct SHA1, and each
+  expires `2027-02-01T22:12:15Z`. All start dates precede this inspection:
+
+| Certificate resource ID | SHA1 | Start (UTC) |
+| --- | --- | --- |
+| `3NSF74TP49` | `DE967875FB1C4BBEBCB60EED42BC7182D031E9F0` | 2026-10-14 06:12:33 |
+| `4A6J752KSR` | `D3CA2AEA2DCBF578D27CFC3557BFFCB41E370561` | 2026-08-25 00:23:32 |
+| `6P3LN2NGX6` | `6342DB21E850363841B97957D2E00E7D0CADA9D7` | 2026-04-30 13:13:22 |
+
+Certificate choice is AMBIGUOUS. Do not select the newest certificate or assume
+its signing private key exists locally. No profile was created/downloaded. The
+owner must identify the intended resource/fingerprint and matching prepared
+signing-key source. No private key was inspected/exported; certificate trust-chain
+and local private-key availability were not tested. Profile team/bundle/certificate
+membership, all-device/debug policy and entitlements remain UNVERIFIED because
+there is no selected profile yet.
+
+Team API key preparation: `asc web auth status` reports authenticated=false and
+passwordStored=false. No web key listing/creation was attempted without that
+session. Existing API authentication works, but does not establish a suitable
+reusable least-privilege notary key or enable web-session bootstrap. The existing
+profile reports issuer `69a6de8c-6878-47e3-e053-5b8c7c11a4d1`; this is metadata
+from that profile, not a newly created key or a verified new-key binding. New
+notary Key ID is not available. The IAP key was not opened or substituted.
+
+Apple's current roles table grants Notarize software to Developer, App Manager,
+Admin and Account Holder; Developer is the least privileged supported role in
+that table. Team-key creation requires Account Holder/Admin. Team keys apply
+across apps; they cannot be limited to LessMeet alone. No elevated ADMIN default
+will be used for the notary key.
+
+Prepared destination outside this worktree:
+`/Users/tubakhuym/projects/lessmeet/keys/developer-id-ci/` (created, mode 0700).
+Parent keys directory is mode 0700; profile/P8 paths are Git-ignored in the owning
+checkout. The directory is empty. Intended files are `AuthKey_<KEY_ID>.p8` and
+`LessMeet_Developer_ID.provisionprofile`, each mode 0600. No secret values were
+printed or saved in evidence logs. No Apple resource mutation occurred.
+
+Minimal owner action:
+
+1. Select one exact certificate above and identify its signing-key source. This
+   does not authorize a new signing certificate or private-key export.
+2. Sign in interactively using `asc web auth login --public-provider-id 63M98WD275`
+   in the owner's terminal, or sign in to App Store Connect in the browser. Do
+   not provide passwords or verification codes in chat. Account Holder/Admin
+   must use the intended team. No authentication bypass will be attempted.
+3. If using the browser, open Users and Access > Integrations > App Store Connect
+   API > Team Keys. Check for a suitable intended existing key before creating
+   `LessMeet CI Notary` with Developer access. If API access has not been enabled,
+   the Account Holder must request it. Download the P8 once to the protected
+   destination above, record Key ID and Issuer ID, and keep the file mode 0600.
+   Alternatively, after login, the CLI can perform the authorized key creation
+   and one-time download with explicit Developer role and output directory.
+
+Resume profile creation after certificate selection; resume key reuse/creation
+after authenticated team/session verification. These are independent branches.
+No GitHub environment change, secret upload, merge, publication, notary submission
+or installed-app operation occurred in this preparation. Existing delivery gates
+and the required-reviewer limitation remain unchanged. Only this status file
+changed locally; no new commit or push was made for this preparation.
+
+Sources checked: [Apple API key creation and one-time download](https://developer.apple.com/help/app-store-connect/get-started/app-store-connect-api),
+[Apple roles and access](https://developer.apple.com/help/account/access/roles),
+[Notary API authentication](https://developer.apple.com/documentation/notaryapi/submitting-software-for-notarization-over-the-web),
+[Profile creation attributes](https://developer.apple.com/documentation/appstoreconnectapi/profilecreaterequest/data-data.dictionary/attributes-data.dictionary).
+
+## Manual signed-build delivery (2026-10-14)
+
+Outcome requested: deliver the accepted secure-storage/signing changes to main
+and obtain a Developer ID signed/notarized GitHub Actions artifact for manual
+testing. Public release publication is excluded. The technical owner owns this
+delivery; no Peer or live UI write scope is active.
+
+Reconciliation: all 19 files matched accepted manifest SHA256
+`c06db248383116612c9b920c0ebcf05518dde2b9c2ee61d296390def77a0e604`.
+Remote main and local HEAD were both
+`7166ef5f6de6d30b69d7bdc0aa9e348c8f2b2fe4`. No remote feature branch or PR existed.
+Product/scripts/tests remain that accepted candidate. Only delivery status and
+configuration observations below are being updated.
+
+At that checkpoint, authority superseded local-only limits: commit/push/PR/merge,
+the seven intended environment secrets, scoped protections, hosted verification
+and Apple timestamp/notarization traffic were authorized. The latest decision
+above reserves merge to the owner. The resource-preparation
+entry above adds specific profile/Team API key creation authority. Other missing
+credentials may not be guessed, newly created or replaced. No unrelated key export, protection
+bypass, public release, real OAuth/chat or installed-app/data operation is allowed.
+
+Remote observations and actions at 06:11–06:13 UTC:
+
+- `LESSMEET_GITHUB_RELEASE_ENABLED` was `true`. Set it to `false` and verified
+  readback. Set `LESSMEET_DEVELOPER_ID_RELEASE_ENABLED=false` explicitly. Neither
+  gate may be enabled until its own prerequisites are met; publication stays off
+  for this verification run. Existing releases/tags/assets were not touched.
+- The private repository had no environments and no repository secrets listed.
+  Creating `lessmeet-developer-id` with a required signing-owner reviewer failed
+  with HTTP 422: the billing plan does not support required reviewers. The API
+  nevertheless created an unprotected empty environment. Verified its secrets
+  and variables were empty, then deleted only that newly created environment.
+  Readback confirms no environments remain. No secret was uploaded.
+- Branch-protection and ruleset reads returned HTTP 403 with a plan limitation.
+  No protection was bypassed or weakened. No plan or repository visibility change
+  was made. The owner must enable support for the intended protection policy.
+- Narrow inspection of the documented project `keys/` source found the two
+  Development profiles, not a prepared Developer ID PKCS#12 or all-device profile.
+  The documented `.p8` belongs to In-App Purchase/RevenueCat; it is not an
+  established Team API notary input and was not opened or reused. No broad
+  Keychain inventory, private-key export or unrelated credential read occurred.
+
+Independent preparation: repeat release tests **112 PASS** and packaging tests
+**76 PASS**. Shell/Node syntax and `git diff --check` pass. Preserve the accepted
+local storage evidence; no new full-app/runtime claim is made. Only the 19 in-scope
+paths were committed and pushed. Draft PR:
+https://github.com/hoangnb24/lessmeet/pull/18
+
+Delivered commits:
+
+- `062c280e4de1432e386e84a216fbbe7c56335dfc`: session-owned sign-out retry state,
+  synthetic storage namespace injection and coupled auth assertions.
+- `7efe7bb7eb7a9c2f77bcf2a5cbf48c3d3dd1cdc5`: signing/build/workflow configuration,
+  tests and delivery documentation. Remote branch readback matches this candidate.
+
+ACCEPT these commits for the prior bounded code/configuration outcome and local
+evidence. Do not accept a signed-build outcome: no such run or artifact exists.
+Main still equals the base above. No merge or workflow dispatch occurred; no
+feature-branch run was listed. Keep PR #18 in draft. This status-only follow-up
+records the remote handoff and does not change executable inputs. The next action
+is owned by the signing/repository owner as specified below, not another code task.
+
+BLOCKED for merge/signing activation: the signing owner must provide securely
+located, already-prepared Developer ID PKCS#12 plus password and exact certificate
+SHA1, matching all-device profile for `com.lessmeet.app` / team `63M98WD275`, and
+the intended Team API notary key plus key ID and issuer ID. If export or creation
+is needed, the owner must establish the exact identity/source and perform or
+separately authorize that action. The repository owner must resolve the protection
+plan limitation without making the private repository public or bypassing review.
+Resume at validated input/protection availability, then provision with `gh`,
+verify publication remains disabled, activate signing, merge and watch the exact
+merged-source build. No signed run, merge SHA or downloadable candidate exists yet.
+
+## Profile-backed build and CI signing repair (2026-10-14)
+
+Active scope: repository packaging scripts, workflow configuration, tests and
+documentation. Base `7166ef5f6de6d30b69d7bdc0aa9e348c8f2b2fe4`, branch
+`fix/chatgpt-secure-storage`. The prior accepted fixture and four source/test
+changes are preserved inputs. The technical owner owns all integrated changes.
+All read-only inspection scopes are closed; no UI scope is active.
+
+Plan: add a profile-backed path for the current local app, keep signing inputs
+out of compiler processes, verify exact identity/profile/entitlements after
+signing, and retain immutable release provenance and asset checks. Test policy
+failures and orchestration offline. No storage downgrade or real-data access.
+Distribution decision: retain GitHub ZIP with Developer ID signing and Apple
+notarization. This replaces the pending channel question. The existing development
+profile is device-limited and remains local-test input only. Implement an explicit
+Developer ID release contract; preserve historical ad-hoc assets and retry rules.
+At this acceptance checkpoint no notarization or remote activation was authorized.
+The manual signed-build delivery entry above records the subsequent authority.
+
+Historical authority at code acceptance: repository edits and exact local signing
+identity/profile for isolated synthetic verification. Not authorized: key
+export/transfer, secret upload, remote CI/settings changes or dispatch, global
+permission/Keychain policy changes, installed-app replacement, live OAuth/chat,
+push, merge, publication or paid services. Hosted CI and full-app runtime must
+remain UNVERIFIED unless separately evidenced. The prior request for permission
+to edit packaging below is settled by this scope; publication remains separate.
+
+### Disposition and exact local evidence
+
+ACCEPT the repository signing configuration with the offline and local-development
+evidence below. This is code/configuration acceptance, not acceptance of a public
+Developer ID artifact or hosted pipeline run. No commit was created. The exact
+working-tree candidate is recorded by per-file SHA256 in
+`.artifacts/chatgpt-storage/ci-signing/CANDIDATE_SHA256SUMS`; its inputs are the
+base above plus the complete changed paths listed there. No unrelated files were
+changed. The previous accepted source/fixture manifest still verifies unchanged.
+
+Implemented:
+
+- `signed-local` builds a separate `com.lessmeet.app` development artifact. It
+  strips legacy services/callbacks, preserves the production storage protections,
+  uses only minimal profile-backed entitlements, and never overwrites an existing
+  signed candidate. Compiler children receive no signing or publishing inputs.
+- `ci-sign-release.py` validates the Developer ID profile before importing the
+  exact selected identity into a temporary hosted-runner keychain. It requires
+  secure timestamp/hardened runtime, exact leaf/profile/entitlements, accepted
+  notarization, staple validation and assessment. It then checks the app extracted
+  from the final ZIP before sealing. No keychain import/ACL/notary operation was
+  executed locally.
+- Schema 3 uses `main-signed-<sequence>-<SHA>` and a `developer-id.zip` suffix.
+  Provenance, four-asset allowlist, immutable artifact-ID download, no-clobber and
+  exact-byte draft recovery remain. Schema 2 is retained for historical recovery.
+  Development profiles cannot be relabeled as either public release route.
+- The workflow is gated by `LESSMEET_DEVELOPER_ID_RELEASE_ENABLED` and protected
+  environment `lessmeet-developer-id`. Seven Apple secrets are exposed only to
+  the signing step. Publication retains its separate existing enable gate.
+  Neither gate nor any remote setting was changed.
+
+Local verification:
+
+- Release tests: **112 PASS**, including missing/wrong signing inputs, mode
+  mismatch, certificate extraction/fingerprint, secret-free children, no unsigned
+  sealing for signed plans, notarization rejection, staple/assessment failures,
+  interruption, cleanup retry and final-archive validation failure.
+- Packaging tests: **76 PASS**. Includes signed-local service/callback stripping.
+- `bash -n`, Node syntax and `git diff --check`: PASS. Ruby YAML workflow policy
+  checks run in the release suite. No local actionlint binary was available;
+  checksum-pinned actionlint execution and hosted validation remain UNVERIFIED.
+- Local toolchain: Xcode 26.6 (17F113), arm64, Metal 32023.883 available. No full
+  dependency/application build was performed for this increment.
+- New signing helper: PASS with only the previously authorized Development
+  fingerprint/profile, no prompt. A separate synthetic copy of the accepted CLI
+  fixture was repackaged with clearly labeled placeholder resource bundles/shader.
+  This exercises the actual signing/leaf/entitlement/profile/promotion path, not
+  full-app resource usability. Bundle:
+  `.artifacts/chatgpt-storage/ci-signing/signed-fixture/LessMeet.app`.
+  Executable SHA256:
+  `1699b11522bc7048f3c3f923b0751cdd7f166904996637491300afc57ed0c397`.
+- That exact helper-signed fixture passed real synthetic Keychain seed, separate
+  process reopen, update, injected pre-write logout failure, retry and reopen with
+  tokens absent. It ran under the prior process isolation policy, never through
+  UI or the installed app. No real credential namespace was queried.
+- The exact base release helper sealed a local-mode synthetic ZIP. The new reader
+  accepted its four assets byte-for-byte. Actual historical hosted assets were
+  not downloaded and remain UNVERIFIED.
+
+Receipts are in `.artifacts/chatgpt-storage/ci-signing/`: `release-tests-final.log`,
+`packaging-tests-final.log`, `local-preflight.log`, `real-signing-final.log`,
+`real-keychain.log`, `legacy-compatibility.log`, and `accepted-input-check.log`.
+Failed signing and initial test logs remain. One real local signing attempt caught
+the optional-argument syntax error in certificate extraction. The corrected
+`--extract-certificates=<prefix>` passed and has a regression test.
+
+Review dispositions: ACCEPT the initial architecture inspection as input for
+separate development and immutable release contracts. The subsequent channel
+decision extended implementation to Developer ID, without retaining an unnecessary
+development-only CI branch. REJECT frozen `review1` for cleanup that aborted after
+keychain deletion failed. ACCEPT corrected `review2`: payload cleanup proceeds
+independently, failed keychain/owner marker remain for retry, failure blocks upload,
+and the final ZIP is checked before sealing. The final 112-test rerun includes
+the last archive-failure extension. All affected inspection scopes are closed.
+
+### Remaining activation inputs and limits
+
+The distribution choice is settled. Human/signing owner must separately supply
+a Developer ID Application identity, its matching valid all-device profile for
+`com.lessmeet.app`, and a Team API notary key/ID/issuer. Exact seven secret names
+and formats are in `docs/CONFIGURATION.md#profile-backed-github-zip-signing`.
+The local Development profile must not be used for public distribution.
+
+The manual-test delivery request now grants authority for established intended
+credential provisioning, protected environment setup and timestamp/notarization
+traffic. Exact inputs and protection-plan support are still missing, as recorded
+above. Resolve those inputs before enabling signing or merging. Public publication
+remains excluded. A timed-out notary submission may continue at Apple; inspect
+the exact submission before retrying under the granted workflow authority.
+
+Developer ID signing, ephemeral CI keychain lifecycle, Apple notarization,
+native final-ZIP checks, hosted CI, full-app launch/save/reopen, existing-user
+credential compatibility and live OAuth remain UNVERIFIED. Offline mocks and the
+development fixture do not convert these limits to PASS. The prior bounded
+account UI acceptance remains valid for its exact original fixture only.
+
+## ChatGPT secure-storage investigation (2026-10-14)
+
+Active task: reproduce and repair sign-in storage failure locally. Base and remote
+main are `7166ef5f6de6d30b69d7bdc0aa9e348c8f2b2fe4`; branch is
+`fix/chatgpt-secure-storage`. PR16 and PR17 are merged. Earlier publication and
+handoff checkpoints below are historical, not new authority or open work.
+The technical owner owns integration and all writes. All read-only inspection
+scopes are closed. All owned fixture processes have exited; UI ownership is released.
+Preserve other checkouts, user data and existing artifacts. No publication,
+live OAuth/chat, real credential access, app termination or permission changes.
+
+Plan: trace error paths; reproduce with synthetic data at the real storage
+boundary; apply the smallest proven fix; repeat sign-in/error/retry and persistence
+checks on the candidate. Budget: three focused experiment rounds, then reassess.
+Done requires fail-to-pass evidence and exact candidate identity, or a concrete
+authority/input blocker. The supplied capture's build and failure stage remain
+unknown. Do not infer damaged Keychain data from the generic error.
+Hypotheses: signing/entitlements versus Data Protection Keychain requirements;
+store/lock errors before browser; persisted-record or later authorization errors.
+The initial tree was clean. No user app or real credential item was opened.
+
+### Local signed candidate — bounded acceptance
+
+ACCEPT the local fixture and retry-classification change for the synthetic offline
+scope below. This is not acceptance of a repaired release pipeline or live OAuth.
+Device coverage: **match**. Signing used only fingerprint
+`24E5A98A599DCBBA0FF05C1B9B1554A2DB101C3C` and the authorized replacement profile.
+No interactive key-use prompt appeared. No key export, ACL change, CI change,
+push, merge or publication occurred.
+
+Exact bundle: `dist/storage-signed-ui/LessMeetStorageCheck.app`, identifier
+`com.lessmeet.app`. Executable SHA256:
+`2e26e479951db6a26618b4f1e7fe2c518d8fbb95022bda9ac56f121c0bd35ee3`.
+Info.plist SHA256:
+`287caa587d39fbb83bb6a13b4ed8ca617fe157e11a66be7379afe30ff09a40ad`.
+Strict signature verification PASS. Complete source, fixture and policy hashes:
+`.artifacts/chatgpt-storage/signed/SHA256SUMS`. Build source and local evidence
+remain ignored; do not upload the profile, bundle or raw captures.
+
+Tracked changes: inject the Keychain service name with the unchanged production
+default; publish an explicit session-owned `needsSignOutRetry`; use that state
+in `ChatGPTAccountView`; assert storage-error, cancel and logout-retry behavior
+in `ChatGPTAuthTests`. Keychain protection flags and storage algorithm are unchanged.
+At this earlier fixture checkpoint, normal packaging was unchanged. The new
+repository repair above supersedes that packaging status, not the fixture limits.
+
+Verification on macOS 26.4:
+
+- Real signing boundary PASS: the production-equivalent probe changes from
+  update/add `-34018` to add/readback `0`. It deletes only its own fresh synthetic
+  item. This isolates a signing mismatch in the tested baseline, not the unknown
+  build from the original report.
+- Real production-store persistence PASS on the exact final executable: seed,
+  separate-process read, update, injected pre-write failure with unchanged real
+  bytes, successful logout retry retaining host/profile, and separate-process
+  read with tokens absent. Receipt: `persistence-final-ui-candidate.log`.
+  This does not test OS-level failed-write atomicity or real remote revocation.
+- Auth regression PASS: 37 tests, zero failures. A dependency-free scratch package
+  compiled the six actual auth source files and the actual test file. It is not
+  the full app regression suite. Receipt: `auth-tests.log`.
+- Signed account UI PASS, approximately 04:40–04:42 UTC: sign-in writes real
+  synthetic Keychain state and reaches the intercepted network boundary; retry
+  remains available; Cancel returns to signed-out UI; an injected storage error
+  no longer displays Retry sign-out. Only the actual account sheet/view/session
+  were hosted, not the full Library. Evidence: `verified-*`, `ui-runtime-v2.log`,
+  `ui-cancel.log`, `ui-failure.log` in the signed evidence directory.
+- Isolation canaries PASS: denied synthetic filesystem read/write/create/list/
+  symlink access, preference synchronization, fresh shared-memory names and five
+  preference/restoration service lookups. The final process policy also denies
+  network, URL launch, Apple Events and Launch Services database modification.
+  Manual windows disable restoration; explicit in-memory defaults supplement,
+  but do not replace, process restrictions. Receipt: `isolation-final.log`.
+  No real credential namespace or recording store was queried.
+
+Preserved failed attempts: an invalid synthetic host identifier failed session
+validation; it was corrected to a valid UUID. An early fixture created two
+NSApplication instances; using the subclass singleton before session construction
+fixed it without weakening isolation. Old capture helpers retained a baseline
+target and reopened the owned baseline fixture; those captures are rejected as
+candidate evidence. Explicit path calls plus PID checks verified the final runs.
+The unintended baseline process was identified and terminated; the installed app
+was not operated or stopped. No processes remain from these trials.
+
+ACCEPT the independent isolation findings as preparation input, not runtime proof.
+ACCEPT the independent source/persistence inspection for the manifest's four
+source/test hashes and preserved `fixture-v1`; no blocking selected-account
+regression was found. Final UI evidence was inspected separately. A nonblocking
+edge remains: direct `signOut()` with no active target can leave retry state after
+a read/lock failure while a direct `signIn()` remains possible. The normal view
+routes this state to retry. The technical owner will revisit this edge with a
+no-target recovery test at the next auth-state change; do not equate the retry
+boolean with the optional target as a universal invariant.
+
+Usable result: the local signed fixture proves the secure-storage route and the
+affected offline UI recovery. Existing real credentials, full-app save/reopen,
+live OAuth/chat, and release packaging remain UNVERIFIED or unresolved. The
+waiting UI text mentions a browser, but no browser was opened in the fixture.
+Synthetic namespaces remain for evidence; they contain only fabricated data.
+The later scope above authorizes repository packaging repair and selects GitHub
+Developer ID distribution. Credential provisioning, activation and publication
+remain separate; do not ask again for the settled repository/channel permission.
+
+### Earlier reproduction and signing-input checkpoints
+
+ACCEPT the independent source inspection of base
+`7166ef5f6de6d30b69d7bdc0aa9e348c8f2b2fe4` as diagnosis input, not a fixed
+candidate. Direct inspection confirms the release builder forces ad-hoc signing,
+rejects an embedded profile, and checks `Signature=adhoc`. The ordinary entitlement
+file contains only audio-input permission. The store selects Data Protection
+Keychain with non-synchronizing, unlocked-device-only protection.
+
+On macOS 26.4, a production-equivalent query in a fresh synthetic namespace
+returns read `-25300` and update/add `-34018` (missing entitlement). The production
+store stops after failed update; the separate add probe also fails. No test item
+was created. This confirms an incompatible storage/signing configuration in the
+tested artifact, not corruption or the identity of the originally reported build.
+Apple's [TN3137](https://developer.apple.com/documentation/technotes/tn3137-on-mac-keychains)
+describes profile-authorized entitlements for this storage implementation.
+
+UI reproduction PASS as a failing baseline, not a repair: the unchanged production
+account view and session were compiled in an isolated harness. Only the store's
+service string differs; lock/defaults and external boundaries are isolated.
+Clicking Continue with ChatGPT at 02:26:53 UTC produced the storage error and
+Retry sign-out. A second click at 02:27:19 UTC repeated it. Logs show the first
+save fails before discovery/browser. No sign-out had occurred: the retry label
+is a separate confirmed state-classification defect in `ChatGPTAccountView`.
+The harness is not the full Library and does not prove its sidebar state.
+
+Bundle: `dist/storage-ui-baseline/LessMeetStorageCheck.app`.
+Executable SHA256:
+`b5bb29076dffd128e64c55061202624f8cfaf64e85bbd12e0bf9b7932dcd3670`.
+Info.plist SHA256:
+`6f50fec70947d32a3737384561d5aeb0060026edaad48e524af97c846cbfa985`.
+Strict signature verification PASS; this does not prove Keychain capability.
+The owned process exited through Quit at 02:27:20 UTC. Private synthetic evidence,
+source hashes and the local handoff are in `.artifacts/chatgpt-storage/`.
+
+Additional checks PASS: real isolated Keychain failures preserve signed-out state,
+release the lock across two attempts, and leave the namespace empty. A separate
+memory fault model verifies logout failure retains bytes and disables activation;
+retry clears tokens but retains host/profile. This is not successful Keychain
+persistence evidence. One initial harness compile failed on a throwing expression
+inside `precondition`; the corrected harness compiled and ran. Product code did
+not change. `git diff --check` passes. No full app regression suite was run.
+
+At the baseline checkpoint, no repair candidate was accepted. Product, packaging and tests remained
+base-identical. Only this tracked status file had changed; probes and bundles were
+ignored local artifacts. The pstack bug-fix workflow prevents substituting mock
+success or a storage downgrade for a real fail-to-pass result.
+
+Signing-input discovery (2026-10-14): authorized read-only local inspection found
+both ignored development profiles under `/Users/tubakhuym/projects/lessmeet/keys/`.
+`asc --read-only profiles inspect` confirms the replacement
+`Lessmeet_Sandbox_Dev_20260923 (1).provisionprofile` targets `com.lessmeet.app`,
+team `63M98WD275`, expires `2027-09-23T09:12:32Z`, and covers one device.
+It contains the historically documented certificate fingerprint
+`24E5A98A599DCBBA0FF05C1B9B1554A2DB101C3C`. No device identifiers or private-key
+contents were printed. No remote ASC call, Keychain scan or signing occurred.
+This resolved the profile-location question. Keep both profiles and the old
+checkout unchanged. The subsequent identifier decision below supersedes the
+proposed separate verification bundle identifier; the old baseline remains intact.
+
+Confirmed build identifier: `com.lessmeet.app`. Use it for the secure-storage
+fix and next verification build, with the supplied replacement profile. Do not
+use `com.lessmeet.storage-ui-probe` for that build. Its previous artifact remains
+only the failing baseline. Bundle identity does not change storage authorization.
+
+Narrow identity check at `2026-10-14T02:52:52Z`: the exact public certificate was
+selected by SHA1 from the supplied profile. `SecIdentityCreateWithCertificate`
+returned `0`; `SecIdentityCopyPrivateKey` returned `0` with a non-null reference.
+This confirms the matching identity/private-key reference is present. No other
+identities were enumerated. No private-key material was read/exported, signature
+created, trust/ACL changed, or unlock requested. Interaction was disabled only
+within the checker process. Evidence: `.artifacts/chatgpt-storage/IdentityCheck.swift`
+and `identity-check.log`. Key-use permission, successful codesign, revocation
+status and current device coverage are not established by this result.
+
+Verification plan: retain the production store algorithm and protection flags,
+but use a fresh synthetic service namespace, synthetic tokens, private lock/root
+and explicit test defaults. Never construct the default production session or
+recording store. Network/browser/URL actions remain intercepted. Build into a new
+worktree-local output; never replace the installed app or the baseline. Launch
+the exact executable and verify its PID/path before UI actions; do not route by
+the shared bundle ID. Check for an existing same-ID app before launch, without
+operating or stopping it. A shared bundle ID also shares OS preference/restoration
+identity: explicit fixture defaults alone do not isolate all framework state.
+Isolate process preferences and disable restoration before the signed UI trial;
+report any unresolved boundary rather than launch the normal app. Persistence
+checks must reuse only the run's synthetic namespace across owned processes.
+
+Local signing is now authorized for the test fixture only: exact fingerprint
+`24E5A98A599DCBBA0FF05C1B9B1554A2DB101C3C`, supplied replacement profile,
+bundle `com.lessmeet.app`. Device coverage may be checked with match/no-match
+output only. Resolve preferences/restoration/routing isolation before launch.
+If key use requires interactive authorization, report it and wait for its owner;
+do not bypass it or change Keychain policy. No export, global permission change,
+real ChatGPT access, installed-app operation or CI change is authorized.
+Plan for this increment: isolated fixture preparation; same-source real-storage
+comparison; affected UI and retry verification. Reassess after 30 minutes or three
+failed experimental routes. Continue the same-source signing comparison, then the smallest local packaging repair
+and real store write/read/update/restart checks. Fix the retry classification with
+session-state regression proof, separately from the storage repair. If valid
+provisioned signing still fails, reopen the signing-only hypothesis.
+That pre-verification checkpoint is superseded by the bounded local acceptance
+above. Live OAuth, the reported build's identity and existing-data compatibility
+remain UNVERIFIED. No push, merge, release, reset or fallback storage is authorized.
+
+## Library repair PR opened (2026-10-13)
+
+Human authorized commit, branch push and a PR into `main` after local acceptance.
+Product and verification changes are committed as `28b8bfe` and pushed to
+`origin/fix/library-shell-navigation`. PR:
+[16 — preserve sidebar and Transcript/Chat navigation](https://github.com/hoangnb24/lessmeet/pull/16).
+Base remains `fc1960208926b2074d3b016a1da480b7e12c78af`.
+The documentation commit preserves the existing release receipt, handoff and
+Library acceptance below. Those sections describe their original checkpoints;
+their earlier publication restrictions are superseded only for this branch push
+and PR. No merge, release, real-data access or system-permission change is authorized.
+
+Source hashes still match the tested candidate. No product code changed during
+publication. `git diff --check` passes. The 162 Swift and 22 packaging test results
+remain valid for these exact source files; they were not rerun for documentation.
+Full-shell Computer Use PASS and XCUITest execution UNVERIFIED remain distinct.
+No raw captures, logs, local bundles or private meeting content were uploaded.
+Next frontier is PR review. Automated UI execution remains deferred until the
+approved automation environment works. Merge/release requires a new decision.
+
+## Library navigation repair — local candidate accepted (2026-10-13)
+
+Local diagnosis, implementation and isolated full-Library verification are complete.
+The historical handoff below remains intact; its stop instruction applied only
+to that completed handoff. No publication or real-data access is authorized.
+Base: `fc1960208926b2074d3b016a1da480b7e12c78af`, confirmed by remote readback;
+its tracked tree matches handoff `234e37b`. Branch: `fix/library-shell-navigation`.
+Only the prior STATUS receipt was dirty. Existing bundles/evidence stay intact.
+
+The current technical owner owns all integrated changes and serial verification.
+All delegated write and read-only scopes are closed. Computer Use has released
+the fixture after verifying the final bundle. XCUITest has also released its run;
+no live UI ownership remains.
+Plan: establish safe full-shell fixture; reproduce; correct the proven mechanism;
+repeat meeting selection, Transcript/Chat, navigation and resize checks.
+Initial investigation budget: 20 minutes and at most three hypotheses, then
+reconcile evidence. Done requires exact bundle identity and before/after runtime
+evidence, regression checks and an explicit technical disposition.
+Observed in supplied image: transcript visible, sidebar blank, tab switch absent.
+Image build and cause remain UNKNOWN; no private meeting content is copied.
+Hypotheses to distinguish: content layout overflow, split-view state, and a
+different/older artifact. Auth/consent/persistence and LM-SC-01 stay unchanged.
+Baseline component checks: 57 tests PASS, zero failures, using the release
+Swift Build path in `dist/local/swift-build`. Receipt:
+`.artifacts/library-navigation/baseline-tests.log`. This is not UI acceptance.
+ACCEPT independent read-only inspection of base `fc196020` as investigation
+input: sidebar and tab picker are unconditional; both tab layouts remain mounted.
+It supports geometry/visibility experiments, not a root-cause claim. Scope closed.
+ACCEPT baseline fixture executable `8b4452595fcc0bb5a89da5afe0a032e47b9f61c857db470bb628f9c6d930b564`
+as a safe runtime input, not a bug fix. Source inspection confirms isolated
+storage and injected external boundaries. Three component and 22 packaging tests
+pass. Signature verification passes. Product Library layout remains base-identical.
+Bundle: `dist/library-ui-check/LessMeet.app`, ID `com.lessmeet.app.library-ui-check`.
+The technical owner holds the sole UI scope for this bundle. No user app is driven.
+Baseline runtime FAIL at 1180 × 760 on macOS 26.4: Library initially shows its
+sidebar. Opening the long meeting makes the sidebar blank and moves the detail
+header and tabs outside the visible window. Accessibility still lists them.
+The short meeting also renders blank. Returning to Library restores navigation.
+Synthetic captures: `.artifacts/library-navigation/01-baseline-library.png`
+through `05-baseline-short-from-library.png`, with matching AX text and actions.
+The baseline bundle is retained at `dist/library-ui-baseline/LessMeet.app`.
+Its process exited after the check. Geometry instrumentation is temporary.
+Measured failure: selecting the short meeting expands the split view from
+1180 × 708 to 1180 × 3425, at global y = -1306.5. Both columns reach height 3373
+and y = -1254. The window stays 1180 × 760. Receipt:
+`.artifacts/library-navigation/geometry-baseline.log`, executable `c1247e3e`.
+ACCEPT the second read-only inspection as experiment guidance. Its scope is closed.
+Next experiment constrains the outer detail's vertical minimum, without removing
+either tab or changing chat state. Root-cause acceptance still needs this A/B.
+Fixture ownership is closed and transferred for integration. A separate writer
+owns only the full-Library XCUITest source, its dedicated runner script, required
+test-project wiring and test README. It does not operate UI. The technical owner
+will run the same regression against retained baseline and fixed candidate.
+Investigation checkpoint: the first 20-minute budget produced a reproduction and
+a successful controlled correction. With only `.frame(minHeight: 0, maxHeight:
+.infinity)` on the outer detail VStack, split height stays 708 and both columns
+stay within the 1180 × 760 window. Short and long transcripts, Chat and Recent
+selection are visible again. This confirms the detail sizing boundary caused
+the reproduced overflow. The exact internal SwiftUI minimum-size calculation and
+the build in the supplied image remain unknown. Hidden Chat was not removed.
+Temporary geometry code is removed. Continue the ready final build, UI regression
+and resize/draft checks. Next verification budget: 20 minutes, then reconcile any
+failed or unknown evidence. No new authority is needed for these local checks.
+Product and fixture snapshot is frozen at
+`.artifacts/library-navigation/candidate-source.tar`, SHA256
+`c518507022374f692aa917412958b8c9612117524f6dee53bfc1c7d63f7ef6ea`.
+ACCEPT independent read-only inspection of this exact snapshot: no blocking source
+finding, and the correction preserves mounted tabs and model state. Its scope is
+closed. Direct Show Files and Open Recording Permissions controls remain outside
+the fixture's URL interception; neither was invoked.
+ACCEPT regression snapshot `390ef5bd9681a7e544de68bca4cb580df6824778f2839a67d94da8f72f411f6d`
+as an integration input, not passing runtime evidence. Ownership is transferred
+and closed. Integration changed heading queries to match observed grouped AX text
+and removed an unsupported Xcode CLI option after exit 64. Failed receipts remain.
+
+Final noninstrumented runtime PASS: executable
+`d0b775acdb2ab0b47f12bf9c292fabc9b74e8a9e01df6893577a82ea1d39be0b`,
+`dist/library-ui-check/LessMeet.app`, on macOS 26.4. Opening the long Library row,
+Transcript/Chat roundtrip, retained draft, long-to-short Recent selection, transcript
+scroll, sidebar Library return and search all preserve visible usable navigation.
+Window checks cover 1180 × 760 and 1000 × 692 points, then restore 1180 × 760.
+Evidence: `.artifacts/library-navigation/12-candidate-library` through
+`27-candidate-library-restored` (PNG and AX), actions and bundle identity.
+The owned process exited normally. The network socket snapshot was empty;
+this is not a packet trace. No real credentials, recordings or cloud calls used.
+Final build and 22 packaging checks PASS. The first two broad Swift test runs
+stalled during compiler probes. A captured sample shows a blocked pipe write.
+Only owned test processes were stopped; logs are retained. A final retry uses
+the accepted fixture's separate build cache.
+Xcode build-for-testing PASS. Execution is UNVERIFIED: the baseline runner failed
+before tests with `Timed out while enabling automation mode.` No baseline layout
+assertion ran, so this failure does not establish regression sensitivity. Candidate
+execution is deferred for the same prerequisite. Receipt:
+`.artifacts/verify-lessmeet/library-xcode.wOhXO7/Tests.xcresult` and `summary.json`.
+Cleanup confirms no fixture process remains. No system permissions were changed.
+The verification owner must rerun both exact bundles when automation is available
+under approved permissions. Human owns any required system-permission change.
+This is a deferred automated check, not a blocker for the observed local repair.
+
+Final Swift regression PASS: 162 tests, zero failures, exit 0. Receipt:
+`.artifacts/library-navigation/candidate-tests-fixture-scratch.log`.
+This includes auth, responses, local chat, recording, transcription, editor and
+the three fixture-isolation tests. The final build cache retry completed without
+global changes. The earlier compiler stalls remain recorded as failed attempts.
+
+ACCEPT the local navigation repair in source snapshot `c5185070` and exact bundle
+executable `d0b775ac` identified above. The measured overflow is corrected, and
+the final full-shell runtime preserves sidebar, tabs and meeting navigation at
+both tested sizes. Auth/consent/persistence code remains unchanged. This accepts
+the scoped local outcome, not release readiness or the deferred XCUITest result.
+Plan complete within the verification budget. No writer or UI process remains.
+No commit, push, merge or release was performed. Existing local bundle, earlier
+evidence, dirty checkout and backup were preserved.
+
+Usable input: `dist/library-ui-check/LessMeet.app` is an isolated synthetic trial.
+Open it, select either Library row, switch Transcript/Chat, select the other Recent
+meeting, resize and return to Library. Do not use it for real meetings. It is not
+the normal app or a playback/auth validation. Full receipt:
+`.artifacts/library-navigation/result.md`; automated source identities:
+`.artifacts/library-navigation/ui-regression-SHA256SUMS`.
+Product edit: `Sources/LessMeet/Presentation/LibraryView.swift:49` only.
+Remaining decisions: Human permission is required for publication or any new
+real-data/system-permission scope. No such decision blocks trying this candidate.
+
+## Bàn giao Library — ownership đã nhường (2026-10-13)
+
+Yêu cầu hiện tại chỉ là bàn giao. Không chẩn đoán hoặc sửa bug trong phiên này.
+Không commit/push/merge/release, cleanup hoặc dừng app người dùng vì bàn giao.
+Các mục bên dưới là lịch sử; quyền release cũ chỉ áp dụng cho phần việc đã hoàn tất.
+
+### Đầu vào và mục tiêu phiên tiếp theo
+
+Người dùng báo: mở app và chọn một meeting thì transcript hiện, nhưng sidebar
+trống và không thấy điều hướng hoặc chỗ chuyển Transcript/Chat. Đây là quan sát
+người dùng cung cấp, chưa tái hiện độc lập. Build trong ảnh và root cause đều
+UNKNOWN. Chỉ tham chiếu ảnh tại đường dẫn sau; không chép nội dung meeting vào repo:
+
+`/var/folders/07/p5pz8vnd0cx_1hll7nsmrm9c0000gn/T/paseo-attachments-WqhdHl/720f8328564c6fcfb658463d290e093b0313d03270ee5250d28cea6096d7e7ee.png`
+
+Phiên mới dùng poteto-mode để tái hiện và sửa trên full Library shell.
+Standalone Chat fixture không đủ để nghiệm thu. Cần runtime evidence cho sidebar,
+chọn meeting, transcript và chuyển Transcript/Chat trên đúng candidate. Giữ cơ chế
+account, consent, chat persistence và UI đã duyệt ngoài phạm vi lỗi. Không suy ra
+quyền dùng recordings/credentials thật, API tính phí, upload hoặc publication mới
+từ quyền release cũ.
+
+### Repo và candidate
+
+- Cwd: `/Users/tubakhuym/.paseo/worktrees/0v2r0tqq/lessmeet-signin-chat-preview`.
+- Branch: `fix/pr14-release-binding`.
+- Actual HEAD và remote branch: `234e37b5658cc8967c4efb4d0157da3a15c71e49`.
+- Remote: `git@github.com:hoangnb24/lessmeet.git`.
+- Remote main: `fc1960208926b2074d3b016a1da480b7e12c78af` (PR15 merge).
+  HEAD và merge có cùng tracked tree; `git diff HEAD origin/main` rỗng.
+  Đây là mốc tích hợp cho phần việc mới sau khi kiểm tra lại remote.
+- UI đã nhận: `LM-SC-01` và `LM-SC-NATIVE-01`, trên cleanup base
+  `8b791b7ca6caf0b9fcbcd8fc224c68c456efb1a0`. Native handoff head:
+  `57c6c74096a91036b2f363953ad01e10b11bde8e`; PR14 merge:
+  `4cb16f2b262af891b10c7ddf498b42d811d65c66`.
+- `design/signin-chat/NATIVE-SHA256SUMS` khóa 11 source/script/test paths.
+  Manifest SHA256: `668814a6ebeea6f35c51f26407008bf3a6939b1bd98a15b4c44404aabf3fa21d`.
+- Latest published prerelease:
+  [build 46](https://github.com/hoangnb24/lessmeet/releases/tag/main-build-46-fc1960208926b2074d3b016a1da480b7e12c78af),
+  source đúng remote main trên. Run
+  [38375157261](https://github.com/hoangnb24/lessmeet/actions/runs/38375157261) SUCCESS.
+  ZIP SHA256: `7724298fdbfa5c1b4a14c7adbb196f58c99b3a6b474b5186ebd9f7ac9b194a83`.
+- [Build 45 gốc](https://github.com/hoangnb24/lessmeet/releases/tag/main-build-45-4cb16f2b262af891b10c7ddf498b42d811d65c66)
+  đã khôi phục và tải xuống; đủ bốn file khớp artifact gốc. ZIP SHA256:
+  `473cac276faad55406fb330e8a991cae240cf923a3526b107ca62ac6b3018034`.
+
+### Paths phải giữ
+
+Worktree này chỉ dirty `docs/STATUS.md`; không có staged changes hoặc non-ignored
+untracked files tại snapshot bàn giao. File đã có receipt cuối release trước khi
+thêm handoff. Receipt và handoff đều chưa commit. Giữ toàn bộ ignored `.artifacts/`
+và `dist/`.
+
+Checkout `/Users/tubakhuym/projects/lessmeet` ở local main
+`b08b3cdae5aeb4cbbd5c771a5f887584afaa518c`. Giữ các paths tại đó:
+
+- `.agents/skills/lessmeet-app-check/SKILL.md` (modified).
+- `docs/STATUS.md` (modified).
+- `.codex/better-harness/2026-09-27-lessmeet/findings.json` (untracked).
+- `.codex/better-harness/2026-09-27-lessmeet/report.html` (untracked).
+- `.codex/better-harness/2026-09-27-lessmeet/report.md` (untracked).
+
+Giữ backup `/Users/tubakhuym/lessmeet-backups/cleanup-20261013.o0nk81`.
+Không đọc hoặc đổi recordings, credentials và dữ liệu riêng ngoài phạm vi.
+
+### Bundle và evidence dùng lại
+
+- `dist/local/LessMeet.app`: `com.lessmeet.app.local`, build pass nhưng chưa launch
+  trong phần kiểm UI đã nhận. Executable SHA256:
+  `06a9a997cca7cd7b9a599541e452754081e4940351864c936e7b5d5a7e694d8b`.
+- `dist/chat-ui-check/LessMeet.app`: `com.lessmeet.app.chat-ui-check`, fixture
+  isolated dùng view thật và dữ liệu tổng hợp, không phải full Library.
+  Executable SHA256: `329d4f6d2616737696be55e7a7ac957ea2c05777df4525ad68ce2505cb653136`.
+- Lệnh build tương ứng: `bash scripts/build-app.sh local` và
+  `bash scripts/build-app.sh chat-ui-check`. Không rebuild trong lần bàn giao.
+- `.artifacts/signin-chat/native/`: 46 PNG/AX captures, `actions.jsonl`,
+  `result.md`, `identity.txt` và persistence evidence, chỉ dữ liệu tổng hợp.
+- `.artifacts/signin-chat/release-fix-download/`: bốn assets build 46 đã tải,
+  kiểm checksum và sealed manifest. ZIP chưa launch để kiểm UI.
+- `.artifacts/signin-chat/hosted-release-38357389787/` và `recovered-download/`:
+  artifact và assets build 45 đã so khớp byte-for-byte.
+- `.artifacts/signin-chat/release-fix-hosted-final.{json,log}` và
+  `recovery-hosted-final.{json,log}`: hosted receipts. Design/native handoff:
+  `design/signin-chat/README.md` và `EVIDENCE.md`.
+
+### Kết quả, giới hạn và known issues
+
+PASS trước đây: 138 Swift tests + 21 packaging tests cho native candidate;
+95 release tests + 74 packaging tests cho release fix. Native fixture đã quan sát
+account states, consent, model selection, prompt draft, send/cancel/error,
+same-run saved-chat reopen, light/dark và compact layout. Không dùng các kết quả
+này thay cho full Library runtime evidence.
+
+UNVERIFIED: full production Library trên candidate UI hiện tại; live OAuth/chat,
+real account changes, full quit/relaunch persistence, recording-active/switch UI,
+long names, VoiceOver/full keyboard/text scaling/contrast. Bằng chứng full Library
+ở cleanup base cũ không chứng minh candidate mới. Bug mới chưa tái hiện.
+
+Known issue đã hoãn: reopen account sheet khi sign-out đang bận có thể hiện copy
+sign-in và `Cancel sign-in` do state cục bộ. Không có bằng chứng nó hủy sign-out
+hoặc phục hồi quyền truy cập. Xem lại ở lần sửa account-operation UX hoặc runtime
+failure mới; không tự gộp vào bug Library. Release fix đã chứng minh lỗi bỏ create
+response và phụ thuộc list visibility. Nguyên nhân lịch sử chính xác của lần fail
+PR14 vẫn UNCONFIRMED do thiếu response gốc; publication không còn blocker.
+
+### Chỉ dẫn và đầu mối code
+
+1. Đọc `~/.config/codex-room/workflow/WORKSPACE_PROTOCOL.md`, `AGENTS.md`,
+   `docs/WORKSPACE_PROTOCOL.md` và handoff này. Kiểm tra lại repo và room.
+2. Đọc toàn bộ poteto-mode tại
+   `/Users/tubakhuym/.codex/plugins/cache/pstack-local/pstack-codex/0.2.0/skills/pstack-poteto-mode/SKILL.md`
+   và các tài liệu skill yêu cầu, gồm `playbooks/bug-fix.md`.
+3. Dùng `.agents/skills/lessmeet-app-check/SKILL.md` khi chẩn đoán UI và
+   `.agents/skills/verify-lessmeet/SKILL.md` khi validation. Tìm và đọc Computer
+   Use skill theo hướng dẫn hiện hành; không giả định tool cũ còn dùng được.
+4. Trước runtime, ghi một UI owner và xác định bundle/build, macOS, window size,
+   state. Ưu tiên full Library với dữ liệu tổng hợp và storage/auth isolation.
+   Normal app tạo `ChatGPTSession()` và default `RecordingStore`; không launch
+   thiếu kiểm tra ranh giới Keychain/recordings.
+5. Tái hiện trước khi kết luận. Không lưu meeting riêng vào evidence repo.
+   Nếu cần dữ liệu riêng, dừng app người dùng hoặc publication mới, xin quyền cụ thể.
+
+Các đầu mối sau không phải kết luận nguyên nhân:
+`Sources/LessMeet/LessMeetApp.swift` chọn app entry và window size;
+`Sources/LessMeet/Presentation/LibraryView.swift` chứa `NavigationSplitView`,
+sidebar, `RecordingDetailView`, `DetailTab` và picker Transcript/Chat;
+`Sources/LessMeet/Presentation/AppModel.swift` quản lý selection/store.
+`LocalChatView`, `ChatGPTStyle`, `ChatGPTAccountSheet` là UI đã nhận cần giữ ngoài
+phạm vi sửa. `ChatGPTUICheckView` không chứng minh full shell.
+
+### Ownership và điểm dừng
+
+Snapshot room: chín Peer cũ IDLE; mọi write/review scope cũ đã được disposition
+và đóng. Không còn writer, build watcher hoặc UI session của phần việc cũ.
+Fixture UI đã thoát. Phiên bàn giao không vận hành app. Snapshot process không
+thấy LessMeet/swift-build/swift-test/xcodebuild/gh; đây không phải bảo đảm về app
+ngoài snapshot. Không process nào bị dừng trong lần bàn giao.
+
+Sau khi ghi handoff này, phiên hiện tại nhường toàn bộ write và live UI ownership.
+Không giữ scope nào cho phiên cũ. Phiên mới có thể nhận ownership sau khi kiểm tra
+lại trạng thái. Không dispatch hoặc sửa bug ở phiên hiện tại; dừng chờ.
+Build trong ảnh và môi trường tái hiện vẫn cần xác định. Người dùng quyết định
+các quyền ngoài local diagnosis/fix; không suy ra quyền publication mới.
+
+## Release repair and original-artifact recovery complete (2026-10-13)
+
+Human authorizes diagnosis, a scoped code/test/documentation fix, commit/push,
+and recovery of release 411365469 using original artifact 11794285906. Existing
+PR/merge/build/prerelease authority continues for this delivery. This supersedes
+the earlier recovery hold below. Preserve the approved UI, local main, backup,
+original artifact bytes, provenance and checksum guards. Do not move/delete tags,
+delete release/artifact data, change repository flags/global configuration or use
+live app credentials, recordings or paid APIs.
+
+Historical repair ownership is closed; write/UI ownership is released above.
+Completed plan: diagnose the failing boundary, prove a narrow correction, then publish and
+download the original build from the exact release. Initial investigation budget:
+20 minutes, at most three hypotheses. Reassess with evidence at that limit.
+Done means fail-to-pass regression evidence, unchanged safety guards, committed
+scoped fix, published release with four exact assets and downloaded archive hash
+`473cac276faad55406fb330e8a991cae240cf923a3526b107ca62ac6b3018034`.
+
+Data boundary: `release.json` binds source SHA, tag and four sealed files.
+GitHub release metadata binds the remote release ID to that manifest. The failed
+run discards the create response, lists releases again and applies one combined
+binding check before uploading. Current direct and list readbacks match every
+binding field. Missing/stale list state, metadata mismatch and permission-specific
+visibility are investigation hypotheses, not confirmed causes.
+
+Diagnosis result: the original publisher discards a valid create response and
+requires immediate collection visibility. A delayed-list fixture reproduces the
+same binding error with a valid draft and zero uploaded assets. That is a confirmed
+code failure mechanism. The hosted log lacks the failing object and call site,
+so it cannot prove that PR14 took this path. Transient field differences at the
+collection or first direct read remain alternatives. Current snapshots match the
+sealed changelog byte-for-byte. The draft URL is not part of binding validation.
+ACCEPT independent bounded diagnosis with this limit. Its read-only scope is closed.
+
+Local correction: validate and retain the successful create response. Keep the
+post-create duplicate check and all direct ID, exact body, tag and asset guards.
+Conflicts still require a matching existing release. Fixed-name error details
+identify a missing object or failed field without disclosing remote values.
+Red receipts: `.artifacts/signin-chat/release-binding-red.log` and
+`release-binding-diagnostics-red.log`. The original code fails delayed visibility
+and ignores an invalid create response. The corrected focused tests pass.
+ACCEPT script SHA256 `ef9b5d110bcd3c77e922011acf167ae79f8c0425ce7076baf16c996d190743bc`
+and tests SHA256 `df0df8421ba98221b7c49058453cc2c92ec5ef521b0aa914ddd3eaad714d2152`
+over `4cb16f2b262af891b10c7ddf498b42d811d65c66`. Reason: reproduced defect corrected,
+95 release tests and 74 packaging tests pass, workflow validation passes, and
+binding/checksum/no-overwrite guards remain intact. Independent review found no
+blocking regression. That read-only scope is closed. Native manifest entries match.
+
+ACCEPT the scoped recovery driver SHA256
+`8f11362eb737943490edc3a1ef0695872a0b2999d3f1cd6dfa3bc829f16579f1`
+for one attempt on release 411365469. It pins all four original file hashes,
+uses existing authenticated `gh`, and permits only those uploads and the final
+publish PATCH. It cannot create or delete a release/tag or overwrite an asset.
+Preflight readback passes without writes. A successful helper return is not final
+acceptance: download all four release assets and compare original hashes. The
+existing already-published path checks remote consistency, not local archive equality.
+
+Correction committed and pushed as `bf7808b4df3c325e71031e6f5b81021ce7f232b7`
+on `fix/pr14-release-binding`, PR [15](https://github.com/hoangnb24/lessmeet/pull/15).
+
+ACCEPT original-artifact recovery. The single guarded attempt published release
+411365469 at 2026-10-13 09:13:58 UTC. It uploaded only the four pinned files and
+changed draft to false. No new tag/release, rebuild, overwrite or deletion occurred.
+[Release](https://github.com/hoangnb24/lessmeet/releases/tag/main-build-45-4cb16f2b262af891b10c7ddf498b42d811d65c66)
+is a prerelease with all four assets. Its tag still points to the original merge SHA.
+All four files downloaded from that release match the original artifact byte-for-byte.
+The downloaded checksum file and the existing dry-run validator also pass.
+
+Original and downloaded SHA256 values:
+
+- ZIP: `473cac276faad55406fb330e8a991cae240cf923a3526b107ca62ac6b3018034`.
+- `release.json`: `e4ad7b659fd5549ec622e6fea4dc605ec3e7b77230459137847b1cd1e339af12`.
+- `changelog.md`: `bfd014d5dd38710f7b93245ea86219527d9a8e9016f1a40016793db513e943ee`.
+- `SHA256SUMS`: `2a62e19a4d78f8d273ea920efb94f9b8dcd501b3122b90c9a89522df558c78a3`.
+
+Evidence: `.artifacts/signin-chat/recovery-execute.log`, `recovery-readback.json`
+and `recovered-download/`. Recovery proves publication and original bytes. It does
+not reconstruct the missing response from the initial failed hosted attempt.
+PR14 run 38357389787 attempt 2 completed SUCCESS at 09:16:16 UTC. Only publish
+reran. It checked out the original `4cb16f2` and downloaded artifact 11794285906
+from attempt 1. The old helper returned `already-published` after its remote
+checks. The original build did not rerun. This confirms restored hosted readback,
+not the original failing response or a hosted execution of the new create path.
+
+PR15 merged normally at 09:16:40 UTC with head
+`234e37b5658cc8967c4efb4d0157da3a15c71e49`, including recovery receipt commit
+`234e37b`. Merge SHA: `fc1960208926b2074d3b016a1da480b7e12c78af`.
+Its tree matches the accepted branch head. GitHub reported CLEAN/MERGEABLE
+with no branch checks. No bypass or force operation occurred.
+Automatic run [38375157261](https://github.com/hoangnb24/lessmeet/actions/runs/38375157261)
+completed SUCCESS. Both jobs checked out `fc1960208926b2074d3b016a1da480b7e12c78af`.
+The corrected helper created and published release 411501050 at 09:25:13 UTC.
+Tag `main-build-46-fc1960208926b2074d3b016a1da480b7e12c78af` points to that merge.
+[Release](https://github.com/hoangnb24/lessmeet/releases/tag/main-build-46-fc1960208926b2074d3b016a1da480b7e12c78af)
+is published as a prerelease with all four assets. Its archive downloads and
+passes checksum and sealed-manifest validation. Archive SHA256:
+`7724298fdbfa5c1b4a14c7adbb196f58c99b3a6b474b5186ebd9f7ac9b194a83`.
+Build artifact ID: 11801301681. Evidence is under `.artifacts/signin-chat/` in
+`release-fix-hosted-final.{json,log}`, `release-fix-remote.json` and
+`release-fix-download/`. Original PR14 release/tag/assets remain unchanged.
+
+ACCEPT the scoped correction, original-artifact recovery and fresh hosted create
+result. Red-to-green fixtures prove the corrected failure mechanism. Successful
+remote publication and downloads prove the usable outcome. Neither recovers the
+missing response from the initial PR14 failure. Its exact trigger stays UNCONFIRMED.
+Integration owns any follow-up if another binding failure occurs; the error now
+identifies the failed field. No further action or permission is needed for the
+published artifacts. All watchers and read-only scopes are closed.
+
+Changed paths are `scripts/github-release.py`,
+`Tests/release/test_github_release.py`, `docs/CONFIGURATION.md` and `docs/STATUS.md`.
+Code and recovery receipt are committed, pushed and merged. This final status
+receipt stays local to avoid another documentation-only release cycle. Local main,
+backup, approved UI and original artifact bytes are unchanged. Full Library,
+live auth/chat, accessibility and reopened-signout copy remain non-PASS.
+
+## Merge complete; automatic publish FAILED (2026-10-13)
+
+Human authorizes a PR from `design/signin-chat-preview` to main, normal merge,
+and the existing `main-release.yml` build/tag/prerelease through terminal outcome.
+Input HEAD: `57c6c74096a91036b2f363953ad01e10b11bde8e`.
+This supersedes earlier no-PR/no-merge/no-release boundaries for this candidate.
+No workflow, global configuration or repository flag change is authorized.
+No force push, check bypass, manual tag, other deployment, live auth/chat,
+user-credential access, recording upload or paid API call is authorized.
+Local main and the retained backup remain untouched.
+
+The PR includes six commits over main `fded246dcf76d3cef1d7d04f84ec14536d77a55f`.
+Two are the accepted cleanup input through `8b791b7ca6caf0b9fcbcd8fc224c68c456efb1a0`.
+The retained cleanup STATUS confirms acceptance and exact-SHA hosted success in
+run 38342265359. The other four publish the accepted native UI and its evidence.
+All 11 native manifest entries match; the manifest hash remains
+`668814a6ebeea6f35c51f26407008bf3a6939b1bd98a15b4c44404aabf3fa21d`.
+No workflow file differs. `LESSMEET_GITHUB_RELEASE_ENABLED` reads `true`.
+Protection/rules APIs return HTTP 403 for this private repository's plan; use
+normal server-enforced PR merge without an admin override.
+
+ACCEPT candidate `57c6c74096a91036b2f363953ad01e10b11bde8e` for the authorized
+PR and normal merge. The exact diff contains the accepted cleanup and native UI
+inputs only. ACCEPT independent read-only findings: no unaccepted dependency or
+concrete integration blocker. That scope is closed. Fresh workflow validation,
+91 release tests and 74 packaging tests PASS. Both manifests PASS. An initial
+preview checksum command used the wrong working directory; the corrected command
+from `design/signin-chat` passes. No candidate bytes changed.
+PR [14](https://github.com/hoangnb24/lessmeet/pull/14) merged normally at
+2026-10-13 06:33:35 UTC. GitHub reported CLEAN/MERGEABLE and no branch checks.
+Merge used the exact expected head without bypass. Merge commit:
+`4cb16f2b262af891b10c7ddf498b42d811d65c66`.
+The automatic `pull_request_target` run is
+[38357389787](https://github.com/hoangnb24/lessmeet/actions/runs/38357389787).
+Terminal result: build SUCCESS; publish FAILURE at `Create or recover exact-SHA
+GitHub prerelease`, error `Release helper refused: release-binding-mismatch`.
+The watcher exited 1. No manual dispatch, retry or corrective remote write occurred.
+Both jobs checked out `4cb16f2b262af891b10c7ddf498b42d811d65c66`; the run's
+headSha `57c6c74` is PR metadata, not the build checkout. Merge parents match the
+accepted base/head. Merge tree and accepted head tree are identical.
+
+ACCEPT the hosted build/package result for this exact merge SHA. Workflow tests,
+compile, strict signature, sealed-file validation and immutable artifact upload
+all passed. Artifact [11794285906](https://github.com/hoangnb24/lessmeet/actions/runs/38357389787/artifacts/11794285906)
+contains four files. Downloaded files pass the existing dry-run release validator
+and SHA256SUMS. Archive SHA256:
+`473cac276faad55406fb330e8a991cae240cf923a3526b107ca62ac6b3018034`.
+This is diagnostic arm64/ad-hoc packaging, not notarized or runtime certification.
+
+Do not accept publication as complete. Automatic tag
+`main-build-45-4cb16f2b262af891b10c7ddf498b42d811d65c66` exists and points exactly
+to the merge SHA. Release ID 411365469 remains draft, prerelease=true,
+published_at=null, with zero release assets. Its current readback matches every
+field checked by `release_matches`, including the exact changelog body. The
+response that failed during publishing is unavailable; the underlying cause
+is therefore UNCONFIRMED. Do not label this a code defect or a proven transient.
+
+Evidence: `.artifacts/signin-chat/release-{watch.log,final.json,final.log,remote.json}`
+and `hosted-release-38357389787/`. An early local validation ran before artifact
+download completed and reported `invalid-sealed-directory`; after download,
+validation passed. That local sequencing error is separate from the hosted failure.
+Current frontier: terminal handoff. Human decides whether to authorize a bounded
+failed-publish-job retry using the original immutable artifact, or further
+diagnosis/correction. Do not rebuild, edit/delete the draft/tag, or change workflow
+or flags under the completed request. No watcher, writer or UI remains active.
+Integration owns status and remote actions. No moving writer or live UI exists.
+This local status receipt does not alter the immutable PR source candidate.
+Full Library, live auth/chat, accessibility and reopened-signout copy limits
+remain unchanged. Release permission does not convert them to PASS.
+
+## Scoped commit/push — COMPLETE (2026-10-13)
+
+Historical authority and receipt; superseded only as stated above.
+
+Human authorizes committing LM-SC-01 and LM-SC-NATIVE-01 and pushing only
+`design/signin-chat-preview` to `origin` (`hoangnb24/lessmeet`). This supersedes
+the earlier no-push boundary for this accepted work only. No merge, PR creation,
+tag, release, CI dispatch, deployment or live account/chat action is authorized.
+Local main, backup and unrelated changes remain untouched.
+
+The accepted native manifest still has SHA256
+`668814a6ebeea6f35c51f26407008bf3a6939b1bd98a15b4c44404aabf3fa21d`.
+Both manifests pass. Build artifact hashes and signatures match the accepted
+handoff. No product change or new feature fix is part of this publication task.
+Raw `.artifacts`, `dist`, credentials and operator configuration stay untracked.
+All runtime limitations and the reopened-signout copy issue below remain in force.
+
+Workflow inspection: remote main at
+`fded246dcf76d3cef1d7d04f84ec14536d77a55f` contains the same two workflow files
+as this candidate. `main-release.yml` starts only on a closed PR targeting main,
+and its build requires the PR to be merged. Publishing also requires
+`LESSMEET_GITHUB_RELEASE_ENABLED == 'true'`. `main-build-diagnostic.yml` is
+`workflow_dispatch` only. Neither workflow has a branch-push trigger. This push
+does not request a hosted build or create a build tag. No workflow is dispatched.
+
+Published groups:
+
+- `17388b9a04c570fa9c093d9efcd200acf6046d21`: approved native account and Chat UI.
+- `653377c429f74fb56265cdd590b2c0a327ca1669`: isolated offline rehearsal and packaging tests.
+- `e3fa0bc27bf9597f1af36bd149d2e9c763da1142`: design, manifests and public evidence.
+
+Push to `origin/design/signin-chat-preview` succeeded. `git ls-remote` read back
+`e3fa0bc27bf9597f1af36bd149d2e9c763da1142` for the published candidate. This
+status-only receipt follows those groups; it does not change the candidate bytes.
+The branch now tracks `origin/design/signin-chat-preview`. Push used an explicit
+branch refspec and disabled automatic tag following. No PR was created.
+GitHub Actions readback returned zero runs for this branch. No automatic hosted
+build or build tag is expected from the inspected workflows.
+
+Commit-time checks: both manifests and whitespace checks PASS; preview checks
+PASS 20 states; packaging tests rerun PASS 21 tests. Accepted build hashes and
+signatures still match. The existing 138 Swift tests and native runtime evidence
+remain the verification input; they were not rerun or relabeled as live proof.
+Only status bookkeeping changed during publication. All product bytes are unchanged.
+
+Frontier at that checkpoint: scoped publication complete; no further action authorized.
+Local main and backup remain untouched. No live UI owner or moving Peer write
+scope exists. Raw runtime evidence and built bundles remain local and ignored.
+
+## Sign-in and Chat native UI — LOCAL CANDIDATE ACCEPTED (2026-10-13)
+
+The following section records acceptance before the scoped publication above.
+
+Human approved LM-SC-01 layout, palette and copy, including the exact HTML hash
+recorded below. The design approval checkpoint is resolved. Implement only
+ChatGPT account/sign-in and recording Chat UI. Preserve auth/chat mechanisms,
+consent, disclosure, persistence and existing functions. Do not redesign Library.
+Local build, tests and offline native UI checks are authorized. Real login/chat,
+credential reads, uploads, paid API calls, push, merge, deploy, release and global
+configuration changes remain prohibited. Main, backup and unrelated edits stay intact.
+
+Current frontier: local implementation and offline technical acceptance complete.
+Human can view and try the isolated native candidate. Live auth/chat remains outside
+the authorized scope; no further local prerequisite blocks this handoff.
+Ownership: Lead owns shared presentation tokens, shell integration, offline harness,
+verification and status. Account and Chat writers have released their view files.
+Offline rehearsal writer has released its fixture and compile-time entry.
+Live UI owner: NONE. The only task-started app process exited after verification.
+No moving Peer scope remains. No other app instance or live Library was operated.
+Do not record private session identifiers in project documents.
+
+### Accepted native handoff
+
+ACCEPT **LM-SC-NATIVE-01** for local viewing and offline trials of the two changed
+surfaces. Base: `8b791b7ca6caf0b9fcbcd8fc224c68c456efb1a0`; uncommitted worktree.
+Exact source: `design/signin-chat/NATIVE-SHA256SUMS`, SHA256
+`668814a6ebeea6f35c51f26407008bf3a6939b1bd98a15b4c44404aabf3fa21d`.
+Reason: inspected code preserves the model contracts; both packaged builds and
+159 focused/packaging tests pass; native observation demonstrates usable account
+and Chat views, consent/model guards, multiline/send keys, partial/cancel, safe
+errors and synthetic save/readback. No substantive design departure was required.
+
+Usable bundle: `dist/chat-ui-check/LessMeet.app`, bundle ID
+`com.lessmeet.app.chat-ui-check`, executable SHA256
+`329d4f6d2616737696be55e7a7ac957ea2c05777df4525ad68ce2505cb653136`.
+Rebuild with `bash scripts/build-app.sh chat-ui-check`. This is a native offline
+fixture, not a replacement production bundle. It never performs real sign-in/chat.
+`dist/local/LessMeet.app` also built and passed signature verification; not launched.
+No commit, push, merge, deploy, release or global configuration change occurred.
+
+Observed UTC: 2026-10-13 05:22:21–05:28:38. Proof is retained under
+`.artifacts/signin-chat/native/`: identity, actions, 46 screenshots/accessibility
+captures, synthetic `chat.json` and cleanup. Sheet: 490 × 608. Compact standalone
+fixture: 820 × 668, content height 640. Light/dark and independent history scroll
+were inspected. Default size/light appearance restored before quitting.
+
+Read `design/signin-chat/README.md` for trial steps and `EVIDENCE.md` for exact
+commands, evidence mapping, source manifest and remaining limits. Production
+Library runtime, exact production minimum-width layout, real OAuth/catalog/chat,
+full quit/relaunch on the same store, VoiceOver and broader accessibility remain
+UNVERIFIED. The low-severity reopened-signout copy issue below remains known.
+No Human decision is needed to try this offline candidate. Real credential access,
+login/chat or publication needs separate scope and authority; acceptance grants none.
+
+### Integration decisions and verification history
+
+Technical shell decision: share `ChatGPTAccountSheet` between production and
+offline rehearsal. Use a 490 × 608-point sheet, a 48-point header, and an internal
+scrolling account body. Done and Back to chat dismiss without cancelling sign-in.
+Only the explicit Cancel action cancels it.
+ACCEPT `LocalChatView.swift` SHA256
+`a9600ba1c6ea3d7c339ddca3237a2eba6307b4d8e9659f5482f792447150e286`
+as an integration input. Source inspection preserves model guards, draft revision
+checks and disclosure. Library now wires account/transcript callbacks and recording
+state. Native rendering and behavior remain UNVERIFIED until runtime checks.
+ACCEPT account view SHA256 `f3bde3a9cc74919a47d65ae79b312d7df9f055aff0af57110518d7a168d2bd4c`
+and sign-in button SHA256 `785cc61913f82052ff08d5c7432f0a089582735ee3acc3edf8e2c3475701cefe`
+as integration inputs. Source preserves session actions, consent and welcome.
+Reopened busy-account copy is a known limitation pending review.
+ACCEPT rehearsal fixture SHA256 `34f73453c73dad7a2cc15f94be2091d32062025facc20efc54a619f9c4434181`
+and app entry SHA256 `ebbc32babe07ad0e8b86c8a4bc80eea87d257031def15b8f1ed164ff4f91517f`
+for build verification. Source uses injected memory credentials, mock transports,
+blocked links and an isolated temporary recording store. Normal app init is excluded.
+Fixture minimum height is 640; slow responses allow partial/cancel observation.
+No fixture result establishes live OAuth or chat success.
+ACCEPT independent source findings for candidate manifest
+`668814a6ebeea6f35c51f26407008bf3a6939b1bd98a15b4c44404aabf3fa21d`.
+All 11 file hashes matched before and after inspection. No new functional or safety
+regression was identified. Build and native proof remain separate.
+Known low-severity baseline issue: dismiss/reopen during sign-out can show sign-in
+waiting copy because operation classification is view-local. It cannot cancel
+sign-out or restore access. Defer classification changes; hiding all unclassified
+Cancel controls could remove cancellation after reopening an actual sign-in.
+Integration owns the return at the next account-operation UX change, or sooner if
+runtime evidence shows this candidate unusable. This limitation is not a PASS.
+
+Verification so far: normal local build and ad-hoc signature PASS (not launched).
+Focused Swift suites PASS: 138 tests, zero failures. Coverage includes auth,
+responses parsing, chat integration/model, recording persistence/finalization,
+local pivot integration and multiline editor. Packaging isolation PASS: 21 tests.
+Logs: `.artifacts/signin-chat/{build-local,swift-tests,packaging-tests}.log`.
+Preview static check still passes 20 states; it is not native proof.
+
+## Design preview handoff — APPROVED; evidence remains scoped
+
+Original preview scope: design artifacts and an offline preview only. Base is
+`cleanup/post-pivot-20261013` at `8b791b7ca6caf0b9fcbcd8fc224c68c456efb1a0`.
+Worktree: `/Users/tubakhuym/.paseo/worktrees/0v2r0tqq/lessmeet-signin-chat-preview`.
+The preview phase made no product source edits. Its former wait for design approval
+is superseded by the implementation decision above. Historical preview results do
+not establish native UI or real auth/chat success.
+Offline preview browser checks are complete; the task-created tab was closed.
+No live UI owner or moving Peer write scope remains.
+ACCEPT the read-only source checklist for base 8b791b7 as design input.
+Reason: consent, model selection, history ownership and partial-answer invariants
+match inspected code. Scope closed; no product/runtime acceptance is implied.
+
+ACCEPT LM-SC-01 as usable local review material. Human has now approved its design;
+native implementation acceptance remains a separate step.
+Exact artifact: `design/signin-chat/preview.html`, SHA256
+`207a39ece311a8478cad1b1fb0cb740a21f0e27c79e09d3fec1f89f4da9209d7`.
+Full artifact manifest after approval-text reconciliation:
+`design/signin-chat/SHA256SUMS`, SHA256
+`78b5ed1ceb304501eaf499c635555d28a2fad875988337335cc4d68e314ae712`.
+HTML and PNG bytes are unchanged. README and EVIDENCE now identify design approval
+as resolved and keep preview proof separate from native implementation evidence.
+Reason: both requested screens have viewable PNGs and an offline state preview;
+20 static-state checks pass, nine PNG exports were inspected, and browser clicks
+show the simulated sign-in/cancel and draft/send/cancel path. The independent
+read-only inspection of this exact HTML and the README found no defect requiring
+revision before approval. Its scope and evidence are recorded in
+`design/signin-chat/EVIDENCE.md`, under “Kiểm tra độc lập”.
+ACCEPT that bounded result; inspection scope is closed.
+
+Handoff correction: private session identifiers were removed from this preview
+section and EVIDENCE.md. Candidate bytes, existing evidence, acceptance reasons
+and limits are unchanged. The manifest was refreshed only for the corrected
+evidence document. No review was reopened by that documentation correction.
+Design approval was subsequently granted as recorded above.
+
+Human can open `design/signin-chat/preview.html` without a server and compare
+Sign-in, Chat, light/dark, waiting, consent, empty/model, partial and error states.
+`README.md` states the design and how to inspect it. `EVIDENCE.md` separates
+retained cleanup runtime, source inference and new mockup/browser evidence.
+At preview handoff, native UI, accessibility, real auth/chat and save/reopen were
+UNVERIFIED. New native offline results are recorded above and in EVIDENCE.md.
+App-check versions were read from both this base and the updated main source.
+This influenced evidence classification; no skill was copied or changed.
+Mobbin was inaccessible through the web tool; no service was purchased.
+Only `design/signin-chat/` and this status changed. No commit or push occurred.
+
+The retained handoff at
+`/Users/tubakhuym/lessmeet-backups/cleanup-20261013.o0nk81/retained-cleanup/docs/STATUS.md`
+supersedes the old cleanup frontier below. Cleanup, commit/push and hosted build
+are COMPLETE at the base SHA. Run 38342265359 succeeded at 03:40:27 UTC.
+This is a handoff reconciliation, not a new remote verification. Do not rerun it.
+Historical permissions below do not apply to the preview task.
+
+## Historical cleanup record — superseded by completed handoff above
+
+Human authorizes survey and local implementation of proven obsolete code,
+dependencies, configuration and instructions, explicitly including RevenueCat.
+Preserve current features, recordings, credentials and old-data readability.
+Updated final-step authority (2026-10-13): after completion and acceptance, commit
+and push the cleanup, then verify the existing GitHub build for that exact SHA
+through completion. Preserve current workflows. Report any automatic prerelease
+trigger. This is conditional authority, not a waiver of runtime limitations.
+No merge, live backend/account/data deletion, production change, paid API call,
+manual release or other publication is authorized. Historical activation authority
+below does not authorize this task's release.
+
+Current frontier: commit/push the accepted cleanup and follow its hosted build.
+Lead owns all writes. No active Peer write scope or UI owner exists. Both app
+processes started for verification exited. Commit/push has not started.
+Local workflow inspection shows no push trigger: main-release.yml runs on a
+merged PR closed against main; main-build-diagnostic.yml is workflow_dispatch.
+Pushing this cleanup branch alone does not trigger that prerelease workflow.
+An exact-SHA hosted build needs the existing manual diagnostic workflow if no
+other remote workflow supplies it. Do not create/merge a PR to manufacture a build.
+
+### New runtime inputs (2026-10-13)
+
+The bundled-marketplace Computer Use package now supplies a readable SKILL.md.
+Its instructions were read and @oai/sky drove the exact local bundle. This resolves
+the missing-skill blocker below. Live UI ownership is released after teardown.
+Human permits local speech inputs only from the explainer output directory
+`/Users/tubakhuym/projects/prototypes/explainer-video/outputs/tldraw-offline-agent-api/`.
+Preserve originals. Put converted samples and runtime proof under ignored
+`.artifacts/cleanup/runtime/`. No uploads, paid calls or explainer edits.
+Runtime proof is in `.artifacts/cleanup/runtime/RESULT.md` and adjacent logs,
+screenshots, accessibility text and hashes. On 2026-10-13 03:26–03:31 UTC:
+
+- PASS network-denied real-model finalization: 30-second narration copy produced
+  15 segments; metadata stayed unchanged and transcript save/reopen matched.
+- PASS normal UI library, sidebar, search/clear and model-ready display.
+- PASS normal local transcription of the existing synthetic integration recording:
+  10 segments, two named speakers and one unknown fragment; saved transcript
+  remained visible after full app quit/relaunch. Audio and recording.json hashes
+  stayed unchanged. Only its new local transcript sidecar was added.
+- PASS playback transport: play, advancing position and pause. Listening quality
+  remains UNVERIFIED.
+- PASS signed-out Account and Chat UI: no storage error, Send/Load models disabled.
+  Live OAuth/chat and microphone/system capture remain UNVERIFIED. No login,
+  message, upload, new capture or production action occurred.
+
+The executable remains SHA256
+`7f150840f82c7a2993c8c1389f7f030c6178352618d9f81694867c5c2406b274`.
+codesign strict verification passed. Original processes 27662 and 30703 exited.
+The former silent-input inference FAIL remains separate. These results establish
+cleanup regression evidence, not authenticated-product or distribution readiness.
+Peer 38419476 independently verified the exact candidate and runtime evidence.
+Report ACCEPTED: no concrete blocker; scope CLOSED with no write ownership.
+All survey, source inspection and runtime-evidence responses have explicit
+ACCEPT dispositions. No unresolved response remains.
+
+### Final cleanup acceptance
+
+ACCEPT candidate patch
+`5edc287bb95c3fdeda8fa76009e40449e247b6c915e899bbd30e16f48f9c9101`
+over `fded246dcf76d3cef1d7d04f84ec14536d77a55f` for the requested cleanup.
+Reason: obsolete native code and its SDK/resources are unreachable and removed;
+active capture, local models, ChatGPT, persistence and workflows stay unchanged.
+Old-data round trips, 386 native tests (six skips, zero failures), 73 packaging
+tests, 91 release tests and both local/offline packages pass. New runtime proof
+establishes normal-app transcription, saved transcript reopen, library navigation,
+model readiness and signed-out behavior. This is not code-only acceptance.
+Keep untested OAuth/live chat, new microphone/system capture and acoustic quality
+explicitly UNVERIFIED. These are unchanged paths, not silently added release gates.
+The earlier silent-fixture failure remains recorded separately.
+
+The conditional final-step authority is now applicable to this bounded outcome.
+Permitted next action: commit only cleanup/helper/status changes, push only
+`cleanup/post-pivot-20261013`, run the existing diagnostic for its exact resulting
+SHA with package_mode=local, and wait for terminal outcome. No merge, PR creation,
+manual release, workflow change or production mutation. Branch push does not
+trigger the merged-main prerelease workflow. Hosted success is not yet established.
+
+### Resumed result and commit/push hold
+
+ACCEPT the verification-helper correction locally. Current candidate, including
+the new untracked fixture test and excluding STATUS, is
+`.artifacts/cleanup/resume/candidate.patch`, SHA256
+`5edc287bb95c3fdeda8fa76009e40449e247b6c915e899bbd30e16f48f9c9101`.
+It extends the accepted 5a95d604 cleanup only in the fixture generator, its tests
+and neutral inference-test logging. Product code and the packaged executable are
+unchanged. The generator checks both source AIFF files before adding silence or
+encoding M4A. Empty/silent inputs now fail instead of producing a misleading
+success. The inference test no longer prints PASS after failed assertions.
+
+Fresh evidence in `.artifacts/cleanup/resume/`: build PASS; `swift-test.log`
+reports 386 tests, 6 skips and zero failures; `packaging.log` reports 73 tests PASS.
+Three new mock tests cover missing levels, silent/invalid second input and valid
+input routing. `fixture-guard-real.log` rejects the actual empty first voice;
+its process exit code was 1. This is successful fail-closed behavior, not speech
+inference acceptance. A bounded Fred-voice probe also returned a 4,096-byte AIFF
+with no duration. The old integration synthetic-fixture directory is unavailable.
+No further speech-generation retries or inference runs are queued.
+
+Independent read-only review of exact 5edc287b found no actionable finding;
+report ACCEPTED and scope closed. Earlier survey and both native-candidate review
+dispositions remain ACCEPTED. No Peer action is unresolved. Lead owns the handoff;
+UI owner NONE. Main checkout still has only its pre-existing dirty STATUS and .codex.
+
+The earlier runtime hold was valid when Computer Use instructions and speech
+input were unavailable. Both missing inputs are now resolved with observed proof
+above. Do not carry the old missing-input requests forward. Final acceptance must
+use the cleanup scope and actual evidence. It must not label untested live auth,
+capture or acoustic quality PASS. Those source paths and workflows are unchanged
+from fded246; a new full-product certification is not an added cleanup requirement.
+
+Remote readback on 2026-10-13: main remains
+`fded246dcf76d3cef1d7d04f84ec14536d77a55f`; cleanup/post-pivot-20261013 does not exist
+remotely (ref API HTTP 404). Only the existing diagnostic and merged-main prerelease
+workflows are registered and active. No new commit, push, workflow dispatch or
+build run occurred. There is no remote cleanup SHA or candidate build URL yet.
+After acceptance, push only the scoped cleanup branch, use the existing diagnostic
+with exact source_ref and package_mode=local, and follow that run to completion.
+Confirm checked-out SHA from its evidence; workflow headSha alone can differ from
+source_ref. No merge or manual release is authorized. Branch push alone does not
+trigger the merged-PR prerelease workflow.
+
+Behavior baseline: tag
+`main-build-44-fded246dcf76d3cef1d7d04f84ec14536d77a55f`, exact commit
+`fded246dcf76d3cef1d7d04f84ec14536d77a55f`, verified against GitHub release and
+remote main. Release ZIP SHA-256:
+`dda3b23cfa8d891e6cf5b1f88bf72e7b04245c9c44dbf96b2327fce2760ff5e4`.
+Work only in `lessmeet-post-pivot-cleanup.TxoYsu`, branch
+`cleanup/post-pivot-20261013`. The old main checkout at b08b3cd, dirty STATUS,
+operator-owned .codex, remaining worktrees and all private data stay untouched.
+
+Plan: (1) map active callers and persisted compatibility; (2) pin baseline tests
+and release identity; (3) remove proven dead native/package/config paths in bounded
+units; (4) reconcile obsolete guidance without deleting live-service contracts;
+(5) compare regression evidence and independently inspect the final snapshot.
+Lead owns code, package, status and acceptance. Native and documentation surveys
+of fded246 are ACCEPTED as static evidence. Both read-only scopes are closed.
+No writable Peer or UI owner exists.
+Reopen a deletion if a caller, saved schema or unresolved product decision needs it.
+Current data boundary: Recording Codable includes cloud/batches; preserve those
+fields until round-trip compatibility is demonstrated. Do not touch actual libraries.
+
+Selected first unit: remove RevenueCat's native SDK, billing driver/store,
+BillingConfiguration, unreachable SubscriptionView/SubscriptionAccountView and
+their dedicated tests. This explicitly retires LESSMEET_SUBSCRIPTION_SNAPSHOT.
+Remove the SDK bundle requirement from builders, validators and fixtures together.
+Keep Clerk, offline deletion, cloud/batch types, SubscriptionModel, all backend
+code, service settings and Store/TestFlight approval contracts. Those have retained
+callers or unresolved distribution obligations. Negative local configuration checks
+must still reject stale RevenueCat keys. Historical handoffs remain historical.
+Cloud/schema retirement is deferred until its compatibility proof and service
+obligations are resolved; Lead owns that technical checkpoint. Product retirement
+of distribution paths requires Human direction, not this dependency deletion.
+
+Baseline evidence: native build-tests PASS with Swift 6.3.3 and Xcode 26.6;
+411 native tests PASS, with 6 opt-in skips; 69 packaging tests PASS. Native tests
+run with outbound network blocked except loopback and optional paid/model test
+variables absent. First sandbox
+invocation failed before tests because its address syntax was invalid; the corrected
+localhost policy is a separate run. Logs: .artifacts/cleanup/baseline/.
+
+Candidate implementation is frozen for independent read-only inspection. Exact
+diff excludes this status file: .artifacts/cleanup/candidate/review.patch,
+SHA256 51f790ff5793a4684865b4bedcaf51f1c43d63d9a0d8fc99f0312725bcfdeba1.
+The lockfile removes only purchases-ios-spm; other pins are unchanged. No persisted
+model, recording path, Keychain identifier, active controller or app entry changed.
+First candidate: native build and 387 tests PASS with the same 6 skips; 69 packaging
+and 91 release tests PASS. Real local SwiftBuild/package and release app validator
+PASS. Executable SHA256 8759c00993266a50a79f28345de6f3ad7c30e7d9e34874959475a698a1240ef0.
+Bundle remains arm64, com.lessmeet.app.local, version 1.0.0/build 1, ad-hoc,
+not notarized. No app was launched. Offline fixture packaging is running.
+
+Two added literal old-metadata tests cover rename/reopen and interrupted recovery
+with cloud/batch fields and source audio preserved. One new packaging test covers
+stale RevenueCat resources not being copied from cache. Final reruns are pending.
+Preserve failed attempts separately: initial new Swift fixture had an unterminated
+raw string; initial stale-resource test exposed a mock signer that wrongly required
+every cached bundle. Both fixture defects are corrected. The intervening skip-build
+run used the earlier test binary and is not evidence for the added tests.
+Skill instructions now separate current local checks from legacy cloud/deletion
+fixtures; the retired billing map is removed. Skill format validation PASS.
+
+ACCEPT RevenueCat unit 51f790ff5793a4684865b4bedcaf51f1c43d63d9a0d8fc99f0312725bcfdeba1
+for local technical integration. Final 389 native tests with 6 skips, 70 packaging
+tests and 91 release tests PASS. Both normal/local and offline-check real packages
+PASS. Independent read-only review found no actionable regression; report ACCEPTED
+and scope closed. UI, real inference/auth and acoustic quality remain UNVERIFIED.
+
+Next ready unit: remove RecordingChatView, RecordingChatDraft and its three isolated
+tests. Repo-wide references show no runtime caller; LocalChatView owns current chat.
+Remove AccountSession.revokeBillingAdmission and its two invocations because the
+deleted BillingStore was its only assignment. Keep account deletion locks and
+all persisted cloud/batch data. Update the legacy map's removed-source anchor.
+Lead alone owns this small follow-up. Rebuild and rerun before final acceptance.
+
+### Final disposition and usable output
+
+ACCEPT the final local cleanup candidate for technical integration. Exact diff
+against fded246, excluding this status file, is
+`.artifacts/cleanup/candidate/review-final.patch`, SHA256
+`5a95d6045bb8058064501836872b0575afb5373c9795f7ed188d61ccd495c17e`.
+Branch `cleanup/post-pivot-20261013` remains uncommitted. No push, PR, merge,
+deployment, service change or release occurred. Removed tracked files can be
+recovered from the baseline commit. No worktree or user data was deleted.
+
+Reason: exact code/diff inspected; both independent read-only reports ACCEPTED;
+all remaining native tests and real package checks pass. All Peer scopes are
+closed. Lead retains the handoff; UI owner NONE. No further source edits are open.
+The packaged app is available at `dist/local/LessMeet.app` in this worktree.
+Its executable SHA256 is
+`7f150840f82c7a2993c8c1389f7f030c6178352618d9f81694867c5c2406b274`.
+The artifact is arm64, ad-hoc signed, not notarized, version 1.0.0/build 1.
+Do not infer runtime or distribution acceptance from this technical disposition.
+
+Final evidence under `.artifacts/cleanup/candidate/`:
+
+- `swift-build-final-unit.log` and `swift-test-final-unit.log`: build PASS;
+  386 tests, 6 opt-in skips, zero failures. `test-delta.json` proves the change
+  from 411 baseline tests is exactly 27 retired tests and 2 new metadata tests.
+  No active regression suite was removed.
+- `packaging-fixed.log`: 70 tests PASS. `release.log`: 91 tests PASS. Their inputs
+  are unchanged by the final chat/callback deletion. No hosted CI was run.
+- `local-package-final-unit.log` and `offline-package-final-unit.log`: real
+  SwiftBuild, shader build, bundle assembly and signing PASS for both entry variants.
+  The local release validator also PASS. `artifact-identity.json` records both
+  binaries, plists, shader hashes and bundle contents without RevenueCat.
+- `source-invariants.json`: only the intended native paths changed. Other package
+  pins, saved schemas, active ChatGPT/transcription paths, app entry, entitlements,
+  backend code and configuration/approval gates remain unchanged.
+- `real-tokenizer.log`: all 15 adapter tests PASS with the cached pinned tokenizer,
+  including the two tests skipped in the general suite. Network access was denied.
+- Skill validation and `git diff --check` PASS. No remaining executable reference
+  to the removed billing/chat declarations was found. Historical hash manifests
+  and service safety documentation remain as evidence, not candidate proof.
+
+Additional inference attempt is FAIL, not a pass: `real-inference.log` reports
+zero segments and a failed nonempty-transcript assertion. The existing fixture
+script returned success but generated only four seconds of silence. `ffprobe`
+reported 4.000 seconds/1,336 bytes; volume was -91 dB. One fixture-generation retry
+produced the same SHA256, so no second inference was run. The test's printed PASS
+line is not authoritative; its XCTest failure is retained. This input failure
+does not establish a cleanup regression or speech-recognition success.
+Only synthetic files and a private copy of the existing model cache were used.
+The original model cache, recordings and credentials were not modified.
+
+Remaining runtime acceptance is UNVERIFIED. The required installed Computer Use
+skill is unavailable; no app UI was launched or driven. Real sign-in/chat, capture,
+playback quality and the full save/reopen UI remain untested. Model inference on
+nonempty speech also needs a valid synthetic speech fixture. Lead can resume when
+the Computer Use skill and an authorized app-check session are available, and a
+verified synthetic speech file is supplied or generated. Human owns any required
+tool availability/permission and live-data or network scope. No new authority is
+needed for the completed local cleanup.
+
+Retained obligations: Clerk/shared account and cloud controllers still have
+fixture/compatibility callers; backend provider deletion and billing remain live
+service obligations until separately resolved. Store/TestFlight and other legacy
+packaging modes retain approval gates. Human must decide any service or distribution
+retirement. Lead must first map remaining callers and preserve old-data roundtrips
+before another native removal unit. Do not treat this handoff as permission to
+cancel subscriptions, delete customers or decommission a backend.
+
+Verification limits: recheck local SwiftBuild and Computer Use availability before
+claiming recovery from earlier failures. Missing runtime access stays UNVERIFIED,
+not equivalent to tests/build passing. The release app is ad-hoc signed; previous
+ChatGPT storage/signing failure is a baseline limit, not permission for an auth fix.
+
+## Release activation — current authority and frontier (2026-10-12)
+
+Human authorizes commit, push to `check/main-build-20261012`, PR creation,
+merge after required checks pass, `LESSMEET_GITHUB_RELEASE_ENABLED=true`, and
+verification of a real pipeline-created release in `hoangnb24/lessmeet`.
+This supersedes the release task's historical no-push/no-merge/no-activation
+restrictions below. No direct main push, admin merge or protection bypass.
+Lead solely owns integration, STATUS and GitHub activation. Three previous Peer
+scopes are CLOSED and idle. UI owner NONE. Preserve private evidence and history.
+
+Input: accepted nine-file snapshot in
+`.artifacts/release-automation/changelog-reopen/verification-e_otpmoj/checks.json`;
+STATUS is the tenth handoff file. Product, pins, app version and signing policy
+remain unchanged. No Apple upload, new credentials or expanded permissions.
+Frontier: verify identity and local gates; inspect GitHub policy; commit exact
+files; push and open PR; run hosted diagnostic on the exact PR commit before
+merge. Enable publishing before the first eligible merge. If bootstrap does not
+receive the install merge event, use a small pipeline activation PR with checks.
+Never manufacture a manual release as trigger evidence. Hosted release remains
+UNVERIFIED until exact SHA, build, tag, four assets and checksums are observed.
+Record final results locally without repeated status-only release commits.
+
+Precommit identity: all nine accepted hashes match. Fresh 91 release tests,
+actionlint, diff-check and unchanged-product/pins checks PASS. The accepted
+69 packaging tests and independent review remain valid for unchanged inputs.
+Evidence: `.artifacts/release-automation/activation/precommit.json` (private).
+Read-only GitHub checks: remote main remains `96412826c688a9042ca278bdaf2088a21712048d`;
+Actions enabled, all actions allowed, default token permission read. Main reports
+`protected=false`. Protection/rules APIs return HTTP 403: `Upgrade to GitHub Pro
+or make this repository public to enable this feature.` No policy was changed.
+Use existing `main-build-diagnostic.yml` with `package_mode=local`, workflow ref
+feature branch and exact `source_ref` PR head; this binds the check to that head.
+Require its success and any required PR checks before normal merge. Use one
+40-minute diagnostic and one 40-minute release build initially; no blind retries.
+The merged-event bootstrap remains an observation to make, not an assumed pass.
+
+## Historical offline acceptance — activation authority superseded above
+
+## Automation sau merge main — corrected candidate ACCEPT offline (2026-10-12)
+
+Final handoff disposition: ACCEPT corrected nine-file snapshot in
+`changelog-reopen/verification-e_otpmoj/checks.json`. All nine hashes match.
+Provenance/changelog code and the rebase example were inspected; 91 release
+tests and `git diff --check` passed again. Implementation scope is closed.
+Keep candidate and evidence. Human owns the next push/PR/merge and activation
+decision. No hosted run or release has occurred; signing/runtime limits remain.
+No push, merge, tag, live release or activation is authorized. Hosted fetch,
+rendering, CI and recovery remain UNVERIFIED. The artifact remains an arm64,
+ad-hoc-signed prerelease without notarization. Preserve the accepted candidate
+and evidence. Wait for Human's activation decision; only this STATUS disposition
+is updated.
+
+Bounded REOPEN changelog đã được sửa và ACCEPT offline. Changelog có event title,
+subjects và toàn bộ original PR commits theo graph/count policy; integration SHA
+được ghi riêng. Không suy ra rewritten-main range từ commit cuối. Giữ nguyên
+các giới hạn hosted activation, credentials, signing và E2E phía dưới.
+Next: Human review corrected candidate theo quy trình PR; activation cần quyền
+riêng như CONFIGURATION. Không còn scope implementation/review đang mở.
+Không live CI/API writes/push/tag/release; version/signing/credentials không đổi.
+Các dispatch và kết quả FAIL sau đây là lịch sử của bounded correction.
+`196feea7` chỉ nghiên cứu primary semantics trong `changelog-reopen/research/`,
+không sửa code; không có writer Peer khác. Route đang đánh giá: snapshot event
+title + original PR head/commits; không đoán range rebased main từ SHA cuối.
+ACCEPT research `changelog-reopen/research/recommendation.json`: primary docs
+xác nhận SHA rebase đổi, empty commit có thể bị bỏ; không có bảo đảm event base
+là premerge. Route được chọn: original PR graph range + exact event count,
+không nhận là mapping rewritten-main. Research scope đóng; Lead sửa toàn bộ
+helper/tests/docs và wiring workflow nhỏ `--fetch-pr-head` với read-only job token.
+Không mở rộng token permission hoặc credentials. Snapshot schema2 có title,
+subjects, original head/base/boundary/count và integration SHA riêng; sealed bytes
+là nguồn cho publish/rerun. Thiếu history/count/topology proof phải fail closed.
+Candidate correction được freeze cho read-only audit `196feea7`, chỉ ghi
+`changelog-reopen/review/`: helper `75f8e7b9`, workflow `943fd029`, new fixtures
+`f10e5136`, helper tests `b7f80c11`, boundary tests `3d31d438`/`72d5635c`,
+CONFIGURATION `ea7a5b78`; wrapper/validator không đổi. 90 tests PASS trước test
+escaping cuối; final suites đang chạy. Chưa ACCEPT corrected candidate.
+Final run đầu giữ FAIL tại `changelog-reopen/verification-8rapunoi/`: test escaping
+đổi object nhưng chưa ghi plan fixture trước seal. Đã sửa đúng fixture; helper
+không đổi. Hash helper tests mới `fd770865`; reviewer nhận snapshot mới, final
+suites được chạy lại. Không chuyển FAIL này thành kết quả PASS cũ.
+Final rerun PASS tại `changelog-reopen/verification-e_otpmoj/checks.json`:
+91 release tests, 69 packaging tests, actionlint/diff-check/unchanged-product.
+Schema2 plan → build dry-run → seal accepted real ZIP → publish dry-run PASS.
+Provenance graph của integration này được tạo trong clone synthetic riêng; SHA
+source/app giữ base đã ACCEPT, PR999999 không phải event thật. Không fetch GitHub,
+compile/launch/publish hoặc sửa ref của project. Chín candidate hash không đổi.
+Example rebase: `changelog-reopen/tests/graph-z3wilwy5/changelog.md` ghi đủ ba
+subjects kể cả empty commit, separate integration tip.
+
+### Acceptance correction changelog
+
+ACCEPT exact chín hash trong
+`.artifacts/release-automation/changelog-reopen/verification-e_otpmoj/checks.json`,
+khớp `changelog-reopen/review/findings.json`. Helper SHA256:
+`75f8e7b91b758cf7d13db61f2df6a03584cc4e243d621e1b614c93be4f943787`.
+Chín file gồm workflow, helper, wrapper, validator, bốn test files và CONFIGURATION;
+STATUS là handoff cập nhật sau snapshot. Hash các file đã kiểm tra lại, không đổi.
+
+Lý do: đã đọc exact code và generated notes; 91 release tests, 69 packaging tests,
+actionlint và schema2/real-archive integration đều PASS. Review độc lập có 96
+checks PASS (cùng 91 tests + năm probes riêng), gồm DAG nhiều nhánh, SHA tie-break,
+rebase empty commit, inert text, sealed rerun và subprocess-level fetch mock.
+ACCEPT report review; evidence/test failure cũ giữ riêng, không tính thành PASS.
+Peer review scope đóng; Lead giữ STATUS, UI owner NONE.
+
+Claim được ACCEPT: title từ merged-event snapshot, subjects từ immutable Git
+objects và complete original PR graph range với exact event count. Merge,
+squash, rebase fixtures nhiều commit đều có đủ nội dung. Không claim mapping
+rewritten-main commits hoặc mô tả conflict resolution. Missing/ambiguous/count
+mismatch dừng trước build/publish, không xuất danh sách bị cắt. Publish/recovery
+không đọc lại title/ref hiện tại; đổi snapshot không được overwrite release.
+
+Downstream dùng corrected code/tests/docs cùng example để review PR. Không có
+live GitHub fetch/token-auth, rendered GitHub UI, hosted CI/release/recovery hoặc
+product E2E mới. Các mục đó vẫn UNVERIFIED. Không thay product/pins, version,
+signing/prerelease policy hoặc token permissions; chỉ thêm read-only token vào
+plan step để tải Git objects nếu cần. Không paid API hoặc release-note AI.
+Giới hạn token `Workflows: write` cho target cũ vẫn giữ nguyên; không tự cấp thêm.
+
+Input: repo `/Users/tubakhuym/projects/lessmeet`; chỉ ghi trong worktree
+`/Users/tubakhuym/.paseo/worktrees/0v2r0tqq/lessmeet-main-build-20261012`, base
+`96412826c688a9042ca278bdaf2088a21712048d`. Giữ nguyên lịch sử E2E bên dưới.
+Scope mới cho phép pipeline/scripts/tests/docs; không sửa app hoặc dependency pins.
+Lead sở hữu workflow, build/package integration, contract và STATUS. UI owner NONE.
+Mọi E2E scope đã đóng. Chưa push/merge, tạo live tag/release/CI run hoặc Apple upload.
+
+Channel đã chốt: chỉ GitHub Release kèm build và changelog sau PR merge main.
+Không gồm TestFlight upload, App Store submission hoặc public App Store release.
+Lý do: quyết định phạm vi mới loại Apple distribution khỏi lượt này. Không còn
+câu hỏi channel hoặc dependency ASC credentials. Không setup/gọi ASC thêm.
+Store first version/manual release giữ nguyên. asc chỉ bắt buộc cho task ASC
+được phép trong tương lai; local help đã thấy version 5.14.0, không đọc credentials.
+
+Contract kỹ thuật: chỉ PR closed+merged vào main, checkout immutable merge SHA.
+Tag `main-build-<first-parent-count>-<full-SHA>` không đổi app/Apple version.
+Mỗi SHA có concurrency group riêng; không cancel merge khác, không dùng latest.
+Build job read-only; publish job contents:write chỉ chạy sau checks/build/package.
+Chỉ phát hành GitHub prerelease arm64 ad-hoc, không notarized/Store-ready.
+Changelog liên kết PR và commit; release chỉ chứa app zip, manifest, checksum,
+changelog allowlist, không logs/screenshots/private E2E. Draft trước, publish sau
+khi đủ assets; không retarget tag hoặc overwrite asset. Rerun đã hoàn tất no-op
+sau kiểm tra binding/checksum; partial recovery phải dùng đúng bytes đã seal.
+
+Acceptance và dispatch dưới đây là lịch sử trước bounded REOPEN changelog.
+Chưa push/merge/live release. Corrected acceptance ở đầu mục thay snapshot cũ
+cho changelog; không cấp quyền activation mới.
+Developer ID signing/notarization chưa được chọn, không phải gate cho artifact
+ad-hoc có nhãn đúng. Không đồng nhất notarization với ASC/TestFlight upload.
+`017c9e18` sở hữu `scripts/github-release.py`, `Tests/release/test_github_release.py`
+và evidence `release-automation/helper/`. Scope audit asc/readiness `5f436d26`
+dừng theo quyết định GitHub-only; giữ evidence đã có, không gọi/setup ASC thêm.
+ACCEPT scope-close `apple-readiness/checks.json`: local help/version và source
+reads, không Apple management/auth/upload; không trace CLI background traffic.
+Không coi audit này là credential readiness. Scope đóng, không còn dependency.
+REOPEN host resolved: JSON REST dùng `api.github.com`; upload chỉ fixed
+`uploads.github.com/repos/.../releases/<id>/assets`, không forward token qua redirect.
+Remote asset readback được theo đúng một redirect HTTPS tới fixed
+`release-assets.githubusercontent.com` hoặc `objects.githubusercontent.com`,
+không Authorization/cookie, không userinfo/port khác443/redirect tiếp. URL ký
+không được log. Dependency kỹ thuật này đã giải quyết; chỉ code/mock, không live API.
+Workflow dùng `pull_request_target: closed` với merged+main gate để hỗ trợ merged
+fork PR; chỉ checkout merge SHA đã merge, tuyệt đối không PR head/ref chưa merge.
+Candidate workflow/build/docs đã freeze cho independent read-only audit `196feea7`
+tại `release-automation/review/`; helper vẫn do `017c9e18` viết riêng, chưa là input
+review. Checkout7 lấy main tin cậy rồi kiểm tra ancestry và detach exact SHA;
+không bật unsafe-PR override. Upload7/download8 pin SHA, digest mismatch là lỗi.
+Local PASS tạm thời: actionlint1.7.12, 20 workflow/build tests, 69 packaging tests;
+verify-app trên artifact đã ACCEPT khớp arm64/ad-hoc/hash. Chưa hosted run/build mới.
+ACCEPT bounded audit `review/findings.json` cho sáu hash được ghi trong evidence:
+20 candidate tests và tám independent mocks PASS; chưa gồm helper/hosted recovery.
+R1 cleanup được nhận: Lead sửa wrapper để giữ `RUNNER_TRACKING_ID`, tạo process
+group riêng và dừng đúng group khi timeout. Không dùng kill theo tên process.
+Candidate sáu file được mở lại cho sửa nhỏ này; review scope tạm đóng tới full
+integration snapshot. Không mở thêm product/runtime scope.
+Helper candidate `6781ae99` và tests `26fef9de` đã đọc, hash khớp, 48 tests PASS.
+REJECT candidate này tại integration: local main cũ làm plan từ chối dù origin/main
+khớp exact SHA. Evidence `integration/sealed-flow.9l1o0jc9/checks.json` giữ FAIL.
+`017c9e18` nhận lại hai file helper/tests: ưu tiên origin/main, fallback local main,
+thiếu cả hai phải fail; thêm regression tests. Không sửa bất kỳ Git ref nào.
+Primary GitHub docs xác nhận giới hạn token cho target cũ khác workflow trên main:
+create/update có thể cần `Workflows: write`, không cấp được cho `GITHUB_TOKEN`.
+Normal path tiếp tục; không nâng quyền/đổi target để né. Không hứa publish mọi
+target cũ trong trường hợp này. CONFIGURATION ghi 403/404 fail-closed và credential
+decision cần Human nếu trường hợp đó xảy ra lúc activation/recovery; chưa cần
+Apple credentials và chưa tự thêm PAT/App token.
+ACCEPT corrected helper `1a4034c3`/tests `17be5162`: origin/main priority và bốn
+regressions khớp contract; actual plan PASS. Scope writer đóng. Full integration
+phát hiện ZIP `--sequesterRsrc` có `__MACOSX`, bị allowlist từ chối đúng; FAIL giữ tại
+`integration/sealed-flow.78kmpa98/`. Lead sửa archive flags để loại filesystem
+metadata, giữ strict ZIP gate. Phải verify signature/resources/hash sau unpack.
+Roundtrip-v2 PASS trên archive không metadata: strict signature, arm64, resources,
+symlink và executable hash `60351a3d...` giữ nguyên. Full synthetic-event flow PASS
+tại `integration/sealed-flow.9ty5m5lh/checks.json`; PR999999 là fixture, không phải
+live PR. Không compile hoặc launch mới. Freeze tám file theo hash cho `196feea7`
+full read-only review helper/workflow/build/docs; chỉ ghi evidence `review/`.
+Final local verification 10:19:48–10:20:26Z PASS tại
+`integration/verification.c7gnxd87/checks.json`: actionlint, 74 release tests,
+69 packaging tests, diff-check và unchanged-product/pins/manual-workflow.
+Tám candidate hash không đổi trong verification. Hosted Actions/release và
+exact-app runtime giữ UNVERIFIED.
+
+### Disposition trước REOPEN và downstream lịch sử
+
+ACCEPT exact tám file/hash trong
+`.artifacts/release-automation/integration/verification.c7gnxd87/checks.json`,
+đối chiếu `.artifacts/release-automation/review/full-review.json`:
+workflow `8df67fa7`, helper `1a4034c3`, build wrapper `7b1ef28f`, validator `767c1a5d`,
+helper tests `17be5162`, build tests `060eca9c`, workflow tests `bf15cd30`,
+CONFIGURATION `1a7a115f`. Full SHA256 nằm trong hai evidence JSON; base không đổi.
+STATUS là file handoff thứ chín, được cập nhật sau snapshot code/docs trên.
+
+Lý do: Lead đã đọc candidate, chạy 74 release tests + 69 packaging tests,
+actionlint và full synthetic-event/real-archive dry-run. Independent review chạy
+81 checks gồm cùng 74 tests và bảy probes riêng; không có finding cần reopen.
+Đã kiểm tra binding SHA/tag, failure-before-publish, rerun/recovery, allowlist,
+redirect không mang token, archive roundtrip và lỗi an toàn. ACCEPT full review;
+tất cả Peer scopes đóng, UI owner NONE. Không còn implementation dependency mở.
+
+Downstream có thể review candidate rồi đưa vào main theo quyền riêng. Sau khi
+cho phép publish, set `LESSMEET_GITHUB_RELEASE_ENABLED=true`; nếu chưa set, workflow
+chỉ build/lưu Actions artifact. CONFIGURATION chứa policy, activation, recovery và
+rollback. Chưa dùng credential thật, live CI/API/tag/release, push/merge hoặc ASC.
+Không cần Apple signing/ASC setup cho path diagnostic này.
+
+Giới hạn giữ nguyên: artifact arm64/ad-hoc, chưa notarized; version1.0.0/build1
+không đổi. Hosted runner/publication/failed-job recovery chưa chạy. Timeout cleanup
+chỉ xác minh code/mocks, chưa thử process tree thật. Exact-app runtime/E2E không
+được nâng thành PASS. Hai integration FAIL cũ giữ riêng; candidate sửa đã PASS.
+GitHub có thể yêu cầu token `Workflows: write` cho target cũ khác workflows trên
+main; current token không có quyền đó. Human sở hữu quyết định credential bổ sung
+khi activation/recovery gặp trường hợp này; không tự tạo token mạnh hơn. Vì vậy
+không ACCEPT lời hứa publish vô điều kiện cho mọi target cũ dưới policy đó.
+
+## E2E local cô lập — hoàn tất có giới hạn (2026-10-12)
+
+Disposition sau handoff: ACCEPT báo cáo fixture có giới hạn, không ACCEPT
+exact-app E2E. Đã đối chiếu assessment cô lập và storage results; hash binary
+chính và deep/strict signature kiểm tra lại PASS. Các launch failure của harness
+vẫn là FAIL riêng. Scope fixture đóng; giữ evidence và artifact. Exact-app vẫn
+chưa xác minh. Nếu cần tạo user/VM hoặc dùng dữ liệu/live effects, Human quyết
+định môi trường và quyền trước khi mở lượt tiếp theo. Không giao sửa sản phẩm.
+
+Disposition áp dụng cho SHA `96412826c688a9042ca278bdaf2088a21712048d`, storage
+harness `befe464f8da9beb4d4a13eed92b5252c54b3b1904107ebc5536fc3926257a563` và
+synthetic shell `1eaa17c1dc5ef6269ff1ecd0e40135e33b806c9156c2336805bf59e1e2e99fdc`,
+chỉ trong các kịch bản fixture ghi dưới đây. Binary chính đã đối chiếu có SHA256
+`60351a3d61c4019a031704024b04fedf049aa7469ea55356482cc1e37341f4fd`.
+Không launch, sửa hoặc cleanup thêm trong lượt đã đóng. Quyền ghi STATUS chỉ
+được trả lại để ghi disposition này. Auth/inference/capture/playback thật vẫn
+UNVERIFIED. Ba launch failure giữ là harness FAIL, không quy thành product bug.
+Frontier exact-app chờ quyết định môi trường/quyền từ Human; acceptance này
+không cấp quyền tạo user/VM, dùng dữ liệu thật hoặc tạo live effects.
+
+ACCEPT storage harness và synthetic shell runtime v4; không ACCEPT exact-app E2E.
+UI owner: NONE. Mọi scope Peer đã đóng. Process fixture 5791 và 12221 đã thoát.
+Lead tiếp quản sau lỗi dịch vụ model capacity của Peer, hoàn tất reopen và cleanup.
+Không có bug sản phẩm được xác nhận trong các kịch bản này. Không sửa product code.
+
+| Luồng thực sự chạy | Kết quả | Evidence dưới `.artifacts/e2e-20261012/` |
+| --- | --- | --- |
+| Storage: save, fresh-process reopen, từ chối dữ liệu hỏng | PASS | `storage/results.json`, `lead/storage-acceptance.json` |
+| Fixture: launch, tìm kiếm có/không kết quả, mở transcript | PASS | `shell/runtime-v4/01`–`06` screenshot/AX, `actions.jsonl` |
+| Fixture model: missing, mock download lỗi, retry thành ready | PASS | `08-model-download-failed`, `12-models-ready`; ba payload một byte |
+| Transcribe bằng engine tổng hợp rồi lưu | PASS | `14-transcription`, before/after transcript mtime; không chứng minh inference |
+| Chat mock: complete, streaming cancel, HTTP 503 | PASS | `23`, `27`, `28`, `32` screenshot/AX; completed history giữ nguyên |
+| Đổi tên, quit, process mới reopen title/transcript/chat | PASS | `34`–`38` screenshot/AX, `lead-actions.jsonl`, `lead/final-verification.json` |
+| Launch harness lần 1–3 | FAIL | `shell/runtime*/RESULT.md`; lỗi policy harness, không phải product bug |
+| Exact `dist/local/LessMeet.app` runtime | UNVERIFIED | `isolation/ASSESSMENT.md`: chưa có startup isolation phù hợp |
+| Live auth/API, inference/model thật, capture và playback | UNVERIFIED | Không dùng tài khoản/model/audio thật; không có quyền capture/live calls |
+
+Runtime v4: PID5791 bắt đầu 06:30:44Z; Computer Use từ 06:31:05Z tới rename
+06:39:23Z. Lead quan sát lại, quit và mở cùng root bằng PID12221 lúc 06:40:17Z.
+Lead thấy title, hai segment transcript và chat hoàn chỉnh trên UI process mới.
+Quit cuối bằng Computer Use; session trả exit0. Kiểm tra cuối 06:41:46Z: không
+còn SyntheticShell, không staging prefix tồn dư. Data và evidence được giữ lại.
+`lsof` không thấy network socket ở các thời điểm kiểm tra; không phải packet trace.
+
+ACCEPT exact candidate executable
+`1eaa17c1dc5ef6269ff1ecd0e40135e33b806c9156c2336805bf59e1e2e99fdc` chỉ cho các
+claim fixture trên. Lead đọc AX/actions, xem screenshot model/chat/reopen và so
+hash file. `chat.json` giữ hash qua complete/cancel/error/rename/reopen. Transcript
+được ghi lại sau click, cùng nội dung tổng hợp; progress thoáng qua chưa xác minh.
+Kiểm tra cuối PASS: 74 source/script/pin file không đổi, binary chính đúng hash,
+deep/strict signature và `git diff --check` đều PASS.
+
+Lỗi tái hiện của harness: launcher cũ chặn Launch Services; v2/v3 chặn Foundation
+staging. Chạy launcher tương ứng trên root riêng tái hiện exit1 như log đã giữ.
+Probe xác nhận `{6}` bị hiểu literal; v4 dùng sáu class tường minh và launch được.
+Audio sentinel cố ý không hợp lệ gây `OSStatus error 1954115647`; không coi là bug
+playback. Không thử import qua UI, account panel, chất lượng nhận dạng, crash/power
+loss hoặc durability preferences. Synthetic transcript được seed trực tiếp.
+
+Downstream có thể dùng fixture, scenario inputs và evidence này cho regression
+cô lập. Muốn xác minh exact-app/live paths cần môi trường cô lập được chứng minh
+và quyền cụ thể từ Human nếu có external effects. Sửa product chờ yêu cầu riêng.
+
+### Lịch sử dispatch và disposition
+
+Yêu cầu mới cho phép runtime với dữ liệu tổng hợp. Giới hạn không-launch của
+lượt build dưới đây chỉ còn là lịch sử, không phải gate của lượt E2E này.
+Input ACCEPT: SHA `96412826c688a9042ca278bdaf2088a21712048d`,
+`dist/local/LessMeet.app`, executable SHA256
+`60351a3d61c4019a031704024b04fedf049aa7469ea55356482cc1e37341f4fd`.
+Đã kiểm tra lại HEAD, hash và deep/strict signature: PASS.
+Lead sở hữu STATUS và disposition. Evidence mới nằm tại `.artifacts/e2e-20261012/`.
+UI owner cuối lượt: NONE. `5f436d26` đã trả scope sau lỗi capacity; Lead đã
+hoàn tất phần còn lại trong `shell/runtime-v4/` và đóng scope.
+Scope probe không UI đã đóng và ACCEPT; không có Peer khác điều khiển UI.
+App có sẵn PID 22742 ở worktree khác phải giữ nguyên.
+Room hiện chỉ có phiên Lead; không có scope Peer đang chạy tại thời điểm mở lượt.
+
+Dispatch mới: `017c9e18` sở hữu `.artifacts/e2e-20261012/isolation/`, audit
+read-only đối với sản phẩm, không launch/UI. `5f436d26` sở hữu
+`.artifacts/e2e-20261012/shell/`, chuẩn bị fixture full-shell, scratch và dữ liệu
+tổng hợp riêng. Không được launch cho tới khi nhận disposition artifact.
+Hai scope không sửa source/script/pins hay STATUS. Dùng provider Peer hiện có.
+Khi chuẩn bị chưa cấp UI; reservation runtime hiện tại được ghi ở đầu mục.
+
+ACCEPT audit `017c9e18`, candidate
+`.artifacts/e2e-20261012/isolation/ASSESSMENT.md` (05:48:36–05:49:25Z).
+Lý do: source xác nhận ba đường startup không cô lập, khớp kiểm tra Lead.
+REOPEN_REQUEST được giải quyết: không launch exact app; runtime của artifact
+đó là UNVERIFIED, không cần biến nó thành điều kiện cho các fixture độc lập.
+Tiếp tục fixture full-shell đã được phép. Scope audit đóng, quyền ghi trả lại.
+Chưa có kết luận bug runtime; đây là blocker cô lập trong phạm vi hiện tại.
+
+Scope mới độc lập cho `017c9e18`: `.artifacts/e2e-20261012/storage/`.
+Chạy harness không UI từ storage source không đổi, với dữ liệu tổng hợp riêng:
+lưu transcript/chat, thoát process, mở lại process khác, từ chối sidecar hỏng
+và giữ dữ liệu cũ. Đây là E2E storage/harness, không phải app UI hay inference.
+Không dùng scratch hoặc dữ liệu của shell; scope storage không có quyền UI.
+
+ACCEPT storage candidate của `017c9e18`: executable
+`befe464f8da9beb4d4a13eed92b5252c54b3b1904107ebc5536fc3926257a563`, manifest
+`e9a98b0dbb41ec31433fb13932dfd2337f3da3104ca34deb4cceeae81e8e2074`.
+Lead đọc harness và negative logs; 119 manifest hash và 11 input hash khớp.
+Chín file sản phẩm được compile nguyên văn; chỉ trích nguyên văn hai error type
+để tránh kéo implementation account/cloud vào harness. Lead chạy lại readback
+PID83920 lúc 05:57:31Z: PASS, không đổi evidence/data bytes.
+Lượt gốc 05:55:25.387830–05:55:25.957995Z dùng các PID81419–81422:
+save, fresh-process reopen, negative cases, fresh-process reopen sau negative.
+PASS: metadata/transcript tiếng Việt/timing/speaker/chat giữ nguyên; invalid
+transcript, incomplete chat pairs, malformed/unsupported chat sidecar bị từ chối,
+giữ dữ liệu cũ. Tất cả child process thoát 0. Không có UI/inference claim.
+Evidence: `storage/handoff.json`, `storage/results.json` và
+`lead/storage-acceptance.json` dưới `.artifacts/e2e-20261012/`.
+Scope storage đóng, evidence giữ nguyên, quyền ghi trả lại. Chưa có lỗi sản phẩm
+tái hiện trong các kịch bản storage này; durability khi crash/power loss chưa thử.
+
+Fixture candidate từ `5f436d26`: `shell/build.s7KePh/SyntheticShell.app`,
+executable `1eaa17c1dc5ef6269ff1ecd0e40135e33b806c9156c2336805bf59e1e2e99fdc`.
+Build 11.228s và strict signature PASS; chưa launch. Lead đã đọc main/support,
+launcher, sandbox và build mapping; kiểm tra input/bundle hash cùng signature.
+Fixture giữ 30 source file nguyên văn, bốn declaration được trích nguyên văn;
+thay capture/Keychain/auth callback/inference bằng fixture boundary. Không dùng
+product entry point. Data/model roots riêng, tiny model payload tổng cộng 3 byte,
+mock Responses transport, private defaults, OS network denial.
+Probe riêng dưới cùng sandbox bị từ chối tạo/bind socket: EPERM. Đây không phải
+bằng chứng runtime app. `017c9e18` được giao review read-only exact candidate,
+chỉ ghi `.artifacts/e2e-20261012/review/`, không launch/UI.
+Ứng viên lỗi build thiếu ChatGPTSession và bản có fixture warning được giữ riêng;
+không tính chúng là lỗi sản phẩm. Bước chuẩn bị này chưa cấp quyền UI.
+Đã làm rõ quyền đọc đúng installed Computer Use SKILL.md là ngoại lệ hẹp cho
+instruction bắt buộc, không cho phép đọc state `.codex`. Peer báo từng traverse
+thư mục skills khi discovery nhưng không đọc nội dung hoặc sửa state; đã dừng.
+
+ACCEPT review `017c9e18`, `review/shell-safety.json` SHA256
+`77b12e80bd69f6027221de6225380b9b79f448fab53eb4685d849c6990b97c69`.
+ACCEPT fixture `build.s7KePh` / executable `1eaa17c…e99fdc` làm input cho
+thử nghiệm runtime cô lập: source/hash/signature và injection boundary khớp,
+không có blocker an toàn. Review scope đóng; không có UI PASS ở bước này.
+Reservation attempt 1: `5f436d26` là owner DUY NHẤT cho SyntheticShell.app nói trên.
+Cho phép sandboxed launcher đã review, run root mới `shell/run.accepted-s7KePh`,
+và evidence `shell/runtime/`. Không sửa candidate/launcher/profile. Kiểm tra
+PID/path trước UI state; không để Computer Use tự launch ngoài sandbox.
+Chỉ chạy kịch bản synthetic trong HANDOFF, không browser/usage/files/permissions.
+Nếu sandbox/framework thất bại, giữ evidence và báo blocker, không bỏ sandbox.
+Lead không điều khiển UI trong scope này. Khi xong phải quit đúng fixture,
+xác minh process đã thoát và trả quyền UI.
+
+ACCEPT evidence runtime attempt 1 `shell/runtime/RESULT.md`; REJECT profile
+`offline.sb` về khả năng launch: 06:02:33–06:02:34Z, PID87140 exit 1.
+Log ghi sandbox từ chối `com.apple.coreservices.launchservicesd`; AppKit không
+đăng ký app được. Không có UI call, screenshot, AX hoặc model/chat request.
+Giữ FAIL của lần launch này riêng; các feature UI là UNVERIFIED, không phải bug
+sản phẩm. Cleanup PASS, PID không còn; UI owner đã trả quyền.
+REOPEN_REQUEST đang được xử lý trong quyền test-harness hiện tại: Lead chuẩn bị
+profile v2 chỉ bỏ một deny Launch Services để AppKit đăng ký app. Network,
+personal-data reads, Keychain/securityd, TCC, appleevents và write-scope denial
+giữ nguyên. Không thay quyền hệ thống. `017c9e18` review deterministic diff tại
+`review/launch-policy-v2.json`; chưa cho phép launch v2 trước disposition.
+
+ACCEPT review v2 `4273cd61e42b899688c47aa2da2142a5e397496897daf0eebb02104cd42c3bab`.
+ACCEPT `offline-v2.sb` SHA256 `1747b8072744df4594c6f8277da5e55f6e42b6e031ad51358491e7c645052130`
+và `launch-v2.sh` SHA256 `f70f934c73ecc1915713210d0d56f811572256b83232d9dc2eedfcd1f05a432c`.
+Lý do: bỏ đúng deny gây lỗi AppKit; source injection và guards khác giữ nguyên.
+Launch Services không bị giới hạn kỹ thuật ở registration-only, nên các nút
+browser/Show Files/permissions vẫn tuyệt đối ngoài scope. Không phải đổi quyền
+hệ thống. Probe network v2 tiếp tục bị EPERM. Review scope đóng.
+`5f436d26` tiếp tục UI ngay với cùng fixture binary, root mới
+`shell/run.v2-accepted-s7KePh`, evidence `shell/runtime-v2/`; một owner duy nhất.
+Giữ attempt 1 nguyên vẹn. Không tự nới thêm profile nếu có blocker mới.
+
+ACCEPT evidence attempt 2 `shell/runtime-v2/RESULT.md`; PID90663 exit 1 lúc
+06:09:54Z. AppKit registration PASS, nhưng Foundation `.atomic` tạo staging
+`TemporaryItems/NSIRD_SyntheticShell_d4DFKZ` ngoài TMPDIR riêng và bị sandbox
+chặn. REJECT policy hiện tại về staging compatibility, không quy thành bug
+sản phẩm. Không có UI call hoặc synthetic file; cleanup PASS, UI đã trả quyền.
+Đang review route staging mới sở hữu riêng, không cho phép rộng toàn `/tmp`
+hay toàn TemporaryItems. Các profile/evidence cũ giữ nguyên.
+
+ACCEPT staging review `c7f62ee40ae01c24d64c4b32ac24e993f9844afb2ad4f7b0d3864ee6fdfbd8d7`.
+Lead kiểm tra byte cụ thể: `offline-v3.sb`
+`0c47484f236bfbd35919e4aa04984020b892503b32b6331af6f20dbe31cb3fbc`
+chỉ thêm đúng regex đã review; `launch-v3.sh`
+`7b6af41dc5ac8cde9b4f8e196f26cb9b8dfd0332c088de9f358c65a12ee97d1c`
+pin binary cũ, kiểm tra physical parent, không có prefix/process trùng và run
+không symlink. Syntax/profile parse PASS; network probe vẫn bị EPERM.
+ACCEPT hai file harness v3 cho attempt tiếp theo. Đây là scope tạm mới cho
+Foundation, không thay product hay quyền hệ thống; không cho phép rộng parent.
+Chỉ namespace mới `/private/var/folders/07/p5pz8vnd0cx_1hll7nsmrm9c0000gn/T/TemporaryItems/NSIRD_SyntheticShell_[A-Za-z0-9]{6}`
+và descendants được ghi. Preflight metadata-only không thấy prefix hay process
+trùng; không đọc nội dung thư mục khác. Prefix không phải ranh giới chống race
+đối kháng; yêu cầu một owner và không overlap vẫn giữ nguyên.
+`5f436d26` sở hữu UI, root `shell/run.v3-accepted-s7KePh`, evidence
+`shell/runtime-v3/` và namespace staging mới nói trên. Phải kiểm tra lại trước
+mỗi launch; nếu có mục cũ thì dừng, không cleanup. Review scope đóng.
+
+ACCEPT evidence attempt 3 `shell/runtime-v3/RESULT.md`: PID96600 exit1 lúc
+06:18:51–06:18:52Z, atomic staging vẫn bị deny tại `NSIRD_SyntheticShell_nkcrYI`.
+REJECT v3 về runtime matching, dù profile parse PASS. Không UI call; cleanup PASS,
+không có staging tồn dư. Tạm ngừng launch app để probe rule không UI trước;
+không lặp cùng cấu hình và không bỏ sandbox. Scope runtime đã trả quyền.
+
+ACCEPT `sandbox-probe/candidate.sb` SHA256
+`12c3f38a55a44dd66ea91afaf42a947bca4f3aa9827a5a2ca643a42852dc5370`.
+Probe 06:27:28–06:27:29Z chứng minh `{6}` khớp literal braces; thay bằng sáu
+class tường minh cho phép đúng staging và vẫn chặn các tên ngoài phạm vi.
+Lead kiểm tra profile, source probe và `mkdir-results.json`. Probe `sandbox_check`
+ban đầu không qua control, không được dùng làm proof. Thư mục probe rỗng mới
+`NSIRD_SyntheticShell_0kIomt` đã được Lead xoá bằng `rmdir`; không mất nội dung.
+ACCEPT `shell/launch-v4.sh` SHA256
+`f1790792aa7135a7fc4ca83d7904c56f4f9a62fdc7838673fbf0bdbdebe72d9c`:
+giữ preflight v3, pin binary và profile mới; syntax PASS. App compatibility chưa biết.
+`5f436d26` tiếp tục ngay runtime với root `shell/run.v4-accepted-s7KePh`, evidence
+`shell/runtime-v4/`. Chỉ scope này và staging mới đúng prefix; không đổi candidate.
+Giới hạn readiness 30 giây; UI tối đa 15 phút. Nếu blocker mới, giữ log và dừng.
+
+Trước launch phải chứng minh cách cô lập data, Keychain và model download.
+Quan sát source: app chính tạo ChatGPTSession đọc Keychain trong init và gọi
+LocalModelManager.startup để tự tải model thiếu. Không được coi đổi thư mục
+làm việc hay biến HOME là bằng chứng cô lập. Chưa launch artifact chính.
+Ưu tiên fixture/harness dùng dependency injection có sẵn, không sửa product.
+Mỗi Peer có thư mục evidence riêng; chỉ một owner UI tại một thời điểm.
+Test fixture/rebuilt artifact phải ghi rõ, không coi là live auth/inference PASS.
+Không truy cập dữ liệu/credentials thật, ghi âm, login, gọi API thật, tải model
+lớn, sửa product source/script/pins, đổi quyền hệ thống, cleanup lịch sử,
+commit/push/deploy hay chạm dự án khác. Unit tests chỉ là bằng chứng bổ trợ.
+
+## Kiểm tra build main trên local — PASS (2026-10-12)
+
+Phạm vi: chỉ build/chẩn đoán trong worktree
+`/Users/tubakhuym/.paseo/worktrees/0v2r0tqq/lessmeet-main-build-20261012`.
+Branch: `check/main-build-20261012`.
+HEAD/base: `96412826c688a9042ca278bdaf2088a21712048d`.
+Đã xác minh HEAD, branch và trạng thái sạch trước khi chạy. Đây là SHA main
+được xác minh qua `git ls-remote origin refs/heads/main` trước khi giao kiểm tra;
+lượt build không truy vấn lại remote và không chạy CI.
+Quyền ghi chỉ gồm build output, evidence và STATUS trong worktree này.
+Không có Peer hay UI scope được mở. Các quyền runtime/merge trong lịch sử bên
+dưới không áp dụng cho lượt kiểm tra này.
+
+Kết quả: ACCEPT artifact build local của đúng SHA trên. Preflight, package và
+strict signature đều PASS. Chấp nhận này chỉ xác nhận build/package, không cho
+phép launch, phân phối, sửa source, thay đổi hệ thống hay triển khai.
+
+Đối chiếu sau handoff: HEAD và build.log khớp; chạy lại
+`codesign --verify --deep --strict dist/local/LessMeet.app` PASS và xác nhận
+executable arm64. ACCEPT kết quả build/chẩn đoán; scope hoàn tất.
+Giữ artifact và logs. Chưa giao tác vụ runtime hoặc sửa code.
+
+Lệnh chính, với `LESSMEET_SIGNING_IDENTITY=-`:
+
+1. `xcrun -sdk macosx metal --version` — PASS.
+2. `bash scripts/build-app.sh local --preflight` — PASS, exit 0.
+3. `bash scripts/build-app.sh local` — PASS, exit 0, 260.1 giây.
+4. `codesign --verify --strict --verbose=4 dist/local/LessMeet.app` — PASS.
+5. `python3 .artifacts/main-build-20261012/verify-artifact.py` — PASS.
+
+Toolchain: macOS 26.4 (25E246), arm64; Xcode 26.6 (17F113) tại
+`/Applications/Xcode.app/Contents/Developer`; Apple Swift 6.3.3
+(`swiftlang-6.3.3.1.3`); Apple clang 21.0.0 (`clang-2100.1.1.101`);
+macOS SDK 26.5; Metal 32023.883; Node v22.22.3; Python 3.9.6.
+Ổ đĩa còn khoảng 42 GiB trước build. Không có build Swift/Xcode đang chạy trước
+khi bắt đầu. App LessMeet có sẵn ở worktree khác được giữ nguyên, không thao tác.
+
+Chỉ chạy một lần. Runner giới hạn 900 giây toàn build và 180 giây không có log
+mới. Không chạm giới hạn, không lấy stack sample và không cần gửi signal.
+Git credential helper bị tắt cho subprocess; không cho Git hỏi credentials.
+Script dùng `--disable-keychain --disable-netrc`, SwiftBuild release arm64 và
+scratch mới `dist/local/swift-build`. Dependency resolution dùng cache có sẵn;
+đây không phải thử nghiệm tải mọi dependency từ đầu. Cả 44 checkout revision
+khớp pins. `Package.resolved` giữ nguyên SHA-256 trước/sau. Không nâng cấp pins.
+
+Artifact: `dist/local/LessMeet.app`.
+Executable SHA-256:
+`60351a3d61c4019a031704024b04fedf049aa7469ea55356482cc1e37341f4fd`.
+Bundle là Mach-O arm64, `com.lessmeet.app.local`, `Signature=adhoc`, có runtime
+flag, không có team/profile. Năm resource bundle có mặt. 33 nguồn Metal đã
+biên dịch; `mlx.metallib` có dữ liệu và symlink trỏ đúng `Contents/Resources`.
+Bảy file giấy phép/thông báo model khớp source. Info.plist không có cấu hình
+cloud hay OAuth callback cũ. Manifest evidence ghi hash 39 file trong bundle.
+
+Vấn đề cụ thể: năm warning, không có compiler error. Một warning tại
+`Sources/LessMeet/ChatGPTAuth/ChatGPTSecureStorage.swift:13`:
+`kSecUseAuthenticationUIFail` đã deprecated trên macOS 11.0. Compiler đề xuất
+`kSecUseAuthenticationContext` với `LAContext.interactionNotAllowed`.
+Warning không chặn compile, link hay ký. Không sửa trong phạm vi này.
+Bốn warning còn lại nằm trong dependency `mlx-swift`, tại
+`steel/utils/integral_constant.h:108` và `steel/attn/kernels/steel_attention.h`
+dòng 356, 426, 436: `constexpr if is a C++17 extension [-Wc++17-extensions]`.
+Không sửa vendor hay thay flags; build vẫn hoàn thành.
+
+Stall compiler discovery/clang pipe cũ KHÔNG tái hiện. Build vượt discovery,
+hoàn thành compile Swift/C++, Metal và packaging. Chưa xác minh được nguyên nhân
+của stall cũ. Khác biệt về process/cache/trạng thái máy chỉ là giả thuyết; thành
+công lần này không chứng minh cleanup hay thay đổi nào đã sửa nguyên nhân.
+
+Evidence giữ tại `.artifacts/main-build-20261012/`:
+
+- `runner.log`, `results.json`: lệnh, PID, thời gian, exit code và giới hạn.
+- `initial-processes.txt`, `initial-status.log`: trạng thái trước build.
+- `os.log`, `arch.log`, `xcode-select.log`, `xcode.log`, `swift.log`, `clang.log`,
+  `sdk.log`, `metal.log`, `node.log`, `python.log`, `disk.log`: toolchain.
+- `preflight.log`, `build.log`: output gốc; preflight thành công không in output.
+- `signature-verify.log`, `signature-details.log`, `artifact-file.log`,
+  `artifact-plist.log`, `artifact-hashes.log`: bundle và signature.
+- `pins.json`, `artifact-verification.json`, `artifact-verification.log`:
+  pins, tài nguyên, hash và kiểm tra source không đổi.
+- `final-processes.log`, `final-worktree.log`: trạng thái sau handoff.
+
+Handoff: build/chẩn đoán đã hoàn tất. Chỉ STATUS là tracked file thay đổi;
+source/script/pins giữ nguyên. Giữ lại artifact và log, không cleanup cache.
+Không ghi vào checkout gốc/worktree khác, không chạm `.codex` hoặc dự án khác.
+Không commit/push/deploy, không dùng signing profile, không tải model, không gọi
+API trả phí, không mở app và không truy cập dữ liệu ghi âm.
+Unit tests và UI/runtime đều CHƯA KIỂM THỬ trong lượt này. Build PASS không chứng
+minh UI, inference, auth, recording hay save/reopen.
+Đề xuất: giữ artifact làm đầu vào cho một yêu cầu runtime riêng nếu Human muốn.
+Việc đó cần quyết định riêng vì app có thể tải model khi mở. Chỉ xử lý warning
+Keychain trong một yêu cầu sửa source riêng. Không cần sửa để hoàn tất build này.
+
+## Integration merged after hosted build — current handoff (2026-10-12)
+
+Human approved a GitHub build of the resolved integration and merge if it passed.
+This decision supersedes earlier review-only/no-main-merge instructions below.
+Those entries retain historical evidence; they are not the current merge gate.
+Lead accepted product `2e61bed708886a48c35d6ac10ed1147a26fd8ef6` after the hosted
+local package build passed. PR12 merged as `864cec81267eaf1daac129e117b56902f3ca5022`.
+GitHub also marks included PR10 and PR11 MERGED. No branch was deleted or force-pushed.
+The merge tree is `6cfc85d8fe0a106b4db345a8860c0fef6c195c66`, exactly the inspected
+candidate plus the diagnostic workflow. No feature source changed during CI.
+
+Evidence: https://github.com/hoangnb24/lessmeet/actions/runs/38204286474 (SUCCESS, 7m11s).
+Workflow commit `cf1ddce4b423f3d1090c8362139e1f7d71d57bbe` dispatched exact source
+`2e61bed708886a48c35d6ac10ed1147a26fd8ef6` with `package_mode=local`.
+The recorded checkout, dependency lockfile and packaging script hashes match.
+Release arm64 SwiftBuild, 33 Metal sources, resource/license packaging, strict
+ad-hoc signature, unchanged pins and artifact upload all passed on Xcode 26.6,
+Swift 6.3.3, SDK 26.5 and macOS 26.6.2 arm64. The existing 407-pass/4-skip native
+suite and 69-pass packaging fixtures remain prior evidence, not rerun CI tests.
+Read-only Peer `5811adbc` inspected the exact workflow and source route; findings
+were ACCEPTED and the scope closed before dispatch. No Peer or UI owner is active.
+
+Artifact: `main-build-diagnostic-38204286474-1` contains logs and `LessMeet.zip`.
+ZIP SHA-256: `258d0b8951f3286751e13fa3821bd6fb78d3936fe0cf1c5586a4adf79dc3dd44`.
+Local evidence is retained in the integration worktree under
+`.artifacts/integration-e2e/github-integration-38204286474/`.
+ZIP integrity, extracted strict signature, arm64 executable, local packaging mode,
+unchanged model licenses and MLX library symlink/bytes passed local inspection.
+No app was launched. GitHub artifact retention is seven days; local evidence remains.
+
+The build-gated merge task is COMPLETE. Main now contains both pivot branches.
+The ad-hoc diagnostic app is available for a separately authorized runtime check.
+Integrated UI, profile-signed launch, real model inference, chat and save/reopen
+remain UNVERIFIED. No model download, live service call, deployment or distribution
+was performed. Runtime/release work remains separate; build success is not its proof.
+The local SwiftBuild stall remains unexplained. A main baseline also passed on
+GitHub in run 38203649241; neither hosted success repairs the local environment.
+Nonblocking warnings: legacy action Node 20 targets ran under Node 24, and
+`kSecUseAuthenticationUIFail` is deprecated. Revisit in scoped maintenance, not as
+a reason to rerun this accepted build. Other local worktree changes remain preserved.
+
+## Pivot integration — historical frontier (2026-10-11)
+
+PR delivery is COMPLETE; integrated normal-app e2e is BLOCKED before packaging.
+PRs [#10](https://github.com/hoangnb24/lessmeet/pull/10),
+[#11](https://github.com/hoangnb24/lessmeet/pull/11), and
+[#12](https://github.com/hoangnb24/lessmeet/pull/12) are open against main.
+No PR was merged. Main remains `b08b3cdae5aeb4cbbd5c771a5f887584afaa518c`.
+All Peer scopes are CLOSED. Lead owns the remaining build/runtime frontier.
+No UI scope is active. No integrated app was launched, signed or accepted.
+This session used zero ChatGPT model-list loads and zero sends. No login, raw
+traffic capture, microphone/system-audio prompt or signing inventory scan occurred.
+
+The normal build, its unchanged retry, and a bounded terminal-attached experiment
+all stalled at SwiftBuild compiler discovery before app compilation. The third
+attempt reached the same blocked clang write stack; terminal attachment did not
+resolve it. Lead stopped only verified owned processes, including the stalled
+diagnostic helper, and confirmed their exit. Logs and samples are retained.
+The precise SwiftBuild trigger remains UNKNOWN. The native test build passed.
+No normal integrated app artifact exists, so signing/resource runtime checks,
+in-app readiness, transcription, diarization, chat and save/reopen are UNVERIFIED.
+
+Do not execute a copy of the old full build scratch: its serialized commands
+contain absolute paths into the protected worktree. No portable discovery cache
+was established. No cache copy, cleanup, build-engine substitution, permission
+change, toolchain installation or machine-setting change occurred.
+Return checkpoint: a working normal SwiftBuild path, or Human approval for
+environment repair outside the project-only scope. Lead owns the technical route.
+Any restart, toolchain replacement or broader machine change needs Human direction.
+The existing bounded ChatGPT approval remains unused; do not ask for it again.
+Detailed local handoff: `.artifacts/integration-e2e/RESULT.md`.
+
+Lead ACCEPTS resolved source snapshot
+`80f5d231ad2fc2e95e8ceb3cdf9559d0b8ed9ab8d982f8d2b37f736f1caf1400`.
+All 318 tracked hashes matched. Fresh read-only review found no blocker across
+the 33 interbranch paths. Both branch behaviors and the transcript contract are
+preserved. Writer `7af3c244` and review `70303505` scopes are CLOSED.
+Acceptance permits the integration commit, push and PR; it is not runtime proof.
+Human authorizes the two source PRs and a resolved integration PR against main.
+No PR may merge into main. Source PRs #10 and #11 are open at the supplied heads.
+
+The cache/space dependency is RESOLVED. Lead approved a new isolated build tree
+and attempted the normal arm64 release build in this worktree. Existing caches and
+protected source-worktree edits stay untouched. Native SwiftPM tests passed below.
+No new production packaging code is needed; the exact-profile final signing route
+below applies. Lead owns build, signing, status, publication and runtime acceptance.
+No live UI is reserved yet; no ChatGPT request has occurred in this integration.
+
+Lead ACCEPTS the new synthetic runtime inputs. Peer `74999fe6` scope is CLOSED.
+Independent destination hashing passed 36/36 models, 3,200,167,866 bytes.
+Receipt: `/Users/tubakhuym/projects/lessmeet/.artifacts/integration-e2e-preflight/VERIFIED.json`,
+SHA256 `2a3ffce14803ac842b12a7019d61fc67db8472934fde5ed355fc839aaa851681`.
+The new recording ID is `898065F3-66A5-4597-861C-A101B667B684`, titled
+`LessMeet integration synthetic dialogue`. Its 31.175-second audio SHA256 is
+`37923997ef875247da340654d02fc73f64e092e0254c93bdfc713b0cb87f5d6c`.
+No transcript or chat was provisioned. Existing library entries were preserved.
+After the build dependency is resolved: verify the normal release bundle, apply approved signing, reserve UI,
+transcribe/diarize the synthetic recording, verify reopen, then one model-list
+load and ONE send to GPT-6.1-Sol using the stored session. Stop on failure.
+No login, raw traffic capture, other model, permission prompt, force push or main
+merge is authorized. Runtime stages remain UNVERIFIED until observed.
+
+Integration merge commit: `ab55a3fcbd3741a23fbe4c23f79d5a9653a32705`, with both
+supplied branch heads as parents. PR #12 is OPEN against main at that commit.
+All three branch pushes and PRs are verified; main remains `b08b3cd`.
+The first normal release build stalled in SwiftBuild compiler discovery. Peer
+diagnosis `7af3c244` is ACCEPTED and CLOSED: three clang probes blocked while
+writing output; the parent showed no output-draining progress. A standalone
+probe passed. The internal trigger remains unknown; this is not a source failure.
+Lead stopped only the verified owned processes and confirmed all five exited.
+One unchanged normal-build retry reproduced the same blocked clang-output stack.
+Lead stopped its five verified owned processes and confirmed exit. No normal
+release build is running. Both logs and samples remain in `.artifacts/integration-e2e/`.
+No cache was deleted. Peer `7af3c244` completed the reopened route diagnosis.
+Findings are ACCEPTED and scope CLOSED: copied-cache isolation is not established;
+the accepted terminal-topology experiment then failed as recorded above.
+Lead ACCEPTS native suite evidence for `ab55a3f`: 407 passed, 4 skipped, 0 failed.
+Peer `70303505` verification scope is CLOSED. The native build passed; all 44
+dependency revisions match pins and all 317 non-status tracked hashes stayed
+unchanged. Synthetic loopback tests used IPv4 localhost; external networking was
+denied. The earlier all-network-denied run had 404 passes, 4 skips and 3 listener
+failures. Both results remain distinct in `.artifacts/integration-swift-tests/`.
+The four skips are opt-in fixture generation, real inference, long capture and
+120-minute chunk coverage. These tests do not establish signed runtime success.
+
+## Integration resolution — completed assignment (2026-10-11)
+
+This assignment owns merge resolution and minimal integration repairs in
+`/Users/tubakhuym/.paseo/worktrees/0v2r0tqq/integration-local-first-pivot` only.
+No other writer is active. UI ownership remains released.
+Base: `b08b3cdae5aeb4cbbd5c771a5f887584afaa518c`.
+Inputs: chat `b8ec7f448e2e1ba002272d45a09f98c2c88d67de` and local models
+`03e0e4730b615e261a42ef686231fa0ce66c3acc`, pending no-commit merge.
+Preserve local-model writer/store, chat shell, segment fields and arm64 support.
+
+1. Inspect interbranch differences and resolve the three conflicts.
+2. Run offline tests and packaging checks. Retain commands and receipts.
+3. Freeze a deterministic snapshot for independent review before runtime proof.
+
+No commit, push, PR, main merge, credential access, signing scan, live app,
+login, ChatGPT call, capture or permission prompt is permitted in this assignment.
+Offline checks do not establish end-to-end acceptance. Checkpoint at 25 minutes.
+The branch histories below preserve earlier evidence and authority in context;
+they do not grant actions beyond this assignment. No protected uncommitted
+README/STATUS edits from another worktree are inputs.
+
+### Accepted packaging and end-to-end route
+
+Read-only route findings for `b8ec7f4` / `03e0e47` are ACCEPTED.
+Read-only e2e route peer `74999fe6` is CLOSED.
+The supplied source PR status is OPEN against main, not merged:
+https://github.com/hoangnb24/lessmeet/pull/10 at
+`b8ec7f448e2e1ba002272d45a09f98c2c88d67de`, and
+https://github.com/hoangnb24/lessmeet/pull/11 at
+`03e0e4730b615e261a42ef686231fa0ce66c3acc`.
+This status was supplied with the accepted route; this writer did not query GitHub.
+
+After candidate acceptance, the packaging execution owner will use the existing
+full-app local build route and resources unchanged. No production packaging
+change is needed for this test. A narrow final signing stage must restore
+`com.lessmeet.app`, embed only
+`/Users/tubakhuym/projects/lessmeet/keys/Lessmeet_Sandbox_Dev_20260923 (1).provisionprofile`,
+and sign directly with approved fingerprint
+`24E5A98A599DCBBA0FF05C1B9B1554A2DB101C3C`
+(`Apple Development: Long Le (335C7MY4H4)`). Preserve the normal audio-input
+entitlement plus app/team identifier only during final signing.
+Do not run `scripts/packaging-signing.py` unchanged: line 135 enumerates
+identities, which is forbidden for this route. This writer does not read the
+profile, scan signing identities, sign an app or execute this route.
+
+Human authorization for the later runtime owner covers non-overwriting synthetic
+fixture/cache setup and stored-session e2e with one model list and ONE
+`GPT-6.1-Sol` send. Stop on failure. No live UI owner is reserved yet.
+Independent candidate review precedes runtime proof. The original writer brief
+and its no-live-actions limits remain in force. Offline tests are not e2e acceptance.
+
+The read-only route scope is closed. Peer `74999fe6` now owns separate runtime
+fixture/cache preparation and
+`/Users/tubakhuym/projects/lessmeet/.artifacts/integration-e2e-preflight` only.
+It has no integration-worktree write scope. Supplied normal-library preflight:
+three ready recordings, one interrupted, zero recording, and no Models root.
+Its new scope prepares a new UUID synthetic dialogue and copies verified model
+files without overwrites. No UI owner or live call is authorized by this entry.
+These are supplied observations, not checks performed by this writer.
+
+### Integration checkpoint and offline evidence
+
+All three conflicts are resolved. `Package.swift` retains the chat logo resource
+and both model dependencies. `docs/LOCAL_MODELS.md` takes the newer local-model
+evidence history. STATUS retains both histories beneath the current assignment.
+No production repair was needed. All tracked bytes match chat `b8ec7f4` except
+`docs/LOCAL_MODELS.md` and `docs/STATUS.md`. Every local-model branch change matches
+its accepted head except the combined STATUS and the logo resource in the manifest.
+The merger correction `ec5cd67` is already present via `8e8e135`; no duplicate import.
+
+Offline environment: macOS 26.4 (25E246), arm64, Apple Swift 6.3.3.
+Packaging tests PASS: 69 tests, zero failures, 38.910 seconds. These use inert
+build/signing tools, not actual packaging. Standalone overlap/attribution tests
+PASS under OS network denial: 28 tests, zero failures, no skips, 0.087 seconds.
+The initial standalone launch failed because its XCTest runtime search path was
+incomplete. The corrected harness passed; both receipts are retained.
+Shell/config syntax checks PASS. The initial diff check found a remaining base
+conflict marker; it was removed and subsequent working/index checks PASS.
+
+Exact commands, environments, logs, comparison of all 33 interbranch paths,
+all changed paths from the original base, and deterministic per-file hashes are
+under `.artifacts/integration/`. Reproduce the checks with `verify.py` and
+`standalone.py`; regenerate the tracked-file snapshot with `snapshot.py` there.
+The snapshot excludes ignored test artifacts; no commit or push was made.
+
+Full SwiftPM tests and a real arm64 release build are UNVERIFIED in this new
+worktree. It has no dependency checkout/build cache. With approximately 14 GiB
+reported free and a separate 3.2 GB runtime model copy pending, this writer did
+not materialize a second dependency tree. No existing cache or scratch was removed.
+Measured new scratch: `.artifacts/integration` 133 MB, including `module-cache`
+132 MB; its `tmp` directory is empty. `df -h` reports 14 GiB available (97% used).
+The original dependency request asked for an accepted cache/reuse plan or space
+for a new isolated build tree. It is resolved by the current-frontier decision.
+The missing full build is not a compiler failure and not e2e acceptance.
+The packaging execution owner retains the accepted signing route after review.
+
+Code-based runtime route: the normal app creates the default `RecordingStore`
+and `LocalModelManager`; it exposes no fixture-root launch option. Use only the
+separately authorized non-overwriting synthetic recording/model placement.
+After independent candidate acceptance and final signing, the runtime owner can
+select that synthetic ready recording and choose **Transcribe on this Mac**.
+Check saved `transcript.json`, visible timestamps/speakers, and reopen persistence
+before the authorized single model list and single send. Preserve failed evidence
+and stop on failure. Capture, UI, actual model inference and stored-session chat
+remain UNVERIFIED for this integration snapshot.
+
+The writer releases integration write ownership with the deterministic handoff.
+Independent review and technical acceptance remain pending.
+
+### Retained chat branch history
+
+## Local pivot — WS1/WS2 contract (2026-10-11)
+
+### Current frontier
+
+Local shell/bridge checkpoint: `f7bff13` on `pivot/chatgpt-signin`, parent `1a9e7f0`.
+The packaged artifact below contains the same production source bytes. No push.
+
+2026-10-11 integration update: imported the six WS2 implementation commits plus
+zero-duration-word correction `bbcc8a8`, without the WS2 status-only commit.
+Local chain is `03d007d`, `83e8941`, `bf98b71`, `b5e7f77`, `a54f03b`, `718e625`,
+`1a9e7f0`. All 26 source/test/helper paths match the supplied candidate; controller
+and transcript-view hashes match the handoff. No import conflict occurred.
+Imported code inputs through `bbcc8a8` ACCEPTED after inspection and independent
+full Swift suite PASS: 345 tests, 5 skipped, zero failures (46.925 seconds).
+Log: `full-package-metal/integrated-tests.log`. This includes the adapter correction;
+it is not a local real-inference rerun. Lead owns shell wiring. The shell now shares
+one manager/controller, binds finalization before capture, starts setup once,
+shows setup progress/cancel, and renders LocalTranscriptView instead of the
+temporary sidecar display. Fresh read-only inspection and full Swift tests passed
+against the frozen shell candidate. No full-shell runtime acceptance yet.
+
+Packaging now targets arm64. Real signing-copy evidence established that shader
+bytes in Resources with a relative MacOS symlink pass strict signing. The actual
+script uses that layout; full integrated package build passed. First updated
+regression run: 68 passed, one stale test expected no Resources metallib. That
+assertion now checks the new byte-identical resource and symlink. The new 69-test
+run PASSED (47.270 seconds), `packaging-symlink-tests-2.log`. Keep failed evidence.
+
+WS2 reports 31.174-second generated dialogue passes real Whisper/Nemotron and
+JSON roundtrip after `bbcc8a8`. The subsequent controller/save/reopen receipt is
+recorded below. Long-audio and transcript-UI acceptance remain pending.
+Shared UI remains RELEASED.
+
+Integrated packaging PASS: `scripts/build-app.sh local` completed with explicit
+ad-hoc signing. Final path `dist/local/LessMeet.app`; executable SHA256
+`9f920690a58a2f5160fe01d6b59cdd82a77df4da3a8c5d409960aeb4f95924f5`,
+Info.plist `66933d4d39449faec0783fa42876027d7e9e102efef63a38aab8f99901e69182`,
+shader `85ef32aaf5ca52f7b670168087f6b204213570e2a8342c8d0f091c5f39c52718`.
+Both script strict verification and separate `--strict=symlinks` PASS. This
+artifact has not been launched. Log `package-integrated-symlink.log`.
+Independent Metal check loaded the exact packaged MacOS symlink and found 15,005
+functions (`shader-load.log`). This proves Metal can read the library. It does
+not prove MLX execution from the app or transcription quality.
+Fresh read-only assessment `1a6a4f02` ACCEPTED and scope CLOSED: frozen shell
+App `8cefc7e1…`, Library `1075df18…` has no concrete source integration blocker.
+Lead accepts code candidate; runtime is still separate.
+
+Peer `24b4d07e` candidate `LocalPivotIntegrationTests.swift` SHA256
+`edbb5dd4e95561cc6c755067525ae0b874e72052a887f37d8ff20335bd987b89`
+ACCEPTED after complete inspection and independent 3-test PASS (0.139s), log
+`full-package-metal/pivot-bridge-tests.log`. Scope CLOSED. It verifies the injected
+capture-to-transcript-to-chat bridge using actual sidecars, full speaker/timing
+JSON, explicit send, history reopen and stale-selection isolation. No real capture,
+auth, inference or UI is established by these tests.
+Peer `e97c583d` owns only `.artifacts/verify-lessmeet/full-shell-ui/` to build
+a synthetic full-shell fixture without launch. Lead owns all production writes
+and will reserve UI only after inspecting the artifact. No driver is active.
+
+WS2 real finalization receipt inspected: one offline synthetic-capture callback
+through controller/real models/atomic save/new-store reopen passed (51.585s,
+10 segments, maxRSS1,971,585,024 bytes). Long650s FAILED invalidTiming in window2;
+mixed sentence/word overlap duplication is another confirmed WS2-owned issue.
+Both remain failed/pending; neither is relabelled by short-run acceptance.
+
+WS1 owns auth/chat, shell/package/scripts and integration. Active Peer scopes are
+listed above; earlier auth/chat and packaging implementation scopes are closed.
+WS2 owns the remaining timing/overlap corrections and real-inference evidence.
+Metal Toolchain prerequisite is resolved: Human installed 17F109 and WS1 verified
+`Apple metal version 32023.883`, target `air64-apple-darwin25.4.0`. Computer Use
+instructions and runtime are available and worked for the bounded component UI.
+No release, installation, system-setting change or full-app launch follows from
+building the bundle.
+
+### Earlier packaging and capability evidence
+
+Full local retry FAILED (exit 1). Metal now runs; the concrete Swift errors are
+SpeechVAD Float16 references for x86_64 in the default universal Swift Build.
+Pinned speech-swift README requires Apple Silicon. Secondary CompileSwift arm64
+and CompileC arm64 summary failures had no diagnostic cause. A read-only
+release-build experiment used `--arch arm64` in the same scratch directory;
+log `full-package-metal/arm64-build.log` records that path independently.
+Package pins and dependency sources are unchanged. Do not infer Intel support.
+The arm64-only release experiment PASSED in 56.46 seconds. Secondary arm64
+summary errors did not recur; their cause in the universal attempt is still not
+proven. Script now fixes `--arch arm64` for the pinned Apple-Silicon dependency;
+69 packaging regressions PASS (36.032s), including the architecture assertion.
+Full corrected package retry compiled app and 33 Metal sources, then FAILED at
+outer signing: Contents/MacOS/mlx.metallib is treated as unsigned nested code.
+Read-only Peer `0314c9ac` diagnosed that exact staged artifact; scope is closed.
+The corrected integrated package result above supersedes this failure, which
+remains retained. No app launch occurred during these builds.
+
+Computer Use capability correction (2026-10-11): the earlier missing-skill claim
+was a discovery gap. The installed marketplace at
+`~/.codex/.tmp/bundled-marketplaces/openai-bundled/.agents/plugins/marketplace.json`
+points to `plugins/computer-use`; its complete `skills/computer-use/SKILL.md`
+was read independently. Direct `await import('@oai/sky')` in WS1 Node REPL passed;
+`get_app_state` and `click` are functions. No UI API was called during discovery. Working-directory
+`createRequire().resolve()` returned MODULE_NOT_FOUND but does not test the
+bundled import route. This corrects historical capability claims below, not UI
+acceptance. Subsequent released UI reservations and observed component results
+are recorded below. Human performs real browser sign-in.
+
+Local source checkpoint: `8b3281b` on `pivot/chatgpt-signin`, parent `b2df5d4`.
+This commit contains accepted auth/chat, the native shell, official logo resource
+and coupled offline tests. Packaging followed as `be48843`, then the imported
+WS2 chain listed above. No push or merge is authorized. Scratch `.build-*` directories remain
+untracked and are not delivery inputs. Preserve them for local test evidence.
+
+**Shared UI reservation (current): RELEASED.** No driver remains. WS1 completed
+the bounded ChatGPT component subset below; exact fixture quit and PID/path checks
+were clean. Any later full-shell check needs a new single-owner reservation.
+
+**Previous WS1 reservation:** agent `7030593f-4910-4e8c-9cf2-235c38d8d9f0`
+owned the bounded ChatGPT component check, under the original WS1 UI scope.
+WS2 explicitly released its reservation after cleanup at 06:57:35 UTC. Its
+RESULT.md was inspected; the accepted model-setup result does not accept ChatGPT
+or full-shell behavior. WS1 exact app-path process inspection found no fixture
+or LessMeet instance before that check.
+Target: a private synthetic ChatGPTScreenCheck.app under
+`.artifacts/verify-lessmeet/chatgpt-ui/`, built from accepted production views and
+controllers with injected memory credentials, fake browser/listener/network, and
+an isolated disk library. OS network denial and isolated defaults are required.
+No real sign-in, account, credentials, user recordings or usage links may be used.
+Peer `7cf68b96` owned only fixture preparation until its artifact handoff;
+it did not launch or drive UI. Lead performed inspection, launch, UI and acceptance.
+Fixture handoff ACCEPTED as runtime input; Peer scope CLOSED. Exact app:
+`chatgpt-ui/build.zSOvdr/ChatGPTScreenCheck.app`, executable
+`1e495cb9e63742c07d6194fab0bc7001efb33470bd782e5134ef660e9a2d7d29`.
+Complete fixture/support/build/sandbox source inspected, all input/artifact hashes
+matched, strict signature PASS. Lead proceeds only with sandboxed synthetic UI.
+First launch FAILED before UI: the fixture suite equaled its bundle identifier,
+so UserDefaults returned nil. PID33971 exited1 and is absent. Lead changed only
+the fixture suite suffix to `.preferences`; retained failed artifact/evidence.
+Fresh build.RgZOQW was signed and launched as PID36434 under offline.sb. Executable
+`a480293c7a85d6d8cbed807f8dcefafdd1eefc11a6bf2028ee7150280a3b426f`.
+Observed: signed-out logo/button, no-consent account, disabled chat/model
+controls and plan welcome. Cleanup and release are recorded below.
+Final subset ACCEPTED: explicit model load/select, completed synthetic Send,
+composer clearing, actual local chat.json and visible history after process
+reopen while signed out. PID36434 and reopened PID39043 quit via Sky, each exited0;
+exact PID/path searches found no process. UI RELEASED. Evidence and limits:
+`.artifacts/verify-lessmeet/chatgpt-ui/RESULT.md`, captures01–17 and actions.jsonl.
+Cancel/quota/keyboard UI were not exercised; real auth/chat/fullshell remain unverified.
+
+Packaging diagnosis `0314c9ac` ACCEPTED, scope CLOSED. Lead inspected pinned loader
+and installed codesign manual, then tested a copy at
+`dist/local/signature-probe.YvCxys/LessMeet.app`. Shader bytes in Resources plus
+relative MacOS/mlx.metallib symlink preserve lookup and pass strict signing and
+strict=symlinks verification. Original failed stage is retained. Script updated
+to this layout; corrected full package passed. Actual packaged MLX load is unverified.
+
+Original component acceptance scenarios: signed-out rendering and disabled chat; restored synthetic
+plan welcome and acknowledgement; explicit model load/select; completed synthetic
+reply saved to chat.json and visible after reopen; provisional answer and Cancel
+without persistence; quota error with retained draft; no-consent state. Use only
+production controls for each behavior assertion. Fixture scenario controls supply
+inputs, not pass results. Usage links and real authorization stay untouched.
+Fixture compile dependency resolved: `RecordingStore` requires `AccountError`,
+which shares a file with Clerk-dependent legacy code. Lead inspected the five-line
+LocalizedError wrapper and permits exact declaration extraction into fixture-only
+compile support, with source/hash attribution. No substituted behavior, production
+edit or Clerk initialization is permitted. All tested production files stay intact.
+The same narrow extraction is approved for `CloudClientError` at CloudClient.swift
+269–273 after inspection. This avoids compiling unrelated cloud-account code;
+it does not substitute transport or grant cloud access.
+
+**Previous shared UI reservation (RELEASED):** agent
+`45d6fb78-db0a-4baf-844c-e8a091178bc9` owned the single live UI scope for the bounded
+WS2 model-setup component check. Before reservation, both workstream status sources
+showed no current owner, WS1 had no UI driver, and process inspection found no
+LessMeet app or local-model-ui fixture. Historical ownership entries below do not
+claim the current desktop.
+Target: an explicit ad-hoc-signed synthetic SwiftUI app under WS2
+`.artifacts/verify-lessmeet/local-model-ui/`, built from its accepted manager
+`9ee218d` and LocalModelSetupView. Allowed: progress, cancel, resume and ready-state
+checks through Node REPL/sky with URLProtocol synthetic transport; optional
+read-only readiness check of the accepted model cache. No auth/account, user
+recordings, cloud, system settings, tool installation or production replacement.
+The driver must record the exact bundle/PID/hash and required skill availability
+before launch. Return event: evidence handoff or blocker, fixture cleanup, and
+explicit UI ownership release, received at 06:57:35 UTC.
+WS1 shell/build work continues independently; this reservation is not UI acceptance.
+
+Human chose an open-source, local macOS app. ChatGPT sign-in and transcript
+chat replace the app's cloud chat path. WS2 owns local WhisperKit large-v3
+transcription and Nemotron-3-Diarization. These decisions supersede conflicting
+historical architecture, release and next-action instructions below.
+No cloud mutation, deployment, account-deletion trial, push, publication or
+release is authorized. Local commits are allowed. One Human-assisted ChatGPT
+sign-in and one real chat turn are allowed after advance notice; other checks
+use offline fixtures. Never log or commit credentials or real email addresses.
+
+Branches start at `b08b3cdae5aeb4cbbd5c771a5f887584afaa518c`:
+WS1 `pivot/chatgpt-signin`; WS2 `pivot/local-models`. Each edits only its own
+worktree. WS1 accepts the following interface and ownership agreement, sent
+directly to WS2. This is not acceptance of an implementation or runtime behavior.
+
+### Transcript read contract
+
+- Keep `Recording.swift` and legacy `Recording.transcript: String?` unchanged.
+  Do not add a competing transcript field.
+- WS2 adds `LocalTranscription/LocalTranscriptStore.swift`, an extension of
+  `RecordingStore`: `loadLocalTranscript(for id: UUID) throws -> LocalTranscript?`
+  and `saveLocalTranscript(_:for:)`. Only WS2 uses the write API.
+- `LocalTranscript: Codable, Equatable` has `version: Int = 1` and
+  `segments: [LocalTranscriptSegment]`. Segment fields stay exactly
+  `startMs: Int64?`, `endMs: Int64?`, `speaker: String?`, `text: String`.
+  Timestamps are absolute milliseconds. Paired null timestamps remain supported;
+  local inference emits timed segments.
+- Sidecar path: `root/<recording UUID>/transcript.json`. A missing file returns
+  nil. Invalid data or an unsupported version throws. No stale cloud fallback.
+- WS1 reads through the existing store and `recording.id`; it never writes
+  transcripts. This avoids competing writes to recording metadata.
+
+### Write ownership and integration order
+
+- WS2 owns new `LocalModels/`, `LocalTranscription/`, `LocalModelSetupView`,
+  `LocalTranscriptView`, and the capture-completion hook in `AppModel.swift`.
+  `RecordingStore.swift` remains unchanged unless both sides agree otherwise.
+- WS1 owns auth/chat and app shell files `LibraryView.swift` and
+  `LessMeetApp.swift`. Three independent new-file scopes are dispatched below.
+- Agreed shell slots: a sidebar **Local models** button opens the setup sheet
+  through `LocalModelSetupView(manager:)`; the selected recording's Transcript
+  tab embeds `LocalTranscriptView(model:, recordingID:)`.
+- Controller/hook input is imported through `1a9e7f0`. The app shell supplies one
+  shared set of instances, also used by the capture hook. The transcript view
+  reloads after completion; chat reads the saved sidecar before submission.
+- WS2's pinned package handoff is accepted and imported as `b2df5d4`. WS1 now
+  owns manifest integration and added the official sign-in logo resource. Keep
+  dependencies while source imports them. No parallel manifest writes.
+
+Read-contract input is accepted as `1125de6`; catalog/notices as `254290e`.
+Next input owner: WS2, for the long-timing and mixed-granularity overlap corrections.
+Shared signatures below are settled; implementation through `bbcc8a8` is accepted.
+The independent ChatGPT shell is implemented and code-accepted. UI and live
+ChatGPT flows remain UNVERIFIED. See the current UI reservation above.
+
+### Controller/shell agreement — accepted, implementation input pending
+
+WS2 confirmed the read contract and recorded it on its branch. Peer `97e9fec9`
+owns only its three new read-contract source/test files. WS2 will inspect, test
+and commit that input before delivery. No package edit has begun.
+
+WS1 accepts this controller shape as an interface, not an implementation:
+
+- `@MainActor LocalModelManager: ObservableObject`, `init(root: URL? = nil)`,
+  async `start()`, `cancel()`, `retry()`.
+- `@MainActor LocalTranscriptionModel: ObservableObject`,
+  `init(app: AppModel, manager: LocalModelManager)`,
+  `transcribe(recordingID: UUID)`, `cancel()`. Published read-only state includes
+  `revision: Int`, `completedRecordingID: UUID?`, activity and error.
+- `LocalModelSetupView(manager: LocalModelManager)` and
+  `LocalTranscriptView(model: LocalTranscriptionModel, recordingID: UUID)`.
+- The shell creates AppModel, then one manager, then one transcription model.
+  Views and the capture hook share those instances. The controller holds a weak
+  AppModel reference and never rewrites Recording metadata.
+
+Both workstreams accept these lifecycle rules before shared writes:
+
+1. Add async `prepare()` for passive local readiness inspection on app appearance.
+   Human already authorized automatic first-launch model downloads in WS2.
+   Shell awaits `prepare()`, then calls `start()` once per app session when
+   required models are missing and state is neither canceled nor failed.
+   Show download size, progress and cancel. Keep the once-per-session guard in
+   shared manager/controller state, not a transient view flag. Repeated appearance
+   or window recreation must not restart downloads. Ready models do not download
+   again. `start()` also serves the setup button; `retry()` is user-triggered.
+   Canceled/error state never auto-retries within that session. This supersedes
+   WS1's earlier explicit-button-only proposal; no new Human approval is needed.
+2. `AppModel.onRecordingFinalized: ((UUID) -> Void)?` fires once after successful
+   audio stop and successful ready-metadata save. It does not fire for interrupted
+   capture or failed saves. Current `persist(_:)` catches save errors; hook work
+   must observe save success. Wire the hook before recording can start.
+3. Deduplicate pending/active recording IDs. Wait for model readiness without
+   changing the target when UI selection changes. Cancellation also clears pending
+   jobs. Preserve a previous sidecar on failure and label it as previous output.
+   Do not add automatic retry loops.
+4. After atomic save, set `completedRecordingID`, then increment `revision`.
+   Neither changes for failed/canceled work. WS1 rereads on appearance, selection,
+   revision and before sending chat; each request freezes its transcript snapshot.
+   Restart reads durable storage; revision is process-local only.
+
+The original review-only checkpoint is complete. WS2 confirmed rules 2–4 and
+the automatic-download rule 1 is accepted. No lifecycle question remains open.
+The read contract is imported. Only WS2 controller/setup/hook injection remains
+pending; independent ChatGPT shell work is complete. Runtime evidence is pending.
+
+### WS1 independent implementation — dispatched (2026-10-11)
+
+Read-contract delivery blocks real-transcript integration only. It does not
+block OAuth, Responses transport or chat persistence. The earlier whole-WS1
+wait was a dependency-framing error. Continue these independent scopes now.
+
+All three Codex Peers use `codex-peer/gpt-6-astra` with explicit `auto` mode,
+base `b08b3cd`, in this worktree. Initial creation without an explicit mode was
+rejected without creating agents; the corrected calls succeeded. No Peer may
+commit, edit manifests/shared files, operate UI or call live authenticated APIs.
+Each returns complete paths, SHA256, offline tests and limits for inspection.
+
+| Owner | Exclusive new-file scope | Ready input |
+| --- | --- | --- |
+| `217bb360-f5bc-4f35-ae81-96e48ae149ec` | `ChatGPTAuth/*.swift`, `ChatGPTAuth*Tests.swift` | Official SIWC OAuth contract and native macOS frameworks |
+| `be35ff77-6ee6-4960-b307-63e8e891bcf5` | `ChatGPTChat/ResponsesClient.swift`, Responses-prefixed helpers, `ResponsesClientTests.swift` | Official Responses contract and existing `ChatMessage` |
+| `220641a5-12a4-48b3-ab61-380a4a14ee5e` | `ChatGPTChat/ConversationStore.swift`, `ConversationStoreTests.swift` | Existing `RecordingStore` and `ChatMessage` |
+
+Source scopes are relative to `Sources/LessMeet/`; test scopes are relative to
+`Tests/LessMeetTests/`. Each uses a separate `.build-<scope>` scratch path.
+Lead retains docs, integration, verification and acceptance. No moving writer
+scope overlaps another. No candidate is accepted yet.
+
+Frozen WS1 boundaries:
+
+- `ChatGPTSession` is a main-actor observable session. It exposes saved profile
+  identities, active ID, busy/error, sessionIdentifier and plan permission.
+  `signIn(profileID:requestPlanConsent:)`, `cancelSignIn()`, `signOut()` and
+  async throwing `accessToken()` own OAuth, Keychain and token lifecycle.
+  Tokens never appear in observable profile state. Storage/network are injected
+  for offline tests; no actual credential access is delegated.
+- `ResponsesClient.models(accessToken:)` returns ordered visible model choices.
+  `reply(accessToken:model:transcript:history:question:onDelta:)` accepts plain
+  transcript text and existing `[ChatMessage]`, awaits incremental text callbacks
+  and returns the full answer only after `response.completed`. It never owns
+  credentials, storage or automatic retries. No sidecar dependency.
+- `ConversationStore(recordingStore:)` loads/saves `LocalConversation`
+  (`version`, `recordingID`, `messages`) at `<recording UUID>/chat.json`.
+  It persists complete user/assistant pairs atomically, preserves corrupt files
+  with a visible error, and never touches recording/transcript metadata.
+
+Next ready integration: inspect each returned candidate independently, then wire
+sign-in, model selection and one synthetic in-memory transcript request with
+local save/reopen. Real WS2 transcript reading follows accepted artifact import.
+Live sign-in/chat remains subject to advance notice and Human browser action.
+UI/live results remain UNVERIFIED. No shared shell/hook/package edits yet.
+
+Auth dependency disposition: ACCEPT `217bb360`'s AppKit request for the
+`NSWorkspace.shared.open` browser adapter only. AppKit is a native framework
+already used in this app; no package change is needed. It avoids authorization
+URL/ID-token hints in subprocess arguments. Offline tests inject a no-op browser.
+The returned no-code handoff establishes the dependency, not a usable candidate.
+The same Peer reclaims its original exclusive auth source/test scope and resumes
+implementation. No real sign-in, UI operation or credential access is delegated.
+
+### Read-contract candidate ACCEPTED and imported (2026-10-11)
+
+ACCEPT WS2 `b67fc0a1ad7ea575157851d4bb88ed86e0c16248`, parent `b08b3cd`.
+All three artifacts were read and supplied SHA256 matched before/after import:
+
+- `LocalTranscript.swift`: `c6cc789172781383e32d90d47cf4ad7f26c15840823deb16dded9674f2d4b7ee`.
+- `LocalTranscriptStore.swift`: `af6ce160c51bf7ad03b9d5cd1f5ddc8dc90a4fd79bae19322f875a6d0066cdc9`.
+- `LocalTranscriptStoreTests.swift`: `5d060400cb4458be0d899282c5825b474bc5059f69078f274e3cd3f8e3b118e4`.
+
+Imported code only as `1125de6f3f28defdc48e9bda97db19b48801761a` on WS1.
+No WS2 status commit or shared-source/package edit was imported. Existing WS1
+writer changes and this status document were preserved.
+WS1 rerun: `swift test --scratch-path .build-ws1-integration --filter
+'LocalTranscriptStoreTests|RecordingStoreTests'` built successfully and passed
+11 tests (8 transcript + 3 recording), zero failures, exit 0. This does not
+accept the concurrently developing ConversationStore candidate.
+
+Reason: exact agreed schema/read API, explicit nulls, duplicate/version rejection,
+missing-vs-invalid distinction, no metadata mutation and no cloud fallback meet
+the bounded contract. The read-contract dependency is resolved. WS1 can now read
+through the existing store and recording ID; WS2 remains the sole transcript writer.
+Acceptance/import disposition sent to WS2. Its already-authorized model/controller
+and owned hook work can continue when their own inputs are ready. WS1 retains
+shell ownership. Package changes remain sequential, WS2 additions first.
+
+Limits retained: filesystem replacement-failure injection, concurrent readers,
+power-loss durability and peak encoding RAM are not verified. UI, model downloads
+and inference remain UNVERIFIED. No live sign-in/chat or cloud action occurred.
+
+### ConversationStore candidate — ACCEPTED
+
+Writer `220641a5` returned its two-file candidate and write ownership. Scope CLOSED.
+Lead read both files and matched source SHA256
+`7d0a47d3a3775ae3bdb5883da5b51f77c0214053657547347c16d4e3fed511d9`
+and test SHA256
+`bcae3f2243cba7fc5579ddb71384a60765252859190b022f9656cb19411285ad`.
+Writer reports 16 tests PASS. Lead rerun also passed 16 tests, zero failures/skips,
+exit 0, using `swift test --scratch-path .build-ws1-integration --filter ConversationStoreTests`.
+Read-only Peer `7f6376ae-95a8-4de8-935b-0714da1f951b` returned no blocking
+filesystem/API findings against those exact hashes. Lead ACCEPTS the candidate:
+complete-pair save/reopen, corrupt-file preservation, unsafe-entry rejection,
+atomic replacement and metadata/transcript isolation meet the assigned scope.
+The exact two hashes define the inspection snapshot; no further writes are active
+in this scope. Disposition sent to writer. Auth/Responses remain independently ready.
+Power-loss, ACL inheritance, hostile concurrent filesystem changes and UI remain
+unverified. Partial-write, fsync and rename failures were not injected; root-path
+ancestors remain trusted. Caller must supply an existing recording ID and save
+only completed responses; role order is not proof of successful inference.
+Concurrent saves are last-writer-wins. Dispositions sent to writer and inspector;
+both scopes CLOSED. Lead can integrate this accepted API without waiting for WS2.
+
+WS2 ownership update: read-contract dependency resolved there too. Separate WS2
+writers own pinned Package.swift/Package.resolved validation (`cd68b7de`), model
+manifest/licenses (`01531be2`) and pure merge/attribution (`32328d4c`). WS2 retains
+AppModel hook/integration. WS1 retains LibraryView/LessMeetApp. No package edit or
+unaccepted controller implementation is consumed by WS1. Exact package and
+controller handoffs remain separate inputs; neither blocks independent auth/chat.
+
+### ResponsesClient candidate — REJECTED, bounded correction active
+
+Writer `be35ff77` returned source
+`9894bcb0892c79d9f5f9d894c1ae6c25c646449ebbf81db202f27fbb00251d27`
+and tests `b3351bb5297f08aef2e6bbb6394f998160691aef5e85dc6d6154a2ec4f5d43f9`.
+Lead matched hashes and read both files. Writer scope CLOSED; disposition sent.
+Lead rerun `swift test --scratch-path .build-ws1-integration --filter ResponsesClientTests`
+PASS: 16 tests, zero failures/skips, exit 0. Read-only inspector
+`1222a138-a7ec-4801-b90d-c7313da37775` returned a completion-contract blocker.
+Lead ACCEPTS the finding and REJECTS the above candidate: final-only output or
+refusal becomes empty success; partial deltas become partial success even when
+the completed output contains more text; a bare completed event also succeeds.
+Passing fixtures currently bless this behavior and do not establish correctness.
+
+Writer `be35ff77` reclaims only its same two source/test files. Correction: validate
+terminal response/status/output, reconcile final text with provisional deltas,
+recover terminal-only text or fail explicitly, reject divergent text, and surface
+refusal as a safe explicit error. No blank/partial successful result. Preserve
+bounds/cancellation and add realistic terminal/refusal regression fixtures.
+Read-only scope CLOSED; dispositions sent to both Peers. Lead owns reinspection
+and acceptance of the corrected hashes. Dependent integration waits for that
+specific correction; auth/store work does not. UI/live OAuth/network/model output
+remain UNVERIFIED. No tools/multimodal scope is added.
+
+### Packaging ownership — model notices
+
+WS1 exclusively owns `scripts/build-app.sh` and `scripts/configure-app.mjs`
+if auth packaging needs changes. WS2 does not edit these scripts. On consuming
+the exact accepted WS2 catalog plus `Resources/ModelLicenses/` candidate, WS1
+copies the notice directory unchanged to `Contents/Resources/ModelLicenses`
+before signing. Verification must compare packaged notice inventory/hashes and
+check the final signature. A model-bearing package must not silently omit notices.
+WS2 supplies exact resource candidate and notice inventory; implementation of
+that copy waits for accepted bytes. This ownership agreement does not accept
+model dependencies or imply package, runtime, UI or release readiness.
+Script ownership/disposition sent directly to WS2. No script edit was made here.
+
+Catalog ACCEPTED/imported: WS2 `c9eec5047d1895481bc99d41501c9cfc993a01b9`
+became WS1 `254290ebecbbb79204c208127dea56113f7a4f16`. Inspected manifest,
+tests, provenance docs and notice inventory; all ten supplied hashes matched.
+`LocalModelManifestTests` rerun in `.build-ws1-integration`: 6/6 PASS.
+Initial shell hash-loop attempt failed from a shell variable naming collision;
+the direct ten-file hash check then succeeded. No data was altered by that failure.
+Lead added the owned build-app.sh notice check/copy/diff before codesign.
+`bash -n`, `git diff --check` and executing the exact copy block into a fresh
+temporary bundle skeleton PASS; all seven copied notice hashes match originals.
+Full signed packaging has not run for this change. No package/controller edits
+were imported. Model payload/runtime, total dependency license coverage and UI
+remain UNVERIFIED. Disposition sent to WS2.
+
+Corrected Responses candidate ACCEPTED: source
+`d717bb623364b5b6cb201e9662abdb03ce05ce1af0245eb3433ebac51d74d990`, tests
+`76107f7e88ef845c2be34ecf82fbdb309ba6077e76756e2193a96fad1a7bf718`.
+Lead inspected terminal validation and all added regression tests, matched hashes,
+and reran 25/25 PASS. Final-only/suffix output is reconciled; divergent, bare,
+empty, malformed and refusal output fails explicitly. The original blocker is
+resolved. Writer scope CLOSED, disposition sent. Deltas remain provisional until
+successful return; tools/multimodal and live/UI remain unverified or unsupported.
+
+Auth candidate: seven-file snapshot recorded by
+`.build-chatgpt-auth/auth-sha256.txt`, digest
+`db24639e99900e6fa75a3a045e8915433d7607ff0550d0248377062dfe4bb93c`.
+Lead matched hashes/read all source and reran 32/32 auth tests PASS.
+Lead ACCEPTS read-only `7db11578`'s three blockers and REJECTS that candidate:
+ordinary sign-in requests identity-only scopes; switching/logout can discard a
+successfully rotated refresh token before save; a failed local logout save loses
+the target, preventing later retry. Existing passing fixtures bless parts of this
+behavior. Writer `217bb360` reclaims only original auth source/tests to correct
+full ordinary scopes vs explicit consent, drain/persist dispatched refresh without
+stale active publication, and retain pending logout target until cleanup succeeds.
+Regression tests are required. Read-only scope CLOSED, dispositions sent. No real
+Keychain/browser/OAuth/refresh was exercised. Auth acceptance waits for new hashes.
+
+Chat lifecycle implementation now has accepted inputs: ResponsesClient,
+ConversationStore and imported sidecar reader. Peer
+`ac488062-71c9-4812-9f53-7e7370644ba5` exclusively owns new
+`ChatGPTChat/LocalChatModel.swift` and `LocalChatModelTests.swift`. It uses injected
+session-ID/token closures rather than unaccepted auth source, and real accepted
+transport/storage with offline fixtures. Required behavior: frozen transcript and
+history per send, provisional deltas, successful complete-pair atomic persistence,
+and cancellation/stale-account/selection protection. No shell/package/WS2 edits.
+
+### Dependency import and current frontier
+
+Imported exact WS2 package candidate `6f14832a6349e597a6f607616e798f1e402c4044`
+as WS1 `b2df5d4`. Both supplied SHA256 values match before and after import:
+Package.swift `6a8024516448500de23f4f3d7e30dcee3f3ac1d56b8022d44431df5f3f92d07c`;
+Package.resolved `33263aff5301de85e6069f002616ae635d1f394a49259081439875952ce26608`.
+Inspected complete two-file diff and dependency handoff. Four old pins remain
+unchanged; 40 were added. WS1 now owns package edits and preserves both inference
+imports/pins. Local integration build with public resolution switches
+`--disable-keychain --disable-netrc` PASS, exit 0 (113.53s). Lead ACCEPTS the exact
+package candidate as build/link input: selected inference products resolve and
+link with WS1 sources. This does not accept moving auth/chat files compiled in
+the same build. Regression rerun PASS: 55 tests across ConversationStore,
+ResponsesClient, LocalTranscriptStore and LocalModelManifest, zero failures.
+Upstream test execution failed for an unknown reason. A 403 blocked public logs.
+That failure is not classified as harmless. No real model or UI is accepted here.
+
+Read-only Peer `3bfd64e2-8361-4a62-9e4c-2ff80404bcbc` inspects pinned resource and
+metallib lookup requirements. It owns no files or live UI. Lead retains package,
+scripts and shell writes. Auth correction and chat lifecycle writers continue in
+their separate scopes above. No controller artifact has been delivered yet.
+The installed skill catalog and local skill search do not expose `computer-use`.
+Its absence blocks required Computer Use verification; UI remains UNVERIFIED.
+Do not substitute another automation stack or change system permissions.
+
+Lead prepared an independent `ChatGPTSignInButton` action-closure component.
+The unchanged original black logo comes from the official OpenAI SIWC asset URL
+`https://developers.openai.com/assets/siwc/sign-in-buttons/chatgpt-logo-black.svg`.
+`NSImage` decoded it as 21x21. Package resources now copy that SVG; the packaging
+script copies `LessMeet_LessMeet.bundle` and disables public resolver credential
+lookups. Inference dependency pins remain unchanged. This is not auth integration
+or visual acceptance. Current post-resource build is pending. Official UI/UX
+instructions require first-use plan confirmation, usage indicator and Manage
+usage link; these remain integration work after auth/chat candidate acceptance.
+
+LocalChatModel candidate ACCEPTED: source
+`0c010e490efbbd04fe88f39c59c0688576489a8eb9cd4064ae377f0fc7012106`, tests
+`c6578baa8045d707822eff7cfcd304d87e1ae1828f94f371b01f4bb1af1c3721`.
+Lead read both complete files, matched hashes and reran 19/19 tests PASS against
+current dependencies. Snapshot isolation, stale-context rejection and successful
+complete-pair persistence meet the bounded controller contract. Writer scope
+CLOSED. Lead can build its view with accepted inputs, independently of auth.
+History belongs to the recording and remains visible across accounts; only explicit
+send transmits it. UI, real network and power-loss behavior remain unverified.
+Post-resource app build also PASS, exit 0 (9.71s).
+
+Packaging findings ACCEPTED from read-only `3bfd64e2`; scope CLOSED. Lead inspected
+pinned resource declarations, Metal loader and complete upstream shader builder.
+Added Hub/Crypto resource copies, explicit build scratch path, clean pinned-checkout
+checks and staged metallib build/copy before signing. `mlx.metallib` goes beside
+the executable, not directly in Contents/Resources. Full release/accessor/runtime
+checks remain pending; this technical correction needs no new Human permission.
+
+Corrected auth candidate ACCEPTED: seven-file manifest
+`.build-chatgpt-auth/auth-correction-sha256.txt`, digest
+`460af8ca534c1394673db77516a44d32da0c23ffebc8166ff412ab312f6f5302`.
+All hashes matched. Lead inspected corrected scope generation, complete session
+implementation and regressions, then reran 37/37 auth tests PASS. The three
+rejected behaviors are corrected: plan scopes on ordinary authorization;
+dispatched refresh maintenance persists before stale callers are rejected;
+failed logout cleanup retains its exact retry target. Writer scope CLOSED.
+Auth and chat can now integrate. No real Keychain/OAuth/JWKS/revocation occurred.
+Residual limit: failed logout cleanup blocks access only in the current process.
+Its visible error warns that credentials may remain after restart. Durable
+restart lockout is not implemented. Do not label a failed cleanup as sign-out
+success. Storage failure after server rotation can require reauthentication.
+
+Peer `5b7d17ee-d4c2-4332-b0a6-7941cb522d60` owns only new
+`ChatGPTChat/ChatGPTAccountView.swift` and `ChatGPTChat/LocalChatView.swift`.
+Inputs are accepted auth/controller, existing editor/Markdown and official
+sign-in button. It owns no UI runtime. Parent shell owns recording/account
+context changes. View actions never auto-submit inference; saved local history
+is visible without sign-in. Lead retains shell/package/scripts and acceptance.
+
+Full offline-check packaging FAILED before bundling/signing. Swift Build reports
+CompileMetalFile failures on generated MLX kernels and CompileSwift failures for
+arm64/x86_64. `xcrun -sdk macosx metal --version` independently fails with
+`cannot execute tool 'metal' due to missing Metal Toolchain`. The Swift compile
+diagnostics are not yet classified; missing Metal is not claimed as their cause.
+No prior bundle was replaced or launched. No offline-check process was present.
+Added a fail-fast compiler check; no toolchain download or installation attempted.
+Owner of environment setup: Human. Return event: Metal Toolchain becomes available.
+Continue independent auth/chat integration and native component tests meanwhile.
+
+Lead added explicit `local` packaging mode. It ignores cloud config sources,
+removes stale service keys/URL callbacks and uses `com.lessmeet.app.local`.
+Legacy build modes remain explicit and unchanged in intent. Syntax/config checks
+PASS; full build remains blocked above. Release-generated Hub and LessMeet
+resource accessors were inspected: both search Bundle.main.resourceURL first,
+which supports Contents/Resources placement. Runtime lookup remains unverified.
+Packaging test Peer owns `Tests/packaging/test_agent_checks.py`, `test_packaging.py`
+and an optional local fixture helper only. Production script hashes frozen during
+that assignment: build `6ce6bcaba5fc37431f23f2fd31c7363496a8252fb0080434300fe61d7b40753d`;
+configure `6f0dba4918f86f84a6b3951accc0c4878c4314a16c3b506d4b4ff2d7294886cc`.
+Tests must use inert tools and cannot establish real signing/Metal/UI success.
+Packaging test scope `f661f081-57b9-4263-8cce-054932507a14` is CLOSED. Its first candidate
+was inspected but REJECTED for a fixture HOME/home override prohibited by execution
+instructions. The corrected candidate is ACCEPTED after source inspection and
+Lead rerun: 69 tests PASS in 35.670s. Exact SHA256 values:
+`local_packaging_fixtures.py` `a0e8ea8a97d694b769426f229673340b7506ecbbddbb8897fe8110b088a2d03d`;
+`test_agent_checks.py` `b6af0c432bdb777ab7393271fa23ce46a475651a28d59fd1fc33d963652eafc9`;
+`test_packaging.py` `f472485e628fd45f7bbf657e430fac930b6822f9aca83b22bde66eaf1a7dd0d1`.
+The prohibited override is removed; Git isolation and assertions remain.
+Production scripts stayed at the hashes above. Acceptance covers only synthetic
+orchestration. Actual Metal output, signing and UI remain UNVERIFIED.
+
+Account/chat view candidate ACCEPTED as code input, not UI outcome:
+ChatGPTAccountView `76c0dcb5e971a03a689c10103dd467998ea8e73d0714196807fdf3c88834625c`;
+LocalChatView `a5af4c81f8ba3c90b5e2c7882bd56f1740465c93932b5425cad1600a0c11a32b`.
+Lead read both files and matched hashes. Current native test build compiled both.
+No appearance-time request, explicit model/send controls, guarded draft clearing,
+safe errors and failed-logout retry meet the assigned code contract. Scope CLOSED.
+Computer Use unavailable; no claim of layout or user-flow success.
+
+Lead added three integration tests using real auth/controller/transport/store APIs
+and injected synthetic credentials/network. All three PASS. First test attempt
+failed because its terminal fixture omitted the required message ID; corrected
+fixture then passed without production relaxation. Real trust/sign-in and UI
+are not tested by restored-session fixtures.
+
+Ready shell increment: replace instantiated legacy cloud/account/billing path with
+accepted ChatGPT session/chat, and read accepted local sidecars in the owned shell.
+This does not require the still-undelivered inference controller. Reopen the
+earlier whole-shell wait: only WS2 controller/setup/hook injection waits for its
+exact candidate. Shared controller signatures/invariants remain unchanged.
+Lead will use a minimal sidecar display in LibraryView until LocalTranscriptView
+is accepted; it writes no transcript and does not implement model operations.
+Automatic local-model setup/hook wiring remains a deferred WS2 delivery dependency.
+
+Shell code increment ACCEPTED: LessMeetApp
+`545a73b6982203eff30b2e78b66a360ad9fed84e9b66922fee61fbb55b7625b4`, LibraryView
+`93284a61495d9286b28c9a6e060ba51c8236dd2b5b5638bd517c161eb08fdd46`.
+Read-only `0d66c211` matched all inputs and found no bounded wiring blocker;
+inspection accepted, scope CLOSED. Native build PASS (11.05s). Full Swift suite
+PASS: 265 tests, 3 skipped, zero failures. The first full compile caught the old
+optional cloud-shell screenshot helper calling the retired initializer; removed
+that unused snapshot branch and AppKit/SwiftUI imports, preserving every cloud
+business assertion. No tests drove live UI. README now describes current local
+build/chat use and clearly separates historical cloud documentation.
+This accepts code integration, not runtime usability, live OAuth or inference.
+
+### Retained local-model branch history
+## Local-first pivot — WS2 active (2026-10-11)
+
+Human selected a native macOS, open-source, local-first app. This entry
+supersedes the historical cloud delivery and push instructions below for this
+workstream. Branch `pivot/local-models` starts at `b08b3cd`. No deploy, cloud
+mutation, account-deletion trial, push, release, repository publication or paid
+API call is authorized. Local model downloads and local commits are allowed.
+Human selected Apple Silicon-only support on 2026-10-11. arm64 is the supported
+architecture; Intel Macs are not supported. Arm64-only packaging is accepted
+product policy, not an unresolved exception. WS1 retains packaging ownership.
+
+Outcome: download pinned WhisperKit large-v3 and Nemotron-3-Diarization models,
+show progress/cancel/resume/retry, verify integrity, then transcribe and diarize
+recordings offline. Use 300-second transcription windows and absolute timestamps.
+Keep diarization state across the full recording, with at most eight speakers.
+Save local segments `{startMs, endMs, speaker, text}`; unknown speaker stays null.
+WS2 alone writes transcripts. WS1 reads them and owns ChatGPT sign-in/chat.
+
+Current frontier: all 36 pinned files are downloaded and independently hashed.
+Offline readiness, short WAV inference, M4A finalization/save/reopen and exact
+digital silence have passing real-model evidence. Current code is `ec5cd67`;
+115 local component tests pass under OS network denial with no skips. Captured
+long-boundary replay passes after the anchored merger correction. The fresh
+650-second run and bounded content audit also PASS: 169.37 seconds inference,
+229 segments, two speaker labels plus null, no adjacent repeated words, and
+all four fixture phrase counts match. Main accepts this exact synthetic fixture
+outcome, not general meeting accuracy. No writable Peer remains active. No new
+Human decision is required for WS2. Live capture, broad speech accuracy and
+current integrated release packaging remain separate limits. WS1 `7030593f`
+has RELEASED the shared UI. No further live calls are authorized. WS1 ACCEPTED
+merger `ec5cd67` as `8e8e135`; the integration input is ready and its dependency
+is CLOSED. No further WS2 work is requested.
+
+Current ownership and plan:
+
+- Integration, acceptance and this status entry: agent `45d6fb78`.
+- Package validation: Peer `cd68b7de`, CLOSED and ACCEPTED as `6f14832`.
+  Package hashes `6a802451` / `33263aff` matched; all four old pins unchanged,
+  44 total. Inspected diff/probe/handoff; reran SpeechVAD build and all six
+  offline tokenizer probe groups with OS network denial, PASS. Production token
+  semantics, real inference, upstream test failure cause and packaging remain
+  unverified. Evidence: `.artifacts/dependency-validation/HANDOFF.txt`.
+  WS1 imported the exact pair as `b2df5d4`, matched both hashes and inspected the
+  complete diff/handoff. WS1 ACCEPTED package build input after independent
+  LessMeet build PASS (exit 0, 113.53 seconds) with its current source. Its moving
+  auth/chat is not accepted by that check; regression tests run separately.
+  WS1 now owns package edits and packaging scripts in its worktree, preserving
+  inference imports/pins. Its resource/metallib inspection is read-only.
+  WS1 found required `swift-transformers_Hub.bundle`, `swift-crypto_Crypto.bundle`
+  and colocated `mlx.metallib`; it owns script corrections. Its full Swift Build
+  release attempt FAILED at MLX CompileMetalFile and arm64/x86_64 CompileSwift.
+  Environment diagnosis remains open there; native debug success is not release
+  acceptance. No dependency version change is requested.
+  The missing Metal Toolchain blocker is RESOLVED on 2026-10-11. Human reports
+  authorized installation of 17F109 (exit 0). Independent WS2 execution of
+  `xcrun -sdk macosx metal --version` now succeeds with Apple metal 32023.883.
+  This proves compiler availability, not a successful release build. WS1 retains
+  ownership of packaging and the release-build rerun. The previous CompileSwift
+  failure cause remains UNKNOWN until rerun evidence resolves it. WS2 native
+  debug/component checks were already usable; its real inference `invalidTiming`
+  failure is separate and is not resolved by installing Metal.
+- Active artifact catalog: Peer `01531be2`, new `LocalModelManifest.swift`, its
+  test, `docs/LOCAL_MODELS.md` and `Resources/ModelLicenses/` only. CLOSED and
+  ACCEPTED as `c9eec5047d1895481bc99d41501c9cfc993a01b9`; all ten hashes matched,
+  source/doc inspection and independent isolated 6/6 tests PASS. Sent to WS1 for
+  exact import and notice packaging. WS1 ACCEPTED/imported as `254290e`, matched
+  ten hashes and passed 6/6 tests. Its owned packaging step passes syntax and
+  staged copy/hash checks; full signed packaging remains UNVERIFIED.
+  36 model files total 3,200,167,866 bytes. The initial catalog acceptance did
+  not verify payloads; later actual download/hash evidence appears below. Manifest:
+  `.artifacts/model-audit/catalog-20261011/SHA256SUMS` (digest `014539ff…b54c`).
+- Local merge/attribution: Peer `32328d4c`, CLOSED and ACCEPTED as internal input.
+  Four-file hashes `c2f045ee`/`3b9b6a1e`/`3a6c4d9b`/`3c521b0c` matched;
+  integration owner read all files and reran standalone 11/11 PASS. Evidence:
+  `.artifacts/verify-lessmeet/local-merge.RdyGB1/results.log`. Package integration
+  and model-quality proof remain pending; 250ms/80% are explicit provisional rules.
+- PCM reader: Peer `2612c301`, CLOSED and ACCEPTED. Exact hashes `8c2db002` /
+  `9fca39e6`; inspected both files and reran isolated 10/10 PASS. The 301-second
+  stereo fixture returns 4,816,002 samples, equal to the one-pass reference.
+  Evidence: `.artifacts/local-pcm-reader/`. Full two-hour decoding, integration
+  and peak memory remain unverified.
+- Offline Whisper adapter: Peer `0a5e14df` owns new `LocalWhisperAdapter.swift`,
+  `LocalWhisperTokenizer.swift` and adapter tests. CLOSED and ACCEPTED as `cb5214d`.
+  Exact hashes `0f340405` / `84412138` / `e6266e3b`; full source/tests inspected,
+  all receipt hashes matched and independent nine tests PASS under OS network
+  denial with the actual pinned tokenizer. Evidence:
+  `.artifacts/verify-lessmeet/local-whisper-adapter/acceptance-tests.log`.
+  Real model loading/inference/timing robustness/cancel-in-flight/memory/UI remain
+  UNVERIFIED. Integration owns real-model findings and any needed corrections.
+- Recording-wide Nemotron adapter: Peer `225a7061` owns new
+  `LocalDiarizationAdapter.swift` and its tests. CLOSED and ACCEPTED as component
+  input: hashes `6a3cefa6` / `89f7a951` matched, full source/tests inspected and
+  independent 12/12 tests PASS under OS network denial. Receipt:
+  `.artifacts/local-diarization-adapter/acceptance-tests.log`. Explicit 340/40
+  session geometry; only final speaker labels consumed. Real Core ML quality,
+  long-file memory/time, max-duration behavior and UI remain UNVERIFIED.
+- Model manager/downloader/setup view: Peer `cc4da88d` owns only `LocalModelManager.swift`,
+  optional `ModelDownloadStore.swift`, `LocalModelSetupView.swift` and manager tests.
+  Accepted catalog `c9eec50` is its input. No real model download or UI ownership
+  delegated; integration owner will test actual payloads after source acceptance.
+  CLOSED and ACCEPTED quartet hashes `52264699` / `c05835dc` / `aaf65679` /
+  `22ded121`: full source/tests inspected, hashes matched, independent SwiftPM
+  13/13 PASS, fresh read-only Peer `b4a7d602` found no concrete blocker (assessment
+  ACCEPTED). Build scratch returned. Receipt:
+  `.artifacts/dependency-validation/manager-diarization-tests.log` (25/25 total).
+  This accepts integration/download trial inputs, not UI/CDN/large-model proof.
+  Integration owns real payload download under `.artifacts/local-inference/models`
+  through `scripts/LocalModelDownloadCheck.swift`, with cancel/resume and offline
+  recheck. Expected catalog bytes: 3,200,167,866; available disk: 53 GiB.
+- Integration owner retains AppModel hook and tests, manager/controller integration,
+  acceptance and docs, `LocalAudioWindows.swift` and tests, plus
+  `scripts/make-local-inference-fixtures.sh`.
+  PCM/merge/windows/capture inputs are committed as `e2f5971`. Manager, adapters
+  and controller are accepted integration inputs. All writer build scopes have
+  returned; `45d6fb78` now owns the local SwiftPM scratch and runtime corrections.
+- Engine assembly is accepted/committed as `410598b`; three pure assembly tests
+  and nine Whisper tests PASS in SwiftPM. Actor work uses two bounded audio passes,
+  300/295-second transcription windows and one full-recording diarization session.
+  Actual-model verification remains separate.
+- Controller/view: Peer `7f832ff3` CLOSED; candidate ACCEPTED as
+  `5b308e6cf2473222546f53a3ebb8d0c61195e84f`, parent
+  `410598b59e900d678f50ef2aecdd7b7a70619c0c`. Exact three-file hashes
+  `c26da6a2` / `ab4a7b70` / `8c78e2da` match. Full source/tests were inspected.
+  Independent combined direct XCTest execution with OS network denial passed
+  92/92, including 13/13 controller tests. Evidence:
+  `.artifacts/dependency-validation/combined-xctest-network-denied.log`.
+  Fresh read-only assessment `58b71849` found no concrete blocker and is ACCEPTED.
+  The prior nested SwiftPM sandbox denial is retained as failed environment
+  evidence, not a product failure. Transcript UI and real inference remain
+  UNVERIFIED. No writer or reviewer retains this scope.
+  Ready import sequence after already imported `6f14832`: `e2f5971`, `f023892`,
+  `9ee218d`, `cb5214d`, `410598b`, `5b308e6`. This supplies the hook, setup,
+  inference dependencies and controller without edits to WS1-owned shell files.
+  WS1 can wire the existing accepted contract now; runtime timing correction is
+  a follow-up and must not block shell integration. No push or merge is authorized.
+- Read-only model provenance/license/API audit: Peer `ab832042`, CLOSED;
+  accepted as research input only, not dependency/runtime acceptance.
+- Read-only capture/overlap diagnosis: Peer `00f27c8c`, CLOSED and ACCEPTED.
+- Read-contract writer: Peer `97e9fec9`, only new `LocalTranscript.swift`,
+  `LocalTranscriptStore.swift` and `LocalTranscriptStoreTests.swift`. Scope CLOSED;
+  original candidate hashes `c6cc7891` / `4ae5b7c9` / `5d060400` inspected and matched.
+  Eight isolated tests and actual SwiftPM integration tests passed.
+- Fresh read-only candidate inspection: Peer `e15d2275`, CLOSED and ACCEPTED.
+  No concrete blocker; limits are recorded below.
+- Real download trial: first cancellation PASS after 13,056,232 reported bytes
+  in 8.51 seconds; partials preserved, process exited 0. Peak process RSS was
+  33,865,728 bytes. Receipt `.artifacts/local-inference/download-cancel.log`.
+  A new manager resumed the same private cache.
+  Resume finished PASS: all 3,200,167,866 catalog bytes verified by manager,
+  elapsed 150.31 seconds, max RSS 61,849,600 bytes. Receipt:
+  `.artifacts/local-inference/download-resume.log`. Independent hashes and
+  OS-network-denied readiness/inference checks are the next frontier.
+- Independent `shasum` checks PASS for all 36 downloaded files. OS-network-denied
+  manager startup reaches ready in 1.12 seconds without download. Evidence:
+  `.artifacts/local-inference/independent-hashes.log` and `offline-ready.log`.
+- First real offline dialogue inference FAIL: Whisper model loads and starts
+  transcription, then adapter throws `invalidTiming`. No output saved.
+  Receipt `.artifacts/local-inference/dialogue-run-1.log` (43.05 seconds,
+  max RSS 1,925,922,816 bytes). Exact diagnosis: raw word ` We` has 0.02..0.02
+  seconds while its parent sentence has valid 0.02..1.72 seconds. `convert`
+  rejects the zero-duration word. Evidence: `raw-timings.log` in the same folder.
+  Owner `45d6fb78` corrected this as `bbcc8a8b56866fcc5cbae8d0c882cb685006e8c4`.
+  Regression reproduced `invalidTiming` before the fix. The fix uses valid
+  parent sentence timing for a finite zero-duration word inside parent/audio,
+  without inventing word duration. Other malformed or reversed times still fail.
+  Independent focused OS-network-denied tests PASS 27/27, including both new
+  regression cases. Evidence: `.artifacts/dependency-validation/zero-duration-red.log`
+  and `zero-duration-offline.log`. Correction ACCEPTED and handed to WS1.
+  Real 31.174-second offline synthetic dialogue now PASS: 10 segments, two
+  speaker labels, one unknown-speaker segment; 47.06 seconds inference and
+  max RSS 1,924,136,960 bytes. Output JSON round-trip passed. Receipts:
+  `.artifacts/local-inference/dialogue-run-2.log` and `dialogue-result-2.json`.
+  Full finalization-hook/controller/real-engine/store save/reopen PASS with
+  generated M4A in a private library under OS network denial: 10 segments,
+  one callback, ready metadata preserved byte-for-byte, sidecar reopened through
+  a new RecordingStore. Receipt `.artifacts/local-inference/finalization-run-1.log`:
+  one actual-model test PASS, 51.59 seconds, max RSS 1,971,585,024 bytes.
+  This injects synthetic capture at the existing boundary; it does not prove
+  microphone/system-audio capture, UI or full shell wiring. The first 650-second
+  real-model check FAILED `invalidTiming` in window 2 after 119.72 seconds;
+  no output was saved. Evidence: `.artifacts/local-inference/long-run-1.log`.
+  Raw long-window diagnosis: the final sentence spans 296.78..308.68 seconds
+  although the input ends at 300 seconds. Its last three words start at or
+  beyond the real audio end. WhisperKit pads its decoder input to 30 seconds.
+  The adapter now excludes only bounded, parent-contained tail predictions from
+  a sentence crossing that real end, reports their count, and retains all
+  in-window words. Malformed or unexplained out-of-window intervals still fail.
+  Red regression reproduced two failures; corrected standalone tests PASS14/14
+  with OS network denial. Replaying the entire captured window passed:
+  20 input sentences, 761 retained word segments, three excluded tail words.
+  Evidence: `raw-long-window-2.log`, `padded-tail-red.log`, `padded-tail-green.log`
+  and `replay-timings.log` under `.artifacts/local-inference/`.
+  Tail correction is committed as `c0f60560f931798474a87b0791cc4988826da3ae`.
+  Fresh read-only Peer `3581ee13` found a concrete mixed-granularity overlap
+  defect on `bbcc8a8`: one fallback sentence versus its two word segments cannot
+  match the one-to-one merger, so both survive. Finding ACCEPTED; review CLOSED.
+  Decision: add the reproducer and match only unambiguous contiguous equal-text
+  sequences with compatible outer timing. Preserve ambiguous/unmatched text.
+  Integration owner `45d6fb78` owns the timing diagnosis and long/silence reruns.
+  Peer `eb431e35` owned only `LocalSegmentMerger.swift` and its tests for the
+  mixed-granularity correction, against accepted `bbcc8a8`. Short-file and
+  controller acceptance stand; long-overlap quality is not accepted.
+  Its first candidate `d8081267` / `aafefaeb` was REOPENED: actual adapter rounding
+  creates 1 ms internal overlaps, which the first sequence matcher rejects.
+  Requested bounded 1 ms rounding tolerance with monotonic endpoints, continued
+  preservation for larger overlaps, and bounded sequence enumeration. Revised
+  hashes `643ef0cc` / `fb36fbf5` ACCEPTED after full inspection, hash match and
+  independent 19/19 standalone tests PASS in `.artifacts/overlap-correction/acceptance.log`.
+  Committed as `9a5eb1035795769b416b33282816393a21ab956f`; writer scope CLOSED.
+  It matches both directions, bounds each overlap side to 64 contained entries,
+  and preserves ambiguous, crossing or crowded boundaries. That preservation
+  can retain duplicates; it is not blanket duplicate-free acceptance.
+  Combined SwiftPM tests PASS105/105 (23.45 seconds). Second real 650-second
+  run completes all three windows and JSON round-trip: 229 segments, two speaker
+  labels, 182.65 seconds inference, max RSS 1,897,381,888 bytes. Receipt:
+  `.artifacts/local-inference/long-run-2.log` and `long-result-2.json`.
+  Runtime/save is PASS, but content inspection REJECTS blanket overlap quality:
+  near 590 seconds output contains `We We`, repeated `are`, and `project project`.
+  Owner `45d6fb78` is comparing raw windows 2/3 before a further correction.
+  Raw comparison identifies >250 ms drift on `We`/`are` and a `project` word
+  ending 60 ms beyond the overlap edge. Peer `eb431e35` again owns only merger
+  and merger tests for an evidence-bounded correction. Keep normal tolerance;
+  proposed higher-drift matching requires a consecutive confirmed text run.
+  It must preserve ambiguous and unmatched text. Main owns the silence adapter
+  correction and private runtime harnesses; no concurrent writes to merger files.
+  Writer returned candidate `a490f988` / `cdc50321` and released both files.
+  Its red exact-boundary regression failed, then 28/28 isolated tests passed.
+  Main matched both hashes and read the full source/test diff. Candidate
+  ACCEPTED as a bounded integration input: independent 28/28 tests PASS and
+  full raw-window 2/3 replay PASS with no repeated `We`, `are` or `project`.
+  Original left words and the unmatched right `decision` remain. Receipts:
+  `.artifacts/overlap-correction/anchored-acceptance.log` and
+  `.artifacts/local-inference/replay-boundary.log`.
+  Fresh read-only Peer `84bb7549` found no concrete ambiguity-contract blocker;
+  assessment ACCEPTED and CLOSED. Same-text distinct speech remains a heuristic
+  risk. Writer scope CLOSED. Main owns integration and the fresh 650-second run;
+  component acceptance does not establish runtime overlap quality or UI.
+  Correction committed as `ec5cd67252790674f5152ac134f7bc1553a83521`.
+  Current combined component check PASS115/115, zero skips, with OS network
+  denial and the pinned tokenizer; 20.94 seconds. Build PASS14.39 seconds.
+  Evidence: `.artifacts/dependency-validation/anchored-build-tests.log` and
+  `anchored-combined-network-denied.log`. Fresh 650-second real inference PASS
+  on these exact source bytes: 169.37 seconds inference, 171.58 seconds wall
+  time, max RSS 1,922,285,568 bytes. Saved 229 segments, two speaker labels plus
+  null; JSON round-trip and absolute times within 0..650000 ms PASS.
+  Bounded content audit PASS: expected phrase counts 21/21/21/20, no adjacent
+  duplicate words, inspected boundaries at 295000 and 590000 ms. Two distinct
+  voice-anchor sentences each retain the same respective speaker label across
+  all 21 repetitions. There are 41 unknown-speaker segments. This is not a
+  general diarization score. Main ACCEPTS this fixture result. Prior runtime
+  failure and failed content audit remain retained, not relabeled as passes.
+  Evidence under `.artifacts/local-inference/`: `long-run-3.log`,
+  `long-result-3.json`, `long-audit-3.log`, `long-speaker-audit-3.log`,
+  `long-run-3-SHA256SUMS`. Harness SHA-256
+  `64ae4b9007afc355782f9a2c8faae397bf3408792e1adb9e692b19a918472023`
+  matched before/after. General speech accuracy, ambient noise, Vietnamese,
+  maximum duration, acoustic identity and production UI are outside this proof.
+  The ten-second digital-silence run FAILED `invalidTiming` before diarization;
+  its raw output is under diagnosis. No silence output was saved. Evidence:
+  `.artifacts/local-inference/silence-run-1.log`.
+  Raw silence output is `you` at 29.52..29.62 seconds for ten seconds of zero
+  PCM. Main added an exact-zero PCM fast path, not a quiet-audio threshold.
+  Correction `384fde3547ae7d59c7036e01060198a6557c3954` ACCEPTED for this case:
+  15/15 focused tests PASS with pinned tokenizer and OS network denial.
+  Full ten-second silence pipeline PASS with real model loading, Whisper
+  decoding skipped, Nemotron execution, and empty JSON save/reopen. Elapsed
+  inference 28.77 seconds; max RSS 1,922,613,248 bytes. Evidence:
+  `.artifacts/local-inference/digital-silence-tests-with-tokenizer.log`,
+  `silence-run-2.log` and `silence-result-2.json`. Harness used the unchanged
+  accepted merger from `9a5eb10`, not concurrently edited merger bytes.
+  Ambient-noise hallucination and quiet-speech accuracy remain unverified.
+  WS1 ACCEPTED/imported exact `384fde3` as
+  `63042543ad2d02f08be1df79816cd776fd019ad1`; both file hashes matched.
+  It independently passed all 15 adapter tests with the pinned tokenizer and
+  OS network denial, and inspected the empty JSON and runtime receipt.
+  Evidence in its worktree:
+  `.artifacts/verify-lessmeet/full-package-metal/digital-silence-pinned-xctest.log`.
+  Its packaged app at import time predates this correction. No further silence work requested;
+  current implementation frontier remains the bounded long-overlap correction.
+  This work keeps the accepted engine/controller API unchanged. The smallest
+  code path now has real-model save/reopen proof. WS1 owns shell hook wiring;
+  live capture/UI verification still needs the exact integrated artifact and
+  an authorized fixture. No new Human decision blocks the code path.
+- Model setup component UI ACCEPTED for `9ee218d` on 2026-10-11.
+  Observed progress/bytes, Cancel, persistent pause after view recreation,
+  Resume, integrity error/Retry, and ready state. Synthetic transport covers
+  transitions; the real 36-file cache reaches ready under OS network denial.
+  Exact fixture executable hash `8f6ed9cb…fd908`; all five manifest hashes and
+  strict code-signature verification passed after the run. Evidence and limits:
+  `.artifacts/verify-lessmeet/local-model-ui/RESULT.md`. Capture 08 is checking
+  despite its filename; capture 10 proves ready. This does not accept full app
+  integration, inference, authentication or packaging.
+  Final fixture exited 0; PID 10870 and exact-path process search were absent
+  at 2026-10-11T06:57:35Z. Earlier fixture sessions exited 0. Private evidence
+  and caches remain; no deletion or account/browser/settings action occurred.
+  UI reservation `45d6fb78` RELEASED. No WS2 UI driver remains active.
+  WS1 `7030593f` subsequently completed its bounded synthetic ChatGPT component
+  subset and explicitly released UI. It reports fixture PIDs 36434/39043 exited
+  0 and absent from exact process searches. Its RESULT.md under its own
+  `.artifacts/verify-lessmeet/chatgpt-ui/` owns that evidence and limits.
+  WS1 `7030593f` completed and RELEASED its bounded full-shell fixture check.
+  Exact target in its worktree: `.artifacts/verify-lessmeet/full-shell-ui/build.thopoyf4/FullShellFixture.app`,
+  executable SHA-256 `c8e94cce6755333e2db984afd354f385568a5fd002e65682b6d60823896a296c`.
+  Only injected synthetic capture/models/auth/Responses/library are in scope;
+  the sandbox denies network, normal recordings and Keychain. WS1 reports
+  observed production transcript progress/save/refresh, sidecar-to-chat request,
+  keyboard Send, stream tab/cancel, quota/draft retention and process reopen.
+  Its `.artifacts/verify-lessmeet/full-shell-ui/RESULT.md` and captures 01–41
+  own the evidence. PIDs 64291/69153 exited 0 and exact process searches were
+  absent. Real models and live auth were not used. No current UI owner here;
+  timing/overlap work continues without UI. No new auth or permission authority.
+  WS1 independently read the installed Computer Use skill and imported bundled
+  `@oai/sky`; its skill/runtime blocker is resolved. Target-app permissions
+  remain UNVERIFIED. Release adds no auth/account or other UI authorization.
+  Subsequent signed auth fixture reservation is RELEASED. WS1 reports original
+  PID 89979 and corrected fixture PID 7708 quit through Sky, both launch sessions
+  exited 0, and exact process checks found neither process. Its reported results:
+  one Human login, model list and stored-session reopen PASS; the single live
+  chat FAILED with a generic malformed-response error. No retry occurred.
+  These are WS1 observations, not independent WS2 UI verification. No more live
+  calls are authorized. UI release grants no new auth, recording or model work.
+  WS1 ACCEPTED exact merger `ec5cd67252790674f5152ac134f7bc1553a83521`, imported
+  as `8e8e135` on `pivot/chatgpt-signin`. Both supplied file hashes matched;
+  it inspected the complete production/test diff and independently passed
+  28/28 standalone tests with OS network denial in 0.089 seconds. Receipt in
+  its worktree: `.artifacts/verify-lessmeet/anchored-merge/tests.log`.
+  It verified harness/adapter/merger hashes, read runtime/audit receipts and
+  independently parsed the saved JSON: 229 segments, 41 unknown speakers,
+  ordered valid times within 0..650000 ms and phrase counts 21/21/21/20.
+  WS1 ACCEPTED the exact 650-second synthetic outcome: 169.374 seconds engine,
+  171.58 seconds wall time, max RSS 1,922,285,568 bytes. General quality,
+  Vietnamese, noise, two-hour input and UI remain outside this acceptance.
+  Prior failures remain retained. Merger integration input is ready; dependency
+  and handoff scope CLOSED. No further WS2 work is requested. No API, schema
+  or package contract changed, and no UI owner remains active.
+- WS1 contact: `7030593f`, separate `pivot/chatgpt-signin` worktree.
+- WS1 accepted the read contract and file ownership on 2026-10-11.
+  Existing `Recording.transcript` is
+  `String?`; the segment schema exists in batch JSON validation, not a local field.
+- Accepted route: `LocalTranscription/LocalTranscriptStore.swift` extends
+  `RecordingStore` with `loadLocalTranscript(for id: UUID) throws -> LocalTranscript?`
+  and `saveLocalTranscript(_:for:)` (WS2 only). Path:
+  `root/<recording UUID>/transcript.json`. Missing means nil; malformed data or
+  unsupported version throws. Never fall back to a cloud transcript.
+- `LocalTranscript: Codable, Equatable` has `version: Int = 1` and
+  `segments: [LocalTranscriptSegment]`. Segment fields are exactly
+  `startMs: Int64?`, `endMs: Int64?`, `speaker: String?`, `text: String`.
+  Timestamps are absolute milliseconds, or a paired null. Local inference emits
+  timed segments. `Recording.swift` and `RecordingStore.swift` stay unchanged.
+- WS2 owns new `LocalModels/`, `LocalTranscription/`, `LocalModelSetupView`,
+  `LocalTranscriptView`, and the `AppModel.swift` capture hook. WS1 owns auth/chat
+  and `LibraryView.swift`/`LessMeetApp.swift`. Never edit the other worktree.
+- Agreed view entries: `LocalModelSetupView(manager:)` from a sidebar sheet and
+  `LocalTranscriptView(model:, recordingID:)` in the Transcript tab. The shared
+  manager/controller constructors, lifecycle and completion notification below
+  are now accepted. Implementation still needs its own ready model inputs.
+- WS2 adds pinned model dependencies first, then returns a stable `Package.swift`
+  diff and `Package.resolved` effects. WS1 waits for explicit handoff before any
+  package edits. Do not remove dependencies still imported by existing source.
+- WS1 exclusively owns `scripts/build-app.sh` and `scripts/configure-app.mjs`.
+  WS2 must not edit them. After accepting/importing the catalog resources, WS1
+  copies `Resources/ModelLicenses/` unchanged to `Contents/Resources/ModelLicenses`
+  before signing, then verifies filenames, content hashes and codesign. Do not
+  silently omit notices. This does not accept dependencies or runtime behavior.
+- WS1 reopened the unnecessary whole-shell wait. Its accepted auth/chat views
+  can migrate LibraryView/LessMeetApp away from instantiated cloud/account/billing
+  now. Until the exact WS2 controller/view is delivered and accepted, its own
+  read-only sidecar display plus manual refresh remains. That display never
+  writes transcripts or runs models. Later inject one shared manager/controller
+  and hook, then replace only this small display. Shared signatures unchanged.
+- Read-contract candidate committed as `b67fc0a1ad7ea575157851d4bb88ed86e0c16248`
+  over `b08b3cd`, accepted and imported by WS1 as `1125de6`. Runtime UI is not accepted.
+- Ready inputs: accepted pinned dependencies, catalog and local overlap matching.
+  Next: model acquisition, inference adapters, capture wiring,
+  then exact-artifact tests and runtime checks. Each new scope gets one writer.
+
+UI, offline inference, download recovery and long-file measurements are
+UNVERIFIED. Historical tests below do not verify this pivot.
+
+Integration checkpoint: local window assembly, PCM reader, overlap merger,
+speaker attribution, transcript sidecar, catalog and capture-finalization tests
+PASS 42/42 in the real SwiftPM test target. Command uses the isolated dependency
+scratch and public-only resolver switches; receipt is
+`.artifacts/dependency-validation/integration-tests.log` (2026-10-11).
+Capture hook fires only after normal stop and successful metadata save. Window
+tests cover exact 300-second EOF (no overlap-only tail), fractional samples,
+650-second geometry and content continuity. This does not accept moving manager
+or adapter code that happened to compile, or establish actual capture/UI behavior.
+
+Controller agreement (interface accepted; ready inputs required for implementation):
+
+- `LocalModelManager` is a main-actor observable object with
+  `init(root: URL? = nil)`, async `start()`, `cancel()`, and `retry()`.
+- `LocalTranscriptionModel` is a main-actor observable object with
+  `init(app: AppModel, manager: LocalModelManager)`, `transcribe(recordingID:)`,
+  and `cancel()`. It holds AppModel weakly and never writes Recording metadata.
+  The shell constructs AppModel, one manager, then one controller.
+- The capture callback fires once only after successful stop and durable ready
+  metadata save. No callback follows interrupted/failed stop or failed save.
+- Jobs stay bound to recording IDs. Deduplicate active/pending IDs. Queue until
+  models are ready. Cancellation clears active and pending work. Never auto-retry.
+- Preserve previous sidecars on failure/cancellation and label them as previous
+  output. After atomic save, set `completedRecordingID`, then increment published
+  `revision`. Failure/cancellation changes neither completion field.
+- WS1 rereads on appearance, selection, revision and before sending chat; each
+  request freezes its transcript snapshot. Revision is process-local.
+- Final startup agreement: async `prepare()` inspects local integrity/readiness
+  without downloading. Once per application session, await prepare then call
+  start if required models are missing and state is neither canceled nor failed.
+  Show declared size, progress and cancel. Keep the once-per-session guard in
+  shared manager/controller state, not a transient view. Window recreation or
+  repeated SwiftUI tasks must not restart canceled/failed downloads. Retry is
+  user-triggered; ready models do not download again. This preserves Human's
+  automatic first-launch policy. The button-only proposal is superseded.
+
+Overlap diagnosis accepted against `b08b3cd`: the actual TS merge returns one
+segment for exact timestamps, but two for 1 ms or 120 ms drift with identical text.
+Lead reproduced all three cases with Node's experimental TypeScript transform.
+The existing cloud test expects this behavior; leave backend unchanged. The new
+local merge needs bounded, one-to-one, adjacent-overlap matching. A proposed
+250 ms tolerance is not empirically validated. Do not add the audit's suggested
+extra envelope fields; the agreed sidecar remains `{version, segments}`.
+
+Model audit inputs (not installed or measured):
+
+- WhisperKit release 1.1.1 source revision
+  `1bbc57cb7fe6410248a685b1c5a3c6d56adc2ed4`, product `WhisperKit`.
+- speech-swift revision `cbcdfc6be5e723952d29ab6e32af5e22ad8e70fa`, product
+  `SpeechVAD`. Core ML use still links MLX-related target dependencies.
+- HF `argmaxinc/whisperkit-coreml` revision
+  `0f63a7800b00dd0226abd051b906c246e1907482`, full
+  `openai_whisper-large-v3/`: published inventory 3,090,319,899 bytes.
+  Do not substitute the compressed Turbo recommendation.
+- HF `openai/whisper-large-v3` tokenizer revision
+  `06f233fe06e710322aca913c1bc4249a0d71fce1`.
+- HF `aufklarer/Nemotron-3-Diarization-100M-CoreML-INT8` revision
+  `db823d36c2230d5535a6165c932f8a5369484b7a`: selected published files total
+  107,083,235 bytes. Community conversion, not an NVIDIA-published binary.
+  Source checkpoint: `a435e9867d79e789e90053f9b6d6834053af564a`.
+- WhisperKit is MIT with embedded Apache notices; speech-swift is Apache-2.0,
+  not MIT. Nemotron weights are OpenMDW-1.1; retain LICENSE and NOTICE.
+- Published LFS checksums exist; Git blob IDs are not raw SHA-256. A uniform
+  per-file hash manifest is accepted as `c9eec50`. Actual downloaded-byte
+  verification remains unfinished.
+- Lead confirmed the pinned Whisper tokenizer loader falls back to network after
+  local parse failure, even with model download disabled. Fail-closed tokenizer
+  loading needs a tested solution before claiming offline operation.
+- Use one Nemotron streaming session for the entire recording, explicit saved-
+  audio geometry, final labels after finish, and null for ambiguous attribution.
+  Runtime retains confirmed probabilities, so long-file memory must be measured.
+- Direct pinned products are the first experiment; no vendoring is justified yet.
+  Upstream test failure and optional real-model coverage remain unclassified.
+- Dependency validation request is now ready: WS1 accepted/imported the small
+  read-contract candidate. Integration owner `45d6fb78` will now resolve
+  and build the pinned products, inspect lockfile effects, prove tokenizer
+  fail-closed behavior, and verify model downloads. No new Human permission is
+  required for those already-authorized local checks.
+
+Read-contract implementation ACCEPTED (2026-10-11):
+
+- Exact candidate: `b67fc0a1ad7ea575157851d4bb88ed86e0c16248`, parent
+  `b08b3cdae5aeb4cbbd5c771a5f887584afaa518c`. Contains only the two new
+  `LocalTranscription` source files and `LocalTranscriptStoreTests.swift`.
+  STATUS is kept in a separate documentation commit so WS1 can import code alone.
+- Integration owner inspected all three files and matched the original hashes.
+  Fresh inspection found no blocker. Only a comment was corrected afterward:
+  the existing two-hour window geometry allows 25 windows, not 24.
+- Final source SHA-256: `LocalTranscript.swift`
+  `c6cc789172781383e32d90d47cf4ad7f26c15840823deb16dded9674f2d4b7ee`;
+  `LocalTranscriptStore.swift`
+  `af6ce160c51bf7ad03b9d5cd1f5ddc8dc90a4fd79bae19322f875a6d0066cdc9`;
+  `LocalTranscriptStoreTests.swift`
+  `5d060400cb4458be0d899282c5825b474bc5059f69078f274e3cd3f8e3b118e4`.
+- Actual `swift test --filter LocalTranscriptStoreTests`: 8/8 PASS.
+  Combined local/legacy store rerun: 11/11 PASS. Existing locked dependencies
+  resolved and compiled; `Package.swift` and `Package.resolved` did not change.
+  Evidence: `.artifacts/verify-lessmeet/read-contract.JUGof8/tests.log`.
+  Final comment-corrected build plus all 11 tests also PASS; exact receipt:
+  `.artifacts/verify-lessmeet/read-contract.JUGof8/final-tests.log`.
+- Verified: exact keys and explicit nulls; paired timestamp validation; malformed
+  and duplicate-key rejection; unsupported-version rejection; missing-file nil;
+  per-recording isolation; store reopen; unchanged recording metadata; prior
+  sidecar preserved after rejected validation/oversize saves; 16 MiB file bound.
+- No injected filesystem replacement failure, concurrent-reader test or power-loss
+  proof. Atomic replacement is the implementation, not a power-loss guarantee.
+  Encoding allocates before checking size; the file limit is not a peak-RAM bound.
+- This is usable storage/read input for WS1, not a completed local inference app.
+  UI, model download, offline inference and long-file performance are UNVERIFIED.
+  No shared shell, capture hook, legacy Recording/RecordingStore or package edits.
+- WS1 ACCEPTED exact candidate `b67fc0a` after source/hash inspection and imported
+  code only as `1125de6f3f28defdc48e9bda97db19b48801761a`. Its independent
+  `swift test --scratch-path .build-ws1-integration --filter
+  'LocalTranscriptStoreTests|RecordingStoreTests'` built and passed 11/11, exit0.
+  WS1's other writer changes are not accepted by that test. The read dependency
+  is resolved; WS1 may consume the read-only API. WS2 may continue its model,
+  controller and owned AppModel hook as their inputs become ready. Shell remains
+  WS1-owned; package changes remain WS2-first. No product decision is needed.
 ## Documentation cleanup (2026-10-13)
 
 Lead owns this documentation-only scope in the main checkout at `b08b3cd`.
@@ -5125,3 +9047,25 @@ Google/Apple credentials or secret values scanned outside this project.
   local configuration. `.env.local` and node_modules are ignored.
 - `npx convex env list --names-only` succeeded: no environment variables set.
 - No app code changed in this setup step; Swift tests were not rerun.
+
+## Icon v2 and promo video (2026-10-13)
+
+Branch `design/icon-promotion-video`, base 4dc7e33 (PR16 merge). Lead owned every write scope and
+no Peers were used. Ownership is RELEASED.
+
+- Icon: `Resources/Artwork/lessmeet-v2/` (SVG, 1024 PNG, ICNS sha256 `fe2fa579…167114`). It is wired
+  through `CFBundleIconFile` in `Resources/Info.plist` and an ICNS copy step in `scripts/build-app.sh`.
+  Store/TestFlight stamping still overrides it. Packaging tests: 75 OK. `NSWorkspace` returns the new icon.
+  Dock/Finder display is UNVERIFIED because screen capture was denied.
+- Demo capture: `Sources/LessMeet/Presentation/DemoCapture.swift` is active only when the
+  `library-ui-check` fixture sets `LESSMEET_DEMO_CAPTURE_DIR`. `LibraryUICheckTests` 3/3 pass, and the
+  `local` and `library-ui-check` builds succeed.
+- Video: `design/promo-video/out/LessMeet-ad-30s-1080p60.mp4` sha256
+  `c7da83088b4689a7d88106c50b7a76a8a21218a9c72da888ecac17049a9423e4`. Specs: 30.000 s, 1920x1080,
+  60 fps (1800 frames), AAC, −17.9 LUFS, −1.7 dBTP. Rendered from the real-app capture in
+  `design/promo-video/capture/` by `app/ad.py`, and reproducible from that capture.
+  Disposition: ACCEPT.
+- Limits: offline demo build, sample meeting, fixture chat answer, some shots sped up 1.6–2×,
+  pre-release CTA ("Coming soon"). Superseded videos and backup takes were removed.
+- Known pre-existing failure: `scripts/test-library-ui.sh` fails its Library heading assertion (line 40).
+  Not investigated.

@@ -7,6 +7,378 @@ ownership and release gates remain in [STATUS.md](STATUS.md). Update this docume
 after each configuration change, including environment, verification date/result,
 secret location and rollback limits. Never commit keys, tokens or private keys.
 
+## Native cleanup boundary (2026-10-13)
+
+The current local app no longer uses RevenueCat. Its native SDK, subscription UI
+and bundle requirement are removed. Backend RevenueCat routes and provider-deletion
+jobs remain. Their settings and operator obligations below are not retired.
+Legacy packaging modes retain their public-configuration and approval contracts.
+Local/offline bundles still strip stale service keys; the release validator still
+rejects them. Native SDK removal does not cancel subscriptions or erase customers.
+Store/TestFlight readiness remains unverified. The existing installer validator
+rejects symlinks, while the app builder creates the required MLX shader symlink.
+This cleanup does not change that policy or authorize distribution.
+
+## Profile-backed GitHub ZIP signing
+
+Decision (2026-10-14): retain GitHub ZIP with Developer ID + notarization. No
+App Store/TestFlight channel is selected. The manual-test delivery request now
+authorizes provisioning established intended inputs, scoped remote activation
+and actual notarization. The owner subsequently authorized automatic GitHub
+pre-release publication after each eligible merge and successful signed build.
+Unspecified key export/credential creation remains excluded. See STATUS for
+current evidence and authority.
+The schema-2 contract below is historical.
+
+`main-release.yml` requires `LESSMEET_DEVELOPER_ID_RELEASE_ENABLED=true` before
+building or submitting anything. It uses environment `lessmeet-developer-id`.
+The owner explicitly chose no required reviewer and retains merging to main.
+Environment `lessmeet-developer-id` now exists with a single allowed branch,
+`main`, and no allowed tag rule. `LESSMEET_GITHUB_RELEASE_ENABLED=true` separately controls
+publication. Signing activation permits timestamp requests and notarization uploads
+even while publication is disabled. Current readback on 2026-10-14 confirms both
+`LESSMEET_DEVELOPER_ID_RELEASE_ENABLED=true` and
+`LESSMEET_GITHUB_RELEASE_ENABLED=true`. Each merged PR into `main` can now
+produce a pre-release after build, signing, notarization and artifact validation
+succeed. Branch pushes and unmerged closed PRs do not publish. Pre-releases are
+not marked as the stable latest release. Earlier disabled gates are historical.
+
+The earlier required-reviewer attempt failed with HTTP 422 due to the billing
+plan, and its empty environment was removed. That condition is superseded by the
+owner's explicit no-reviewer decision. A new main-only environment was created and
+verified. All seven secrets below are provisioned. Names-only readback includes
+the password secret updated at `2026-10-14T09:51:34Z`.
+At that earlier PR #18 verification checkpoint, signing was enabled and
+publication remained disabled. The later automatic-publication decision above
+supersedes that checkpoint. Do not substitute
+Development/IAP credentials for the intended inputs.
+
+Prepared local inputs (2026-10-14), outside Git in
+`/Users/tubakhuym/projects/lessmeet/keys/developer-id-ci/` (directory 0700, files 0600):
+
+- `AppleDeveloperID.p12`: owner-supplied PKCS#12 with matching private key;
+  certificate resource `3NSF74TP49`, SHA1
+  `DE967875FB1C4BBEBCB60EED42BC7182D031E9F0`, team `63M98WD275`.
+- `LessMeet_Developer_ID.provisionprofile`: MAC_APP_DIRECT resource `JUKU76YFHS`,
+  exact bundle `com.lessmeet.app`, all-device, only the selected certificate.
+- `AuthKey_C252BFL5P7.p8`: `LessMeet CI Notary`, Team API key, Developer role;
+  Key ID `C252BFL5P7`, issuer `69a6de8c-6878-47e3-e053-5b8c7c11a4d1`.
+
+The three prepared files and their certificate/key/issuer identifiers have been
+uploaded to the six matching environment secrets via `gh` stdin. This does not
+establish a notarized app. The owner completed the ignored
+`provision-p12-password.rb` helper for the seventh secret. It prompts securely,
+validates the exact export, and uploads the password without retaining a file.
+The agent verified its secret name and timestamp, not its value.
+Keep an encrypted backup of the one-time P8 download. See STATUS for exact checks,
+profile/certificate expiry differences and remaining verification limits.
+
+### Required environment secrets
+
+Provision only established intended inputs under the authority recorded in STATUS.
+Never record their values in repository files, chat, logs or debug artifacts.
+
+| Secret | Required input |
+| --- | --- |
+| `LESSMEET_DEVELOPER_ID_P12_BASE64` | Base64 PKCS#12 with only the selected Developer ID Application identity/private key; its certificate chain may be included. Export/transfer remains a separate owner action. |
+| `LESSMEET_DEVELOPER_ID_P12_PASSWORD` | Nonempty password protecting that PKCS#12. |
+| `LESSMEET_DEVELOPER_ID_PROFILE_BASE64` | Base64 CMS Developer ID profile for exact `com.lessmeet.app`, approved team, selected certificate, valid dates, all devices and no debugging. |
+| `LESSMEET_DEVELOPER_ID_CERT_SHA1` | Exact 40-hex fingerprint of the Developer ID Application certificate, not a name or Development/Installer identity. |
+| `LESSMEET_NOTARY_KEY_BASE64` | Base64 `.p8` Team API key accepted by Apple's notary service. This is not the signing key. |
+| `LESSMEET_NOTARY_KEY_ID` | Team API key ID. |
+| `LESSMEET_NOTARY_ISSUER_ID` | Team API issuer UUID. Individual API keys are not supported by this configuration. |
+
+Team remains `63M98WD275`. The application identifier uses the profile's own
+prefix. It need not equal the team ID. Entitlements contain only audio input
+plus profile-authorized application/team identifiers. No wildcard Keychain
+groups, debugging or App Sandbox capability is copied. Storage protections are
+unchanged. The existing Apple Development profile is local-test input only.
+
+### Build, sign and seal
+
+1. Verify the merged-main event and check out its immutable source SHA.
+2. Record complete original-PR provenance in a schema-3 plan.
+3. Compile and verify the local staging app without Apple/publishing secrets in
+   child environments. Preserve arm64, resource, notice, pin and signature gates.
+4. Expose the seven secrets only to `ci-sign-release.py`. Validate the profile
+   before importing the exact identity into a new run-only keychain.
+5. Sign a separate copy with `com.lessmeet.app`, hardened runtime and secure
+   timestamp. Verify its exact leaf, embedded profile and entitlement allowlist.
+6. Submit a temporary ZIP with `notarytool --wait --timeout 15m`. Require
+   `Accepted`, staple, validate the ticket and pass Gatekeeper assessment.
+7. Verify again, then create the final ZIP after stapling. Bind executable/profile
+   hashes and the signing/notarization receipt to the source and archive hashes.
+8. Seal and upload only ZIP, `release.json`, `changelog.md` and `SHA256SUMS`.
+   Publishing still downloads the exact successful artifact ID.
+9. Remove only the run-owned keychain and credential files in a finally block.
+   An `always()` step retries cleanup after ordinary cancellation. Hard runner
+   loss cannot execute cleanup; only ephemeral GitHub-hosted runners are supported.
+
+Tags use `main-signed-<first-parent sequence>-<full SHA>`. ZIPs end with
+`-macos-arm64-developer-id.zip`. This separate namespace prevents replacing old
+ad-hoc release or partial-draft bytes for the same source. Schema 2 remains
+readable for historical recovery. Asset allowlists, exact-byte retry checks,
+`latest=false`, version numbers and source provenance remain intact. Development
+bundles are rejected by both public sealing paths.
+
+Unknown, rejected or timed-out notarization stops before seal/upload. A timed-out
+submission can still be processing at Apple. Do not retry blindly; inspect that
+submission with separately approved remote authority first. The full app is never
+launched by CI. A signature/notary pass is not runtime, OAuth, migration or
+recording acceptance.
+
+The compiler environment allowlist is not a same-user sandbox. Trusted merged
+code and pinned dependencies remain the trust boundary. The new keychain is
+selected explicitly and temporarily prepended to the runner's user search list.
+The prior list is saved before keychain creation and restored with readback during
+cleanup. Existing entries are preserved; the default keychain and trust settings
+are not changed. Failed restoration retains a protected snapshot for cleanup retry
+and blocks delivery. Access settings apply only to the newly created CI keychain. No such commands
+were run against the operator's Keychain during local verification.
+
+### Local development signing
+
+Use `bash scripts/build-app.sh signed-local` with exact
+`LESSMEET_SIGNING_IDENTITY` SHA1 and `LESSMEET_PROVISIONING_PROFILE` path.
+Output is `dist/signed-local/LessMeet.app`. It adds no App Sandbox or legacy backend
+configuration. For an already built local bundle, use `sign-local-app.py --app
+<local.app> --output <new.app>`. Input and existing outputs are never overwritten.
+This local path neither imports/exports keys nor changes Keychain ACLs. If key use
+prompts, wait for its owner; do not bypass the prompt.
+
+A development build verifies registered target devices exist in the profile.
+It does not require the build runner itself to be covered because it does not run
+the app. Before any runtime check, verify the target device match and isolate
+preferences, restoration, routing, storage and network as recorded in STATUS.
+Build success does not authorize launching the normal app against real data.
+
+References: [Apple Developer ID](https://developer.apple.com/developer-id/),
+[notarization workflow](https://developer.apple.com/documentation/security/customizing-the-notarization-workflow),
+[Keychain requirements](https://developer.apple.com/documentation/technotes/tn3137-on-mac-keychains).
+
+## Historical ad-hoc GitHub contract (2026-10-12)
+
+The following describes schema 2 and old releases. The schema-3 configuration
+above supersedes its no-Apple-input rule for future merged-main releases.
+
+Scope decision: GitHub Release with a build file and changelog only. TestFlight,
+App Store submission and public App Store release are excluded. Apple credentials
+are not a dependency. Do not configure or call App Store Connect for this path.
+Any future authorized App Store Connect task must use `asc`, not browser,
+`altool` or fastlane. The first public Store version and manual release policy
+below are unchanged.
+
+Implementation: `.github/workflows/main-release.yml`, `scripts/github-release.py`
+and `scripts/build-github-release.py`. The existing manual diagnostic workflow
+remains separate. The installed pipeline produced tag
+`main-build-44-fded246dcf76d3cef1d7d04f84ec14536d77a55f` on 2026-10-12.
+That is the cleanup behavior baseline, not a release of this cleanup candidate.
+Local verification does not establish a new hosted Actions pass or exact-app E2E.
+
+### Trigger, identity and ordering
+
+The workflow handles `pull_request_target: closed` on `main`. Both event state
+and the merge flag must match. A PR closed without merge does not build or publish.
+Checkout first fetches trusted main history with its unsafe-PR override disabled.
+The job checks merge-SHA ancestry, then detaches at `pull_request.merge_commit_sha`
+before executing repository scripts. It never executes the PR head or a synthetic
+pre-merge ref. Main branch protection and review of workflow/script
+changes are the trust boundary: merged code may run in the publishing job.
+
+Each tag is `main-build-<sequence>-<full merge SHA>`. The sequence is the count of
+first-parent commits through that SHA, with full Git history fetched. It orders
+builds by main history, not runner completion time. Main must not be force-pushed
+or rewritten. Different merges have different concurrency groups and immutable
+artifact names. Same-SHA retries share one group. A retry can replace another
+pending retry of that SHA, but cannot cancel another merge's run.
+
+This tag namespace is not a semantic product version. It does not bump
+`CFBundleShortVersionString`, `CFBundleVersion`, or Apple upload numbers. For
+example, base `96412826c688a9042ca278bdaf2088a21712048d` has first-parent count 43.
+Its identity would be `main-build-43-96412826c688a9042ca278bdaf2088a21712048d`.
+No tag for that example was created. Releases are prereleases and never set
+GitHub's `latest` marker, so an older build finishing late cannot replace it.
+
+### Artifact and checks
+
+Build uses the existing `local` packaging mode on `macos-26` Apple Silicon,
+Xcode 26.6 build 17F113, and the unchanged product dependency pins. Missing Metal
+or a mismatched Xcode causes failure; the job does not install another toolchain.
+Checkout 7.0.1, upload-artifact 7.0.2 and download-artifact 8.0.1 use full commit
+pins and Node 24 on hosted runners. Downloaded artifact digest mismatch is fatal.
+Workflow validation uses
+actionlint 1.7.12 with pinned archive SHA256 values, extracted into job-local
+scratch. Python uses only the standard library. Ruby's standard YAML parser
+supports the offline workflow-policy tests. Node must support `node:util.parseEnv`.
+
+Offline release/packaging tests and workflow validation run before build. The
+package gate checks arm64, local bundle identity, absent service configuration,
+ad-hoc signature, strict/deep signature validation, resources and model notices.
+Only successful builds are sealed and passed to the publishing job. The build
+job has `contents: read`; only the publishing job has `contents: write`.
+`GITHUB_TOKEN` is ephemeral, exposed as `GH_TOKEN` only to the final publish step.
+The provenance step separately receives `GH_READ_TOKEN` from the build job's
+read-only token. It can fetch missing original PR objects from the fixed base
+repository URL. It never checks out or executes the PR head and never persists
+the credential. All compilation steps exclude this token from their environment.
+Checkout does not persist credentials. Build subprocesses use an environment
+allowlist and cannot inherit publishing or Apple secrets.
+
+Exactly four files are release assets: the app ZIP, `release.json`, `changelog.md`
+and `SHA256SUMS`. The ZIP name includes tag, architecture and `adhoc`. Changelog
+links point to the merged PR, captured original PR commits and integration tip.
+The manifest binds the ZIP hash
+to the source SHA and release identity. Logs, screenshots, credentials and private
+E2E evidence are not release assets. GitHub adds its own source archives.
+The ZIP excludes filesystem extended attributes, ACLs and resource-fork sidecars.
+Bundle resource files, executable permissions and the Metal lookup symlink remain.
+
+After a successful release creation, the helper validates the returned release
+record. It does not require the collection listing to contain that record yet.
+The listing still detects duplicate bindings. Before each upload, the helper
+reads the selected release by ID and checks its exact metadata and changelog.
+Creation conflicts still require a matching existing release. Binding errors
+name the failed field, but do not print remote values or release bodies.
+
+The app is **macOS arm64, ad-hoc signed, not notarized, diagnostic-only**. It is
+not a Developer ID distribution or App Store package. Gatekeeper may block it.
+No runtime launch is part of this pipeline. Exact-app E2E, real auth, inference,
+capture and playback remain UNVERIFIED. Model weights are not included. Local
+app startup can use local data/auth and download models; the ZIP is not the
+isolated synthetic E2E fixture. Do not infer permission to launch it from build
+or signature success.
+
+Developer ID distribution would need a separate signing/notarization decision,
+a Developer ID Application certificate with its private key, secure CI key import,
+and notarization-service authentication. None is provisioned or required here.
+That is a separate path from TestFlight/App Store upload. Never send secrets in chat.
+
+### Changelog coverage and immutable provenance
+
+Schema 2 stores the PR title from the closed+merged event, its `head.sha` and
+`commits` count, every original commit SHA and subject, the original comparison
+base, and the separate integration SHA. It does not read the current PR title or
+body from an API. PR bodies, labels, author details and raw logs are not copied.
+Titles and subjects are intentional release content; do not put secrets in them.
+
+The heading is **Original PR commits**, not rewritten commits on main. For a
+two-parent integration commit, the second parent must equal the captured head;
+the first parent is the exclusion boundary. For a one-parent integration, the
+integration SHA itself is the exclusion boundary. The helper lists all commits
+reachable from the original head but not from that boundary. It does not walk
+backwards by a commit count or assume event `base.sha` is the premerge tip.
+
+The complete set must match the event count. A unique Git merge-base anchors the
+original comparison link; its range must contain the same commit set. A stable
+topological sort uses SHA order to break ties. Empty commits remain in the list.
+For example, an original PR with feature commit A, empty commit E and fix H can
+rebase into only A′ and H′. The changelog lists A, E and H with their subjects.
+H′ is labeled the integration tip, not the full PR diff.
+
+This policy covers original PR provenance for merge, squash and rebase. A linear
+graph alone cannot identify squash versus rebase, so the helper does not guess.
+It does not reconstruct the rebased-main range, attest individual rewritten
+commits, or describe merge conflict resolutions beyond the original PR content.
+The final integration commit link remains available for inspecting the built tree.
+
+If original objects are missing, `plan --fetch-pr-head` fetches
+`refs/pull/<number>/head` as Git data. The fixed HTTPS repository comes from the
+validated repository identifier, not a webhook URL. Redirects are disabled.
+The fetched tip must equal the captured head. No branch ref or checkout changes;
+only downloaded objects and `FETCH_HEAD` are written. Default local planning does
+not fetch. GitHub availability or a moved/deleted ref can prevent fresh planning.
+
+Missing history, shallow or grafted graphs, multiple merge-bases, unsupported
+parent topology, count mismatch or exceeded limits stop before build/publish.
+Indirect merges or already-integrated heads can trigger these refusals. The helper
+does not silently omit commits. Limits are 2048 original commits, 1000 characters
+per title/subject and a 1 MiB canonical provenance snapshot. No truncation occurs.
+
+Text is normalized to one Unicode line. Control and bidi formatting characters
+are removed as whitespace. Variable-length inline-code delimiters contain HTML,
+Markdown, links and embedded backticks as text; `@` displays as `＠` to disable
+mentions. Only validated identifiers form link targets. No user text enters shell
+interpolation. These rules change presentation, not the referenced commit objects.
+
+The sealed manifest and changelog preserve this canonical snapshot. Publish and
+failed-job recovery read those bytes without consulting current PR metadata or
+Git refs. An edited title in a different snapshot cannot replace an existing
+release. Use the original artifact for partial recovery. Schema 1 candidates are
+rejected by the corrected helper; none was published in this work. Do not migrate
+an existing release by overwriting it.
+
+Primary evidence: [merge modes and empty commits](https://docs.github.com/en/repositories/configuring-branches-and-merges-in-your-repository/configuring-pull-request-merges/about-merge-methods-on-github),
+[PR object schema](https://github.com/octokit/webhooks/blob/main/payload-schemas/api.github.com/common/pull-request.schema.json),
+[PR head fetch](https://docs.github.com/en/pull-requests/how-tos/review-pull-requests/checking-out-pull-requests-locally),
+and [GFM code spans](https://github.github.com/gfm/#code-spans).
+The checked official closed webhook fixture is unmerged; it is not evidence that
+`base.sha` has a particular timing on merged events. Merge-mode tests use explicit
+synthetic Git graphs, not a claim of hosted webhook verification.
+
+### Rerun and recovery
+
+The publisher validates the allowlist and checksums before network writes. It
+creates or checks the exact-SHA tag, creates a draft prerelease, uploads assets,
+then publishes only when all expected assets match. It never retargets a tag,
+deletes an asset or uses overwrite/clobber. A fully published matching release
+is verified and left unchanged, even if a later local rebuild has different ZIP
+timestamps. Incomplete drafts are not reported as published releases.
+
+1. If build or tests fail, fix the cause before rerunning; no publish job runs.
+2. If publish fails, use **Re-run failed jobs** on that workflow run. The build
+   output artifact ID selects the original sealed bytes. Assets are retained for
+   30 days, subject to repository retention limits.
+3. If a draft already contains different bytes, stop. Do not overwrite it with a
+   rebuild. Recover the original successful build artifact and investigate the
+   mismatch. Expired or missing artifacts need a new explicit recovery decision.
+4. If a tag points to another SHA or a published asset fails its checksum, stop.
+   Do not move the tag or silently replace the release.
+
+Concurrent merges can finish out of order. They cannot share a tag or artifact.
+There is no global single-pending workflow group that could discard a merge.
+GitHub cancellation, runner/toolchain outages, token policy, rulesets and rate
+limits can still block a run. A failure is not permission to bypass those controls.
+
+GitHub has a specific token limit: if an older target commit differs from the
+current default branch under `.github/workflows/`, release create/update can
+require `Workflows: write`. `GITHUB_TOKEN` cannot have that permission. This can
+affect a delayed concurrent build or retry after another PR changes workflows.
+The job fails closed on 403/404; it does not retarget the release or use a stronger
+token. Unconditional publication of those older commits is not established.
+That case needs a separate credential-authority decision: a repository-scoped
+GitHub App installation token or fine-grained token with `Contents: write` and
+`Workflows: write`, supplied through a secret store, never chat. The current
+workflow neither provisions nor consumes such a token. See the
+[release API token condition](https://docs.github.com/en/rest/releases/releases#create-a-release).
+
+### Activation and rollback boundary
+
+1. Review and merge the candidate through the normal approved PR process.
+2. Confirm Actions policy permits the pinned actions and the macOS runner. Keep
+   branch protection and review for pipeline changes. Ensure repository rules
+   permit the workflow token to create `main-build-*` tags and releases.
+3. Set repository variable `LESSMEET_GITHUB_RELEASE_ENABLED=true` only when
+   publishing is authorized. Without it, eligible merges build and retain an
+   Actions artifact, but the publish job is skipped. The normal path uses no
+   long-lived PAT or Apple secret. The older-workflow token limit above remains.
+4. Verify a subsequently merged PR's hosted run, exact tag target, release manifest
+   and asset checksums. Then rerun failed jobs or a completed run to verify the
+   hosted recovery/no-duplicate behavior. No such live run occurred locally.
+
+To stop future publication, remove the variable or set it to `false`. Disable the
+workflow as well if builds must stop. Variable changes do not recall a published
+release or guarantee that an already-running publish job stops. Review that job
+before taking further action. Deleting releases/tags needs separate authority.
+
+Primary references checked for this candidate: [merged PR trigger and security
+semantics](https://docs.github.com/en/actions/reference/workflows-and-actions/events-that-trigger-workflows#pull_request_target),
+[concurrency](https://docs.github.com/en/actions/how-tos/write-workflows/choose-when-workflows-run/control-workflow-concurrency),
+[release API](https://docs.github.com/en/rest/releases/releases),
+[release assets API](https://docs.github.com/en/rest/releases/assets), and the
+[macOS runner image](https://github.com/actions/runner-images/blob/main/images/macos/macos-26-arm64-Readme.md).
+Verification evidence and final acceptance are recorded in STATUS, not here as
+a second work tracker.
+
 Oct4 local email candidate: normal scoped deletion within7 calendar days of receipt,
 email updates/results, and explicit exception status/reason/next-update time are
 approved. This is not permission to send or enable automatic sends. Candidate

@@ -137,7 +137,7 @@ def validate_bundle(app, values, mode="store"):
     require(info.get("CFBundleURLTypes") == [{"CFBundleURLName": signing.BUNDLE,
                                              "CFBundleURLSchemes": [signing.BUNDLE]}], "Callback contract mismatch.")
     require((app / "Contents/Resources/LessMeet.icns").read_bytes() == icon, "Bundled icon differs from approved bytes.")
-    for name in ("Clerk_ClerkKit.bundle", "RevenueCat_RevenueCat.bundle"):
+    for name in ("Clerk_ClerkKit.bundle",):
         require((app / "Contents/Resources" / name).is_dir(), "Missing SDK resources.")
     require((app / "Contents/MacOS/LessMeet").is_file(), "Missing app executable.")
 
