@@ -3,6 +3,29 @@ import XCTest
 
 @MainActor
 final class LibraryUICheckTests: XCTestCase {
+    func testManualFixtureLoadsLocalModelsAndReopensSavedInterruptedTranscript() async throws {
+        let fixture = try LibraryUICheckContext(manualCheck: true)
+        await fixture.manager.prepare()
+        XCTAssertEqual(fixture.manager.state, .ready, fixture.manager.error ?? "")
+        guard fixture.manager.state == .ready else { return }
+        let id = ManualTranscriptionUICheck.interruptedID
+        XCTAssertEqual(fixture.transcription.state(for: id), .idle)
+        XCTAssertNil(try fixture.store.loadLocalTranscript(for: id))
+        fixture.transcription.transcribe(recordingID: id)
+        for _ in 0..<100 where fixture.transcription.state(for: id) != .completed {
+            try await Task.sleep(for: .milliseconds(10))
+        }
+        XCTAssertEqual(fixture.transcription.state(for: id), .completed)
+        let transcript = try XCTUnwrap(fixture.store.loadLocalTranscript(for: id))
+        XCTAssertTrue(transcript.segments[0].text.contains("no speech model ran"))
+        let reopened = try LibraryUICheckContext(root: fixture.root, manualCheck: true)
+        await reopened.manager.prepare()
+        XCTAssertEqual(reopened.manager.state, .ready)
+        XCTAssertEqual(reopened.transcription.state(for: id), .idle)
+        XCTAssertEqual(try reopened.store.loadLocalTranscript(for: id), transcript)
+        XCTAssertEqual(reopened.model.recordings.first { $0.id == id }?.status, .interrupted)
+    }
+
     func testSeedsTwoIsolatedLibrariesWithFixedTranscriptContent() throws {
         let first = try LibraryUICheckContext()
         let second = try LibraryUICheckContext()

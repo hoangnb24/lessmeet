@@ -58,6 +58,16 @@ Packaged runtime checks and final candidate disposition are pending. This sessio
 reserves sole live UI ownership for the isolated Library fixture. Do not operate
 the installed app or its library. No Peer or XCUITest driver owns this scope.
 
+Candidate `426674a` contains the product fix and preliminary evidence. Its first
+UI launch on Oct15 at 04:01:53 UTC reached the isolated Library, but model setup
+failed: "The model folder contains an unsafe path or link." The fixture's temporary
+path traversed macOS `/var`. REJECT that fixture as acceptance evidence; keep the
+model-store path checks unchanged. Quit its exact PID 53551 through Computer Use
+and confirmed exit. Correct the fixture to pass a physical model path, add a
+regression, then rerun packaged UI checks. This does not reopen the product scope.
+The first attempted regression build also failed on an actor-isolated default
+argument; keep its log separate from runtime regression evidence.
+
 ## Documentation integration and local cleanup (2026-10-15)
 
 The owner authorized integrating the retained documentation/skill edits and the

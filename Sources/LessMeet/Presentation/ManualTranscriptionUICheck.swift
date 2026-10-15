@@ -1,5 +1,6 @@
 import AVFoundation
 import CryptoKit
+import Darwin
 import Foundation
 import SwiftUI
 
@@ -69,7 +70,12 @@ enum ManualTranscriptionUICheck {
         }
         let config = URLSessionConfiguration.ephemeral
         config.protocolClasses = [ManualUICheckDenyNetwork.self]
-        return LocalModelManager(root: root, catalog: catalog, configuration: config)
+        // Foundation can normalize macOS temporary URLs back to the /var link.
+        // Resolve this fixture's existing directory without weakening store checks.
+        guard let physical = realpath(root.path, nil) else { throw LibraryUICheckError.disabled }
+        defer { free(physical) }
+        let physicalRoot = URL(fileURLWithPath: String(cString: physical), isDirectory: true)
+        return LocalModelManager(root: physicalRoot, catalog: catalog, configuration: config)
     }
 }
 
