@@ -1,5 +1,53 @@
 # LessMeet delivery
 
+## Public repository enabled and main protected (2026-10-15)
+
+The existing [hoangnb24/lessmeet](https://github.com/hoangnb24/lessmeet)
+repository is public. Anonymous API readback confirms public visibility and MIT.
+[PR #24](https://github.com/hoangnb24/lessmeet/pull/24) added the exact MIT text
+for original LessMeet code at `27c89706415938e842edd4c27b6742e68aa11b65`.
+Third-party notices and licenses remain unchanged. This receipt supersedes the
+pending publication checkpoint in the preparation record below.
+
+Protection readback at 03:17 UTC confirms required PRs, administrator enforcement,
+blocked force pushes/deletion and required conversation resolution. Required
+approvals are zero for the single maintainer. No bypass allowance was granted.
+No pre-merge check exists, so the post-merge release job is not a required check.
+Secret scanning and push protection are enabled. Fork workflows require approval
+for all external contributors. Default workflow permissions remain read-only;
+Actions cannot approve PR reviews. The signing environment remains main-only.
+
+The owner accepted a non-atomic public-first transition on GitHub Free. Visibility
+changed at 03:16:26 UTC. The first protection request failed with HTTP 422 because
+an empty bypass-allowance object is organization-only. Removing that unsupported
+object allowed protection to succeed without weakening the intended policy.
+Final visibility/protection/security-settings readback passed at 03:17:25 UTC.
+
+Audit scope: all remote branches, tags and PR heads; 140 reachable commits;
+current source; issue/PR text, comments and 54 content edits; 16 available CI log
+archives; 12 available artifacts; and eight releases. Gitleaks 8.30.1 scanned
+Git history and decoded/nested archive content with secret values redacted.
+The nine Git findings were inspected: synthetic test fixtures or SHA256 records,
+not real credentials. GitHub-content scanning covered approximately 1.95 GB of
+expanded content and found no secret matches. Archive inspection covered 47
+archives and 1,499 members with no private-key filename matches. Commit-message
+scanning also found no matches. No known real secret remains from this audit.
+This is bounded detection evidence, not a guarantee against every unknown secret.
+
+[Run 38674353267](https://github.com/hoangnb24/lessmeet/actions/runs/38674353267)
+succeeded for the MIT merge. Its logs and artifact were included before public
+visibility. Build 56 release-asset digests match the downloaded artifact bytes.
+No app was run. Earlier user-reported launch, ChatGPT sign-in and follow-up chat
+remain unbound to a version/build or environment; no other runtime pass is inferred.
+
+ACCEPT the requested public/MIT/protected-main outcome. Review merged code and
+dependencies carefully: build and signing share a runner. Existing privacy,
+deletion and billing obligations remain; issue closure does not waive them.
+The audit and changes used a separate working copy. The original checkout,
+operator-owned files, credentials and recordings were not changed. No secret was
+rotated, no provider was changed, and no history was rewritten or deleted.
+No further write ownership remains after this documentation receipt is integrated.
+
 ## Public repository preparation (2026-10-15)
 
 The owner chose to publish the existing repository, use MIT for original
