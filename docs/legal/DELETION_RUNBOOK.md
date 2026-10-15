@@ -231,8 +231,10 @@ and privacy research do not change that operational deadline.
 
 ## Intake and verification
 
-Native Account settings include Delete Account, destructive confirmation and
-Refresh deletion status. The backend has owner guards, cleanup, retention and
+The pre-pivot native Account settings include Delete Account, destructive
+confirmation and Refresh deletion status. The current local-first app does not
+expose these controls. Retained backend obligations remain unchanged.
+The backend has owner guards, cleanup, retention and
 separately gated provider workers. Recorded production provisioning and the Oct4
 selected-case Clerk deletion do not prove complete fulfillment. The later Google
 prerequisite and automatic contact/send path still need live evidence.

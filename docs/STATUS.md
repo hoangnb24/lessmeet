@@ -52,6 +52,15 @@ GitHub branch-protection readback returned 403 (plan limitation); no bypass or
 protection change is authorized. Normal PR merge remains the integration route.
 Historical tests below do not verify the new merge artifact.
 
+Independent read-only inspection of `fcb7d51` confirmed the 11-file boundary,
+unchanged code/workflow, preserved delivery ancestry and original local intent.
+ACCEPT its finding that the deletion runbook still described pre-pivot native
+controls as current. Corrected only that sentence and its historical boundary;
+retained backend obligations are unchanged. ACCEPT the reconciled documentation
+for normal PR integration after direct diff inspection and link/whitespace checks.
+The review scope is closed with no write ownership. No app or new release artifact
+acceptance follows from this static review.
+
 ## Automatic merged-main pre-releases enabled (2026-10-14)
 
 The owner authorized automatic release publication after merges with successful
