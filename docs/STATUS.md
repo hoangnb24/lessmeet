@@ -34,7 +34,9 @@ fix/ci-signing-stage-diagnostics, fix/ci-signing-substage-diagnostics,
 fix/library-shell-navigation, fix/pr14-release-binding,
 integration/local-first-pivot, pivot/chatgpt-signin and pivot/local-models.
 Only non-forced local branch deletion was used. Remote branches/tags remain for
-recovery. Delivery and the integration branch remain until main contains them.
+recovery. After PR #23 merged, delivery/signed-ci-artifact and
+integration/docs-cleanup-20261015 were also deleted locally after ancestry checks.
+Only local main remains. No remote branch or tag was deleted.
 
 Archived exactly sessions `369f7431`, `b0d8a03a` and `2c302ba2`.
 Each was idle, with no active turn, pending permission or attention request.
@@ -60,6 +62,37 @@ retained backend obligations are unchanged. ACCEPT the reconciled documentation
 for normal PR integration after direct diff inspection and link/whitespace checks.
 The review scope is closed with no write ownership. No app or new release artifact
 acceptance follows from this static review.
+
+Final integration receipt: [PR #23](https://github.com/hoangnb24/lessmeet/pull/23)
+merged exact head `a7f49307e50ccc155ccc6abc0407a04c74ab1346` at
+`975b8e4b6731e23d8dc31b5116489d713a54c4c6`. Local main fast-forwarded to that
+remote merge without stash, reset, revert or force. The only untracked files
+remain the three preserved `.codex/better-harness/2026-09-27-lessmeet/` reports.
+No tracked changes or local-only branch commits remained after integration.
+
+[Run 38670032984](https://github.com/hoangnb24/lessmeet/actions/runs/38670032984)
+completed successfully. Fresh job results establish workflow/offline checks,
+arm64 build, signing/notarization/stapling, credential cleanup, sealed artifact
+checks and publication success for this merge. Artifact `11944031881` binds
+source `975b8e4`; its envelope digest is
+`dea4b4fd6195db4a415921178922a8a3fc0ba621d6b14bf79d46d96546cd94dc`.
+It expires on 2026-11-14. The run API head is the PR head, not the merged source.
+
+Fresh release readback confirms [main-signed-54](https://github.com/hoangnb24/lessmeet/releases/tag/main-signed-54-975b8e4b6731e23d8dc31b5116489d713a54c4c6),
+release ID `413356067`, non-draft prerelease targeting the exact merge SHA.
+It contains the signed arm64 ZIP, release.json, changelog.md and SHA256SUMS.
+The API-reported ZIP digest is
+`5dfd20e4bceafe076e2b1c2251ef5a9fb97fee2525c631772fb43483cb8cc7c8`.
+This is new hosted evidence, not reuse of the previous build's tests. No app was
+downloaded/extracted/launched here; independent local signature verification,
+UI, real auth, recording/playback, inference and save/reopen remain UNVERIFIED
+for this artifact. ACCEPT the scoped Git/docs integration and safe cleanup.
+No implementation, UI or Peer write scope remains from this task.
+
+This final receipt is a documentation-only main push under the owner's existing
+commit/push authority. It does not trigger the PR-merge release workflow or imply
+a new binary beyond build 54. No production deploy, secret/account change, new
+release mechanism, ignored-data cleanup or backup modification occurred.
 
 ## Automatic merged-main pre-releases enabled (2026-10-14)
 
