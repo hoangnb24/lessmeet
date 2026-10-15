@@ -19,13 +19,14 @@ final class AppModel: ObservableObject {
     @Published var error: String?
     @Published var startedAt: Date?
     let playback = AudioPlayback()
-    var onRecordingFinalized: ((UUID) -> Void)?
     private let capture: any RecordingCapture
     private(set) var store: RecordingStore?
     private var activeID: UUID?
 
     var selected: Recording? { recordings.first { $0.id == selection } }
     var canQuit: Bool { phase == .idle }
+
+    func isCapturing(_ id: UUID) -> Bool { activeID == id }
 
     init(store suppliedStore: RecordingStore? = nil, capture: (any RecordingCapture)? = nil) {
         self.capture = capture ?? CaptureService()
@@ -74,30 +75,24 @@ final class AppModel: ObservableObject {
         guard phase == .recording, let id = activeID,
               var recording = recordings.first(where: { $0.id == id }) else { return }
         phase = .stopping
-        var finalizedNormally = false
         do {
             let result = try await capture.stop()
             recording.duration = result.duration
             recording.failure = [interruption, result.warning].compactMap { $0 }.joined(separator: "\n")
             if recording.failure?.isEmpty == true { recording.failure = nil }
             recording.status = interruption == nil ? .ready : .interrupted
-            // A stream-stop error can return finalized audio with a warning.
-            finalizedNormally = interruption == nil && result.warning == nil
         } catch {
             recording.status = .interrupted
             recording.duration = startedAt.map { Date.now.timeIntervalSince($0) } ?? 0
             recording.failure = error.localizedDescription
             self.error = error.localizedDescription
         }
-        let saved = persist(recording)
+        persist(recording)
         activeID = nil
         startedAt = nil
         phase = .idle
         selection = id
         loadPlayback()
-        if saved && finalizedNormally && recording.status == .ready {
-            onRecordingFinalized?(id)
-        }
     }
 
     func rename(_ title: String) {

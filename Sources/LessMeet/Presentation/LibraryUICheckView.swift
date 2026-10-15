@@ -9,9 +9,19 @@ struct LibraryUICheckView: View {
     var body: some View {
         Group {
             if let context {
+                VStack(spacing: 0) {
+                    if let capture = context.manualCapture {
+                        ManualUICheckControls(model: context.model, transcription: context.transcription,
+                                              capture: capture) {
+                                do { self.context = try LibraryUICheckContext(root: context.root) }
+                                catch { failed = true; self.context = nil }
+                        }
+                    }
                 LibraryView(model: context.model, session: context.session, chat: context.chat,
                             modelManager: context.manager, transcription: context.transcription)
                     .defaultAppStorage(context.defaults)
+                }
+                .task(id: ObjectIdentifier(context.manager)) { await context.manager.prepare() }
             } else if failed {
                 Text("Could not create the isolated Library fixture. No product storage was opened.")
             } else {
@@ -45,14 +55,17 @@ final class LibraryUICheckContext {
     let chat: LocalChatModel
     let manager: LocalModelManager
     let transcription: LocalTranscriptionModel
+    let manualCapture: ManualUICheckCapture?
 
-    init() throws {
-        root = FileManager.default.temporaryDirectory.resolvingSymlinksInPath()
+    init(root suppliedRoot: URL? = nil) throws {
+        root = suppliedRoot ?? FileManager.default.temporaryDirectory.resolvingSymlinksInPath()
             .appendingPathComponent("LessMeet-Library-UICheck-" + UUID().uuidString, isDirectory: true)
         defaults = UserDefaults(suiteName: "com.lessmeet.library-ui-check." + UUID().uuidString)!
         store = try RecordingStore(root: root.appendingPathComponent("Recordings", isDirectory: true))
         let date = Date(timeIntervalSince1970: 1_760_000_000)
-        if DemoCapture.isActive {
+        if ManualTranscriptionUICheck.isActive {
+            if suppliedRoot == nil { try ManualTranscriptionUICheck.seed(store) }
+        } else if DemoCapture.isActive {
             _ = try DemoCapture.seed(store: store)
         } else {
         try store.save(Recording(id: Self.longID, title: "Synthetic planning — long transcript",
@@ -70,11 +83,20 @@ final class LibraryUICheckContext {
             LocalTranscriptSegment(startMs: 0, endMs: 30_000, speaker: "Maya", text: Self.shortText)
         ]), for: Self.shortID)
         }
-        model = AppModel(store: store, capture: DemoCapture.isActive ? DemoCaptureRecorder() : LibraryUICheckCapture())
+        manualCapture = ManualTranscriptionUICheck.isActive ? ManualUICheckCapture() : nil
+        let capture: any RecordingCapture
+        if let manualCapture { capture = manualCapture }
+        else if DemoCapture.isActive { capture = DemoCaptureRecorder() }
+        else { capture = LibraryUICheckCapture() }
+        model = AppModel(store: store, capture: capture)
         // An empty catalog fails validation before filesystem or network work, including Retry.
-        manager = LocalModelManager(root: root.appendingPathComponent("Models", isDirectory: true),
-                                    catalog: [], configuration: .ephemeral)
-        transcription = LocalTranscriptionModel(app: model, manager: manager, engine: LibraryUICheckEngine())
+        manager = try ManualTranscriptionUICheck.isActive
+            ? ManualTranscriptionUICheck.manager(root: root.appendingPathComponent("Models"))
+            : LocalModelManager(root: root.appendingPathComponent("Models", isDirectory: true),
+                                catalog: [], configuration: .ephemeral)
+        let engine: any LocalTranscriptionProcessing = ManualTranscriptionUICheck.isActive
+            ? ManualUICheckEngine() : LibraryUICheckEngine()
+        transcription = LocalTranscriptionModel(app: model, manager: manager, engine: engine)
         let profile = ChatGPTProfile(id: "library-fixture", displayName: DemoCapture.isActive ? "Demo account" : "Synthetic account", clientID: "fixture-client")
         var record = ChatGPTAuthRecord()
         record.registrations = [ChatGPTRegistration(clientID: profile.clientID, subject: "fixture-subject", profile: profile,

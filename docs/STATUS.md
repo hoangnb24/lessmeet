@@ -1,5 +1,63 @@
 # LessMeet delivery
 
+## Saved interrupted audio and manual transcription — in progress (2026-10-15)
+
+Outcome: valid saved audio remains eligible for explicit local transcription after
+sleep/interruption, including older interrupted records. Stop, recovery and reopen
+must never enqueue transcription automatically. Keep interruption warnings and
+reject missing, invalid or still-active audio without modifying recordings.
+
+Base: local main `8150dc1` after the documentation/delivery integration below.
+Work branch: `fix/manual-saved-transcription-20261015`. The existing session owns
+all implementation, tests and status writes. No Peer writer or live UI owner is
+active. Room inspection found this session as the sole active project owner;
+its existing workspace is absent from the active listing but its cwd and tools
+work. Do not create a replacement owner/workspace. Preserve untracked `.codex`.
+An attempted read-only safety inspection could not start: the existing workspace
+ID returned not found. No Peer was created and no ownership was delegated. Continue
+local work; independent Peer inspection is unavailable until the existing workspace
+registration is repaired. Do not create a competing workspace to bypass this.
+
+Observed source cause: LocalTranscriptionModel accepts only `.ready` metadata;
+AppModel records sleep-finalized audio as `.interrupted`. LessMeetApp separately
+connects onRecordingFinalized to transcription. The supplied screenshot shows
+both the sleep warning and recording-not-ready error. The actual meeting file
+and installed build have not been supplied or checked; do not scan the library.
+
+Plan: characterize the saved/active audio boundary, remove implicit start wiring,
+cover manual stop/interruption/reopen/explicit requests with synthetic tests, then
+check the affected UI through lessmeet-app-check and inspect the exact candidate.
+Use verify-lessmeet for regression evidence. Keep runtime results separate from
+tests and unavailable real sleep/meeting checks. No upload, paid API, destructive
+repair, credential change or new release mechanism. Existing delivery authority
+and automatic merged-main prerelease policy below remain unchanged.
+
+Implementation removes the finalization callback and its app wiring. The only
+production transcription entry is now the explicit Transcript button. Eligibility
+accepts saved `.interrupted` or `.ready` metadata but rejects the active capture ID
+through starting/recording/stopping. Existing file and decoder validation remain.
+No metadata migration or audio repair is used.
+
+Preliminary evidence under ignored `.artifacts/manual-transcription/`: the first
+build was invalidated by overlapping source edits; a clean incremental candidate
+build passed. The first 393-test run passed with six opt-in skips. The expanded
+394-test run passed with seven opt-in skips. Two explicit real-model checks then
+passed separately with network denied: normal and interrupted saves each stayed
+idle until requested, saved a valid transcript, reopened it and preserved metadata.
+The installed model cache was cloned into private task storage. Input was the
+retained synthetic narration fixture, not a user meeting. A new `say` fixture
+failed its audible-sample check and was not used. Retain failed evidence separately.
+The isolated Library fixture now supports generated AAC, simulated interruption,
+explicit transcription through the shared controller and real decoder, and reopen.
+Its output is synthetic; it is not speech-model or physical-sleep evidence.
+Final regression: 395 tests, seven explicit opt-in skips, zero failures
+(`regression-final.log`). The two real-model opt-ins passed separately
+(`real-inference.log`); long-capture, exact two-hour, tokenizer and backend-fixture
+opt-ins were not run. Build warnings in DemoCapture are pre-existing.
+Packaged runtime checks and final candidate disposition are pending. This session
+reserves sole live UI ownership for the isolated Library fixture. Do not operate
+the installed app or its library. No Peer or XCUITest driver owns this scope.
+
 ## Documentation integration and local cleanup (2026-10-15)
 
 The owner authorized integrating the retained documentation/skill edits and the

@@ -61,10 +61,13 @@ Core ML caches. Open **Local models** to see progress, cancel, resume or retry.
 Failed or cancelled setup does not retry automatically during that app session.
 The model cache is `~/Library/Application Support/LessMeet/Models/`.
 
-After **Stop & Save** finishes successfully, LessMeet queues local transcription.
-If models are not ready, the job waits for setup. Open **Transcript** to see the
-job and saved output. **Transcribe on this Mac** also processes an existing ready
-recording. **Cancel all transcription** cancels the active job and pending jobs.
+**Stop & Save** saves audio without starting transcription. Recovery and reopening
+a recording do not start transcription either. Open **Transcript**, then choose
+**Transcribe on this Mac** to start. Saved interrupted recordings are eligible
+when their audio is valid; the interruption warning remains visible. Active,
+missing or invalid audio cannot produce a new transcript.
+If models are not ready, an explicitly requested job waits for setup.
+**Cancel all transcription** cancels the active job and pending jobs.
 Cancellation or failure preserves a previous saved transcript.
 
 ## Chat with a local transcript

@@ -5,7 +5,17 @@ import XCTest
 /// Opt-in real-model check. Capture uses a supplied synthetic M4A, never a microphone.
 final class LocalRealInferenceTests: XCTestCase {
     @MainActor
-    func testFinalizationThroughRealModelsSavesAndReopensSidecar() async throws {
+    func testExplicitRequestThroughRealModelsSavesAndReopensSidecar() async throws {
+        try await checkExplicitRequest(interruption: nil)
+    }
+
+    @MainActor
+    func testExplicitInterruptedRequestThroughRealModelsSavesAndReopensSidecar() async throws {
+        try await checkExplicitRequest(interruption: "Synthetic sleep interruption")
+    }
+
+    @MainActor
+    private func checkExplicitRequest(interruption: String?) async throws {
         let environment = ProcessInfo.processInfo.environment
         guard let modelPath = environment["LOCAL_INFERENCE_MODEL_ROOT"],
               let audioPath = environment["LOCAL_INFERENCE_AUDIO"],
@@ -30,21 +40,19 @@ final class LocalRealInferenceTests: XCTestCase {
         }
         let controller = LocalTranscriptionModel(app: app, manager: manager)
         defer { controller.cancel() }
-        var finalized: [UUID] = []
-        app.onRecordingFinalized = { id in
-            finalized.append(id)
-            controller.transcribe(recordingID: id)
-        }
         let started = Date()
         await app.startRecording()
         guard app.phase == .recording, let id = app.selected?.id else {
             throw CheckFailure(app.error ?? "Synthetic capture did not start.")
         }
         XCTAssertNil(try store.loadLocalTranscript(for: id))
-        await app.stopRecording()
-        XCTAssertEqual(finalized, [id])
+        await app.stopRecording(interruption: interruption)
+        XCTAssertEqual(controller.state(for: id), .idle)
+        XCTAssertNil(try store.loadLocalTranscript(for: id))
+        controller.transcribe(recordingID: id)
         XCTAssertEqual(capture.stopCount, 1)
-        XCTAssertEqual(app.selected?.status, .ready)
+        XCTAssertEqual(app.selected?.status, interruption == nil ? .ready : .interrupted)
+        XCTAssertEqual(app.selected?.failure, interruption)
         let metadataURL = store.directory(for: id).appendingPathComponent("recording.json")
         let metadata = try Data(contentsOf: metadataURL)
         // Retain evidence even on failure. Do not use or clean up the default library.
@@ -74,7 +82,8 @@ final class LocalRealInferenceTests: XCTestCase {
         XCTAssertEqual(try Data(contentsOf: metadataURL), metadata)
         let reopened = try RecordingStore(root: root)
         XCTAssertEqual(try reopened.loadLocalTranscript(for: id), transcript)
-        XCTAssertEqual(try reopened.load().first?.status, .ready)
+        XCTAssertEqual(try reopened.load().first?.status, interruption == nil ? .ready : .interrupted)
+        XCTAssertEqual(try reopened.load().first?.failure, interruption)
         print("Real finalization-to-sidecar result elapsedSeconds=\(Date().timeIntervalSince(started)) segments=\(transcript.segments.count) path=\(store.directory(for: id).appendingPathComponent("transcript.json").path)")
     }
 
