@@ -26,8 +26,31 @@ The existing workflow builds only merged main PRs, signs/notarizes with scoped
 environment secrets, then publishes a prerelease after artifact validation.
 Branch pushes do not trigger this workflow. No secret values were read.
 
-Integration verification and cleanup disposition will be recorded here before
-handoff. Historical tests below do not verify the new merge artifact.
+Cleanup completed for 12 local branches after checking each tip is an ancestor
+of remote main and equals its remote branch: check/main-build-20261012,
+cleanup/post-pivot-20261013, design/icon-promotion-video,
+design/signin-chat-preview, fix/chatgpt-secure-storage,
+fix/ci-signing-stage-diagnostics, fix/ci-signing-substage-diagnostics,
+fix/library-shell-navigation, fix/pr14-release-binding,
+integration/local-first-pivot, pivot/chatgpt-signin and pivot/local-models.
+Only non-forced local branch deletion was used. Remote branches/tags remain for
+recovery. Delivery and the integration branch remain until main contains them.
+
+Archived exactly sessions `369f7431`, `b0d8a03a` and `2c302ba2`.
+Each was idle, with no active turn, pending permission or attention request.
+Their handoffs relinquish ownership or complete the accepted research; their
+candidate commits are integrated. Their old directories are absent and no cwd
+process was found there. This is session soft-archive, not transcript deletion.
+The main workspace, current session and main's other idle session remain intact.
+No worktree directory or ignored/local data was removed; no disk saving claimed.
+
+The scoped diff passes whitespace checks; 70 local file links resolve.
+Sources, workflows, scripts, tests and package files match remote main exactly.
+An initial diff check against the old base reported existing trailing tabs in
+the already-merged promo capture TSV. That unrelated file remains unchanged.
+GitHub branch-protection readback returned 403 (plan limitation); no bypass or
+protection change is authorized. Normal PR merge remains the integration route.
+Historical tests below do not verify the new merge artifact.
 
 ## Automatic merged-main pre-releases enabled (2026-10-14)
 
