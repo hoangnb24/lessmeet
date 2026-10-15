@@ -1,5 +1,11 @@
 # LessMeet
 
+## License
+
+LessMeet's original code is available under the [MIT License](LICENSE).
+Third-party code, SDKs and model weights retain their own licenses and notices.
+See the [model and SDK license sources](Resources/ModelLicenses/SOURCES.md).
+
 [![LessMeet: 30-second promo](design/promo-video/out/poster-ad.png)](design/promo-video/out/LessMeet-ad-30s-1080p60.mp4)
 
 *Be in the conversation. Keep the details.* ([watch the 30 s video](design/promo-video/out/LessMeet-ad-30s-1080p60.mp4))

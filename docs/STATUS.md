@@ -1,5 +1,26 @@
 # LessMeet delivery
 
+## Recording fix publication — authorized and in progress (2026-10-15)
+
+The owner explicitly authorized pushing accepted candidate `8e4f195`, creating
+its PR and merging through the normal protected workflow. Preserve implementation
+`d09112c` and all three existing logical commits. This session owns publication
+and status updates; no Peer or live UI scope is active. The workspace visibility
+issue remains unresolved and does not require a replacement owner.
+
+Fresh remote main is `a3d1b05`. Its changes since the original base `8150dc1`
+are LICENSE, README and STATUS only. A normal integration merge retains those
+MIT/publication records and resolves only the overlapping STATUS insertion.
+Product code, tests, workflows and release configuration remain unchanged from
+the accepted candidate. Protection enforces PRs and conversation resolution,
+requires zero approvals and defines no pre-merge status checks. Both existing
+release gates read true. No bypass, force push or configuration change is used.
+
+Proceed with the exact reconciled head and observe its merged-source build and
+publication to a terminal result. Physical lid/sleep, the actual meeting/build,
+full production relaunch and all other UNVERIFIED limits below remain unchanged.
+The absent meeting path is not an approval gate for this authorized merge.
+
 ## Saved interrupted audio and manual transcription — accepted locally (2026-10-15)
 
 Outcome: valid saved audio remains eligible for explicit local transcription after
@@ -139,6 +160,88 @@ Complete changed paths from the base:
 - `Tests/LessMeetTests/RecordingFinalizationTests.swift`
 - `docs/LOCAL_MODELS.md`
 - `docs/STATUS.md`
+
+## Public repository enabled and main protected (2026-10-15)
+
+The existing [hoangnb24/lessmeet](https://github.com/hoangnb24/lessmeet)
+repository is public. Anonymous API readback confirms public visibility and MIT.
+[PR #24](https://github.com/hoangnb24/lessmeet/pull/24) added the exact MIT text
+for original LessMeet code at `27c89706415938e842edd4c27b6742e68aa11b65`.
+Third-party notices and licenses remain unchanged. This receipt supersedes the
+pending publication checkpoint in the preparation record below.
+
+Protection readback at 03:17 UTC confirms required PRs, administrator enforcement,
+blocked force pushes/deletion and required conversation resolution. Required
+approvals are zero for the single maintainer. No bypass allowance was granted.
+No pre-merge check exists, so the post-merge release job is not a required check.
+Secret scanning and push protection are enabled. Fork workflows require approval
+for all external contributors. Default workflow permissions remain read-only;
+Actions cannot approve PR reviews. The signing environment remains main-only.
+
+The owner accepted a non-atomic public-first transition on GitHub Free. Visibility
+changed at 03:16:26 UTC. The first protection request failed with HTTP 422 because
+an empty bypass-allowance object is organization-only. Removing that unsupported
+object allowed protection to succeed without weakening the intended policy.
+Final visibility/protection/security-settings readback passed at 03:17:25 UTC.
+
+Audit scope: all remote branches, tags and PR heads; 140 reachable commits;
+current source; issue/PR text, comments and 54 content edits; 16 available CI log
+archives; 12 available artifacts; and eight releases. Gitleaks 8.30.1 scanned
+Git history and decoded/nested archive content with secret values redacted.
+The nine Git findings were inspected: synthetic test fixtures or SHA256 records,
+not real credentials. GitHub-content scanning covered approximately 1.95 GB of
+expanded content and found no secret matches. Archive inspection covered 47
+archives and 1,499 members with no private-key filename matches. Commit-message
+scanning also found no matches. No known real secret remains from this audit.
+This is bounded detection evidence, not a guarantee against every unknown secret.
+
+[Run 38674353267](https://github.com/hoangnb24/lessmeet/actions/runs/38674353267)
+succeeded for the MIT merge. Its logs and artifact were included before public
+visibility. Build 56 release-asset digests match the downloaded artifact bytes.
+No app was run. Earlier user-reported launch, ChatGPT sign-in and follow-up chat
+remain unbound to a version/build or environment; no other runtime pass is inferred.
+
+ACCEPT the requested public/MIT/protected-main outcome. Review merged code and
+dependencies carefully: build and signing share a runner. Existing privacy,
+deletion and billing obligations remain; issue closure does not waive them.
+The audit and changes used a separate working copy. The original checkout,
+operator-owned files, credentials and recordings were not changed. No secret was
+rotated, no provider was changed, and no history was rewritten or deleted.
+No further write ownership remains after this documentation receipt is integrated.
+
+## Public repository preparation (2026-10-15)
+
+The owner chose to publish the existing repository, use MIT for original
+LessMeet code, and retain nonsecret documentation and GitHub history. Existing
+third-party licenses and notices remain unchanged. Closed issues do not establish
+technical acceptance or waive applicable privacy, deletion or billing obligations.
+
+GitHub Free returns HTTP 403 for private-repository branch protection and rulesets.
+The owner selected the no-upgrade route: audit first, then change visibility and
+immediately protect main. The transition is not atomic. Publication remains
+pending until the secret audit and CI trust-boundary checks are resolved.
+
+The MIT change is documentation-only. No app behavior, workflow, release gate,
+credential, provider setting or runtime acceptance changes. The existing merged-PR
+release workflow remains in force; its success is not new runtime evidence.
+
+The publication task owns LICENSE, this entry, the README license section and
+authorized GitHub publication/protection settings. Audit work uses a separate copy;
+the original checkout, operator-owned files and local credentials remain untouched.
+
+Read-only CI inspection of base `8150dc1` found no unmerged-PR route to signing
+secrets or repository-write credentials. Direct inspection confirms that release
+execution checks out the validated merged SHA; PR history is read as data only.
+ACCEPT this bounded finding. Manual diagnostics can execute a selected unmerged
+ref with a read-only token and no signing environment; those outputs are untrusted.
+Merged code and build dependencies share the signing runner, so maintainer review
+and dependency integrity remain the security boundary, not step order.
+
+Planned main protection requires a PR, applies to administrators, blocks force
+pushes/deletion and requires conversation resolution. Required approvals remain
+zero for the single-maintainer repository; no PR bypass is granted. There is no
+dependable pre-merge CI check, so the post-merge release job is not a required
+status check. Verify settings after publication; preparation is not enforcement.
 
 ## Documentation integration and local cleanup (2026-10-15)
 
