@@ -1,7 +1,13 @@
 # Gemini backend contract
 
+This contract covers retained cloud services and pre-pivot clients. The current
+local-first app uses local transcription and ChatGPT, not these upload routes.
+
 Development endpoint: `https://zany-octopus-315.convex.site`.
-Implementation and deployment acceptance are tracked in [STATUS.md](STATUS.md).
+Production endpoint: `https://uncommon-narwhal-733.convex.site`.
+This document describes local source contracts, not current live switch values.
+Deployment and acceptance are tracked in [STATUS.md](STATUS.md); dated environment
+observations are in [CONFIGURATION.md](CONFIGURATION.md).
 
 **Current recorded dev policy: owner-funded Gemini with sandbox billing enforcement.**
 The earlier unlimited-development policy was superseded when Human selected this
@@ -18,6 +24,9 @@ validates Clerk's issuer and `aud: convex`. Never send a Gemini key from Swift.
 The application does not accept a client-supplied owner or storage ID.
 
 ## Upload and transcription
+
+The pre-pivot native Create Transcript action uses [batch transcription](BATCH_CONTRACT.md).
+The following single-upload contract remains for legacy recordings and clients.
 
 `POST /recordings` sends the combined audio as the raw request body, with its audio
 `Content-Type`. The initial version accepts at most 18 MiB; larger recordings must
@@ -68,10 +77,10 @@ rejected rather than saved partially. Jobs expire after five minutes; abandoned
 chat reservations expire after two minutes. There is no automatic retry.
 
 Cloud content retains the existing indefinite-storage policy unless deletion is
-requested; no automatic content retention TTL is added. The deletion implementation
-below is deployed to dev with intake/automation gates off. Main-ledger retention is
-approved at 90 days after full verified completion; provider erasure remains
-unimplemented for Clerk/Apple/RevenueCat. Temporary Google Files are deleted after
+requested; no automatic content retention TTL is added. Main-ledger retention is
+approved at 90 days after full verified completion, including reconciled execution
+evidence and required Google proof. Clerk, Apple and RevenueCat workers are
+implemented; their presence does not establish live fulfillment. Temporary Google Files are deleted after
 transcription when their ID is known. Known IDs and ambiguous operations now have a
 durable ledger; failures remain pending, not inferred deleted after a deadline.
 
@@ -151,35 +160,30 @@ production activation remains unauthorized):
 No live deployment, key sharing, store purchase or production switch change is
 included in offline implementation acceptance.
 
-## Account deletion — development deployed, activation off
+## Account deletion
 
-The accepted A snapshot implemented in-app intake, guards, local cleanup and manual
-provider evidence. Human subsequently chose normal-path automation with bounded
-retries and completion notification. The follow-up below implements the
-provider-neutral worker, exact-known Gemini-file cleanup, and a separately gated
-frozen Resend sender with read-only Clerk contact inventory. Local-only Clerk,
-Apple and RevenueCat execution now has separately gated explicit adoption;
-generic worker stages stop as exceptions until adopted. Residual-copy fulfillment
-remains operator-owned. Email delivery remains pending,
-never inferred from API acceptance. This is not full automation,
-provider readiness, legal compliance, or permission to deploy/enable anything.
+The implementation includes in-app intake, owner guards, local cleanup, provider
+workers and a separately gated notification sender. Generic provider stages stop
+as exceptions until explicitly adopted into the relevant worker. Residual-copy
+handling remains operator-owned. A DELETE acknowledgement or absent account does
+not establish complete provider erasure.
 
-The original [Clerk transport](../Tests/backend/CLERK_TRANSPORT_HANDOFF.md) now has
-a separately gated [durable execution worker](#durable-clerk-execution--local-only).
-Deployed to production Sep 26, but provider activation remains off pending credentials.
-Generic stages still report `adapter_unimplemented`
-until explicitly adopted into that worker. A DELETE acknowledgement, exact-resource
-absence or revoked session is not by itself full account-deletion completion.
+The Sep 26 backend was deployed to production. Oct3 configuration enabled intake,
+automation and Clerk/RevenueCat execution. Oct4 evidence covers one selected Clerk
+deletion and one recipient-confirmed manual status email, not full fulfillment.
+The Oct5 Google prerequisite and revised contact/email implementation remain local
+according to the recorded handoff. Automatic delivery remains unverified.
+See [the operator runbook](legal/DELETION_RUNBOOK.md) for current scope and limits.
 
-### Durable Clerk execution — local only
+### Durable Clerk execution
 
 The2026-10-05 local extension inserts Google grant handling before Clerk session
 and user destruction. This extension is not deployed or live-verified yet. See
 the Google section below; historical Clerk-only evidence does not verify it.
 
-Historical heading retained for links: deployed to production; Clerk execution
-configured and enabled Oct3. Exact case adoption is still required. No live account
-deletion has been tested. See STATUS for configuration evidence and limits.
+The earlier Clerk worker was configured and enabled Oct3, with a selected-case
+deletion observed Oct4. That result does not verify the later Google prerequisite.
+Exact case adoption is still required.
 
 `CLERK_DELETION_ENABLED=true` and `DELETION_AUTOMATION_ENABLED=true` are both
 required. The immutable binding uses `CLERK_JWT_ISSUER_DOMAIN`, matching
@@ -294,14 +298,14 @@ and loss of authenticated status refresh after Clerk deletion need the existing
 operator completion-notification process before live use.
 
 Source semantics: [pinned Clerk REST schema](https://raw.githubusercontent.com/clerk/openapi-specs/main/bapi/2026-05-12.yml).
-Mock-only acceptance is recorded in STATUS and `Tests/backend/clerkExecution.test.ts`.
-No live account, notification, Apple token or RevenueCat deletion was exercised.
+Mocked coverage is in `Tests/backend/clerkExecution.test.ts`. Dated live evidence
+and its limits remain in STATUS; these tests do not establish provider behavior.
 
-### Apple and RevenueCat execution — local only
+### Apple and RevenueCat execution
 
 `providerExecution` shares one small durable case worker for these two providers,
 not a generic integration framework. Deployed to production Sep 26; RevenueCat is
-configured/enabled Oct3, Apple remains off (historical heading retained for links). All provider
+configured/enabled Oct3, Apple remains off at that checkpoint. All provider
 results are observations/acknowledgements until operator reconciliation. It retains
 no OAuth tokens, client secrets, private keys, raw responses or provider error text.
 
@@ -442,12 +446,10 @@ all activation gates were removed afterward. Provider flags in that fixture are
 synthetic attestations only: no Clerk, RevenueCat, Apple or Gemini deletion ran, so
 this proves ledger orchestration and retention—not provider erasure.
 
-Human must supply a supportable completion-time disclosure and completion
-notification method before release; the current native pending text promises no
-deadline. [Apple permits manual fulfillment but requires timing and completion
-communication](https://developer.apple.com/support/offering-account-deletion-in-your-app/).
-Manual fulfillment must not require the requester to email to initiate deletion.
-The flow is not presently established as App Store compliant or release-ready.
+The approved operating policy is normal scoped deletion within seven calendar days
+of receipt, with email updates/results. Exceptions require a status, reason and
+next-update time. See the [approved procedure](legal/DELETION_RUNBOOK.md#approved-7-calendar-day-email-operation--implementationreadback-required).
+This is not a universal erasure guarantee or verified release readiness.
 
 ### Race and cleanup contract
 
@@ -547,7 +549,7 @@ row, not an email match or an ID supplied by an unverified requester.
    The separate sender below can submit email only after exact scope
    completion and contact/configuration checks; submission is not delivery evidence.
 
-### Partial automation worker (offline candidate)
+### Partial automation worker
 
 `DELETION_AUTOMATION_ENABLED` is a separate, default-off gate: only the exact value
 `true` allows discovery/claims/external dispatch. It does not enable intake, grant
@@ -641,12 +643,14 @@ windows. No automatic generation retry or shared-project file listing is added.
 
 ### Progress and notification intent, not delivery
 
-Public `GET/POST /account/deletion` and native response fields are unchanged.
+Public `GET/POST /account/deletion` retains its routes. The local Google extension
+adds optional `googleStatus` without replacing broad provider-completion fields.
 `deletionAutomation:inventory({id,owner,cursor})` exposes paginated internal stages
 and an outbox snapshot. Classification is `queued` while discovery or scheduled
 work is pending, `exceptions` for blocked/exhausted/unresolved scope, and
-`scope_complete` only when local cleanup and all independent legacy provider/residual
-attestations are complete. A successful known-file stage alone never sets `gemini`
+`scope_complete` only when local cleanup, all five provider/residual attestations
+and reconciled execution evidence are complete, including required Google proof.
+A successful known-file stage alone never sets `gemini`
 or `providersComplete`. Read the legacy inventory alongside automation inventory
 for unknown work and a current `automationRevision` before manual changes.
 
@@ -659,23 +663,21 @@ remains unchanged for compatibility; it describes this provider-neutral intent,
 not the separate `deletionSends` record below. Read notification inventory for
 actual submission/pending state. The mutable intent is never itself sent.
 
-Remaining live dependencies: native RevenueCat shutdown/startup and other-device
-quiescence; separate exact-project v2 deletion credentials and evidence;
-exact Clerk/Apple linked-token and original-client
-verification with revocation before losing identity access; deployment of the
-default-off contact/sender candidate and an approved relay-only exception procedure.
-RC v1 GET creates missing customers and is not used for verification. The new
-local-only v2 route above supersedes the earlier planned v1 deletion route.
-Backups, logs, legacy orphans, identity suppression/retention and completion-time
-disclosures remain unresolved. Nothing here deletes the owner guard or claims all
-normal-path provider automation has shipped.
+Remaining live dependencies include RevenueCat recreation checks, applicable
+Google/Apple grant handling and automatic contact/send verification. Credentials
+and activation observations belong in [CONFIGURATION.md](CONFIGURATION.md), not
+this contract. The v2 RevenueCat route replaces the planned v1 deletion route;
+v1 GET is not used for absence verification. The [runbook](legal/DELETION_RUNBOOK.md)
+separates scoped case work from broad backup/log/privacy work and records the
+approved timing disclosure. Nothing here removes the owner guard or proves full automation.
 
 Offline verification uses mocked fetch exclusively and scheduler-driven fixtures:
 default-off/missing-secret behavior, pagination, retries/exhaustion, lost workers,
 concurrent claims, stale/manual/config/owner conflicts, exact-file absence versus
 generation uncertainty, old rows, and unique intent truth. Deployment cron timing,
-real provider response compatibility, actual deletes and actual notifications have
-not been exercised. Sources read 2026-09-23:
+real provider response compatibility, actual deletes and notifications are not
+proved by those fixtures. Separate dated live results remain in STATUS.
+Sources read 2026-09-23:
 [Convex scheduling](https://docs.convex.dev/scheduling/scheduled-functions),
 [Gemini Files](https://ai.google.dev/api/files),
 [RevenueCat v1](https://www.revenuecat.com/docs/api-v1/customers).
@@ -699,12 +701,12 @@ Public capability documentation is not verification of these deployments/setting
 Accepted disclosure/runbook input remains in `docs/legal/`; this candidate does not
 edit or supersede its historical base-characterization results.
 
-### Frozen completion notification (local/offline candidate, 2026-09-24)
+### Frozen completion notification
 
-No deployment, secret provisioning, live contact lookup or email send was performed.
-The verified sender supplied by Lead is `notifications@lessmeet.2m0r.com`; the
-domain-restricted sending-only Resend key is not provisioned to this backend.
-Do not read it for tests. Direct REST uses the existing runtime, no SDK/install.
+The fixed sender is `notifications@lessmeet.2m0r.com`. Production credential
+provisioning was recorded Oct3. A manual status email has recipient-reported
+receipt; this does not verify automatic contact capture or outbox delivery.
+Do not read credentials for tests. Direct REST uses the existing runtime.
 The public deletion response and routes are unchanged; no public contact setter,
 arbitrary-recipient endpoint or webhook endpoint is added.
 
@@ -878,7 +880,7 @@ Offline fixtures establish request/state behavior only. Live Clerk/key/issuer
 binding, Resend compatibility, delivery, cron timing and full deletion readiness
 remain unverified. Existing identity/provider exceptions remain release blockers.
 
-### Read-only provider preflight (local/offline candidate, 2026-09-24)
+### Read-only provider preflight
 
 This is a separate inventory sidecar of the accepted automation worker, not a
 destructive provider adapter. `deletionAutomation.start` schedules it when enabled;

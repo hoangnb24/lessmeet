@@ -1,13 +1,18 @@
 # Provider disclosure research — unpublished
 
+Implementation notes reconciled 2026-10-13 against local source and recorded
+acceptance. External provider terms below remain dated research, not a current
+legal opinion. Recheck them during policy review before publication.
+
 Reconciled 2026-09-24 against `b42a7a00a9e0f60a72eaeeadaa17b0c9c190f605`
 plus accepted working-tree evidence in [STATUS](../STATUS.md),
 [BACKEND](../BACKEND.md) and [CONFIGURATION](../CONFIGURATION.md).
 This is evidence for policy review, not legal approval or authorization to publish.
 No account/settings inspection occurred in the Sep 24 reconciliation. Sep 25
 Google/Clerk evidence is now recorded in CONFIGURATION: Google credentials enabled,
-domain/SSL complete, Google Testing/Branding incomplete and Apple credentials pending.
-Scopes/Google dashboard behavior are Human-reported; full login remains unverified.
+domain/SSL complete and Google Testing/Branding incomplete. Sep26 Apple credential
+readback and Human-reported hosted login supersede the earlier missing-credential
+finding. Native callback and provider revocation remain separate checks.
 Human subsequently authorized landing-only publication Sep 25; this does not
 authorize publishing policy drafts or establish Google production readiness.
 
@@ -25,7 +30,7 @@ optional-sharing evidence is still needed; no universal no-training claim follow
 
 | Recipient | Accepted implementation sends/stores | Public provider documentation | Production verification still needed |
 | --- | --- | --- | --- |
-| Convex | Issuer-bound owner, subject, uploaded audio, transcript, questions/answers, processing and billing/quota state. Content indefinite unless deletion requested. Accepted guarded cleanup and operational ledgers are dev-deployed, intake/automation off. Separate approved 30/90-day policies below. | [File deletion](https://docs.convex.dev/file-storage/delete-files) is separate from row deletion. The historical Sep 23 [backup research](https://docs.convex.dev/database/backup-restore) found differing duration descriptions; no universal erasure deadline was established. | Exact production region/plan, backup/file schedule, exports, logs/support retention, DPA and subprocessors. Recheck backup documentation/settings and suppression on restore; no production backup expiry or deletion SLA is verified. |
+| Convex | Issuer-bound owner, subject, uploaded audio, transcript, questions/answers, processing and billing/quota state. Content indefinite unless deletion requested. Production provisioning and selected-case cleanup evidence are recorded; complete fulfillment is not established. Separate approved 30/90-day policies below. | [File deletion](https://docs.convex.dev/file-storage/delete-files) is separate from row deletion. The historical Sep 23 [backup research](https://docs.convex.dev/database/backup-restore) found differing duration descriptions; no universal erasure deadline was established. | Exact production region/plan, backup/file schedule, exports, logs/support retention, DPA and subprocessors. Recheck backup documentation/settings and suppression on restore; no production backup expiry or deletion SLA is verified. |
 | Clerk | Account identity, selected social-login profile/contact information and sessions; the app uses Clerk tokens for backend authentication. Not intentionally sent meeting audio. | [deleteUser](https://clerk.com/docs/reference/backend/user/delete-user) deletes the specified user. [DPA](https://clerk.com/legal/dpa) distinguishes customer personal data from account information, permits processing where Clerk/subprocessors operate, and describes deletion following contract termination. That is not a per-user deletion deadline. | Production social-login scopes/profile fields, session/device/security logs, backup retention, applicable contract/transfer mechanism, and Sign in with Apple token-revocation responsibility. User API deletion alone does not prove every residual copy or OAuth grant is erased. |
 | RevenueCat | Clerk subject as App User ID, subscription transactions/entitlements and SDK purchase context; backend receives status for authorization. Not intentionally sent meeting content. | [Customer deletion](https://www.revenuecat.com/docs/dashboard-and-metrics/customer-profile#delete-customer) removes customer/purchase history but does not cancel Apple subscriptions. [Privacy policy](https://www.revenuecat.com/privacy) distinguishes developer end-user processing under customer agreements from its own site/account policy. Do not copy its six-year site/account retention language into LessMeet's end-user promise. | Exact SDK fields, aliases, integrations/exports, production and sandbox restore policy, DPA, residual logs/backups and deletion confirmation. [Apple privacy guidance](https://www.revenuecat.com/docs/platform-resources/apple-platform-resources/apple-app-privacy) informs SDK disclosure but does not complete the whole app questionnaire. |
 | Google Gemini | Audio via Files; transcript/question/history for replies; generation requests `store: false`. Safe known file IDs and ambiguous operations are durably recorded. Eligible exact-known files have bounded cleanup; unknown uploads, legacy copies and interrupted generation remain exceptions. | [Files API](https://ai.google.dev/gemini-api/docs/files) documents expiry/deletion, distinct from [Interaction storage](https://ai.google.dev/gemini-api/docs/interactions-overview#data-storage-and-retention) and provider logs. [Terms](https://ai.google.dev/gemini-api/terms) distinguish paid/unpaid handling; project billing and optional sharing matter. | Exact project billing/tier/region and logging/sharing settings, residual retention and reconciliation. Recorded owner-funded dev approval is not a fresh settings audit. File absence and `store: false` do not prove universal erasure or no training at every layer; no sensitive/personal test data under unverified unpaid terms. |
@@ -33,21 +38,22 @@ optional-sharing evidence is still needed; no universal no-training claim follow
 
 ### Accepted execution limits and notification processor
 
-Clerk's accepted transport-only module pins the recorded `2026-05-12` wire version
-and distinguishes DELETE acknowledgement, point-in-time absence and session
-revocation. It has no worker caller or completion writes; the worker still returns
-`adapter_unimplemented`. Apple original-client/revocation provenance and RevenueCat
-destructive permission, aliases and all-device recreation risk remain unresolved.
-The recorded RC v2 preflight credential is read-only; it does not authorize deletion.
-The development Clerk instance uses shared social credentials; enabling the native
-Apple capability did not resolve hosted OAuth provenance or migrate identities.
+Clerk, Apple and RevenueCat transports have durable worker callers. Clerk pins the
+recorded `2026-05-12` API version. Generic stages require explicit adoption; API
+acknowledgements do not establish full deletion. Selected-case Clerk deletion has
+recorded live evidence. Apple/RevenueCat live destruction and complete fulfillment
+remain unverified. The local Google prerequisite still needs live proof. See the
+[runbook](DELETION_RUNBOOK.md) and [configuration inventory](../CONFIGURATION.md)
+for exact evidence, credentials and exceptions. Read-only preflight credentials
+remain distinct from destructive credentials.
 
 Resend is the selected, separately gated completion-notification processor. The
 implementation would send a verified primary non-relay email address and frozen,
 scope-qualified completion text from `notifications@lessmeet.2m0r.com`, retaining
 submission identifiers/state. It sends no recording content. The recorded domain
-is verified; the sending credential is not provisioned to Convex and no send is
-established. Contact/send activation privacy and provider retention/processing
+is verified in the recorded checkpoint; production credential provisioning was
+recorded Oct3. One manual status email has recipient-reported receipt, not automatic
+outbox acceptance. Contact/send activation privacy and provider retention/processing
 terms still need review; the 90-day linked-row purge is not Resend-side deletion.
 There is no delivery webhook/readback; API acceptance remains delivery-unknown.
 Missing/relay-only contact needs a separately approved route, never a guessed
@@ -61,8 +67,9 @@ configuration and cursors compact after 30 days since the latest accepted state
 transition; mere reads do not extend the deadline. A minimal request-linked receipt
 prevents snapshot recreation. It contains no provider identifiers but is not the
 final unlinkable receipt. Incomplete main requests retain exact-owner guards and
-operational evidence. After local cleanup and all five provider/residual confirmations,
-90 continuous days start; reopening cancels the clock and unresolved work blocks
+operational evidence. The 90-day clock requires local cleanup, all five provider/residual
+confirmations and reconciled execution evidence. New requests also require durable
+Google acknowledgement or evidence-backed non-applicability. Reopening cancels the clock and unresolved work blocks
 purge. Daily bounded purge removes request-linked preflight/receipts, stage, outbox,
 contact and send rows, leaving only unlinkable completion/purge times and policy
 revision. Both policies are dev-deployed and gate-independent. Neither activates
@@ -94,12 +101,11 @@ inventory; mailbox provider, access and retention are operator-unverified.
    processing purposes/legal bases, transfer disclosures, contact details and
    audience text with jurisdiction-appropriate review. No GDPR/CCPA compliance,
    data-locality, no-tracking or universal no-training claim is established.
-4. Native intake/guarded cleanup and the disconnected Clerk transport are accepted
-   within their recorded limits, not end-to-end provider fulfillment. Before public
-   claims, verify the integrated candidate and separately authorized provider
-   rehearsal. Human approves supportable timing and completion communication;
-   [Privacy](PRIVACY_DRAFT.md), [Terms](TERMS_DRAFT.md) and the
-   [runbook](DELETION_RUNBOOK.md) supply no SLA or legal-compliance certification.
+4. Preserve the accepted seven-calendar-day operating policy for normal scoped
+   deletion, email updates/results and explicit exception updates. Verify actual
+   fulfillment before public claims. Integrated workers and selected-case evidence
+   do not establish universal erasure or legal compliance. Current evidence and
+   unresolved scope remain in the [runbook](DELETION_RUNBOOK.md).
 
 ## Reproducible source boundary
 

@@ -1,5 +1,172 @@
 # LessMeet delivery
 
+## Documentation integration and local cleanup (2026-10-15)
+
+The owner authorized integrating the retained documentation/skill edits and the
+delivery handoff, pushing/merging through the existing workflow, updating local
+main, and removing only integrated local branches and three verified idle sessions.
+This scope owns documentation integration and cleanup only. No implementation,
+UI, credential, provider-deployment or new release mechanism is in scope.
+
+Original edits are preserved in commits `bed254c` (app-check procedure) and
+`c647692` (cloud documentation) over `b08b3cd`. Merge reconciliation keeps the
+current local-first README and moves cloud instructions under its historical
+section. Dated acceptance and policy limitations remain; no public legal approval
+or fresh app acceptance is inferred. Operator-owned `.codex`, backup
+`/Users/tubakhuym/lessmeet-backups/cleanup-20261013.o0nk81`, ignored evidence,
+artifacts, credentials and recordings remain outside the write scope.
+
+Fresh GitHub/Git inspection: PRs #18 through #22 already integrated signing,
+safe diagnostics and temporary keychain discovery into main `8965929`.
+The remaining delivery commits `889b245`, `293bb72` and `02bb5de` change only
+CONFIGURATION and STATUS. They record accepted signed delivery, publication and
+automatic prerelease authorization. Preserve their ancestry and those decisions;
+no CI code change is needed. Both release variables read `true` on Oct15.
+The existing workflow builds only merged main PRs, signs/notarizes with scoped
+environment secrets, then publishes a prerelease after artifact validation.
+Branch pushes do not trigger this workflow. No secret values were read.
+
+Cleanup completed for 12 local branches after checking each tip is an ancestor
+of remote main and equals its remote branch: check/main-build-20261012,
+cleanup/post-pivot-20261013, design/icon-promotion-video,
+design/signin-chat-preview, fix/chatgpt-secure-storage,
+fix/ci-signing-stage-diagnostics, fix/ci-signing-substage-diagnostics,
+fix/library-shell-navigation, fix/pr14-release-binding,
+integration/local-first-pivot, pivot/chatgpt-signin and pivot/local-models.
+Only non-forced local branch deletion was used. Remote branches/tags remain for
+recovery. Delivery and the integration branch remain until main contains them.
+
+Archived exactly sessions `369f7431`, `b0d8a03a` and `2c302ba2`.
+Each was idle, with no active turn, pending permission or attention request.
+Their handoffs relinquish ownership or complete the accepted research; their
+candidate commits are integrated. Their old directories are absent and no cwd
+process was found there. This is session soft-archive, not transcript deletion.
+The main workspace, current session and main's other idle session remain intact.
+No worktree directory or ignored/local data was removed; no disk saving claimed.
+
+The scoped diff passes whitespace checks; 70 local file links resolve.
+Sources, workflows, scripts, tests and package files match remote main exactly.
+An initial diff check against the old base reported existing trailing tabs in
+the already-merged promo capture TSV. That unrelated file remains unchanged.
+GitHub branch-protection readback returned 403 (plan limitation); no bypass or
+protection change is authorized. Normal PR merge remains the integration route.
+Historical tests below do not verify the new merge artifact.
+
+Independent read-only inspection of `fcb7d51` confirmed the 11-file boundary,
+unchanged code/workflow, preserved delivery ancestry and original local intent.
+ACCEPT its finding that the deletion runbook still described pre-pivot native
+controls as current. Corrected only that sentence and its historical boundary;
+retained backend obligations are unchanged. ACCEPT the reconciled documentation
+for normal PR integration after direct diff inspection and link/whitespace checks.
+The review scope is closed with no write ownership. No app or new release artifact
+acceptance follows from this static review.
+
+## Automatic merged-main pre-releases enabled (2026-10-14)
+
+The owner authorized automatic release publication after merges with successful
+builds. Set repository variable `LESSMEET_GITHUB_RELEASE_ENABLED=true` and
+verified readback. `LESSMEET_DEVELOPER_ID_RELEASE_ENABLED` remains `true`.
+This supersedes earlier per-candidate-only publication limits and disabled-gate
+entries below. No credentials, environment protections or workflow code changed.
+
+Verified the workflow on remote `main` matches the inspected local blob
+`63a7fb6ce9d3c4c799c7d9faa6135e22a836fa71`. Only merged PRs into `main`
+trigger the existing path. A successful build must sign, notarize, staple, seal
+and upload the immutable artifact before the publish job can run. The publisher
+checks the exact source SHA, artifact ID and asset bindings before exposing the
+pre-release. Failed builds and branch pushes do not publish. Releases remain
+pre-releases, not stable latest releases.
+
+ACCEPT the requested gate configuration based on remote readback and existing
+workflow conditions. No new merge/build was triggered solely to test the gate.
+The first subsequent eligible merge will verify the enabled automatic path;
+this turn does not claim that hosted execution occurred. The already-published
+signed build 53 remains available. Runtime/UI limits remain unchanged.
+No Peer writer or UI owner is active.
+
+## Signed pre-release published on request (2026-10-14)
+
+The owner authorized publishing the accepted artifact to GitHub Releases.
+This supersedes the publication prohibition for this exact candidate only.
+The automatic release gate remains disabled; no future release policy changed.
+
+Published [main-signed-53](https://github.com/hoangnb24/lessmeet/releases/tag/main-signed-53-8965929bd735ae3623fa13e8d7cee0c4265b97e3),
+release ID `412798921`, as a non-draft pre-release, not the stable latest release.
+The existing guarded publisher used the original downloaded artifact and exact
+source `8965929bd735ae3623fa13e8d7cee0c4265b97e3`. No rebuild, signing or
+notary submission occurred. Tag, canonical metadata, four-asset allowlist,
+remote digests and downloaded remote manifest/checksum/notes passed validation.
+The signed ZIP SHA256 remains
+`dc748b0956df5a8660fc8af1a42048fd0716675c90f4702eeb99d8f94498fb11`.
+
+ACCEPT this published release as the requested distribution of the previously
+accepted artifact. Users can download its signed arm64 ZIP from Releases.
+Full-app runtime, UI, auth, inference and save/reopen limits below still apply.
+No Peer writer or UI owner is active. Earlier publication-disabled entries are
+historical for this candidate; automatic publication remains disabled.
+
+## Signed CI artifact accepted for manual testing (2026-10-14)
+
+The search-list repair resolved the observed hosted codesign failure.
+[Run 38571374166](https://github.com/hoangnb24/lessmeet/actions/runs/38571374166)
+completed successfully. Checkout logs and sealed metadata bind the build to
+merged source `8965929bd735ae3623fa13e8d7cee0c4265b97e3` (PR #22).
+The run API's head SHA is the PR head, not the checked-out merge SHA.
+
+[Download artifact 11897678766](https://github.com/hoangnb24/lessmeet/actions/runs/38571374166/artifacts/11897678766)
+for manual testing. It expires on 2026-11-13. Public publication was skipped and
+remains disabled. The artifact contains the signed arm64 ZIP, `release.json`,
+`changelog.md` and `SHA256SUMS`.
+
+- Inner ZIP: `LessMeet-main-signed-53-8965929bd735ae3623fa13e8d7cee0c4265b97e3-macos-arm64-developer-id.zip`.
+- ZIP SHA256: `dc748b0956df5a8660fc8af1a42048fd0716675c90f4702eeb99d8f94498fb11`.
+- GitHub artifact envelope digest: `sha256:f05b9216681013de1a5a07389470f2f9af320ebe27a577da31119b2936606bea` (API-reported; distinct from inner ZIP).
+- Certificate SHA1: `DE967875FB1C4BBEBCB60EED42BC7182D031E9F0`.
+- Profile SHA256: `aaecb8a165088f734db862548ce4dde6d2b6d30d9ce4dad571ab2f153e7102cc`.
+- Executable SHA256: `b16f5dd356a5efa42a7c040ec3fecad0dcf16c532399f3b99b2d542a79115f35`.
+- Apple notarization: `d6ea5f5f-679c-4a16-b4bc-6f1a9f0f7eb6`, `Accepted`, stapled.
+
+Downloaded artifact was independently checked locally with the sealed-release
+dry run against the exact source SHA. Checksums, canonical metadata, file allowlist
+and executable/profile binding passed. Native verification passed for bundle
+`com.lessmeet.app`, arm64, exact selected certificate/profile, minimal entitlements,
+secure timestamp, hardened runtime, strict signature and packaged resources.
+`stapler validate` passed; `spctl --assess --type execute --verbose=4` returned
+`accepted`, `source=Notarized Developer ID` on the extracted final ZIP.
+The signer's summary has a static `notarized: false`; it does not assess tickets.
+The separate staple/Gatekeeper checks establish notarization.
+
+The first local sealed check refused `/tmp` because it is a symlink. The same
+check passed with canonical `/private/tmp`, with no guard change. Local files
+remain at `/private/tmp/lessmeet-ci-38571374166.w2RCvT/` for inspection.
+Hosted search-list restoration, credential cleanup and separate cleanup step
+all passed. No duplicate notary submission or rerun was needed. No local keys,
+installed app, recordings or runtime state were changed by artifact checks.
+
+ACCEPT artifact `11897678766` and the exact inner ZIP hash above for manual
+testing. Direct inspection and fresh independent read-only verification agree.
+The independent check also matched extracted files/link bytes to the ZIP, with
+no extras, on macOS 26.4 (`25E246`). GitHub provenance was checked directly;
+the independent check covered local bytes and native signature/ticket evidence.
+Disposition sent; no further Peer work, writer or UI ownership remains.
+Full-app UI, recording/playback, auth, inference and save/reopen behavior
+remain UNVERIFIED for this artifact. This is a signed distribution candidate for
+manual testing, not runtime acceptance or authorization for public release.
+The bounded fix/merge/build loop is complete. No extra build or notary retry is
+needed. The owner can download this artifact for manual testing. Any later UI
+acceptance must use the required app-check skill and respect existing data and
+live-auth limits. Earlier pending-run and missing-artifact entries are historical.
+
+## Search-list repair merged; hosted verification underway (2026-10-14)
+
+PR #22 merged accepted candidate `68e85536c28db73d1f96c77de95912898cf8855b`
+normally at `8965929bd735ae3623fa13e8d7cee0c4265b97e3`, with exact head match
+and no bypass. Run `38571374166` passed provenance and offline checks and is
+building arm64 inputs. Observe completion before any retry or further repair.
+Publication remains disabled. No signed/notarized artifact is accepted yet.
+The technical owner holds the delivery scope; no Peer writer or live UI owner
+is active. Earlier underway/waiting entries below are historical.
+
 ## Restore ephemeral keychain discovery for codesign (2026-10-14)
 
 Run `38569381901` completed/failure at `sign-codesign` with
@@ -3787,6 +3954,76 @@ Read-contract implementation ACCEPTED (2026-10-11):
   is resolved; WS1 may consume the read-only API. WS2 may continue its model,
   controller and owned AppModel hook as their inputs become ready. Shell remains
   WS1-owned; package changes remain WS2-first. No product decision is needed.
+## Documentation cleanup (2026-10-13)
+
+Lead owns this documentation-only scope in the main checkout at `b08b3cd`.
+Peer `a0df6f8e` completed a read-only audit of the pinned configuration/legal docs.
+ACCEPT its six source/status discrepancy findings: worker integration, timing,
+retention prerequisites, email evidence, production state and Apple credentials.
+No write scope or UI ownership was delegated. Existing Oct12/13 entries and
+operator-owned `.codex/` remain unchanged.
+
+The current references are README for entry points, BACKEND/BATCH_CONTRACT for
+source behavior, CONFIGURATION for dated service observations, and the deletion
+runbook for operator steps. Removed duplicate provisioning instructions and old
+MVP contract prose; retained their acceptance evidence below. No whole file was
+proven obsolete. Legal drafts, design intent and historical failure evidence still
+support unresolved release work. This cleanup does not approve publication.
+
+Current handoff, based on recorded evidence rather than a fresh service readback:
+
+- The Oct5 Google deletion increment is accepted locally, not deployed or live-verified.
+  Issue #3 still needs exact-account Google proof and a scoped completion notice.
+  The [Oct8 registration entry](#takeover-and-live-test-account-registration-2026-10-08)
+  records the later trial artifact and authority limits.
+- Issue #4 owns broad provider/privacy completeness and public disclosures. The
+  seven-calendar-day scoped operating policy and existing retention periods remain.
+- The [Oct12 cleanup entry](#session-cleanup-2026-10-12) retains worktrees with
+  local data or a running app pending Human disposition.
+
+The entries below form a dated evidence journal. Old ownership, "current" labels,
+test totals and next steps describe their own checkpoint, not new authority.
+Later explicit dispositions supersede them.
+
+ACCEPT the documentation candidate over `b08b3cd`, diff SHA256
+`cb63dbc91c7d5fd022929bfc8ebc59ad7b4730ae09e489c0901b183152a36a9b`,
+before this verification receipt. Fresh read-only review `d7aaf300` found no
+concrete issue; its scope is closed. Source inspection, local file/heading links
+and `git diff --check` pass. Existing Oct12/13 additions match byte-for-byte;
+AGENTS, WORKSPACE_PROTOCOL and code have no diff. No app/test suite, live service,
+external-link or legal-policy verification was run. No commit or push occurred.
+These docs are usable for local development and the recorded open-work handoff,
+not as approved public policies or fresh production-state evidence.
+
+## Computer Use rule update (2026-10-13)
+
+Human requested updating the app-check rule for the currently exposed tools.
+This documentation scope is complete. `lessmeet-app-check` now uses
+`mcp__cua_repl__js`, `cua.getApp(...)` and the tool's returned API documentation.
+The current workflow does not require the absent legacy Computer Use SKILL.md.
+The older node_repl workflow still requires its own installed instructions.
+UI ownership, action authority and runtime-evidence requirements remain in force.
+Validation: skill validator and scoped `git diff --check` pass. Entry-point usage
+was checked against the current tool instructions. No app was selected or operated;
+runtime access, macOS permissions and LessMeet UI behavior remain UNVERIFIED.
+No live UI ownership was acquired. Existing status content and `.codex/` preserved.
+
+## Session cleanup (2026-10-12)
+
+Human requested archiving LessMeet sessions and cleaning merged worktrees.
+Archived 68 active session records and both main-checkout workspace records.
+The main checkout and operator-owned `.codex/` remain unchanged by cleanup.
+Remote main was verified at `96412826c688a9042ca278bdaf2088a21712048d`.
+All five auxiliary worktree HEADs are ancestors of that commit.
+Removed clean worktree `lessmeet-ci-publish.o1wyqc`; its commit remains on main.
+Retained `integration-local-first-pivot`, `pivot-chatgpt-signin`,
+`pivot-local-models`, and `lessmeet-main-build-check.sMcDRC`.
+They contain uncommitted files, local verification evidence, or build data.
+Integration also has a running LessMeet app. No app was stopped.
+The three worktree workspace records remain active to avoid deleting those files.
+Cleanup is partial. Human decides when the app can stop and whether to retain
+these directories as backups or discard their local data. Resume worktree cleanup
+after that decision. No branch deletion, push, deployment or runtime acceptance.
 
 ## Commit and push of accepted local work (2026-10-11)
 
@@ -8721,13 +8958,6 @@ above kept separate from fixture/build acceptance.
   CLI setup complete; development backend deployed (see verification below).
   Reference dependency resolved: /Users/tubakhuym/projects/unclebob/references.
 
-## Milestones
-
-1. Foundation, local library and launchable app bundle.
-2. Dual capture and aligned combined playback.
-3. Gemini transcript and chat, integrated native UI.
-4. Focused verification, independent candidate inspection, usable handoff.
-
 ## Active backend contract (supersedes earlier proposed endpoint list)
 
 Human requests implementing owner-isolated Gemini backend now; key is configured.
@@ -8755,20 +8985,9 @@ No valid live JWT, personal audio upload or paid Gemini request was exercised.
 Backend contract/retention/limits documented in docs/BACKEND.md. Next frontier:
 connect native Swift cloud actions, then human-assisted valid login/audio trial.
 Lead owns docs, acceptance and deployment; no live paid API tests.
-Accepted MVP: authenticated HTTP POST /recordings with raw audio (max 18 MiB,
-below Convex HTTP 20 MB limit) creates server-owned storage + record and schedules
-internal transcription; returns 202 {recordingId}. GET /recordings?id=... returns
-only owner's status/transcript/messages. POST /chat {recordingId,message} uses
-owned server transcript/history, persists the exchange and returns {text}.
-Keep GET /account. Identity is always derived from ctx.auth, never client owner IDs.
-No public storage URLs or client-supplied storage IDs, no shared caches/history.
-Internal helpers only, except HTTP routes. Gemini key only process.env.GEMINI_API_KEY;
-Vercel AI SDK Google provider, default gemini-flash-latest (server env override).
-Model availability remains live-unverified. No vector DB, tools, streaming, billing
-framework, automatic retry or deletion feature. Bound inputs/output/history; preserve
-local recording and expose actionable safe failures. Oversize audio is rejected,
-not truncated. Before deployment, focused owner/other-user/unauthenticated tests
-must pass and independent inspection must resolve concrete authorization risks.
+The original MVP wire contract is maintained in [BACKEND.md](BACKEND.md).
+Billing, deletion and [batch transcription/chat](BATCH_CONTRACT.md) were added
+later; the acceptance evidence here covers only the original checkpoint.
 
 Original local UI milestone: library/detail, rename, playback, Markdown presentation
 and recording lifecycle; cloud placeholders were not feature acceptance. They are

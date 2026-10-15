@@ -14,50 +14,44 @@ code-only scope; do not operate the app in that case.
 1. Read `docs/WORKSPACE_PROTOCOL.md` and current ownership in `docs/STATUS.md`.
    Lead owns or delegates one live UI scope. Supervisor routes checks through
    Lead. A read-only Peer requests evidence rather than operating the shared UI.
-2. Read the installed `computer-use` skill before using its runtime. Discover
-   its current location from the plugin catalog; do not pin a cache version.
+2. Check the tools exposed in the current session. For `mcp__cua_repl__js`,
+   read its supplied instructions and the API documentation it returns. A
+   separate installed `computer-use` skill is not required for this tool.
+   Do not infer tool availability from cached plugins or enabled settings.
 3. Identify the approved bundle, build identity, environment and allowed actions.
    Opening Account can itself send a status request. A state read can launch
    the app. Do not assume that observing a production app is network-free.
 
 ## Observe, act, verify
 
-Use `mcp__node_repl__js` and the installed `@oai/sky` runtime. Import once per
-fresh session, then get the app state:
+Use `mcp__cua_repl__js` for the current Computer Use workflow. In a fresh
+session, make exactly one entry-point call to select the approved app:
 
 ```js
-var sky = (await import('@oai/sky')).sky;
-var lmApp = '/absolute/path/to/the/approved/LessMeet.app';
-var before = await sky.get_app_state({app: lmApp});
-nodeRepl.write(before.text);
+var lmApp = await cua.getApp('/absolute/path/to/the/approved/LessMeet.app');
 ```
 
-Choose an authorized action from the current accessibility tree. Replace
-`observedIndex` below with its actual index; never guess or reuse a stale index.
+This call returns API documentation and the initial app state. Read both before
+continuing. Do not add clicks, waits, snapshots or other API calls to this first
+invocation. Use only methods and arguments described by the tool or its returned
+documentation. After a context reset, call `await cua.rewriteDocumentation()`
+before continuing an existing Computer Use session.
 
-```js
-var startedAt = new Date().toISOString();
-await sky.click({app: lmApp, element_index: observedIndex});
-var after = await sky.get_app_state({app: lmApp});
-nodeRepl.write(after.text);
-```
+1. Choose an authorized action from the current app state.
+2. Use the documented app API to perform that action. Never guess a control
+   identifier or reuse a stale one.
+3. Fetch fresh state using the documented API before choosing another control.
+4. For layout or rendering claims, inspect a screenshot using the documented
+   capture and image-output APIs.
 
-Inspect a screenshot for visible layout or rendering claims:
+Do not import `@oai/sky` or copy older `sky.get_app_state(...)` examples into
+`cua_repl`. If a session exposes only the older `mcp__node_repl__js` tool, read
+its installed Computer Use skill before using that older workflow. If those
+instructions are missing, report that specific blocker. An empty older skill
+directory alone does not block a documented `cua_repl` workflow.
 
-```js
-var fs = await import('node:fs/promises');
-var url = await import('node:url');
-if (after.screenshot) {
-  await nodeRepl.emitImage({
-    bytes: await fs.readFile(url.fileURLToPath(after.screenshot.url)),
-    mimeType: 'image/png'
-  });
-}
-```
-
-Fetch fresh state after each action before choosing the next control. The runtime
-can wait for loading to settle; a final snapshot cannot prove a brief spinner
-appeared. For a tool smoke check, hide and restore the sidebar rather than opening
+A final snapshot cannot prove that a brief spinner appeared. Use the documented
+wait or observation methods when the scenario requires evidence during loading. For a tool smoke check, hide and restore the sidebar rather than opening
 recordings or triggering cloud work.
 
 ## Evidence and limits
@@ -74,11 +68,12 @@ Server logs alone do not prove that the app applied that response. Report missin
 click/request/applied-state correlation instead of inferring it. Do not repeat
 clicks, or ask Human to repeat them, without a new evidence collection path.
 
-If the tool, skill, permissions, ownership or action authority is unavailable,
-report the exact blocker and mark the affected behavior UNVERIFIED. Ask Human
+If the tool, required API instructions, permissions, ownership or action authority
+is unavailable, report the exact blocker and mark the affected behavior
+UNVERIFIED. Ask Human
 only for the missing permission or unavailable action. Do not bypass permissions
 or silently install another automation stack. An approved limitation is not a pass.
 
 This skill grants no additional authority for deletion, production writes,
-uploads, recording, paid calls or account changes. Follow the installed Computer
-Use skill's action-time confirmation rules for risky actions.
+uploads, recording, paid calls or account changes. Follow the current Computer
+Use tool's supplied action-time confirmation rules for risky actions.
