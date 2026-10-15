@@ -1,5 +1,39 @@
 # LessMeet delivery
 
+## Public repository preparation (2026-10-15)
+
+The owner chose to publish the existing repository, use MIT for original
+LessMeet code, and retain nonsecret documentation and GitHub history. Existing
+third-party licenses and notices remain unchanged. Closed issues do not establish
+technical acceptance or waive applicable privacy, deletion or billing obligations.
+
+GitHub Free returns HTTP 403 for private-repository branch protection and rulesets.
+The owner selected the no-upgrade route: audit first, then change visibility and
+immediately protect main. The transition is not atomic. Publication remains
+pending until the secret audit and CI trust-boundary checks are resolved.
+
+The MIT change is documentation-only. No app behavior, workflow, release gate,
+credential, provider setting or runtime acceptance changes. The existing merged-PR
+release workflow remains in force; its success is not new runtime evidence.
+
+The publication task owns LICENSE, this entry, the README license section and
+authorized GitHub publication/protection settings. Audit work uses a separate copy;
+the original checkout, operator-owned files and local credentials remain untouched.
+
+Read-only CI inspection of base `8150dc1` found no unmerged-PR route to signing
+secrets or repository-write credentials. Direct inspection confirms that release
+execution checks out the validated merged SHA; PR history is read as data only.
+ACCEPT this bounded finding. Manual diagnostics can execute a selected unmerged
+ref with a read-only token and no signing environment; those outputs are untrusted.
+Merged code and build dependencies share the signing runner, so maintainer review
+and dependency integrity remain the security boundary, not step order.
+
+Planned main protection requires a PR, applies to administrators, blocks force
+pushes/deletion and requires conversation resolution. Required approvals remain
+zero for the single-maintainer repository; no PR bypass is granted. There is no
+dependable pre-merge CI check, so the post-merge release job is not a required
+status check. Verify settings after publication; preparation is not enforcement.
+
 ## Documentation integration and local cleanup (2026-10-15)
 
 The owner authorized integrating the retained documentation/skill edits and the
