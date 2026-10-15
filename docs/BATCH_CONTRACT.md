@@ -1,5 +1,8 @@
 # Internal batch v1 integration contract
 
+Retained cloud contract for pre-pivot clients. The current app transcribes locally
+and does not use this upload path. Existing backend obligations remain unchanged.
+
 Lead-frozen 2026-09-25. Implementation status/ownership lives only in STATUS.md.
 Default-off, owner-allowlisted internal beta. No live activation, paid tests or
 claim of complete AAC decoder safety follows from this contract.

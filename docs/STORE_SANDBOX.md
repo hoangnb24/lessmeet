@@ -1,5 +1,9 @@
 # Store connection and sandbox acceptance
 
+Historical pre-pivot runbook. The current local-first app has no RevenueCat
+purchase/restore screen. These procedures apply only to the recorded legacy
+artifact and do not authorize rebuilding or activating the old product.
+
 Execution status and ownership live in [STATUS.md](STATUS.md). This is the runbook,
 not evidence that the dashboard, legal publication or sandbox tests are complete.
 Scope: configure and test only. No submission, public release, real purchase,

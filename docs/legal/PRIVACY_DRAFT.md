@@ -1,5 +1,9 @@
 # LessMeet Privacy Policy — unpublished draft
 
+This draft describes the pre-pivot cloud product and retained provider obligations.
+It is not a disclosure of the current local-first/ChatGPT app. Reconcile that
+product change before any publication; existing data obligations remain.
+
 NOT FOR PUBLICATION until the operator has reviewed and completed this document.
 This is a draft for review, not a legal-compliance certification.
 

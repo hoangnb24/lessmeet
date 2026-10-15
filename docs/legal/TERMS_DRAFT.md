@@ -1,5 +1,9 @@
 # LessMeet Terms of Use — unpublished draft
 
+This draft describes the pre-pivot cloud product and retained provider obligations.
+It is not the current local-first/ChatGPT product contract. Reconcile that change
+before any publication; existing subscription obligations remain.
+
 NOT FOR PUBLICATION until reviewed and completed by the operator. This is product
 copy for review, not a complete jurisdiction-specific legal agreement.
 
