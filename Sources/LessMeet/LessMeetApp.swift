@@ -48,9 +48,6 @@ struct LessMeetApp: App {
         let session = ChatGPTSession()
         let manager = LocalModelManager()
         let transcription = LocalTranscriptionModel(app: model, manager: manager)
-        model.onRecordingFinalized = { [weak transcription] id in
-            transcription?.transcribe(recordingID: id)
-        }
         _model = StateObject(wrappedValue: model)
         _chatGPTSession = StateObject(wrappedValue: session)
         _modelManager = StateObject(wrappedValue: manager)

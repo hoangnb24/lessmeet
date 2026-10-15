@@ -17,6 +17,7 @@ final class LocalPivotIntegrationTests: XCTestCase {
         let transcription: LocalTranscriptionModel
         let wire: PivotWire
         let chat: LocalChatModel
+        let capture: PivotCapture
     }
 
     private func fixture() throws -> Fixture {
@@ -44,16 +45,13 @@ final class LocalPivotIntegrationTests: XCTestCase {
         let configuration = URLSessionConfiguration.ephemeral
         configuration.protocolClasses = [PivotDenyNetwork.self]
         let manager = LocalModelManager(root: modelRoot, catalog: catalog, configuration: configuration)
-        let app = AppModel(store: store, capture: PivotCapture())
+        let capture = PivotCapture()
+        let app = AppModel(store: store, capture: capture)
         let engine = PivotEngine()
         let transcription = LocalTranscriptionModel(app: app, manager: manager, engine: engine)
-        // Match LessMeetApp's shared controller and weak finalization callback.
-        app.onRecordingFinalized = { [weak transcription] id in
-            transcription?.transcribe(recordingID: id)
-        }
         let wire = PivotWire()
         return Fixture(store: store, app: app, manager: manager, engine: engine,
-                       transcription: transcription, wire: wire, chat: makeChat(store, wire))
+                       transcription: transcription, wire: wire, chat: makeChat(store, wire), capture: capture)
     }
 
     private func makeChat(_ store: RecordingStore, _ wire: PivotWire) -> LocalChatModel {
@@ -81,6 +79,8 @@ final class LocalPivotIntegrationTests: XCTestCase {
         let saved = try XCTUnwrap(f.store.load().first { $0.id == id })
         XCTAssertEqual(saved.status, .ready)
         XCTAssertEqual(saved.duration, 8)
+        XCTAssertEqual(f.transcription.state(for: id), .idle)
+        XCTAssertNil(try f.store.loadLocalTranscript(for: id))
         return id
     }
 
@@ -89,6 +89,36 @@ final class LocalPivotIntegrationTests: XCTestCase {
             .init(startMs: 125, endMs: 2300, speaker: "Speaker A", text: "\(label): first line"),
             .init(startMs: 3100, endMs: 7800, speaker: "Speaker B", text: "\(label): last line — đầy đủ")
         ])
+    }
+
+    func testReadyModelsNeverStartTranscriptionOnStopOrCaptureFailureOrReopen() async throws {
+        for interrupted in [false, true] {
+            let f = try fixture()
+            await f.manager.startup()
+            await f.app.startRecording()
+            let id = try XCTUnwrap(f.app.selection)
+            if interrupted {
+                f.capture.onFailure?("Synthetic sleep interruption")
+                try await settle { f.app.phase == .idle }
+            } else {
+                await f.app.stopRecording()
+            }
+            let reopenedApp = AppModel(store: f.store)
+            let reopened = LocalTranscriptionModel(app: reopenedApp, manager: f.manager, engine: f.engine)
+            await f.manager.startup()
+            for _ in 0..<10 { await Task.yield() }
+            let calls = await f.engine.calls.count
+            XCTAssertEqual(calls, 0)
+            XCTAssertEqual(f.transcription.state(for: id), .idle)
+            XCTAssertEqual(reopened.state(for: id), .idle)
+            XCTAssertNil(try f.store.loadLocalTranscript(for: id))
+            XCTAssertEqual(reopenedApp.selected?.status, interrupted ? .interrupted : .ready)
+            if interrupted { XCTAssertEqual(reopenedApp.selected?.failure, "Synthetic sleep interruption") }
+            reopened.transcribe(recordingID: id)
+            try await settle { await f.engine.calls.count == 1 }
+            await f.engine.finish(transcript("Explicit after reopen"))
+            try await settle { reopened.state(for: id) == .completed }
+        }
     }
 
     private func assertInput(_ wire: PivotWire, transcript: LocalTranscript,
@@ -106,10 +136,11 @@ final class LocalPivotIntegrationTests: XCTestCase {
         XCTAssertEqual(input.dropFirst().compactMap { $0["role"] }, roles)
     }
 
-    func testFinalizationWaitsForSharedModelsThenSendsFullSidecarAndReopensHistory() async throws {
+    func testExplicitRequestWaitsForSharedModelsThenSendsFullSidecarAndReopensHistory() async throws {
         let f = try fixture()
         let id = try await capture(f)
         let expected = transcript("Captured recording")
+        f.transcription.transcribe(recordingID: id)
         XCTAssertEqual(f.transcription.state(for: id), .queued)
         XCTAssertEqual(f.transcription.activity, .waitingForModels("Waiting for local models to be ready."))
         XCTAssertNil(try f.store.loadLocalTranscript(for: id))
@@ -181,6 +212,8 @@ final class LocalPivotIntegrationTests: XCTestCase {
         let f = try fixture()
         let first = try await capture(f)
         let second = try await capture(f)
+        f.transcription.transcribe(recordingID: first)
+        f.transcription.transcribe(recordingID: second)
         f.app.selection = second
         f.chat.select(recordingID: second)
         await f.manager.startup()
@@ -230,6 +263,7 @@ final class LocalPivotIntegrationTests: XCTestCase {
     func testRejectedTranscriptReplacementKeepsDurableSidecarForExplicitSend() async throws {
         let f = try fixture()
         let id = try await capture(f)
+        f.transcription.transcribe(recordingID: id)
         await f.manager.startup()
         try await settle { await f.engine.calls.count == 1 }
         let expected = transcript("Keep every segment")

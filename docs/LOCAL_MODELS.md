@@ -231,8 +231,8 @@ transcript. Evidence: `silence-run-2.log` and `silence-result-2.json`.
 Correction `384fde3` does not establish robustness for ambient noise or quiet
 speech. Model loading still occurs even for an all-zero recording.
 
-`LocalRealInferenceTests` exercises the production path:
-synthetic capture finalization → `AppModel.onRecordingFinalized` →
+The historical `LocalRealInferenceTests` receipt below exercised:
+synthetic capture finalization → the former `AppModel.onRecordingFinalized` →
 `LocalTranscriptionModel` → real Whisper and Nemotron → atomic sidecar save →
 reopen through a new `RecordingStore`. It verifies one callback, unchanged
 ready metadata, one completion notification and a valid nonempty transcript.
@@ -246,7 +246,11 @@ The finalization test prints the exact retained private library and sidecar path
 Focused correction tests with network denied passed 27/27; their receipt is
 `.artifacts/dependency-validation/zero-duration-offline.log`.
 
-### Repeat the finalization check
+### Repeat the explicit transcription check
+
+The current test verifies that Stop stays idle, then explicitly requests
+transcription through `LocalTranscriptionModel`. The automatic finalization hook
+was removed on 2026-10-15. Historical receipts above do not verify that change.
 
 1. Run `bash scripts/make-local-inference-fixtures.sh` with already installed
    `say` voices and `ffmpeg`. Keep the printed fixture directory. No voice

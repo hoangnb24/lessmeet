@@ -1,3 +1,4 @@
+import AVFoundation
 import Combine
 import CryptoKit
 import Darwin
@@ -50,6 +51,18 @@ private final class NoControllerNetwork: URLProtocol {
     override func stopLoading() {}
 }
 
+@MainActor
+private final class ManualControllerCapture: RecordingCapture {
+    var onFailure: ((String) -> Void)?
+    var duringStart: (() throws -> Void)?
+    var duringStop: (() -> Void)?
+    func start(directory: URL) async throws { try duringStart?() }
+    func stop() async throws -> CaptureResult {
+        duringStop?()
+        return .init(duration: 1, warning: nil)
+    }
+}
+
 final class LocalTranscriptionModelTests: XCTestCase {
     private struct Fixture {
         let app: AppModel
@@ -80,7 +93,8 @@ final class LocalTranscriptionModelTests: XCTestCase {
         throw TestFailure.inference
     }
 
-    @MainActor private func fixture(ready: Bool = true, count: Int = 2) async throws -> Fixture {
+    @MainActor private func fixture(ready: Bool = true, count: Int = 2,
+                                   capture: (any RecordingCapture)? = nil) async throws -> Fixture {
         let physical = try XCTUnwrap(realpath(FileManager.default.temporaryDirectory.path, nil))
         defer { free(physical) }
         let root = URL(fileURLWithPath: String(cString: physical), isDirectory: true)
@@ -115,7 +129,7 @@ final class LocalTranscriptionModelTests: XCTestCase {
             XCTAssertEqual(manager.state, .ready, manager.error ?? "")
             guard manager.state == .ready else { throw TestFailure.inference }
         }
-        let app = AppModel(store: store)
+        let app = AppModel(store: store, capture: capture)
         let engine = ControlledTranscriptionEngine()
         let model = LocalTranscriptionModel(app: app, manager: manager, engine: engine)
         return Fixture(app: app, store: store, manager: manager, engine: engine, model: model, ids: ids)
@@ -123,6 +137,140 @@ final class LocalTranscriptionModelTests: XCTestCase {
 
     private func transcript(_ text: String = "Hello", speaker: String? = nil) -> LocalTranscript {
         .init(segments: [.init(startMs: 1200, endMs: 3456, speaker: speaker, text: text)])
+    }
+
+    private func writePlayableAudio(_ url: URL) throws {
+        let writer = try AVAudioFile(forWriting: url, settings: [
+            AVFormatIDKey: kAudioFormatMPEG4AAC, AVSampleRateKey: 48_000,
+            AVNumberOfChannelsKey: 1, AVEncoderBitRateKey: 64_000
+        ])
+        let buffer = try XCTUnwrap(AVAudioPCMBuffer(pcmFormat: writer.processingFormat, frameCapacity: 48_000))
+        buffer.frameLength = 48_000
+        for index in 0..<48_000 {
+            buffer.floatChannelData![0][index] = Float(sin(Double(index) * 0.0576)) * 0.1
+        }
+        try writer.write(from: buffer)
+    }
+
+    func testInterruptedAndRecoveredAudioReopensIdleAndTranscribesOnlyOnRequest() {
+        run {
+            for status in [Recording.Status.interrupted, .recording] {
+                let f = try await self.fixture()
+                let id = f.ids[0]
+                var recording = try XCTUnwrap(f.app.recordings.first { $0.id == id })
+                recording.status = status
+                recording.failure = "Synthetic sleep interruption"
+                try f.store.save(recording)
+                let audio = f.store.audioURL(for: id)
+                try self.writePlayableAudio(audio)
+                let originalAudio = try Data(contentsOf: audio)
+                let reader = try LocalPCMReader(url: audio)
+                var samples = 0
+                while true {
+                    let block = try reader.read(maxSamples: 16_384)
+                    if block.isEmpty { break }
+                    samples += block.count
+                }
+                XCTAssertGreaterThan(samples, 0)
+                let reopenedApp = AppModel(store: f.store)
+                let reopened = LocalTranscriptionModel(app: reopenedApp, manager: f.manager, engine: f.engine)
+                let metadataURL = f.store.directory(for: id).appendingPathComponent("recording.json")
+                let metadata = try Data(contentsOf: metadataURL)
+                XCTAssertEqual(reopenedApp.recordings.first { $0.id == id }?.status, .interrupted)
+                XCTAssertNotNil(reopenedApp.recordings.first { $0.id == id }?.failure)
+                if status == .interrupted {
+                    XCTAssertEqual(reopenedApp.recordings.first { $0.id == id }?.failure, recording.failure)
+                }
+                await f.manager.prepare()
+                for _ in 0..<10 { await Task.yield() }
+                XCTAssertEqual(reopened.state(for: id), .idle)
+                let initialCalls = await f.engine.calls.count
+                XCTAssertEqual(initialCalls, 0)
+                XCTAssertNil(try f.store.loadLocalTranscript(for: id))
+                reopened.transcribe(recordingID: id)
+                try await self.settle { await f.engine.calls.count == 1 }
+                await f.engine.finish(0, .success(self.transcript("Explicit request")))
+                try await self.settle { reopened.state(for: id) == .completed }
+                XCTAssertEqual(try f.store.loadLocalTranscript(for: id), self.transcript("Explicit request"))
+                XCTAssertEqual(try Data(contentsOf: metadataURL), metadata)
+                XCTAssertEqual(try Data(contentsOf: audio), originalAudio)
+            }
+        }
+    }
+
+    func testInterruptedCorruptAudioFailsRealDecoderAndPreservesPreviousTranscript() {
+        run {
+            let f = try await self.fixture()
+            let id = f.ids[0]
+            var recording = try XCTUnwrap(f.app.recordings.first { $0.id == id })
+            recording.status = .interrupted
+            recording.failure = "Synthetic sleep interruption"
+            try f.store.save(recording)
+            try f.store.saveLocalTranscript(self.transcript("Previous"), for: id)
+            let metadata = try Data(contentsOf: f.store.directory(for: id).appendingPathComponent("recording.json"))
+            let audio = try Data(contentsOf: f.store.audioURL(for: id))
+            let model = LocalTranscriptionModel(app: f.app, manager: f.manager)
+            model.transcribe(recordingID: id)
+            try await self.settle { if case .failed = model.state(for: id) { return true }; return false }
+            XCTAssertTrue(model.error?.contains("Cannot read local audio") == true, model.error ?? "")
+            XCTAssertEqual(try f.store.loadLocalTranscript(for: id), self.transcript("Previous"))
+            XCTAssertEqual(try Data(contentsOf: f.store.audioURL(for: id)), audio)
+            XCTAssertEqual(try Data(contentsOf: f.store.directory(for: id).appendingPathComponent("recording.json")), metadata)
+        }
+    }
+
+    func testInterruptedMissingEmptyAndLinkedAudioNeverReachesEngine() {
+        run {
+            let f = try await self.fixture()
+            for kind in ["missing", "empty", "linked"] {
+                let recording = Recording(title: kind, status: .interrupted, failure: "Synthetic interruption")
+                try f.store.save(recording)
+                let url = f.store.audioURL(for: recording.id)
+                if kind == "empty" { try Data().write(to: url) }
+                if kind == "linked" {
+                    try FileManager.default.createSymbolicLink(at: url, withDestinationURL: f.store.audioURL(for: f.ids[0]))
+                }
+                f.model.transcribe(recordingID: recording.id)
+                guard case .failed = f.model.state(for: recording.id) else { return XCTFail("Accepted \(kind) audio") }
+                XCTAssertNil(try f.store.loadLocalTranscript(for: recording.id))
+            }
+            let calls = await f.engine.calls.count
+            XCTAssertEqual(calls, 0)
+        }
+    }
+
+    func testActiveCaptureCannotTranscribeEvenWithInterruptedMetadataOrChangedSelection() {
+        run {
+            let capture = ManualControllerCapture()
+            let f = try await self.fixture(capture: capture)
+            capture.duringStart = {
+                let id = try XCTUnwrap(f.app.selected?.id)
+                var recording = try XCTUnwrap(f.app.selected)
+                recording.status = .interrupted
+                try f.store.save(recording)
+                try self.writePlayableAudio(f.store.audioURL(for: id))
+                f.app.selection = f.ids[0]
+                f.model.transcribe(recordingID: id)
+                guard case .failed = f.model.state(for: id) else { return XCTFail("Starting capture accepted") }
+            }
+            await f.app.startRecording()
+            let id = try XCTUnwrap(f.app.recordings.first { !f.ids.contains($0.id) }?.id)
+            f.model.transcribe(recordingID: id)
+            guard case .failed = f.model.state(for: id) else { return XCTFail("Active capture accepted") }
+            capture.duringStop = {
+                f.model.transcribe(recordingID: id)
+                guard case .failed = f.model.state(for: id) else { return XCTFail("Stopping capture accepted") }
+            }
+            await f.app.stopRecording(interruption: "Synthetic sleep interruption")
+            let calls = await f.engine.calls.count
+            XCTAssertEqual(calls, 0)
+            XCTAssertEqual(f.model.activity, .idle)
+            XCTAssertNil(try f.store.loadLocalTranscript(for: id))
+            f.model.transcribe(recordingID: id)
+            try await self.settle { await f.engine.calls.count == 1 }
+            await f.engine.finish(0, .success(self.transcript()))
+            try await self.settle { f.model.state(for: id) == .completed }
+        }
     }
 
     func testQueueWaitsForCommittedReadinessAndDeduplicatesPendingAndActive() {
@@ -384,7 +532,7 @@ final class LocalTranscriptionModelTests: XCTestCase {
             let id = f.ids[0]
             f.model.transcribe(recordingID: id)
             var recording = try XCTUnwrap(f.app.recordings.first { $0.id == id })
-            recording.status = .interrupted
+            recording.status = .recording
             try f.store.save(recording)
             await f.manager.prepare()
             try await self.settle { if case .failed = f.model.state(for: id) { return true }; return false }

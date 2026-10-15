@@ -1,5 +1,166 @@
 # LessMeet delivery
 
+## Recording fix publication — authorized and in progress (2026-10-15)
+
+The owner explicitly authorized pushing accepted candidate `8e4f195`, creating
+its PR and merging through the normal protected workflow. Preserve implementation
+`d09112c` and all three existing logical commits. This session owns publication
+and status updates; no Peer or live UI scope is active. The workspace visibility
+issue remains unresolved and does not require a replacement owner.
+
+Fresh remote main is `a3d1b05`. Its changes since the original base `8150dc1`
+are LICENSE, README and STATUS only. A normal integration merge retains those
+MIT/publication records and resolves only the overlapping STATUS insertion.
+Product code, tests, workflows and release configuration remain unchanged from
+the accepted candidate. Protection enforces PRs and conversation resolution,
+requires zero approvals and defines no pre-merge status checks. Both existing
+release gates read true. No bypass, force push or configuration change is used.
+
+Proceed with the exact reconciled head and observe its merged-source build and
+publication to a terminal result. Physical lid/sleep, the actual meeting/build,
+full production relaunch and all other UNVERIFIED limits below remain unchanged.
+The absent meeting path is not an approval gate for this authorized merge.
+
+## Saved interrupted audio and manual transcription — accepted locally (2026-10-15)
+
+Outcome: valid saved audio remains eligible for explicit local transcription after
+sleep/interruption, including older interrupted records. Stop, recovery and reopen
+must never enqueue transcription automatically. Keep interruption warnings and
+reject missing, invalid or still-active audio without modifying recordings.
+
+Base: local main `8150dc1b69e20edd55f2c32343efa25d927aee6d` after the
+documentation/delivery integration below.
+Work branch: `fix/manual-saved-transcription-20261015`. This session completed
+all implementation, tests and status writes. No Peer writer or live UI owner is
+active. Room inspection found this session as the sole active project owner;
+its existing workspace is absent from the active listing but its cwd and tools
+work. Do not create a replacement owner/workspace. Preserve untracked `.codex`.
+An attempted read-only safety inspection could not start: the existing workspace
+ID returned not found. No Peer was created and no ownership was delegated. Local
+execution remained available; independent Peer inspection is unavailable until the existing workspace
+registration is repaired. Do not create a competing workspace to bypass this.
+
+Observed base-code cause: LocalTranscriptionModel accepted only `.ready` metadata;
+AppModel recorded sleep-finalized audio as `.interrupted`. LessMeetApp separately
+connected onRecordingFinalized to transcription. The supplied screenshot shows
+both the sleep warning and recording-not-ready error. The actual meeting file
+and installed build have not been supplied or checked; do not scan the library.
+
+Verification used synthetic tests for the saved/active audio boundary and manual
+stop/interruption/reopen/explicit requests. The lessmeet-app-check procedure then
+checked the shared UI in an isolated fixture. verify-lessmeet guided regression
+and evidence scope. Keep runtime results separate from
+tests and unavailable real sleep/meeting checks. No upload, paid API, destructive
+repair, credential change or new release mechanism. Existing delivery authority
+and automatic merged-main prerelease policy below remain unchanged.
+
+Implementation removes the finalization callback and its app wiring. The only
+production transcription entry is now the explicit Transcript button. Eligibility
+accepts saved `.interrupted` or `.ready` metadata but rejects the active capture ID
+through starting/recording/stopping. Existing file and decoder validation remain.
+No metadata migration or audio repair is used.
+
+Preliminary evidence under ignored `.artifacts/manual-transcription/`: the first
+build was invalidated by overlapping source edits; a clean incremental candidate
+build passed. The first 393-test run passed with six opt-in skips. The expanded
+394-test run passed with seven opt-in skips. Two explicit real-model checks then
+passed separately with network denied: normal and interrupted saves each stayed
+idle until requested, saved a valid transcript, reopened it and preserved metadata.
+The installed model cache was cloned into private task storage. Input was the
+retained synthetic narration fixture, not a user meeting. A new `say` fixture
+failed its audible-sample check and was not used. Retain failed evidence separately.
+The isolated Library fixture now supports generated AAC, simulated interruption,
+explicit transcription through the shared controller and real decoder, and reopen.
+Its output is synthetic; it is not speech-model or physical-sleep evidence.
+Pre-repair regression: 395 tests, seven explicit opt-in skips, zero failures
+(`regression-final.log`). The two real-model opt-ins passed separately
+(`real-inference.log`); long-capture, exact two-hour, tokenizer and backend-fixture
+opt-ins were not run. Build warnings in DemoCapture are pre-existing.
+This session held sole live UI ownership for the isolated Library fixture. The
+installed app and its library remained outside this runtime check. No Peer or
+XCUITest driver operated the scope.
+
+Candidate `426674a` contains the product fix and preliminary evidence. Its first
+UI launch on Oct15 at 04:01:53 UTC reached the isolated Library, but model setup
+failed: "The model folder contains an unsafe path or link." The fixture's temporary
+path traversed macOS `/var`. REJECT that fixture as acceptance evidence; keep the
+model-store path checks unchanged. Quit its exact PID 53551 through Computer Use
+and confirmed exit. Corrected the fixture to pass a physical model path in
+`d09112c`, added a regression, and reran packaged UI checks. The regression first
+failed at the expected unsafe-path guard, then passed. The product scope and
+model-store guards did not change.
+The first attempted regression build also failed on an actor-isolated default
+argument; keep its log separate from runtime regression evidence.
+
+ACCEPT exact implementation candidate
+`d09112c5378405cf31503be9ac6b47611607bf86` for the requested local behavior.
+Direct source inspection confirms the only production transcription caller is
+the explicit button. Final regression passed 396 tests with seven opt-in skips
+and no failures (`regression-repaired.log`). The two real-model opt-ins passed
+separately. Physical capture and the user's specific audio are not established by
+these results. No schema change, audio rewrite or warning suppression is needed.
+
+Computer Use PASS, 04:06:56–04:09:13 UTC, on the exact isolated fixture:
+previously saved interrupted audio opened idle, played, transcribed only after a
+click and retained its warning. Normal Stop and simulated sleep callback each
+saved audio without a transcript. Reopening each save kept transcription idle;
+explicit requests then saved output. Corrupt interrupted audio reported an
+AVFoundation decoder error and created no transcript. Audio and metadata hashes
+for both interrupted records remained unchanged. The fixture used generated AAC
+and synthetic transcript output after real decoding, not speech-model inference.
+Its Reopen control constructs fresh models and remounts Library over saved files;
+it does not prove a production process relaunch. Screenshots were inspected.
+
+Private proof: `.artifacts/manual-transcription/ui/RESULT.md`, action log,
+before/after snapshots, hashes and retained synthetic library. Fixture executable
+SHA256: `924c45d46a1c4fb494f5e979d1157880444005fa8a218c27a198442911967eb5`.
+Strict code signature verification passed. The process ran with network denied;
+the final socket check was empty (point-in-time evidence only). Quit exact owned
+PID 63410 and confirmed exit. All owned build/test processes have finished. No
+live UI, Peer or implementation write scope remains. No Peer was created, so no
+delegated response is outstanding. Independent inspection remains unavailable:
+the existing workspace is still absent from the listing. Return to that optional
+inspection if room registration is repaired; do not create a replacement owner.
+
+Usable development artifact: `dist/local/LessMeet.app`, built from the same code
+and strictly signature-verified. Executable SHA256:
+`990993dbce709ee544b6c10a097e5477edbd91c6ae0b599858f8c68659465946`.
+This is an ad-hoc local build, not a signed/notarized release. It was not launched
+against the real library. No installed app, recording, credential or original
+model cache was changed. No push, PR, merge, publication or new delivery mechanism
+was used. Existing delivery authority and merged-main prerelease policy remain.
+
+To try the fix:
+
+1. Open `dist/local/LessMeet.app` when no other LessMeet instance is running.
+2. Open the saved interrupted recording, then select **Transcript**.
+3. Choose **Transcribe on this Mac**. Keep the interruption warning as history.
+
+Stop and reopen no longer start transcription. Existing interrupted records need
+no metadata edit. Valid saved audio follows the same decoder/model path as a ready
+recording. Missing, empty, linked, active and corrupt audio remain rejected.
+No new Human decision is needed for this local candidate. Confirmation against
+the reported meeting requires its exact path and installed build from Human;
+neither has been supplied. Physical lid/sleep, microphone/system capture,
+acoustic quality, full production relaunch, real auth/chat and skipped long-run
+checks remain UNVERIFIED. These limits are not converted into passes.
+
+Complete changed paths from the base:
+
+- `README.md`
+- `Sources/LessMeet/LessMeetApp.swift`
+- `Sources/LessMeet/LocalTranscription/LocalTranscriptionModel.swift`
+- `Sources/LessMeet/Presentation/AppModel.swift`
+- `Sources/LessMeet/Presentation/LibraryUICheckView.swift`
+- `Sources/LessMeet/Presentation/ManualTranscriptionUICheck.swift`
+- `Tests/LessMeetTests/LibraryUICheckTests.swift`
+- `Tests/LessMeetTests/LocalPivotIntegrationTests.swift`
+- `Tests/LessMeetTests/LocalRealInferenceTests.swift`
+- `Tests/LessMeetTests/LocalTranscriptionModelTests.swift`
+- `Tests/LessMeetTests/RecordingFinalizationTests.swift`
+- `docs/LOCAL_MODELS.md`
+- `docs/STATUS.md`
+
 ## Public repository enabled and main protected (2026-10-15)
 
 The existing [hoangnb24/lessmeet](https://github.com/hoangnb24/lessmeet)

@@ -163,10 +163,13 @@ final class LocalTranscriptionModel: ObservableObject {
     }
 
     private func audioURL(for id: UUID) throws -> URL {
-        guard app != nil, let store else { throw ControllerError.libraryUnavailable }
+        guard let app, let store else { throw ControllerError.libraryUnavailable }
+        guard !app.isCapturing(id) else { throw ControllerError.recordingNotReady }
         let metadata = store.directory(for: id).appendingPathComponent("recording.json")
         let recording = try JSONDecoder().decode(Recording.self, from: Data(contentsOf: metadata))
-        guard recording.id == id, recording.status == .ready else { throw ControllerError.recordingNotReady }
+        // Interruption describes capture, not whether its saved audio can be decoded.
+        // The engine validates audio before publishing a transcript.
+        guard recording.id == id, recording.status != .recording else { throw ControllerError.recordingNotReady }
         let url = store.audioURL(for: id)
         let values = try url.resourceValues(forKeys: [.isRegularFileKey, .isSymbolicLinkKey, .fileSizeKey])
         guard url.isFileURL, values.isRegularFile == true, values.isSymbolicLink != true,
